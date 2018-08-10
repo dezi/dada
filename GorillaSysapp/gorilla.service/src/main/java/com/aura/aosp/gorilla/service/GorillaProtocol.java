@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.service;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -40,14 +41,31 @@ public class GorillaProtocol
         Log.d(LOGTAG, "sendPayload: apkname=" + apkname + " receiver=" + receiver + " payload=" + payload);
 
         JSONObject result = new JSONObject();
-        Json.put(result, "success", false);
 
         if ((apkname == null) || (receiver == null) || (payload == null))
         {
             Json.put(result, "error", "APK-name, receiver or payload missing");
+            Json.put(result, "success", false);
         }
         else
         {
+            //
+            // Simply echo the payload for now...
+            //
+
+            Intent echoIntent = new Intent();
+
+            echoIntent.setPackage(apkname);
+            echoIntent.setAction("com.aura.aosp.gorilla.service.RECV_PAYLOAD");
+            echoIntent.putExtra("sender", receiver);
+            echoIntent.putExtra("payload", payload);
+
+            context.sendBroadcast(echoIntent);
+
+            //
+            // Return success for now.
+            //
+
             Json.put(result, "success", true);
         }
 

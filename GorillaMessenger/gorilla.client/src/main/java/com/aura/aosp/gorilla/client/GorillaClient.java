@@ -37,6 +37,7 @@ public class GorillaClient extends BroadcastReceiver
 
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT");
+        filter.addAction("com.aura.aosp.gorilla.service.RECV_PAYLOAD");
 
         this.context.registerReceiver(this, filter);
     }
@@ -50,7 +51,17 @@ public class GorillaClient extends BroadcastReceiver
         {
             String result = intent.getStringExtra("result");
 
-            Log.d(LOGTAG,"onReceive: result=" + result);
+            Log.d(LOGTAG,"onReceive: SEND_PAYLOAD_RESULT result=" + result);
+
+            return;
+        }
+
+        if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_PAYLOAD"))
+        {
+            String sender = intent.getStringExtra("sender");
+            String payload = intent.getStringExtra("payload");
+
+            Log.d(LOGTAG,"onReceive: RECV_PAYLOAD sender=" + sender + " payload=" + payload);
 
             return;
         }
