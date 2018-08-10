@@ -1,4 +1,4 @@
-package com.aura.android.gorilla;
+package com.aura.android.gorilla.sysapp;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
