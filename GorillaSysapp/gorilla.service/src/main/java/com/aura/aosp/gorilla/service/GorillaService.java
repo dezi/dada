@@ -31,7 +31,7 @@ public class GorillaService extends Service
     {
         Log.d(LOGTAG, "onCreate: started.");
 
-        GorillaClient.getInstance(this);
+        GorillaProtocol.getInstance(this);
     }
 
     @Override

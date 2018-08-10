@@ -14,47 +14,47 @@ public class GorillaReceiver extends BroadcastReceiver
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        if ((intent.getAction() == null) || ! intent.getAction().equals("com.aura.aosp.gorilla.service.SEND_PAYLOAD"))
+        //Log.d(LOGTAG,"onReceive: intent=" + intent.toString());
+
+        if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.SEND_PAYLOAD"))
         {
+            String apkname = intent.getStringExtra("apkname");
+
+            if (apkname == null)
+            {
+                //
+                // Silently ignore.
+                //
+
+                Log.d(LOGTAG,"onReceive: no apkname.");
+
+                return;
+            }
+
             //
-            // Silently ignore.
-            //
-
-            Log.d(LOGTAG,"onReceive: wrong action.");
-
-            return;
-        }
-
-        Log.d(LOGTAG,"onReceive: intent=" + intent.toString());
-
-        String apkname = intent.getPackage();
-
-        if (apkname == null)
-        {
-            //
-            // Silently ignore.
+            // Prepare a response broadcast.
             //
 
-            Log.d(LOGTAG,"onReceive: no apkname.");
+            String receiver = intent.getStringExtra("receiver");
+            String payload = intent.getStringExtra("payload");
+
+            JSONObject result = GorillaProtocol.getInstance(context).sendPayload(apkname, receiver, payload);
+
+            Intent responseIntent = new Intent();
+
+            responseIntent.setPackage(apkname);
+            responseIntent.setAction("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT");
+            responseIntent.putExtra("result", result.toString());
+
+            context.sendBroadcast(responseIntent);
 
             return;
         }
 
         //
-        // Prepare a response broadcast.
+        // Silently ignore.
         //
 
-        String receiver = intent.getStringExtra("receiver");
-        String payload = intent.getStringExtra("payload");
-
-        JSONObject result = GorillaClient.getInstance(context).sendPayload(apkname, receiver, payload);
-
-        Intent responseIntent = new Intent();
-
-        responseIntent.setPackage(apkname);
-        responseIntent.setAction("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT");
-        responseIntent.putExtra("result", result.toString());
-
-        context.sendBroadcast(responseIntent);
+        Log.d(LOGTAG,"onReceive: wrong action.");
     }
 }

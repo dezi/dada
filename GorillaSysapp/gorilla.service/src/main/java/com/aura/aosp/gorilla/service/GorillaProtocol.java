@@ -5,14 +5,14 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
-public class GorillaClient
+public class GorillaProtocol
 {
-    private static final String LOGTAG = GorillaClient.class.getSimpleName();
+    private static final String LOGTAG = GorillaProtocol.class.getSimpleName();
 
     private static final Object mutex = new Object();
-    private static GorillaClient instance;
+    private static GorillaProtocol instance;
 
-    public static GorillaClient getInstance(Context context)
+    public static GorillaProtocol getInstance(Context context)
     {
         if (instance == null)
         {
@@ -20,7 +20,7 @@ public class GorillaClient
             {
                 if (instance == null)
                 {
-                    instance = new GorillaClient(context);
+                    instance = new GorillaProtocol(context);
                 }
             }
         }
@@ -30,7 +30,7 @@ public class GorillaClient
 
     private Context context;
 
-    private GorillaClient(Context context)
+    private GorillaProtocol(Context context)
     {
         this.context = context;
     }
