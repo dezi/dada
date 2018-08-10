@@ -1,14 +1,17 @@
 package com.aura.aosp.gorilla.client;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.util.Log;
 
-public class GorillaClient extends BroadcastReceiver
+@SuppressLint("StaticFieldLeak")
+public class GorillaClient
 {
     private static final String LOGTAG = GorillaClient.class.getSimpleName();
+
+    //region Static implemention.
 
     private static final Object mutex = new Object();
     private static GorillaClient instance;
@@ -29,21 +32,18 @@ public class GorillaClient extends BroadcastReceiver
         return instance;
     }
 
+    //endregion Static implemention.
+
+    //region Instance implemention.
+
     private Context context;
 
     private GorillaClient(Context context)
     {
         this.context = context;
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT");
-        filter.addAction("com.aura.aosp.gorilla.service.RECV_PAYLOAD");
-
-        this.context.registerReceiver(this, filter);
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent)
+    public void onReceive(Intent intent)
     {
         //Log.d(LOGTAG, "onReceive: intent=" + intent.toString());
 
@@ -86,4 +86,6 @@ public class GorillaClient extends BroadcastReceiver
 
         context.sendBroadcast(requestIntent);
     }
+
+    //endregion Instance implemention.
 }
