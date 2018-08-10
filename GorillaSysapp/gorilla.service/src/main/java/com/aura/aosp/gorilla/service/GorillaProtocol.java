@@ -6,6 +6,8 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.util.UUID;
+
 public class GorillaProtocol
 {
     private static final String LOGTAG = GorillaProtocol.class.getSimpleName();
@@ -36,16 +38,16 @@ public class GorillaProtocol
         this.context = context;
     }
 
-    public JSONObject sendPayload(String apkname, String receiver, String payload)
+    public JSONObject sendPayload(String uuid, long time, String apkname, String receiver, String payload)
     {
-        Log.d(LOGTAG, "sendPayload: apkname=" + apkname + " receiver=" + receiver + " payload=" + payload);
+        Log.d(LOGTAG, "sendPayload: uuid=" + uuid + " time=" + time + " apkname=" + apkname + " receiver=" + receiver + " payload=" + payload);
 
         JSONObject result = new JSONObject();
 
-        if ((apkname == null) || (receiver == null) || (payload == null))
+        if ((uuid == null) || (apkname == null) || (receiver == null) || (payload == null) || (time <= 0))
         {
-            Json.put(result, "error", "APK-name, receiver or payload missing");
-            Json.put(result, "success", false);
+            Json.put(result, "error", "Request parameters missing");
+            Json.put(result, "status", "error");
         }
         else
         {
@@ -53,10 +55,11 @@ public class GorillaProtocol
             // Simply echo the payload for now...
             //
 
-            Intent echoIntent = new Intent();
+            Intent echoIntent = new Intent("com.aura.aosp.gorilla.service.RECV_PAYLOAD");
 
             echoIntent.setPackage(apkname);
-            echoIntent.setAction("com.aura.aosp.gorilla.service.RECV_PAYLOAD");
+            echoIntent.putExtra("uuid", uuid);
+            echoIntent.putExtra("time", time);
             echoIntent.putExtra("sender", receiver);
             echoIntent.putExtra("payload", payload);
 
@@ -66,7 +69,9 @@ public class GorillaProtocol
             // Return success for now.
             //
 
-            Json.put(result, "success", true);
+            Json.put(result, "uuid", uuid);
+            Json.put(result, "time", time);
+            Json.put(result, "status", "send");
         }
 
         return result;

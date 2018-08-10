@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.aura.aosp.gorilla.client.GorillaClient;
 
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity
 {
     private static final String LOGTAG = MainActivity.class.getSimpleName();
@@ -17,6 +19,17 @@ public class MainActivity extends AppCompatActivity
 
         Log.d(LOGTAG, "onCreate: started.");
 
-        GorillaClient.getInstance(this).sendPayload("huhublabla", "hallo");
+        GorillaClient gc = GorillaClient.getInstance(this);
+
+        gc.setOnResultListener(new GorillaClient.OnResultListener()
+        {
+            @Override
+            public void onResult(JSONObject result)
+            {
+                Log.d(LOGTAG, "onResult: sendPayload: result=" + result.toString());
+            }
+        });
+
+        gc.sendPayload("huhublabla", "hallo");
     }
 }
