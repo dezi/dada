@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.service;
 
 import android.app.Application;
+import android.os.Handler;
 import android.util.Log;
 
 public class GorillaBase extends Application
@@ -14,6 +15,15 @@ public class GorillaBase extends Application
 
         super.onCreate();
 
-        GorillaService.SelfStartMainService(this);
+        Handler handler = new Handler();
+
+        handler.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                GorillaService.SelfStartMainService(GorillaBase.this);
+            }
+        });
     }
 }

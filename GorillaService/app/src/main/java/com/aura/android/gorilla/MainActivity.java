@@ -1,10 +1,8 @@
-package com.aura.android.gorillaservice;
+package com.aura.android.gorilla;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-
-import com.aura.aosp.gorilla.service.GorillaService;
 
 public class MainActivity extends AppCompatActivity
 {

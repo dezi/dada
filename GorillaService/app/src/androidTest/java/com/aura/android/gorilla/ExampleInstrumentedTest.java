@@ -1,4 +1,4 @@
-package com.aura.android.gorillaservice;
+package com.aura.android.gorilla;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
