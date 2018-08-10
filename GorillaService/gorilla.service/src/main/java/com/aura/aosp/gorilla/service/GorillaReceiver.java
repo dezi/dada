@@ -14,7 +14,7 @@ public class GorillaReceiver extends BroadcastReceiver
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        if ((intent.getAction() == null) || ! intent.getAction().equals("com.aura.android.gorillaservice.SEND_PAYLOAD"))
+        if ((intent.getAction() == null) || ! intent.getAction().equals("com.aura.aosp.gorilla.service.SEND_PAYLOAD"))
         {
             //
             // Silently ignore.
@@ -52,7 +52,7 @@ public class GorillaReceiver extends BroadcastReceiver
         Intent responseIntent = new Intent();
 
         responseIntent.setPackage(apkname);
-        responseIntent.setAction("com.aura.android.gorillaservice.SEND_PAYLOAD_RESULT");
+        responseIntent.setAction("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT");
         responseIntent.putExtra("result", result.toString());
 
         context.sendBroadcast(responseIntent);

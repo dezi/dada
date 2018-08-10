@@ -1,14 +1,30 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.aura.aosp.gorilla.service">
 
-    <application>
+    <application android:name="com.aura.aosp.gorilla.service.GorillaBase">
+
+        <receiver android:name="com.aura.aosp.gorilla.service.GorillaBoot">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.aura.aosp.gorilla.service.GorillaService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.aura.android.gorillaservice.START_SERVICE" />
+            </intent-filter>
+        </service>
 
         <receiver
             android:name="com.aura.aosp.gorilla.service.GorillaReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.aura.android.gorillaservice.SEND_PAYLOAD"/>
+                <action android:name="com.aura.aosp.gorilla.service.SEND_PAYLOAD"/>
             </intent-filter>
         </receiver>
 

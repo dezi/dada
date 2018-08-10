@@ -6,13 +6,13 @@ import android.app.Service;
 import android.os.IBinder;
 import android.util.Log;
 
-public class MainService extends Service
+public class GorillaService extends Service
 {
-    private static final String LOGTAG = MainService.class.getSimpleName();
+    private static final String LOGTAG = GorillaService.class.getSimpleName();
 
     public static void SelfStartMainService(Context context)
     {
-        Intent serviceIntent = new Intent(context, MainService.class);
+        Intent serviceIntent = new Intent(context, GorillaService.class);
         context.startService(serviceIntent);
 
         Log.d(LOGTAG,"SelfStartMainService: service started.");

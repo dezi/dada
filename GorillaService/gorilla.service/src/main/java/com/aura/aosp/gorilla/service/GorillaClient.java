@@ -44,8 +44,7 @@ public class GorillaClient
 
         if ((apkname == null) || (receiver == null) || (payload == null))
         {
-
-            Json.put(result, "error", "APK, receiver or payload extra missing");
+            Json.put(result, "error", "APK-name, receiver or payload missing");
         }
         else
         {
