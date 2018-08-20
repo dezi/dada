@@ -18,6 +18,10 @@ public class Log
 
     public static void d(String format, Object... args)
     {
+        //
+        // Because of da fucked log format in Android Studio 3.1
+        //
+
         Simple.sleep(1);
 
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
@@ -42,6 +46,10 @@ public class Log
 
     public static void e(String format, Object... args)
     {
+        //
+        // Because of da fucked log format in Android Studio 3.1
+        //
+
         Simple.sleep(1);
 
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
