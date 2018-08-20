@@ -1,4 +1,4 @@
-package com.aura.aosp.gorilla.service;
+package com.aura.aosp.aura.simple;
 
 import android.support.annotation.Nullable;
 

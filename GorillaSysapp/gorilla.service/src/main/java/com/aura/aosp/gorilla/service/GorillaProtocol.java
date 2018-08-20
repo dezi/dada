@@ -1,19 +1,19 @@
 package com.aura.aosp.gorilla.service;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.aura.aosp.aura.simple.Json;
+import com.aura.aosp.aura.simple.Simple;
+
 import org.json.JSONObject;
 
-import java.util.UUID;
-
+@SuppressWarnings("FieldCanBeLocal")
 public class GorillaProtocol
 {
     private static final String LOGTAG = GorillaProtocol.class.getSimpleName();
-
-    private static final Object mutex = new Object();
-    private static GorillaProtocol instance;
 
     public static GorillaProtocol getInstance(Context context)
     {
@@ -29,13 +29,6 @@ public class GorillaProtocol
         }
 
         return instance;
-    }
-
-    private Context context;
-
-    private GorillaProtocol(Context context)
-    {
-        this.context = context;
     }
 
     public JSONObject sendPayload(String uuid, long time, String apkname, String receiver, String payload)
@@ -76,4 +69,39 @@ public class GorillaProtocol
 
         return result;
     }
+
+    private static final Object mutex = new Object();
+
+    @SuppressLint("StaticFieldLeak")
+    private static GorillaProtocol instance;
+
+    private final Context context;
+    private final Thread workerThread;
+
+    private GorillaProtocol(Context context)
+    {
+        this.context = context;
+
+        workerThread = new Thread(workerRunner);
+        workerThread.start();
+    }
+
+    private static final Runnable workerRunner = new Runnable()
+    {
+        @Override
+        @SuppressWarnings("InfiniteLoopStatement")
+        public void run()
+        {
+            while (true)
+            {
+                GorillaNodes.getBestNode("DE", 53.551086, 9.993682);
+
+                Simple.sleep(1000);
+
+                Log.d(LOGTAG, "workerRunner: ...");
+
+                break;
+            }
+        }
+    };
 }
