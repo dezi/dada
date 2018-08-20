@@ -262,4 +262,18 @@ public class Simple
 
         return String.valueOf(hexChars);
     }
+
+    public static byte[] sliceBytes(byte[] bytes, int from)
+    {
+        return sliceBytes(bytes,from, bytes.length);
+    }
+
+    public static byte[] sliceBytes(byte[] bytes, int from, int toto)
+    {
+        byte[] slice = new byte[toto - from];
+
+        System.arraycopy(bytes, from, slice, 0, slice.length);
+
+        return slice;
+    }
 }

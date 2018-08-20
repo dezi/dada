@@ -65,6 +65,9 @@ public class GorillaMessage
     public byte[] Head;
     public byte[] Load;
 
+    public byte[] Sign;
+    public byte[] Base;
+
     public GorillaMessage()
     {
         Magic = GorillaMagic;

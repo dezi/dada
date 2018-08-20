@@ -152,4 +152,16 @@ public class RSA
                 modulus, publicExp, privateExp, prime1, prime2,
                 exp1, exp2, crtCoef);
     }
+
+    @Nullable
+    public static byte[] RSACreateSignature(RSAPrivateKey privateKey, byte[]... buffers)
+    {
+        return null;
+    }
+
+    @Nullable
+    public static boolean RSAVerifySignature(RSAPublicKey publicKey, byte[] signature, byte[]... buffers)
+    {
+        return false;
+    }
 }

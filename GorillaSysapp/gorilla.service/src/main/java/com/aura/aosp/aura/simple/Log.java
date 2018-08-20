@@ -18,6 +18,8 @@ public class Log
 
     public static void d(String format, Object... args)
     {
+        Simple.sleep(1);
+
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
 
         String logtag = "????????";
@@ -40,6 +42,8 @@ public class Log
 
     public static void e(String format, Object... args)
     {
+        Simple.sleep(1);
+
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
 
         String logtag = "????????";
