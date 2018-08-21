@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.simple.Log;
 
+import java.net.SocketTimeoutException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
@@ -57,12 +58,18 @@ public class GorillaSession
 
             while (offset < size)
             {
-                conn.socket.setSoTimeout(5 * 1000);
-                int xfer = conn.input.read(buffer, offset, size - offset);
+                try
+                {
+                    conn.socket.setSoTimeout(1000 * 1000);
+                    int xfer = conn.input.read(buffer, offset, size - offset);
 
-                offset += xfer;
+                    offset += xfer;
 
-                if (offset == size) break;
+                    if (offset == size) break;
+                }
+                catch (SocketTimeoutException ignore)
+                {
+                }
             }
 
             Log.d("##### read=%d", size);
