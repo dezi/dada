@@ -22,7 +22,7 @@ public class Log
         // Because of da fucked log format in Android Studio 3.1
         //
 
-        Simple.sleep(1);
+        Simple.sleep(100);
 
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
 
@@ -50,7 +50,7 @@ public class Log
         // Because of da fucked log format in Android Studio 3.1
         //
 
-        Simple.sleep(1);
+        Simple.sleep(100);
 
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
 

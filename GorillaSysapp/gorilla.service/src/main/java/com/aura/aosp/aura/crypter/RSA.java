@@ -4,6 +4,9 @@ import android.support.annotation.Nullable;
 
 import android.util.Base64;
 
+import com.aura.aosp.aura.simple.Log;
+
+import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.RSAPrivateCrtKeySpec;
@@ -156,12 +159,46 @@ public class RSA
     @Nullable
     public static byte[] RSACreateSignature(RSAPrivateKey privateKey, byte[]... buffers)
     {
+        try
+        {
+            Signature signer = Signature.getInstance("SHA256withRSA");
+            signer.initSign(privateKey);
+
+            for (byte[] buffer : buffers)
+            {
+                signer.update(buffer);
+            }
+
+            return signer.sign();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
         return null;
     }
 
     @Nullable
     public static boolean RSAVerifySignature(RSAPublicKey publicKey, byte[] signature, byte[]... buffers)
     {
+        try
+        {
+            Signature signer = Signature.getInstance("SHA256withRSA");
+            signer.initVerify(publicKey);
+
+            for (byte[] buffer : buffers)
+            {
+                signer.update(buffer);
+            }
+
+            return signer.verify(signature);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
         return false;
     }
 }

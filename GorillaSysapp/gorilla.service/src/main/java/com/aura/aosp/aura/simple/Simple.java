@@ -241,6 +241,11 @@ public class Simple
         return Base64.decode(base64, 0);
     }
 
+    public static String getHexBytesToString(byte[] bytes, boolean space)
+    {
+        return getHexBytesToString(bytes, 0, bytes.length, true);
+    }
+
     public static String getHexBytesToString(byte[] bytes, int offset, int length, boolean space)
     {
         int clen = (length << 1) + (space ? (length - 1) : 0);

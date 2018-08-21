@@ -3,8 +3,8 @@ package com.aura.aosp.gorilla.service;
 import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.crypter.RSA;
-import com.aura.aosp.aura.simple.Log;
 import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.simple.Log;
 
 public class GorillaClient
 {
@@ -161,7 +161,7 @@ public class GorillaClient
         // Disassemble message.
         //
 
-        byte[] challenge = Simple.sliceBytes(message.Base,0, GorillaMessage.GorillaChallengeSize);
+        byte[] challenge = Simple.sliceBytes(message.Base, 0, GorillaMessage.GorillaChallengeSize);
         byte[] publickey = Simple.sliceBytes(message.Base, GorillaMessage.GorillaChallengeSize);
 
         session.PeerPublicKey = RSA.RSAUnMarshalPublicKey(publickey);
@@ -181,9 +181,12 @@ public class GorillaClient
         // Verify servers signature.
         //
 
+        Log.d("####### %s", Simple.getHexBytesToString(message.Head, true));
+        Log.d("####### %s", Simple.getHexBytesToString(message.Base, true));
+
         boolean ok = RSA.RSAVerifySignature(session.PeerPublicKey, message.Sign, message.Head, message.Base);
 
-        if (! ok)
+        if (!ok)
         {
             Log.e("Signature fail!");
 
