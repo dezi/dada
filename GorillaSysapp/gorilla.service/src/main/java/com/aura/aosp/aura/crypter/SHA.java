@@ -2,8 +2,8 @@ package com.aura.aosp.aura.crypter;
 
 import android.support.annotation.Nullable;
 
-import java.security.MessageDigest;
 import java.util.Arrays;
+import java.security.MessageDigest;
 
 public class SHA
 {
@@ -13,6 +13,7 @@ public class SHA
         try
         {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
+
             md.update(secret);
 
             for (byte[] buffer : buffers)

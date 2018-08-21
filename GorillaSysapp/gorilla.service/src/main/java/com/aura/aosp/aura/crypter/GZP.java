@@ -1,13 +1,15 @@
 package com.aura.aosp.aura.crypter;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.zip.GZIPInputStream;
+import android.support.annotation.Nullable;
+
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.GZIPInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 
 public class GZP
 {
-
+    @Nullable
     public static byte[] enGzip(byte[] data)
     {
         try
@@ -31,6 +33,7 @@ public class GZP
         return null;
     }
 
+    @Nullable
     public static byte[] unGzip(byte[] gzip)
     {
         try

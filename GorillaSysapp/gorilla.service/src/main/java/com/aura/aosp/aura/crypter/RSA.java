@@ -5,11 +5,11 @@ import android.support.annotation.Nullable;
 import android.util.Base64;
 
 import java.security.Signature;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.RSAPrivateCrtKeySpec;
-import java.security.spec.RSAPublicKeySpec;
 import java.security.KeyFactory;
+import java.security.spec.RSAPublicKeySpec;
+import java.security.interfaces.RSAPublicKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.RSAPrivateCrtKeySpec;
 
 import javax.crypto.Cipher;
 
@@ -76,7 +76,6 @@ public class RSA
         return unmarshalRSAPublicKey(Base64.decode(pkcs1base64, 0));
     }
 
-
     @Nullable
     public static byte[] encodeRSABuffer(RSAPublicKey publicKey, byte[] plain)
     {
@@ -139,7 +138,6 @@ public class RSA
         return null;
     }
 
-    @Nullable
     public static boolean verifyRSASignature(RSAPublicKey publicKey, byte[] signature, byte[]... buffers)
     {
         if (dryrunRSA)
