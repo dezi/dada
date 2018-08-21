@@ -37,10 +37,10 @@ public class AES
 
     public static class Block
     {
-        SecretKeySpec skeySpec;
-        Cipher cipher;
+        private SecretKeySpec skeySpec;
+        private Cipher cipher;
 
-        public Block(SecretKeySpec skeySpec, Cipher cipher)
+        private Block(SecretKeySpec skeySpec, Cipher cipher)
         {
             this.skeySpec = skeySpec;
             this.cipher = cipher;
@@ -48,7 +48,7 @@ public class AES
     }
 
     @Nullable
-    public byte[] EncryptAESBlock(Block block, byte[]... buffers)
+    public byte[] encryptAESBlock(Block block, byte[]... buffers)
     {
         int total = 0;
 
@@ -96,5 +96,55 @@ public class AES
         System.arraycopy(ms, 0, ciphertext, iv.length, ms.length);
 
         return ciphertext;
+    }
+
+    @Nullable
+    public byte[] encryptAES(byte[] aeskey, byte[]... buffers)
+    {
+        Block block = newAESCipher(aeskey);
+
+        return encryptAESBlock(block, buffers);
+    }
+
+    @Nullable
+    public byte[] decryptAESBlock(Block block, byte[] ciphertext)
+    {
+        if (ciphertext.length < AESBlockSize * 2)
+        {
+            return null;
+        }
+
+        byte[] iv = new byte[ AESBlockSize ];
+        byte[] ms = new byte[ ciphertext.length - AESBlockSize ];
+
+        System.arraycopy(ciphertext, 0, iv, 0, iv.length);
+        System.arraycopy(ciphertext, iv.length, ms, 0, ms.length);
+
+        if (! dryrunAES)
+        {
+            try
+            {
+                IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+                block.cipher.init(Cipher.DECRYPT_MODE, block.skeySpec, ivParameterSpec);
+
+                ms = block.cipher.doFinal(ms);
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+
+                return null;
+            }
+        }
+
+        return ms;
+    }
+
+    @Nullable
+    public byte[] decryptAES(byte[] aeskey, byte[] ciphertext)
+    {
+        Block block = newAESCipher(aeskey);
+
+        return decryptAESBlock(block, ciphertext);
     }
 }
