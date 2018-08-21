@@ -2,11 +2,14 @@ package com.aura.aosp.gorilla.service;
 
 import android.support.annotation.Nullable;
 
+import com.aura.aosp.aura.crypter.AES;
 import com.aura.aosp.aura.simple.Log;
 
 import java.net.SocketTimeoutException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+
+import javax.crypto.Cipher;
 
 public class GorillaSession
 {
@@ -23,7 +26,7 @@ public class GorillaSession
     private boolean isClosed;
 
     public byte[] AESKey;
-    //public AESBlock cipher.Block
+    public AES.Block AESBlock;
 
     public byte[] Challenge;
 
@@ -71,8 +74,6 @@ public class GorillaSession
                 {
                 }
             }
-
-            Log.d("##### read=%d", size);
 
             return buffer;
         }

@@ -1,6 +1,6 @@
 package com.aura.aosp.gorilla.service;
 
-@SuppressWarnings("PointlessBitwiseExpression")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class GorillaMessage
 {
     public final static int GorillaMagic = 0x6ea60451;
@@ -101,11 +101,13 @@ public class GorillaMessage
         }
     }
 
+    @SuppressWarnings("PointlessBitwiseExpression")
     public byte[] marshall()
     {
         Head = new byte[ GorillaHeaderSize ];
 
         // @formatter:off
+
         Head[  0 ] = (byte) ((Magic   >> 24) & 0xff);
         Head[  1 ] = (byte) ((Magic   >> 16) & 0xff);
         Head[  2 ] = (byte) ((Magic   >>  8) & 0xff);
@@ -127,27 +129,44 @@ public class GorillaMessage
         Head[ 13 ] = (byte) ((Size    >> 16) & 0xff);
         Head[ 14 ] = (byte) ((Size    >>  8) & 0xff);
         Head[ 15 ] = (byte) ((Size    >>  0) & 0xff);
+
         // @formatter:on
 
         return Head;
     }
 
+    @SuppressWarnings("PointlessBitwiseExpression")
     public GorillaMessage unmarshall(byte[] bytes)
     {
         if (bytes == null) return null;
 
         Head = bytes;
 
-        Magic = ((Head[ 0 ] & 0xff) << 24) + ((Head[ 1 ] & 0xff) << 16) + ((Head[ 2 ] & 0xff) << 8) + ((Head[ 3 ] & 0xff) << 0);
-
         // @formatter:off
-        Version = ((Head[  4 ] & 0xff) << 8) + ((Head[  5 ] & 0xff) << 0);
-        Command = ((Head[  6 ] & 0xff) << 8) + ((Head[  7 ] & 0xff) << 0);
-        Idsmask = ((Head[  8 ] & 0xff) << 8) + ((Head[  9 ] & 0xff) << 0);
-        Keymask = ((Head[ 10 ] & 0xff) << 8) + ((Head[ 11 ] & 0xff) << 0);
-        // @formatter:on
 
-        Size = ((Head[ 12 ] & 0xff) << 24) + ((Head[ 13 ] & 0xff) << 16) + ((Head[ 14 ] & 0xff) << 8) + ((Head[ 15 ] & 0xff) << 0);
+        Magic   = ((Head[ 0 ] & 0xff) << 24)
+                + ((Head[ 1 ] & 0xff) << 16)
+                + ((Head[ 2 ] & 0xff) <<  8)
+                + ((Head[ 3 ] & 0xff) <<  0);
+
+        Version = ((Head[  4 ] & 0xff) << 8)
+                + ((Head[  5 ] & 0xff) << 0);
+
+        Command = ((Head[  6 ] & 0xff) << 8)
+                + ((Head[  7 ] & 0xff) << 0);
+
+        Idsmask = ((Head[  8 ] & 0xff) << 8)
+                + ((Head[  9 ] & 0xff) << 0);
+
+        Keymask = ((Head[ 10 ] & 0xff) << 8)
+                + ((Head[ 11 ] & 0xff) << 0);
+
+        Size    = ((Head[ 12 ] & 0xff) << 24)
+                + ((Head[ 13 ] & 0xff) << 16)
+                + ((Head[ 14 ] & 0xff) <<  8)
+                + ((Head[ 15 ] & 0xff) <<  0);
+
+        // @formatter:on
 
         return this;
     }

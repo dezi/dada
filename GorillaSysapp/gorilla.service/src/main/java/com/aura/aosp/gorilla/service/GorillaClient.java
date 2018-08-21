@@ -2,6 +2,7 @@ package com.aura.aosp.gorilla.service;
 
 import android.support.annotation.Nullable;
 
+import com.aura.aosp.aura.crypter.AES;
 import com.aura.aosp.aura.crypter.GZP;
 import com.aura.aosp.aura.crypter.RND;
 import com.aura.aosp.aura.crypter.RSA;
@@ -222,7 +223,7 @@ public class GorillaClient
         //
 
         session.AESKey = RND.randomBytes(GorillaMessage.GorillaAESKeySize);
-        //session.AESBlock = crypter.AESNewCipher(session.AESKey);
+        session.AESBlock = AES.newAESCipher(session.AESKey);
 
         //
         // Encrypt challenge, AES key and user UUIDs into RSA block.
@@ -295,11 +296,11 @@ public class GorillaClient
             return false;
         }
 
-
         JSONArray jClientNodes = Json.fromStringArray(new String(nodesBytes));
 
         availableNodes = GorillaNodes.ClientNode.unmarshall(jClientNodes);
 
+        Log.d("nodes=%s", new String(nodesBytes));
         Log.d("nodes=%s", Json.toPretty(jClientNodes));
 
         return true;
