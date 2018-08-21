@@ -2,6 +2,8 @@ package com.aura.aosp.gorilla.service;
 
 import android.support.annotation.Nullable;
 
+import com.aura.aosp.aura.simple.Log;
+
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
@@ -16,8 +18,8 @@ public class GorillaSession
     public byte[] UserUUID;
     public byte[] DeviceUUID;
 
-    public boolean isConnected;
-    public boolean isClosed;
+    private boolean isConnected;
+    private boolean isClosed;
 
     public byte[] AESKey;
     //public AESBlock cipher.Block
@@ -63,6 +65,8 @@ public class GorillaSession
                 if (offset == size) break;
             }
 
+            Log.d("##### read=%d", size);
+
             return buffer;
         }
         catch (Exception ex)
@@ -81,6 +85,8 @@ public class GorillaSession
         {
             try
             {
+                Log.d("size=%d", buffer.length);
+
                 conn.socket.setSoTimeout(5 * 1000);
                 conn.output.write(buffer);
 
@@ -95,5 +101,25 @@ public class GorillaSession
         }
 
         return false;
+    }
+
+    public boolean IsClosed()
+    {
+        return isClosed;
+    }
+
+    public void SetIsClosed(boolean closed)
+    {
+        isClosed = closed;
+    }
+
+    public boolean IsConnected()
+    {
+        return isConnected;
+    }
+
+    public void SetIsConnected(boolean connected)
+    {
+        isConnected = connected;
     }
 }

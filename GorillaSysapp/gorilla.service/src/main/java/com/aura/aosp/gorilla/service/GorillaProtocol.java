@@ -1,12 +1,13 @@
 package com.aura.aosp.gorilla.service;
 
 import android.annotation.SuppressLint;
+
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
+import com.aura.aosp.aura.univid.Identity;
 import com.aura.aosp.aura.simple.Json;
-import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.simple.Log;
 
 import org.json.JSONObject;
 
@@ -94,14 +95,29 @@ public class GorillaProtocol
         {
             while (true)
             {
-                GorillaNodes.getBestNode("DE", 53.551086, 9.993682);
+                GorillaNodes.ClientNode clientNode = GorillaNodes.getBestNode("DE", 53.551086, 9.993682);
+                if (clientNode == null) continue;
 
-                Simple.sleep(1000);
-
-                Log.d(LOGTAG, "workerRunner: ...");
-
-                break;
+                enterGorillaSession(clientNode);
             }
         }
     };
+
+    private static void enterGorillaSession(GorillaNodes.ClientNode cnode)
+    {
+        Log.d("...");
+
+        GorillaConnect conn = new GorillaConnect(cnode.Addr, cnode.Port);
+        if (! conn.connect()) return;
+
+        GorillaSession session = new GorillaSession(conn);
+
+        session.UserUUID = Identity.getUserUUID();
+        session.DeviceUUID = Identity.getDeviceUUID();
+        session.ClientPrivKey = Identity.getRSAPrivateKey();
+
+        GorillaClient client = new GorillaClient(session, false);
+
+        client.clientHandler();
+    }
 }

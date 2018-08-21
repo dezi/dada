@@ -21,8 +21,8 @@ public class Utils
         // Parse inside the sequence
         parser = sequence.getParser();
 
-        BigInteger modulus = parser.read().getInteger();
-        BigInteger publicExp = parser.read().getInteger();
+        BigInteger modulus = parser.read().getBigInteger();
+        BigInteger publicExp = parser.read().getBigInteger();
 
         return new RSAPublicKeySpec(modulus, publicExp);
     }
@@ -42,14 +42,14 @@ public class Utils
         parser = sequence.getParser();
 
         Asn1Object version = parser.read();
-        BigInteger modulus = parser.read().getInteger();
-        BigInteger publicExp = parser.read().getInteger();
-        BigInteger privateExp = parser.read().getInteger();
-        BigInteger prime1 = parser.read().getInteger();
-        BigInteger prime2 = parser.read().getInteger();
-        BigInteger exp1 = parser.read().getInteger();
-        BigInteger exp2 = parser.read().getInteger();
-        BigInteger crtCoef = parser.read().getInteger();
+        BigInteger modulus = parser.read().getBigInteger();
+        BigInteger publicExp = parser.read().getBigInteger();
+        BigInteger privateExp = parser.read().getBigInteger();
+        BigInteger prime1 = parser.read().getBigInteger();
+        BigInteger prime2 = parser.read().getBigInteger();
+        BigInteger exp1 = parser.read().getBigInteger();
+        BigInteger exp2 = parser.read().getBigInteger();
+        BigInteger crtCoef = parser.read().getBigInteger();
 
         return new RSAPrivateCrtKeySpec(
                 modulus, publicExp, privateExp, prime1, prime2,

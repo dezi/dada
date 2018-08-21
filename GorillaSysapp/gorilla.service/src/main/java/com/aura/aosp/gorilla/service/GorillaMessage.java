@@ -138,16 +138,16 @@ public class GorillaMessage
 
         Head = bytes;
 
-        Magic = (Head[ 0 ] << 24) + (Head[ 1 ] << 16) + (Head[ 2 ] << 8) + (Head[ 3 ] << 0);
+        Magic = ((Head[ 0 ] & 0xff) << 24) + ((Head[ 1 ] & 0xff) << 16) + ((Head[ 2 ] & 0xff) << 8) + ((Head[ 3 ] & 0xff) << 0);
 
         // @formatter:off
-        Version = (Head[  4 ] << 8) + (Head[  5 ] << 0);
-        Command = (Head[  6 ] << 8) + (Head[  7 ] << 0);
-        Idsmask = (Head[  8 ] << 8) + (Head[  9 ] << 0);
-        Keymask = (Head[ 10 ] << 8) + (Head[ 11 ] << 0);
+        Version = ((Head[  4 ] & 0xff) << 8) + ((Head[  5 ] & 0xff) << 0);
+        Command = ((Head[  6 ] & 0xff) << 8) + ((Head[  7 ] & 0xff) << 0);
+        Idsmask = ((Head[  8 ] & 0xff) << 8) + ((Head[  9 ] & 0xff) << 0);
+        Keymask = ((Head[ 10 ] & 0xff) << 8) + ((Head[ 11 ] & 0xff) << 0);
         // @formatter:on
 
-        Size = (Head[ 12 ] << 24) + (Head[ 13 ] << 16) + (Head[ 14 ] << 8) + (Head[ 15 ] << 0);
+        Size = ((Head[ 12 ] & 0xff) << 24) + ((Head[ 13 ] & 0xff) << 16) + ((Head[ 14 ] & 0xff) << 8) + ((Head[ 15 ] & 0xff) << 0);
 
         return this;
     }

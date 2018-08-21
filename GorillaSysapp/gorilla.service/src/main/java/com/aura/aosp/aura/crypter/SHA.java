@@ -8,13 +8,18 @@ import java.util.Arrays;
 public class SHA
 {
     @Nullable
-    public static byte[] SHACreateSignature(byte[] secret, byte[] buffer)
+    public static byte[] createSHASignature(byte[] secret, byte[]... buffers)
     {
         try
         {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(secret);
-            md.update(buffer);
+
+            for (byte[] buffer : buffers)
+            {
+                md.update(buffer);
+            }
+
             return md.digest();
         }
         catch (Exception ex)
@@ -25,9 +30,9 @@ public class SHA
         return null;
     }
 
-    public static boolean SHAVerifySignature(byte[] secret, byte[] signature, byte[] buffer)
+    public static boolean verifySHASignature(byte[] secret, byte[] signature, byte[]... buffers)
     {
-        byte[] remotesign = SHACreateSignature(secret, buffer);
+        byte[] remotesign = createSHASignature(secret, buffers);
 
         return Arrays.equals(signature, remotesign);
     }

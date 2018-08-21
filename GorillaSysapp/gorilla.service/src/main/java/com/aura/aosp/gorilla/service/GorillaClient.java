@@ -2,16 +2,20 @@ package com.aura.aosp.gorilla.service;
 
 import android.support.annotation.Nullable;
 
+import com.aura.aosp.aura.crypter.GZP;
 import com.aura.aosp.aura.crypter.RND;
 import com.aura.aosp.aura.crypter.RSA;
+import com.aura.aosp.aura.crypter.SHA;
+import com.aura.aosp.aura.simple.Json;
 import com.aura.aosp.aura.simple.Simple;
 import com.aura.aosp.aura.simple.Log;
 
+import org.json.JSONArray;
+
+import java.util.List;
+
 public class GorillaClient
 {
-    private GorillaSession session;
-    private boolean boot;
-
     public GorillaClient(GorillaSession session, boolean boot)
     {
         this.session = session;
@@ -24,6 +28,16 @@ public class GorillaClient
 
         session.close();
     }
+
+    public List<GorillaNodes.ClientNode> getAvailableClientNodes()
+    {
+        return availableNodes;
+    }
+
+    private GorillaSession session;
+    private boolean boot;
+
+    private List<GorillaNodes.ClientNode> availableNodes;
 
     private void clientHandlerBody()
     {
@@ -68,8 +82,6 @@ public class GorillaClient
     {
         boolean ok = false;
 
-        Log.d("command=0x%04x size=%d", message.Command, message.Size);
-
         switch (message.Command)
         {
             case GorillaMessage.MsgAuthChallenge:
@@ -93,7 +105,7 @@ public class GorillaClient
                 break;
         }
 
-        return false;
+        return ok;
     }
 
     @Nullable
@@ -103,6 +115,13 @@ public class GorillaClient
         if (buffer == null) return null;
 
         GorillaMessage message = new GorillaMessage().unmarshall(buffer);
+
+        if (message.Size < 0)
+        {
+            Log.e("size=%d fail!", message.Size);
+
+            return null;
+        }
 
         if ((message.Command != GorillaMessage.MsgAuthSndNodes) &&
                 (message.Size > GorillaMessage.GorillaMaxSize))
@@ -116,15 +135,15 @@ public class GorillaClient
         if ((message.Idsmask & GorillaMessage.HasRSASignature) != 0)
         {
 
-            message.Sign = Simple.sliceBytes(payload, 0, 256);
-            message.Base = Simple.sliceBytes(payload, 256);
+            message.Sign = Simple.sliceBytes(payload, 0, GorillaMessage.GorillaRSASignSize);
+            message.Base = Simple.sliceBytes(payload, GorillaMessage.GorillaRSASignSize);
         }
         else
         {
             if ((message.Idsmask & GorillaMessage.HasSHASignature) != 0)
             {
-                message.Sign = Simple.sliceBytes(payload, 0, 32);
-                message.Base = Simple.sliceBytes(payload, 32);
+                message.Sign = Simple.sliceBytes(payload, 0, GorillaMessage.GorillaSHASignSize);
+                message.Base = Simple.sliceBytes(payload, GorillaMessage.GorillaSHASignSize);
             }
             else
             {
@@ -144,9 +163,14 @@ public class GorillaClient
 
     private boolean sendAuthReqNodes()
     {
-        GorillaMessage packet = new GorillaMessage(GorillaMessage.MsgAuthRequest);
+        byte[] head = new GorillaMessage(GorillaMessage.MsgAuthReqNodes, GorillaMessage.HasSHASignature, 0, 0).marshall();
 
-        return session.writeSession(packet.marshall());
+        byte[] sign = SHA.createSHASignature(session.AESKey, head);
+        if (sign == null) return false;
+
+        byte[] packet = Simple.concatBuffers(head, sign);
+
+        return session.writeSession(packet);
     }
 
     private boolean chAuthChallenge(GorillaMessage message)
@@ -205,8 +229,8 @@ public class GorillaClient
         //
 
         byte[] plain = Simple.concatBuffers(challenge, session.AESKey, session.UserUUID, session.DeviceUUID);
-        byte[] crypt = RSA.encodeRSABuffer(session.PeerPublicKey, plain);
 
+        byte[] crypt = RSA.encodeRSABuffer(session.PeerPublicKey, plain);
         if (crypt == null) return false;
 
         //
@@ -225,16 +249,60 @@ public class GorillaClient
 
     private boolean chAuthAccepted(GorillaMessage message)
     {
-        Log.d("...");
+        Log.d("....");
 
-        return false;
+        boolean ok = RSA.verifyRSASignature(session.PeerPublicKey, message.Sign, message.Head, message.Base);
+
+        if (!ok)
+        {
+            Log.e("Signature fail!");
+
+            return false;
+        }
+
+        Log.d("Connected!");
+
+        //
+        // We are finally connected now.
+        //
+
+        session.SetIsConnected(true);
+
+        return true;
     }
 
     private boolean chAuthSndNodes(GorillaMessage message)
     {
         Log.d("...");
 
-        return false;
+        boolean ok = SHA.verifySHASignature(session.AESKey, message.Sign, message.Head, message.Base);
+
+        if (!ok)
+        {
+            Log.e("Signature fail!");
+
+            return false;
+        }
+
+        Log.d("Received nodes!");
+
+        byte[] nodesBytes = GZP.unGzip(message.Base);
+
+        if (nodesBytes == null)
+        {
+            Log.e("Unzip fail!");
+
+            return false;
+        }
+
+
+        JSONArray jClientNodes = Json.fromStringArray(new String(nodesBytes));
+
+        availableNodes = GorillaNodes.ClientNode.unmarshall(jClientNodes);
+
+        Log.d("nodes=%s", Json.toPretty(jClientNodes));
+
+        return true;
     }
 
     private boolean chMessageDownload(GorillaMessage message)

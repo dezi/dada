@@ -1,11 +1,12 @@
 package com.aura.aosp.gorilla.service;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
+import com.aura.aosp.aura.simple.Log;
 import com.aura.aosp.aura.simple.Json;
 import com.aura.aosp.aura.simple.Simple;
 import com.aura.aosp.aura.univid.Identity;
+
 import com.aura.aosp.gorilla.utility.Regions;
 
 import org.json.JSONArray;
@@ -18,8 +19,6 @@ import java.util.Map;
 
 public class GorillaNodes
 {
-    private static final String LOGTAG = GorillaNodes.class.getSimpleName();
-
     //region Public implementation.
 
     public static class ClientNode
@@ -37,6 +36,47 @@ public class GorillaNodes
             return "Addr=" + Addr + " Port=" + Port + " Cons=" + Cons
                     + " City=" + City + " Lat=" + Lat + " Lon=" + Lon;
         }
+
+        public ClientNode unMarshall(JSONObject jClientNode)
+        {
+            Addr = Json.getString(jClientNode, "addr");
+            Port = Json.getInt(jClientNode, "port");
+            Cons = Json.getInt(jClientNode, "cons");
+            City = Json.getString(jClientNode, "city");
+            Lat = Json.getDouble(jClientNode, "lat");
+            Lon = Json.getDouble(jClientNode, "lon");
+
+            return this;
+        }
+
+        public JSONObject marshall()
+        {
+            JSONObject jClientNode = new JSONObject();
+
+            Json.put(jClientNode, "addr", Addr);
+            Json.put(jClientNode, "port", Port);
+            Json.put(jClientNode, "cons", Cons);
+            Json.put(jClientNode, "city", City);
+            Json.put(jClientNode, "lat", Lat);
+            Json.put(jClientNode, "lon", Lon);
+
+            return jClientNode;
+        }
+
+        @Nullable
+        public static List<ClientNode> unmarshall(JSONArray jClientNodes)
+        {
+            if (jClientNodes == null) return null;
+
+            List<ClientNode> clientNodesList = new ArrayList<>();
+
+            for (int inx = 0; inx < jClientNodes.length(); inx++)
+            {
+                clientNodesList.add(new ClientNode().unMarshall(Json.getObject(jClientNodes, inx)));
+            }
+
+            return clientNodesList;
+        }
     }
 
     @Nullable
@@ -52,7 +92,7 @@ public class GorillaNodes
             sleep = true;
 
             List<ClientNode> cNodes = getClientNodes(country);
-            if ((cNodes == null) || (cNodes.size() == 0)) break; //##############;
+            if ((cNodes == null) || (cNodes.size() == 0)) continue;
 
             //
             // Todo: select best node...
@@ -111,18 +151,32 @@ public class GorillaNodes
             PublicNode pNode = pNodes.get(inx);
             if (pNode == null) continue;
 
-            Log.d(LOGTAG, "readClientNodes: " + pNode);
+            Log.d("pnode=%s", pNode.toString());
 
             cNodes = readClientNodesFromGorilla(pNode);
-            if (cNodes != null) break;
+
+            if (cNodes != null)
+            {
+                clientNodes.put(country, cNodes);
+                return cNodes;
+            }
+
+            //
+            // Public node did not deliver any client nodes.
+            // Remove from public nodes list.
+            //
+
+            pNodes.remove(inx--);
         }
 
-        return cNodes;
+        return null;
     }
 
     @Nullable
     private static List<ClientNode> readClientNodesFromGorilla(PublicNode pnode)
     {
+        Log.d("...");
+
         GorillaConnect conn = new GorillaConnect(pnode.Addr, pnode.Port);
         if (! conn.connect()) return null;
 
@@ -136,7 +190,7 @@ public class GorillaNodes
 
         client.clientHandler();
 
-        return null;
+        return client.getAvailableClientNodes();
     }
 
     @Nullable
@@ -162,12 +216,12 @@ public class GorillaNodes
         String bucketFile = "gorilla-public-nodes-" + country + ".json";
         String bucketUrl = "https://s3." + awsregion + ".amazonaws.com/aura-public/" + bucketFile;
 
-        Log.d(LOGTAG, "readPublicNodes: url=" + bucketUrl);
+        Log.d("bucketUrl=%s", bucketUrl);
 
         JSONArray jNodes = Simple.getHTTPJSONArray(bucketUrl);
         if (jNodes == null) return null;
 
-        Log.d(LOGTAG, "readPublicNodes: jNodes=" + jNodes.toString());
+        Log.d("jNodes=%s", jNodes.toString());
 
         List<PublicNode> publNodes = new ArrayList<>();
 
