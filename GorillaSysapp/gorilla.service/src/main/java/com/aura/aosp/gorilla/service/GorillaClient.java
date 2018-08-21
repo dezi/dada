@@ -115,7 +115,14 @@ public class GorillaClient
         byte[] buffer = session.readSession(GorillaMessage.GorillaHeaderSize);
         if (buffer == null) return null;
 
-        GorillaMessage message = new GorillaMessage().unmarshall(buffer);
+        GorillaMessage message = new GorillaMessage();
+
+        if (! message.unmarshall(buffer))
+        {
+            Log.e("Unmarshall fail!");
+
+            return null;
+        }
 
         if (message.Size < 0)
         {

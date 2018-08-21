@@ -40,7 +40,6 @@ public class Utils
             throw new IllegalArgumentException("Invalid DER: not a sequence");
         }
 
-        // Parse inside the sequence
         parser = sequence.getParser();
 
         ASN version = parser.read();
@@ -60,22 +59,21 @@ public class Utils
 
     private static class DER
     {
-        static final int CONSTRUCTED = 0x20;
         static final int INTEGER = 0x02;
         static final int SEQUENCE = 0x10;
+        static final int CONSTRUCTED = 0x20;
 
         private static final byte LOWER_7_BITS = 0x7F;
-        private static final int BYTE_MAX = 0xFF;
         private static final int MAX_NUMBER_OF_BYTES = 4;
 
         private final InputStream in;
 
-        DER(byte[] bytes)
+        private DER(byte[] bytes)
         {
             in = new ByteArrayInputStream(bytes);
         }
 
-        ASN read() throws IOException
+        private ASN read() throws IOException
         {
             int tag = in.read();
 
@@ -94,34 +92,35 @@ public class Utils
                 throw new IOException("Invalid DER: stream too short, missing value");
             }
 
-            return new ASN(tag, length, value);
+            return new ASN(tag, value);
         }
 
         private int getLength() throws IOException
         {
-            int i = in.read();
+            int len = in.read();
 
-            if (i == -1)
+            if (len == -1)
             {
                 throw new IOException("Invalid DER: length missing");
             }
 
-            // A single byte short length
-            if ((i & ~LOWER_7_BITS) == 0)
+            if ((len & ~LOWER_7_BITS) == 0)
             {
-                return i;
+                return len;
             }
 
-            int num = i & LOWER_7_BITS;
+            int num = len & LOWER_7_BITS;
 
-            if (i >= BYTE_MAX || num > MAX_NUMBER_OF_BYTES)
+            if (num > MAX_NUMBER_OF_BYTES)
             {
-                throw new IOException("Invalid DER: length field too big (" + i + ")");
+                throw new IOException("Invalid DER: length field too big (" + len + ")");
             }
 
             byte[] bytes = new byte[num];
-            int n = in.read(bytes);
-            if (n < num)
+
+            int xfer = in.read(bytes);
+
+            if (xfer < num)
             {
                 throw new IOException("Invalid DER: length too short");
             }
@@ -132,29 +131,14 @@ public class Utils
 
     private static class ASN
     {
-        /**
-         * Type: This is actually called tag in ASN.1. It indicates data type
-         * (Integer, String) or a construct (sequence, choice, set).
-         */
-        private final int type;
-        /**
-         * Length of the field.
-         */
-        private final int length;
-        /**
-         * Encoded octet string for the field.
-         */
-        private final byte[] value;
-        /**
-         * Tag or identifier.
-         */
         private final int tag;
+        private final int type;
+        private final byte[] value;
 
-        private ASN(int tag, int length, byte[] value)
+        private ASN(int tag, byte[] value)
         {
             this.tag = tag;
             this.type = tag & 0x1f;
-            this.length = length;
             this.value = value;
         }
 
@@ -163,14 +147,9 @@ public class Utils
             return type;
         }
 
-        private boolean isConstructed()
-        {
-            return (tag & DER.CONSTRUCTED) == DER.CONSTRUCTED;
-        }
-
         private DER getParser() throws IOException
         {
-            if (!isConstructed())
+            if ((tag & DER.CONSTRUCTED) != DER.CONSTRUCTED)
             {
                 throw new IOException("Invalid DER: can't parse primitive entity"); 
             }

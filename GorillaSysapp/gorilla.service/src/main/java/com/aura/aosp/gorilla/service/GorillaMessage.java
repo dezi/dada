@@ -104,70 +104,75 @@ public class GorillaMessage
     @SuppressWarnings("PointlessBitwiseExpression")
     public byte[] marshall()
     {
-        Head = new byte[ GorillaHeaderSize ];
+        byte[] bytes = new byte[ GorillaHeaderSize ];
 
         // @formatter:off
 
-        Head[  0 ] = (byte) ((Magic   >> 24) & 0xff);
-        Head[  1 ] = (byte) ((Magic   >> 16) & 0xff);
-        Head[  2 ] = (byte) ((Magic   >>  8) & 0xff);
-        Head[  3 ] = (byte) ((Magic   >>  0) & 0xff);
+        bytes[  0 ] = (byte) ((Magic   >> 24) & 0xff);
+        bytes[  1 ] = (byte) ((Magic   >> 16) & 0xff);
+        bytes[  2 ] = (byte) ((Magic   >>  8) & 0xff);
+        bytes[  3 ] = (byte) ((Magic   >>  0) & 0xff);
 
-        Head[  4 ] = (byte) ((Version >>  8) & 0xff);
-        Head[  5 ] = (byte) ((Version >>  0) & 0xff);
+        bytes[  4 ] = (byte) ((Version >>  8) & 0xff);
+        bytes[  5 ] = (byte) ((Version >>  0) & 0xff);
 
-        Head[  6 ] = (byte) ((Command >>  8) & 0xff);
-        Head[  7 ] = (byte) ((Command >>  0) & 0xff);
+        bytes[  6 ] = (byte) ((Command >>  8) & 0xff);
+        bytes[  7 ] = (byte) ((Command >>  0) & 0xff);
 
-        Head[  8 ] = (byte) ((Idsmask >>  8) & 0xff);
-        Head[  9 ] = (byte) ((Idsmask >>  0) & 0xff);
+        bytes[  8 ] = (byte) ((Idsmask >>  8) & 0xff);
+        bytes[  9 ] = (byte) ((Idsmask >>  0) & 0xff);
 
-        Head[ 10 ] = (byte) ((Keymask >>  8) & 0xff);
-        Head[ 11 ] = (byte) ((Keymask >>  0) & 0xff);
+        bytes[ 10 ] = (byte) ((Keymask >>  8) & 0xff);
+        bytes[ 11 ] = (byte) ((Keymask >>  0) & 0xff);
 
-        Head[ 12 ] = (byte) ((Size    >> 24) & 0xff);
-        Head[ 13 ] = (byte) ((Size    >> 16) & 0xff);
-        Head[ 14 ] = (byte) ((Size    >>  8) & 0xff);
-        Head[ 15 ] = (byte) ((Size    >>  0) & 0xff);
+        bytes[ 12 ] = (byte) ((Size    >> 24) & 0xff);
+        bytes[ 13 ] = (byte) ((Size    >> 16) & 0xff);
+        bytes[ 14 ] = (byte) ((Size    >>  8) & 0xff);
+        bytes[ 15 ] = (byte) ((Size    >>  0) & 0xff);
 
         // @formatter:on
-
-        return Head;
-    }
-
-    @SuppressWarnings("PointlessBitwiseExpression")
-    public GorillaMessage unmarshall(byte[] bytes)
-    {
-        if (bytes == null) return null;
 
         Head = bytes;
 
+        return bytes;
+    }
+
+    @SuppressWarnings("PointlessBitwiseExpression")
+    public boolean unmarshall(byte[] bytes)
+    {
+        if ((bytes == null) || (bytes.length != GorillaHeaderSize))
+        {
+            return false;
+        }
+
         // @formatter:off
 
-        Magic   = ((Head[ 0 ] & 0xff) << 24)
-                + ((Head[ 1 ] & 0xff) << 16)
-                + ((Head[ 2 ] & 0xff) <<  8)
-                + ((Head[ 3 ] & 0xff) <<  0);
+        Magic   = ((bytes[ 0 ] & 0xff) << 24)
+                + ((bytes[ 1 ] & 0xff) << 16)
+                + ((bytes[ 2 ] & 0xff) <<  8)
+                + ((bytes[ 3 ] & 0xff) <<  0);
 
-        Version = ((Head[  4 ] & 0xff) << 8)
-                + ((Head[  5 ] & 0xff) << 0);
+        Version = ((bytes[  4 ] & 0xff) << 8)
+                + ((bytes[  5 ] & 0xff) << 0);
 
-        Command = ((Head[  6 ] & 0xff) << 8)
-                + ((Head[  7 ] & 0xff) << 0);
+        Command = ((bytes[  6 ] & 0xff) << 8)
+                + ((bytes[  7 ] & 0xff) << 0);
 
-        Idsmask = ((Head[  8 ] & 0xff) << 8)
-                + ((Head[  9 ] & 0xff) << 0);
+        Idsmask = ((bytes[  8 ] & 0xff) << 8)
+                + ((bytes[  9 ] & 0xff) << 0);
 
-        Keymask = ((Head[ 10 ] & 0xff) << 8)
-                + ((Head[ 11 ] & 0xff) << 0);
+        Keymask = ((bytes[ 10 ] & 0xff) << 8)
+                + ((bytes[ 11 ] & 0xff) << 0);
 
-        Size    = ((Head[ 12 ] & 0xff) << 24)
-                + ((Head[ 13 ] & 0xff) << 16)
-                + ((Head[ 14 ] & 0xff) <<  8)
-                + ((Head[ 15 ] & 0xff) <<  0);
+        Size    = ((bytes[ 12 ] & 0xff) << 24)
+                + ((bytes[ 13 ] & 0xff) << 16)
+                + ((bytes[ 14 ] & 0xff) <<  8)
+                + ((bytes[ 15 ] & 0xff) <<  0);
 
         // @formatter:on
 
-        return this;
+        Head = bytes;
+
+        return true;
     }
 }
