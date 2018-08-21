@@ -87,13 +87,23 @@ public class GorillaMessage
 
         Idsmask = idsmask;
         Keymask = keymask;
+
         Size = size;
+
+        if ((Idsmask & HasRSASignature) != 0)
+        {
+            Size += GorillaRSASignSize;
+        }
+
+        if ((Idsmask & HasSHASignature) != 0)
+        {
+            Size += GorillaSHASignSize;
+        }
     }
 
-    public byte[] Marshall()
+    public byte[] marshall()
     {
         Head = new byte[ GorillaHeaderSize ];
-        Size = (Load == null) ? 0 : Load.length;
 
         // @formatter:off
         Head[  0 ] = (byte) ((Magic   >> 24) & 0xff);
@@ -122,10 +132,11 @@ public class GorillaMessage
         return Head;
     }
 
-    public GorillaMessage UnMarshall(byte[] bytes)
+    public GorillaMessage unmarshall(byte[] bytes)
     {
+        if (bytes == null) return null;
+
         Head = bytes;
-        if (Head == null) return null;
 
         Magic = (Head[ 0 ] << 24) + (Head[ 1 ] << 16) + (Head[ 2 ] << 8) + (Head[ 3 ] << 0);
 

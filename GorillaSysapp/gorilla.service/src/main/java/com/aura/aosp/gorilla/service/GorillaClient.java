@@ -2,6 +2,7 @@ package com.aura.aosp.gorilla.service;
 
 import android.support.annotation.Nullable;
 
+import com.aura.aosp.aura.crypter.RND;
 import com.aura.aosp.aura.crypter.RSA;
 import com.aura.aosp.aura.simple.Simple;
 import com.aura.aosp.aura.simple.Log;
@@ -101,7 +102,7 @@ public class GorillaClient
         byte[] buffer = session.readSession(GorillaMessage.GorillaHeaderSize);
         if (buffer == null) return null;
 
-        GorillaMessage message = new GorillaMessage().UnMarshall(buffer);
+        GorillaMessage message = new GorillaMessage().unmarshall(buffer);
 
         if ((message.Command != GorillaMessage.MsgAuthSndNodes) &&
                 (message.Size > GorillaMessage.GorillaMaxSize))
@@ -138,14 +139,14 @@ public class GorillaClient
     {
         GorillaMessage packet = new GorillaMessage(GorillaMessage.MsgAuthRequest);
 
-        return session.writeSession(packet.Marshall());
+        return session.writeSession(packet.marshall());
     }
 
     private boolean sendAuthReqNodes()
     {
         GorillaMessage packet = new GorillaMessage(GorillaMessage.MsgAuthRequest);
 
-        return session.writeSession(packet.Marshall());
+        return session.writeSession(packet.marshall());
     }
 
     private boolean chAuthChallenge(GorillaMessage message)
@@ -164,7 +165,7 @@ public class GorillaClient
         byte[] challenge = Simple.sliceBytes(message.Base, 0, GorillaMessage.GorillaChallengeSize);
         byte[] publickey = Simple.sliceBytes(message.Base, GorillaMessage.GorillaChallengeSize);
 
-        session.PeerPublicKey = RSA.RSAUnMarshalPublicKey(publickey);
+        session.PeerPublicKey = RSA.unmarshalRSAPublicKey(publickey);
 
         if (session.PeerPublicKey == null)
         {
@@ -181,10 +182,7 @@ public class GorillaClient
         // Verify servers signature.
         //
 
-        Log.d("####### %s", Simple.getHexBytesToString(message.Head, true));
-        Log.d("####### %s", Simple.getHexBytesToString(message.Base, true));
-
-        boolean ok = RSA.RSAVerifySignature(session.PeerPublicKey, message.Sign, message.Head, message.Base);
+        boolean ok = RSA.verifyRSASignature(session.PeerPublicKey, message.Sign, message.Head, message.Base);
 
         if (!ok)
         {
@@ -195,21 +193,54 @@ public class GorillaClient
 
         Log.d("Signature ok!");
 
-        return false;
+        //
+        // Create random AES key and cipher.
+        //
+
+        session.AESKey = RND.randomBytes(GorillaMessage.GorillaAESKeySize);
+        //session.AESBlock = crypter.AESNewCipher(session.AESKey);
+
+        //
+        // Encrypt challenge, AES key and user UUIDs into RSA block.
+        //
+
+        byte[] plain = Simple.concatBuffers(challenge, session.AESKey, session.UserUUID, session.DeviceUUID);
+        byte[] crypt = RSA.encodeRSABuffer(session.PeerPublicKey, plain);
+
+        if (crypt == null) return false;
+
+        //
+        // Assemble response packet.
+        //
+
+        byte[] head = new GorillaMessage(GorillaMessage.MsgAuthSolved, GorillaMessage.HasRSASignature, 0, crypt.length).marshall();
+
+        byte[] sign = RSA.createRSASignature(session.ClientPrivKey, head, crypt);
+        if (sign == null) return false;
+
+        byte[] packet = Simple.concatBuffers(head, sign, crypt);
+
+        return session.writeSession(packet);
     }
 
     private boolean chAuthAccepted(GorillaMessage message)
     {
+        Log.d("...");
+
         return false;
     }
 
     private boolean chAuthSndNodes(GorillaMessage message)
     {
+        Log.d("...");
+
         return false;
     }
 
     private boolean chMessageDownload(GorillaMessage message)
     {
+        Log.d("...");
+
         return false;
     }
 

@@ -64,7 +64,7 @@ public class Identity
 
         try
         {
-            return RSA.RSAUnMarshalPublicKeyBase64(fakeRSAPublicKey);
+            return RSA.unmarshalRSAPublicKeyBase64(fakeRSAPublicKey);
         }
         catch (Exception ex)
         {
@@ -81,7 +81,7 @@ public class Identity
 
         try
         {
-            return RSA.RSAUnMarshalPrivateKeyBase64(fakeRSAPrivateKey);
+            return RSA.unmarshalRSAPrivateKeyBase64(fakeRSAPrivateKey);
         }
         catch (Exception ex)
         {

@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.File;
 import java.net.URL;
+import java.security.SecureRandom;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Simple
@@ -241,9 +242,14 @@ public class Simple
         return Base64.decode(base64, 0);
     }
 
-    public static String getHexBytesToString(byte[] bytes, boolean space)
+    public static String getHexBytesToString(byte[] bytes)
     {
         return getHexBytesToString(bytes, 0, bytes.length, true);
+    }
+
+    public static String getHexBytesToString(byte[] bytes, boolean space)
+    {
+        return getHexBytesToString(bytes, 0, bytes.length, space);
     }
 
     public static String getHexBytesToString(byte[] bytes, int offset, int length, boolean space)
@@ -280,5 +286,26 @@ public class Simple
         System.arraycopy(bytes, from, slice, 0, slice.length);
 
         return slice;
+    }
+
+    public static byte[] concatBuffers(byte[]... buffers)
+    {
+        int total = 0;
+
+        for (byte[] buffer : buffers)
+        {
+            total += buffer.length;
+        }
+
+        byte[] result = new byte[total];
+        int offset = 0;
+
+        for (byte[] buffer : buffers)
+        {
+            System.arraycopy(buffer, 0, result, offset, buffer.length);
+            offset += buffer.length;
+        }
+
+        return result;
     }
 }
