@@ -24,7 +24,7 @@ public class GoprotoMessage
     public GoprotoMessage()
     {
         Magic = GoprotoDefs.GorillaMagic;
-        Version = (GoprotoDefs.VersionV1Major << 8) + (GoprotoDefs.VersionV1Minor << 0);
+        Version = (GoprotoDefs.VersionV1Major << 8) + GoprotoDefs.VersionV1Minor;
     }
 
     public GoprotoMessage(int command)

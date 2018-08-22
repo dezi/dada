@@ -12,6 +12,7 @@ import com.aura.aosp.aura.simple.Err;
 import com.aura.aosp.aura.simple.Simple;
 import com.aura.aosp.aura.simple.Json;
 import com.aura.aosp.aura.simple.Log;
+
 import com.aura.aosp.gorilla.goproto.GoprotoDefs;
 import com.aura.aosp.gorilla.goproto.GoprotoMessage;
 import com.aura.aosp.gorilla.gorilla.GorillaNodes;
@@ -134,7 +135,7 @@ public class GomessClient
                 ((message.Command != GoprotoDefs.MsgAuthSndNodes) &&
                 (message.Size > GoprotoDefs.GorillaMaxSize)))
         {
-            Err.errp("size=%d fail!", message.Size);
+            Err.errp("excessive size=%d fail!", message.Size);
 
             return null;
         }
