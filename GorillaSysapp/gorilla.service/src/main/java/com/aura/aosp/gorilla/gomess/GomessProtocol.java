@@ -1,9 +1,9 @@
-package com.aura.aosp.gorilla.service;
+package com.aura.aosp.gorilla.gomess;
 
-import android.annotation.SuppressLint;
-
-import android.content.Context;
 import android.content.Intent;
+
+import com.aura.aosp.aura.sockets.Connect;
+import com.aura.aosp.gorilla.service.GorillaBase;
 
 import com.aura.aosp.aura.univid.Identity;
 import com.aura.aosp.aura.simple.Json;
@@ -12,11 +12,9 @@ import com.aura.aosp.aura.simple.Log;
 import org.json.JSONObject;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class GorillaProtocol
+public class GomessProtocol
 {
-    private static final String LOGTAG = GorillaProtocol.class.getSimpleName();
-
-    public static GorillaProtocol getInstance(Context context)
+    public static GomessProtocol getInstance()
     {
         if (instance == null)
         {
@@ -24,7 +22,7 @@ public class GorillaProtocol
             {
                 if (instance == null)
                 {
-                    instance = new GorillaProtocol(context);
+                    instance = new GomessProtocol();
                 }
             }
         }
@@ -34,7 +32,7 @@ public class GorillaProtocol
 
     public JSONObject sendPayload(String uuid, long time, String apkname, String receiver, String payload)
     {
-        Log.d(LOGTAG, "sendPayload: uuid=" + uuid + " time=" + time + " apkname=" + apkname + " receiver=" + receiver + " payload=" + payload);
+        Log.d("uuid=" + uuid + " time=" + time + " apkname=" + apkname + " receiver=" + receiver + " payload=" + payload);
 
         JSONObject result = new JSONObject();
 
@@ -57,7 +55,7 @@ public class GorillaProtocol
             echoIntent.putExtra("sender", receiver);
             echoIntent.putExtra("payload", payload);
 
-            context.sendBroadcast(echoIntent);
+            GorillaBase.getAppContext().sendBroadcast(echoIntent);
 
             //
             // Return success for now.
@@ -73,16 +71,12 @@ public class GorillaProtocol
 
     private static final Object mutex = new Object();
 
-    @SuppressLint("StaticFieldLeak")
-    private static GorillaProtocol instance;
+    private static GomessProtocol instance;
 
-    private final Context context;
     private final Thread workerThread;
 
-    private GorillaProtocol(Context context)
+    private GomessProtocol()
     {
-        this.context = context;
-
         workerThread = new Thread(workerRunner);
         workerThread.start();
     }
@@ -107,8 +101,8 @@ public class GorillaProtocol
     {
         Log.d("...");
 
-        GorillaConnect conn = new GorillaConnect(cnode.Addr, cnode.Port);
-        if (! conn.connect()) return;
+        Connect conn = new Connect(cnode.Addr, cnode.Port);
+        if (conn.connect() != null) return;
 
         GorillaSession session = new GorillaSession(conn);
 
@@ -116,7 +110,7 @@ public class GorillaProtocol
         session.DeviceUUID = Identity.getDeviceUUID();
         session.ClientPrivKey = Identity.getRSAPrivateKey();
 
-        GorillaClient client = new GorillaClient(session, false);
+        GomessClient client = new GomessClient(session, false);
 
         client.clientHandler();
     }

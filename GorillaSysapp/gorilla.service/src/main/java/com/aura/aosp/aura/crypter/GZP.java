@@ -2,6 +2,8 @@ package com.aura.aosp.aura.crypter;
 
 import android.support.annotation.Nullable;
 
+import com.aura.aosp.aura.simple.Err;
+
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,10 +29,9 @@ public class GZP
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Err.errp(ex);
+            return null;
         }
-
-        return null;
     }
 
     @Nullable
@@ -61,9 +62,8 @@ public class GZP
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Err.errp(ex);
+            return null;
         }
-
-        return null;
     }
 }

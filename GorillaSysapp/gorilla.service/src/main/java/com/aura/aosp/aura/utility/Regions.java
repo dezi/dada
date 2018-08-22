@@ -1,6 +1,8 @@
-package com.aura.aosp.gorilla.utility;
+package com.aura.aosp.aura.utility;
 
 import android.support.annotation.Nullable;
+
+import com.aura.aosp.aura.simple.Err;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,8 +10,7 @@ import java.util.Map;
 public class Regions
 {
     //
-    // Temporary hardwired package
-    // for cloud basics.
+    // Temporary hardwired package for cloud basics.
     //
 
     //
@@ -21,6 +22,10 @@ public class Regions
     //
     // af = africa
     // ru = russia
+    //
+
+    //
+    // Aura regions.
     //
 
     private static String[] auraRegions = createAuraRegions();
@@ -58,7 +63,7 @@ public class Regions
     }
 
     //
-    // Amazon Web Services
+    // Amazon Web Services regions.
     //
 
     private static Map<String, String> auraToAWSRegions = createAuraToAWSRegions();
@@ -113,15 +118,30 @@ public class Regions
         return initmap;
     }
 
+    //
+    // Country to region.
+    //
     @Nullable
     public static String CountryToRegion(String country)
     {
-        return countryToAuraRegion.get(country);
+        String region = countryToAuraRegion.get(country);
+
+        if (region == null) Err.errp("unknown country=%s", country);
+
+        return region;
     }
+
+    //
+    // Aura region to Amazon region.
+    //
 
     @Nullable
     public static String MapToAWS(String auraregion)
     {
-        return auraToAWSRegions.get(auraregion);
+        String awsregion = auraToAWSRegions.get(auraregion);
+
+        if (awsregion == null) Err.errp("unknown auraregion=%s", auraregion);
+
+        return awsregion;
     }
 }

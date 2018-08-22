@@ -2,6 +2,8 @@ package com.aura.aosp.aura.crypter;
 
 import android.support.annotation.Nullable;
 
+import com.aura.aosp.aura.simple.Err;
+
 import java.util.Arrays;
 import java.security.MessageDigest;
 
@@ -25,16 +27,16 @@ public class SHA
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Err.errp(ex);
+            return null;
         }
-
-        return null;
     }
 
-    public static boolean verifySHASignature(byte[] secret, byte[] signature, byte[]... buffers)
+    public static Err verifySHASignature(byte[] secret, byte[] signature, byte[]... buffers)
     {
         byte[] remotesign = createSHASignature(secret, buffers);
+        if (remotesign == null) return Err.getLastErr();
 
-        return Arrays.equals(signature, remotesign);
+        return Arrays.equals(signature, remotesign) ? null : Err.errp("signature fail!");
     }
 }

@@ -4,24 +4,35 @@ import android.content.Context;
 import android.content.Intent;
 import android.app.Service;
 import android.os.IBinder;
-import android.util.Log;
+
+import com.aura.aosp.gorilla.gomess.GomessProtocol;
+
+import com.aura.aosp.aura.simple.Log;
 
 public class GorillaService extends Service
 {
-    private static final String LOGTAG = GorillaService.class.getSimpleName();
+    //region Static stuff.
 
-    public static void SelfStartMainService(Context context)
+    //
+    // Public static self start Gorilla Service via intent.
+    //
+    public static void SelfStartMainService()
     {
+        Context context = GorillaBase.getAppContext();
         Intent serviceIntent = new Intent(context, GorillaService.class);
         context.startService(serviceIntent);
 
-        Log.d(LOGTAG,"SelfStartMainService: service started.");
+        Log.d("service started...");
     }
+
+    //endregion Static stuff.
+
+    //region Instance stuff.
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        Log.d(LOGTAG, "onStartCommand: started.");
+        Log.d("...");
 
         return START_STICKY;
     }
@@ -29,9 +40,14 @@ public class GorillaService extends Service
     @Override
     public void onCreate()
     {
-        Log.d(LOGTAG, "onCreate: started.");
+        Log.d("...");
 
-        GorillaProtocol.getInstance(this);
+        //
+        // Dummy fetch instance to
+        // make sure it is started.
+        //
+
+        GomessProtocol.getInstance();
     }
 
     @Override
@@ -39,4 +55,6 @@ public class GorillaService extends Service
     {
         return null;
     }
+
+    //endregion Instance stuff.
 }

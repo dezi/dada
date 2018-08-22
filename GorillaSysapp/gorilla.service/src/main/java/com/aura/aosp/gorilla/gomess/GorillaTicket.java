@@ -1,4 +1,4 @@
-package com.aura.aosp.gorilla.service;
+package com.aura.aosp.gorilla.gomess;
 
 import com.aura.aosp.aura.simple.Simple;
 

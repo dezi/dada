@@ -13,6 +13,8 @@ import java.security.spec.RSAPrivateCrtKeySpec;
 
 import javax.crypto.Cipher;
 
+import com.aura.aosp.aura.simple.Err;
+
 public class RSA
 {
     private static boolean dryrunRSA;
@@ -25,7 +27,11 @@ public class RSA
     @Nullable
     public static RSAPrivateKey unmarshalRSAPrivateKey(byte[] pkcs1PrivateKey)
     {
-        if (pkcs1PrivateKey == null) return null;
+        if (pkcs1PrivateKey == null)
+        {
+            Err.errp();
+            return null;
+        }
 
         try
         {
@@ -35,7 +41,7 @@ public class RSA
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Err.errp(ex);
         }
 
         return null;
@@ -44,7 +50,11 @@ public class RSA
     @Nullable
     public static RSAPrivateKey unmarshalRSAPrivateKeyBase64(String pkcs1base64PrivateKey)
     {
-        if (pkcs1base64PrivateKey == null) return null;
+        if (pkcs1base64PrivateKey == null)
+        {
+            Err.errp();
+            return null;
+        }
 
         return unmarshalRSAPrivateKey(Base64.decode(pkcs1base64PrivateKey, 0));
     }
@@ -52,7 +62,11 @@ public class RSA
     @Nullable
     public static RSAPublicKey unmarshalRSAPublicKey(byte[] pkcs1)
     {
-        if (pkcs1 == null) return null;
+        if (pkcs1 == null)
+        {
+            Err.errp();
+            return null;
+        }
 
         try
         {
@@ -62,7 +76,7 @@ public class RSA
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Err.errp(ex);
         }
 
         return null;
@@ -71,7 +85,11 @@ public class RSA
     @Nullable
     public static RSAPublicKey unmarshalRSAPublicKeyBase64(String pkcs1base64)
     {
-        if (pkcs1base64 == null) return null;
+        if (pkcs1base64 == null)
+        {
+            Err.errp();
+            return null;
+        }
 
         return unmarshalRSAPublicKey(Base64.decode(pkcs1base64, 0));
     }
@@ -87,10 +105,9 @@ public class RSA
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Err.errp(ex);
+            return null;
         }
-
-        return null;
     }
 
     @Nullable
@@ -104,10 +121,9 @@ public class RSA
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Err.errp(ex);
+            return null;
         }
-
-        return null;
     }
 
     @Nullable
@@ -132,17 +148,16 @@ public class RSA
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Err.errp(ex);
+            return null;
         }
-
-        return null;
     }
 
-    public static boolean verifyRSASignature(RSAPublicKey publicKey, byte[] signature, byte[]... buffers)
+    public static Err verifyRSASignature(RSAPublicKey publicKey, byte[] signature, byte[]... buffers)
     {
         if (dryrunRSA)
         {
-            return true;
+            return null;
         }
 
         try
@@ -155,13 +170,11 @@ public class RSA
                 signer.update(buffer);
             }
 
-            return signer.verify(signature);
+            return signer.verify(signature) ? null : Err.errp("signature fail");
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            return Err.errp(ex);
         }
-
-        return false;
     }
 }

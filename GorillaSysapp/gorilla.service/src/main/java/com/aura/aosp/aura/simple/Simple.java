@@ -2,7 +2,6 @@ package com.aura.aosp.aura.simple;
 
 import android.support.annotation.Nullable;
 import android.util.Base64;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,13 +14,10 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.File;
 import java.net.URL;
-import java.security.SecureRandom;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Simple
 {
-    private static final String LOGTAG = Simple.class.getSimpleName();
-
     public static int compareTo(String str1, String str2)
     {
         if ((str1 != null) && (str2 != null)) return str1.compareTo(str2);
@@ -56,7 +52,7 @@ public class Simple
         }
         catch (Exception ex)
         {
-            Log.d(LOGTAG, ex.toString());
+            ex.printStackTrace();
         }
 
         return null;
@@ -81,7 +77,7 @@ public class Simple
         }
         catch (Exception ex)
         {
-            Log.d(LOGTAG, ex.toString());
+            ex.printStackTrace();
         }
 
         return false;
@@ -103,7 +99,7 @@ public class Simple
         }
         catch (IOException ex)
         {
-            Log.d(LOGTAG, ex.toString());
+            ex.printStackTrace();
 
             return null;
         }
@@ -127,7 +123,7 @@ public class Simple
         }
         catch (IOException ex)
         {
-            Log.d(LOGTAG, ex.toString());
+            ex.printStackTrace();
 
             return null;
         }
@@ -174,7 +170,7 @@ public class Simple
         }
         catch (Exception ex)
         {
-            Log.d(LOGTAG, ex.toString());
+            ex.printStackTrace();
         }
 
         return null;
@@ -197,7 +193,7 @@ public class Simple
         }
         catch (Exception ex)
         {
-            Log.d(LOGTAG, ex.toString());
+            ex.printStackTrace();
         }
 
         return null;

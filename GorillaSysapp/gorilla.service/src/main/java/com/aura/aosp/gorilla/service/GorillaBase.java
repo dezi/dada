@@ -1,19 +1,43 @@
 package com.aura.aosp.gorilla.service;
 
+import android.support.annotation.NonNull;
+
 import android.app.Application;
+import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
+
+import com.aura.aosp.aura.simple.Log;
 
 public class GorillaBase extends Application
 {
-    private static final String LOGTAG = GorillaBase.class.getSimpleName();
+    //region Static stuff.
+
+    private static Context appContext;
+
+    @NonNull
+    public static Context getAppContext()
+    {
+        return appContext;
+    }
+
+    //endregion Static stuff.
+
+    //region Instance stuff.
 
     @Override
     public void onCreate()
     {
-        Log.d(LOGTAG, "onCreate...");
+        appContext = this;
+
+        Log.d("...");
 
         super.onCreate();
+
+        //
+        // Required for testing with Android Studio
+        // because onBootCompleted is never issued
+        // in this case.
+        //
 
         Handler handler = new Handler();
 
@@ -22,8 +46,10 @@ public class GorillaBase extends Application
             @Override
             public void run()
             {
-                GorillaService.SelfStartMainService(GorillaBase.this);
+                GorillaService.SelfStartMainService();
             }
         });
     }
+
+    //endregion Instance stuff.
 }

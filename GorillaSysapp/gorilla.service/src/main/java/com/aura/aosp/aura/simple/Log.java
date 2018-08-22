@@ -8,18 +8,20 @@ public class Log
             {
             };
 
-    public static void ddd(String logtag, String message)
-    {
-        if (debug || checkLog(allow, logtag))
-        {
-            android.util.Log.d(logtag, message);
-        }
-    }
-
     public static void d(String format, Object... args)
     {
+        d(4,format,args);
+    }
+
+    public static void derr(String format, Object... args)
+    {
+        d(5,format,args);
+    }
+
+    private static void d(int index, String format, Object... args)
+    {
         //
-        // Because of da fucked log format in Android Studio 3.1
+        // Sleep because of da fucked log format in Android Studio 3.1
         //
 
         Simple.sleep(5);
@@ -28,9 +30,9 @@ public class Log
 
         String logtag = "????????";
 
-        if (elements.length > 3)
+        if (elements.length > index)
         {
-            StackTraceElement ste = elements[3];
+            StackTraceElement ste = elements[index];
 
             String[] classpath = ste.getClassName().split("\\.");
 
@@ -44,10 +46,20 @@ public class Log
         }
     }
 
+    public static void eerr(String format, Object... args)
+    {
+        e(4,format,args);
+    }
+
     public static void e(String format, Object... args)
     {
+        e(3,format,args);
+    }
+
+    private static void e(int index, String format, Object... args)
+    {
         //
-        // Because of da fucked log format in Android Studio 3.1
+        // Sleep because of da fucked log format in Android Studio 3.1
         //
 
         Simple.sleep(5);
@@ -56,9 +68,9 @@ public class Log
 
         String logtag = "????????";
 
-        if (elements.length > 3)
+        if (elements.length > index)
         {
-            StackTraceElement ste = elements[3];
+            StackTraceElement ste = elements[index];
 
             String[] classpath = ste.getClassName().split("\\.");
 
