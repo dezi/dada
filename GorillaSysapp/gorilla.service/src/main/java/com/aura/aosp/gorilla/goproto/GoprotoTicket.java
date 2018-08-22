@@ -21,7 +21,6 @@ public class GoprotoTicket
 
     private byte[] AppUUID;
 
-    public byte[] Head;
     public byte[] Payload;
 
     public byte[] getMessageUUID()
@@ -135,8 +134,6 @@ public class GoprotoTicket
             offset += usiz;
         }
 
-        offset += GoprotoDefs.GorillaHeaderSize;
-
         if (Payload != null)
         {
             offset += Payload.length;
@@ -193,9 +190,6 @@ public class GoprotoTicket
             System.arraycopy(AppUUID,0, bytes, offset, usiz);
             offset += usiz;
         }
-
-        System.arraycopy(Head,0, bytes, offset, GoprotoDefs.GorillaHeaderSize);
-        offset += GoprotoDefs.GorillaHeaderSize;
 
         System.arraycopy(Payload,0, bytes, offset, Payload.length);
 
@@ -260,9 +254,6 @@ public class GoprotoTicket
             offset += usiz;
         }
 
-        Head = Simple.sliceBytes(bytes, offset, GoprotoDefs.GorillaHeaderSize);
-        offset += GoprotoDefs.GorillaHeaderSize;
-
         Payload = Simple.sliceBytes(bytes, offset,bytes.length - offset);
 
         return null;
@@ -278,7 +269,7 @@ public class GoprotoTicket
         Log.d("ReceiverUserUUID=%s", Simple.getHexBytesToString(ReceiverUserUUID));
         Log.d("ReceiverDeviceUUID=%s", Simple.getHexBytesToString(ReceiverDeviceUUID));
         Log.d("AppUUID=%s", Simple.getHexBytesToString(AppUUID));
-        Log.d("Head=%s", Simple.getHexBytesToString(Head));
+
         Log.d("Payload=%s", Simple.getHexBytesToString(Payload));
     }
 }
