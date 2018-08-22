@@ -1,17 +1,16 @@
-package com.aura.aosp.gorilla.gomess;
+package com.aura.aosp.gorilla.goproto;
 
 import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.crypter.AES;
 import com.aura.aosp.aura.simple.Err;
-import com.aura.aosp.aura.simple.Log;
 import com.aura.aosp.aura.sockets.Connect;
+import com.aura.aosp.aura.univid.Identity;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.net.SocketTimeoutException;
 
-public class GorillaSession
+public class GoprotoSession
 {
     public byte[] UUID;
 
@@ -33,9 +32,23 @@ public class GorillaSession
     public RSAPublicKey PeerPublicKey;
     public RSAPrivateKey ClientPrivKey;
 
-    public GorillaSession(Connect conn)
+    public GoprotoSession(Connect conn)
     {
         this.conn = conn;
+    }
+
+    public Err aquireIdentity()
+    {
+        UserUUID = Identity.getUserUUID();
+        if (UserUUID == null) return Err.getLastErr();
+
+        DeviceUUID = Identity.getDeviceUUID();
+        if (DeviceUUID == null) return Err.getLastErr();
+
+        ClientPrivKey = Identity.getRSAPrivateKey();
+        if (ClientPrivKey == null) return Err.getLastErr();
+
+        return null;
     }
 
     public void close()

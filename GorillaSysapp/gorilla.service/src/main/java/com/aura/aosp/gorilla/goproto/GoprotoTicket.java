@@ -1,9 +1,9 @@
-package com.aura.aosp.gorilla.gomess;
+package com.aura.aosp.gorilla.goproto;
 
 import com.aura.aosp.aura.simple.Simple;
 
 @SuppressWarnings("WeakerAccess")
-public class GorillaTicket
+public class GoprotoTicket
 {
     public int Idsmask;
 
@@ -22,7 +22,7 @@ public class GorillaTicket
 
     public int getTicketSize()
     {
-        int usiz = GorillaMessage.GorillaUUIDSize;
+        int usiz = GoprotoMessage.GorillaUUIDSize;
 
         int offset = 0;
 
@@ -36,37 +36,37 @@ public class GorillaTicket
         // Variable fields.
         //
 
-        if ((Idsmask & GorillaMessage.HasMessageUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasMessageUUID) != 0)
         {
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasReceiverUserUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasReceiverUserUUID) != 0)
         {
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasReceiverDeviceUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasReceiverDeviceUUID) != 0)
         {
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasSenderUserUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasSenderUserUUID) != 0)
         {
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasSenderDeviceUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasSenderDeviceUUID) != 0)
         {
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasAppUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasAppUUID) != 0)
         {
             offset += usiz;
         }
 
-        offset += GorillaMessage.GorillaHeaderSize;
+        offset += GoprotoMessage.GorillaHeaderSize;
 
         if (Payload != null)
         {
@@ -79,7 +79,7 @@ public class GorillaTicket
     @SuppressWarnings("PointlessBitwiseExpression")
     public byte[] marshall()
     {
-        int usiz = GorillaMessage.GorillaUUIDSize;
+        int usiz = GoprotoMessage.GorillaUUIDSize;
 
         byte[] bytes = new byte[ getTicketSize() ];
 
@@ -88,44 +88,44 @@ public class GorillaTicket
 
         int offset = 2;
 
-        if ((Idsmask & GorillaMessage.HasMessageUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasMessageUUID) != 0)
         {
             System.arraycopy(MessageUUID,0, bytes, offset, usiz);
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasReceiverUserUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasReceiverUserUUID) != 0)
         {
             System.arraycopy(ReceiverUserUUID,0, bytes, offset, usiz);
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasReceiverDeviceUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasReceiverDeviceUUID) != 0)
         {
             System.arraycopy(ReceiverDeviceUUID,0, bytes, offset, usiz);
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasSenderUserUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasSenderUserUUID) != 0)
         {
             System.arraycopy(SenderUserUUID,0, bytes, offset, usiz);
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasSenderDeviceUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasSenderDeviceUUID) != 0)
         {
             System.arraycopy(SenderDeviceUUID,0, bytes, offset, usiz);
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasAppUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasAppUUID) != 0)
         {
             System.arraycopy(AppUUID,0, bytes, offset, usiz);
             offset += usiz;
         }
 
-        System.arraycopy(Head,0, bytes, offset, GorillaMessage.GorillaHeaderSize);
-        offset += GorillaMessage.GorillaHeaderSize;
+        System.arraycopy(Head,0, bytes, offset, GoprotoMessage.GorillaHeaderSize);
+        offset += GoprotoMessage.GorillaHeaderSize;
 
         System.arraycopy(Payload,0, bytes, offset, Payload.length);
 
@@ -135,7 +135,7 @@ public class GorillaTicket
     @SuppressWarnings("PointlessBitwiseExpression")
     public boolean unmarshall(byte[] bytes)
     {
-        int usiz = GorillaMessage.GorillaUUIDSize;
+        int usiz = GoprotoMessage.GorillaUUIDSize;
 
         if ((bytes == null) || (bytes.length < 2))
         {
@@ -152,44 +152,44 @@ public class GorillaTicket
 
         int offset = 2;
 
-        if ((Idsmask & GorillaMessage.HasMessageUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasMessageUUID) != 0)
         {
             MessageUUID = Simple.sliceBytes(bytes, offset, usiz);
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasReceiverUserUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasReceiverUserUUID) != 0)
         {
             ReceiverUserUUID = Simple.sliceBytes(bytes, offset, usiz);
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasReceiverDeviceUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasReceiverDeviceUUID) != 0)
         {
             ReceiverDeviceUUID = Simple.sliceBytes(bytes, offset, usiz);
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasSenderUserUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasSenderUserUUID) != 0)
         {
             SenderUserUUID = Simple.sliceBytes(bytes, offset, usiz);
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasSenderDeviceUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasSenderDeviceUUID) != 0)
         {
             SenderDeviceUUID = Simple.sliceBytes(bytes, offset, usiz);
             offset += usiz;
         }
 
-        if ((Idsmask & GorillaMessage.HasAppUUID) != 0)
+        if ((Idsmask & GoprotoMessage.HasAppUUID) != 0)
         {
             AppUUID = Simple.sliceBytes(bytes, offset, usiz);
             offset += usiz;
         }
 
-        Head = Simple.sliceBytes(bytes, offset, GorillaMessage.GorillaHeaderSize);
-        offset += GorillaMessage.GorillaHeaderSize;
+        Head = Simple.sliceBytes(bytes, offset, GoprotoMessage.GorillaHeaderSize);
+        offset += GoprotoMessage.GorillaHeaderSize;
 
         Payload = Simple.sliceBytes(bytes, offset,bytes.length - offset);
 

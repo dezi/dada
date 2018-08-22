@@ -43,13 +43,13 @@ public class Connect
 
             input = socket.getInputStream();
             output = socket.getOutputStream();
+
+            return null;
         }
         catch (Exception ex)
         {
             return Err.errp(ex);
         }
-
-        return null;
     }
 
     @Nullable
@@ -74,13 +74,13 @@ public class Connect
                 socket.close();
                 socket = null;
             }
+
+            return null;
         }
         catch (Exception ex)
         {
             return Err.errp(ex);
         }
-
-        return null;
     }
 
     @Nullable
@@ -114,9 +114,8 @@ public class Connect
             disconnect();
 
             Err.errp(ex);
+            return null;
         }
-
-        return null;
     }
 
     @Nullable
@@ -129,6 +128,8 @@ public class Connect
                 com.aura.aosp.aura.simple.Log.d("size=%d", buffer.length);
 
                 output.write(buffer);
+
+                return null;
             }
             catch (Exception ex)
             {
@@ -137,7 +138,5 @@ public class Connect
                 return Err.errp(ex);
             }
         }
-
-        return null;
     }
 }

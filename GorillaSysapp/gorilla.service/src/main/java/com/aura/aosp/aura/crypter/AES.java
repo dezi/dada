@@ -48,7 +48,7 @@ public class AES
     }
 
     @Nullable
-    public byte[] encryptAESBlock(Block block, byte[]... buffers)
+    public static byte[] encryptAESBlock(Block block, byte[]... buffers)
     {
         int total = 0;
 
@@ -99,7 +99,7 @@ public class AES
     }
 
     @Nullable
-    public byte[] encryptAES(byte[] aeskey, byte[]... buffers)
+    public static byte[] encryptAES(byte[] aeskey, byte[]... buffers)
     {
         Block block = newAESCipher(aeskey);
 
@@ -107,7 +107,7 @@ public class AES
     }
 
     @Nullable
-    public byte[] decryptAESBlock(Block block, byte[] ciphertext)
+    public static byte[] decryptAESBlock(Block block, byte[] ciphertext)
     {
         if (ciphertext.length < AESBlockSize * 2)
         {
@@ -141,7 +141,7 @@ public class AES
     }
 
     @Nullable
-    public byte[] decryptAES(byte[] aeskey, byte[] ciphertext)
+    public static byte[] decryptAES(byte[] aeskey, byte[] ciphertext)
     {
         Block block = newAESCipher(aeskey);
 

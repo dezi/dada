@@ -6,7 +6,7 @@ import android.content.Intent;
 
 import com.aura.aosp.aura.simple.Err;
 
-import com.aura.aosp.gorilla.gomess.GomessProtocol;
+import com.aura.aosp.gorilla.gomess.GomessThread;
 
 import org.json.JSONObject;
 
@@ -40,7 +40,7 @@ public class GorillaReceiver extends BroadcastReceiver
         String receiver = intent.getStringExtra("receiver");
         String payload = intent.getStringExtra("payload");
 
-        JSONObject result = GomessProtocol.getInstance().sendPayload(uuid, time, apkname, receiver, payload);
+        JSONObject result = GomessThread.getInstance().sendPayload(uuid, time, apkname, receiver, payload);
 
         Intent responseIntent = new Intent("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT");
 

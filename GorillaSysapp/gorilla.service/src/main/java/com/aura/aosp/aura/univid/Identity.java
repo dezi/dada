@@ -1,18 +1,16 @@
 package com.aura.aosp.aura.univid;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
-
-import com.aura.aosp.aura.crypter.RSA;
-import com.aura.aosp.aura.simple.Simple;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
+import com.aura.aosp.aura.crypter.RSA;
+import com.aura.aosp.aura.simple.Err;
+import com.aura.aosp.aura.simple.Simple;
+
 public class Identity
 {
-    private static final String LOGTAG = Identity.class.getSimpleName();
-
     private final static String fakeUser = "r0Z7g7cnTF6Mi5/NRyU4Yw==";
     private final static String fakeDevice = "lfTBPb1qQ9akd3ltWLWxaw==";
 
@@ -60,34 +58,28 @@ public class Identity
     @Nullable
     public static RSAPublicKey getRSAPublicKey()
     {
-        Log.d(LOGTAG, "getRSAPublicKey: .....");
-
         try
         {
             return RSA.unmarshalRSAPublicKeyBase64(fakeRSAPublicKey);
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Err.errp(ex);
+            return null;
         }
-
-        return null;
     }
 
     @Nullable
     public static RSAPrivateKey getRSAPrivateKey()
     {
-        Log.d(LOGTAG, "getRSAPrivateKey: .....");
-
         try
         {
             return RSA.unmarshalRSAPrivateKeyBase64(fakeRSAPrivateKey);
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Err.errp(ex);
+            return null;
         }
-
-        return null;
     }
 }

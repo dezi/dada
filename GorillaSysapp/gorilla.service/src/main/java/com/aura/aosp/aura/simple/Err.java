@@ -1,12 +1,11 @@
 package com.aura.aosp.aura.simple;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 @SuppressWarnings({"WeakerAccess", "SameReturnValue", "CanBeFinal", "unused"})
 public class Err
 {
-    //region Static implementation.
+    //region Static stuff.
 
     private static Err lastErr;
 
@@ -56,7 +55,7 @@ public class Err
     public static Err errp()
     {
         Err err = err();
-        Log.e(err.err);
+        Log.eerr(err.err);
         return err;
     }
 
@@ -64,7 +63,7 @@ public class Err
     public static Err errp(String error)
     {
         Err err = err(error);
-        Log.e(err.err);
+        Log.eerr(err.err);
         return err;
     }
 
@@ -72,7 +71,7 @@ public class Err
     public static Err errp(String format, Object... args)
     {
         Err err = err(format, args);
-        Log.e(err.err);
+        Log.eerr(err.err);
         return err;
     }
 
@@ -80,7 +79,7 @@ public class Err
     public static Err errp(Exception ex, String error)
     {
         Err err = err(ex, error);
-        Log.e(err.err);
+        Log.eerr(err.err);
         return err;
     }
 
@@ -88,7 +87,7 @@ public class Err
     public static Err errp(Exception ex)
     {
         Err err = err(ex);
-        Log.e(err.err);
+        Log.eerr(err.err);
         return err;
     }
 
@@ -96,13 +95,13 @@ public class Err
     public static Err errp(Exception ex, String format, Object... args)
     {
         Err err = err(ex, format, args);
-        Log.e(err.err);
+        Log.eerr(err.err);
         return err;
     }
 
-    //endregion Static implementation.
+    //endregion Static stuff.
 
-    //region Instance implementation.
+    //region Instance stuff.
 
     public String err;
     public Exception ex;
@@ -127,5 +126,5 @@ public class Err
         return err;
     }
 
-    //endregion Instance implementation.
+    //endregion Instance stuff.
 }

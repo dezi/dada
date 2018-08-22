@@ -1,7 +1,11 @@
-package com.aura.aosp.gorilla.gomess;
+package com.aura.aosp.gorilla.goproto;
+
+import android.support.annotation.NonNull;
+
+import com.aura.aosp.aura.simple.Err;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class GorillaMessage
+public class GoprotoMessage
 {
     public final static int GorillaMagic = 0x6ea60451;
 
@@ -68,20 +72,20 @@ public class GorillaMessage
     public byte[] Sign;
     public byte[] Base;
 
-    public GorillaMessage()
+    public GoprotoMessage()
     {
         Magic = GorillaMagic;
         Version = (VersionV1Major << 8) + (VersionV1Minor << 0);
     }
 
-    public GorillaMessage(int command)
+    public GoprotoMessage(int command)
     {
         this();
 
         Command = command;
     }
 
-    public GorillaMessage(int command, int idsmask, int keymask, int size)
+    public GoprotoMessage(int command, int idsmask, int keymask, int size)
     {
         this(command);
 
@@ -101,6 +105,7 @@ public class GorillaMessage
         }
     }
 
+    @NonNull
     @SuppressWarnings("PointlessBitwiseExpression")
     public byte[] marshall()
     {
@@ -138,11 +143,13 @@ public class GorillaMessage
     }
 
     @SuppressWarnings("PointlessBitwiseExpression")
-    public boolean unmarshall(byte[] bytes)
+    public Err unmarshall(byte[] bytes)
     {
-        if ((bytes == null) || (bytes.length != GorillaHeaderSize))
+        if (bytes == null) return Err.errp();
+
+        if (bytes.length != GorillaHeaderSize)
         {
-            return false;
+            return Err.errp("size=%d fail!", bytes.length);
         }
 
         // @formatter:off
@@ -173,6 +180,6 @@ public class GorillaMessage
 
         Head = bytes;
 
-        return true;
+        return null;
     }
 }

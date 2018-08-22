@@ -46,14 +46,14 @@ public class Log
         }
     }
 
-    public static void eerr(String format, Object... args)
+    public static void e(String format, Object... args)
     {
         e(4,format,args);
     }
 
-    public static void e(String format, Object... args)
+    public static void eerr(String format, Object... args)
     {
-        e(3,format,args);
+        e(5,format,args);
     }
 
     private static void e(int index, String format, Object... args)

@@ -1,13 +1,15 @@
-package com.aura.aosp.gorilla.gomess;
+package com.aura.aosp.gorilla.gorilla;
 
 import android.support.annotation.Nullable;
 
+import com.aura.aosp.aura.simple.Err;
 import com.aura.aosp.aura.simple.Log;
 import com.aura.aosp.aura.simple.Json;
 import com.aura.aosp.aura.simple.Simple;
 import com.aura.aosp.aura.sockets.Connect;
-import com.aura.aosp.aura.univid.Identity;
 import com.aura.aosp.aura.utility.Regions;
+import com.aura.aosp.gorilla.gomess.GomessClient;
+import com.aura.aosp.gorilla.goproto.GoprotoSession;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -180,15 +182,14 @@ public class GorillaNodes
         Connect conn = new Connect(pnode.Addr, pnode.Port);
         if (conn.connect() != null) return null;
 
-        GorillaSession session = new GorillaSession(conn);
-
-        session.UserUUID = Identity.getUserUUID();
-        session.DeviceUUID = Identity.getDeviceUUID();
-        session.ClientPrivKey = Identity.getRSAPrivateKey();
+        GoprotoSession session = new GoprotoSession(conn);
+        Err err = session.aquireIdentity();
+        if (err != null) return null;
 
         GomessClient client = new GomessClient(session, true);
 
-        client.clientHandler();
+        err = client.clientHandler();
+        if (err != null) return null;
 
         return client.getAvailableClientNodes();
     }

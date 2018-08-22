@@ -2,19 +2,24 @@ package com.aura.aosp.gorilla.gomess;
 
 import android.content.Intent;
 
+import com.aura.aosp.aura.simple.Err;
 import com.aura.aosp.aura.sockets.Connect;
+import com.aura.aosp.gorilla.gorilla.GorillaNodes;
+import com.aura.aosp.gorilla.goproto.GoprotoSession;
 import com.aura.aosp.gorilla.service.GorillaBase;
 
-import com.aura.aosp.aura.univid.Identity;
 import com.aura.aosp.aura.simple.Json;
 import com.aura.aosp.aura.simple.Log;
 
 import org.json.JSONObject;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class GomessProtocol
+public class GomessThread
 {
-    public static GomessProtocol getInstance()
+    private static GomessThread instance;
+    private static final Object mutex = new Object();
+
+    public static GomessThread getInstance()
     {
         if (instance == null)
         {
@@ -22,7 +27,7 @@ public class GomessProtocol
             {
                 if (instance == null)
                 {
-                    instance = new GomessProtocol();
+                    instance = new GomessThread();
                 }
             }
         }
@@ -69,13 +74,9 @@ public class GomessProtocol
         return result;
     }
 
-    private static final Object mutex = new Object();
-
-    private static GomessProtocol instance;
-
     private final Thread workerThread;
 
-    private GomessProtocol()
+    private GomessThread()
     {
         workerThread = new Thread(workerRunner);
         workerThread.start();
@@ -97,21 +98,18 @@ public class GomessProtocol
         }
     };
 
-    private static void enterGorillaSession(GorillaNodes.ClientNode cnode)
+    private static Err enterGorillaSession(GorillaNodes.ClientNode cnode)
     {
         Log.d("...");
 
         Connect conn = new Connect(cnode.Addr, cnode.Port);
-        if (conn.connect() != null) return;
+        if (conn.connect() != null) return Err.getLastErr();
 
-        GorillaSession session = new GorillaSession(conn);
-
-        session.UserUUID = Identity.getUserUUID();
-        session.DeviceUUID = Identity.getDeviceUUID();
-        session.ClientPrivKey = Identity.getRSAPrivateKey();
+        GoprotoSession session = new GoprotoSession(conn);
+        Err err = session.aquireIdentity();
+        if (err != null) return err;
 
         GomessClient client = new GomessClient(session, false);
-
-        client.clientHandler();
+        return client.clientHandler();
     }
 }
