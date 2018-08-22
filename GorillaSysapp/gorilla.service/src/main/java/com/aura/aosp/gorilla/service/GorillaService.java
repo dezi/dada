@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.app.Service;
 import android.os.IBinder;
 
-import com.aura.aosp.gorilla.gomess.GomessThread;
+import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 import com.aura.aosp.aura.simple.Log;
 
@@ -47,7 +47,7 @@ public class GorillaService extends Service
         // make sure it is started.
         //
 
-        GomessThread.getInstance();
+        GomessHandler.getInstance();
     }
 
     @Override

@@ -2,10 +2,13 @@ package com.aura.aosp.gorilla.gomess;
 
 import android.content.Intent;
 
+import com.aura.aosp.aura.crypter.RND;
 import com.aura.aosp.aura.simple.Err;
 import com.aura.aosp.aura.simple.Simple;
 import com.aura.aosp.aura.sockets.Connect;
+import com.aura.aosp.aura.univid.Identity;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
+import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 import com.aura.aosp.gorilla.service.GorillaBase;
 
 import com.aura.aosp.aura.simple.Json;
@@ -14,12 +17,12 @@ import com.aura.aosp.aura.simple.Log;
 import org.json.JSONObject;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class GomessThread
+public class GomessHandler
 {
-    private static GomessThread instance;
+    private static GomessHandler instance;
     private static final Object mutex = new Object();
 
-    public static GomessThread getInstance()
+    public static GomessHandler getInstance()
     {
         if (instance == null)
         {
@@ -27,7 +30,7 @@ public class GomessThread
             {
                 if (instance == null)
                 {
-                    instance = new GomessThread();
+                    instance = new GomessHandler();
                 }
             }
         }
@@ -36,6 +39,43 @@ public class GomessThread
     }
 
     private final Thread workerThread;
+
+    public JSONObject sendPayloadTest(String uuid, long time, String apkname, String userUUID, String deviceUUID, String payload)
+    {
+        Log.d("uuid=" + uuid + " time=" + time);
+        Log.d("user=" + userUUID + " dev=" + deviceUUID);
+        Log.d("apkname=" + apkname + " payload=" + payload);
+
+        JSONObject result = new JSONObject();
+
+        if ((uuid == null) || (apkname == null) || (userUUID == null) || (deviceUUID == null) || (payload == null) || (time <= 0))
+        {
+            Json.put(result, "error", "Request parameters missing");
+            Json.put(result, "status", "error");
+
+            return result;
+        }
+
+        GoprotoTicket ticket = new GoprotoTicket();
+
+        ticket.setMessageUUID(RND.randomUUID());
+
+        ticket.setSenderUserUUID(Identity.getUserUUID());
+        ticket.setSenderDeviceUUID(Identity.getDeviceUUID());
+
+        ticket.setReceiverUserUUID(Simple.decodeBase64(userUUID));
+        ticket.setReceiverDeviceUUID(Simple.decodeBase64(deviceUUID));
+
+        ticket.setAppUUID(RND.randomUUID());
+
+        ticket.Payload = payload.getBytes();
+
+        client.sendMessageUpload(ticket);
+
+        Json.put(result, "status", "success");
+
+        return result;
+    }
 
     public JSONObject sendPayload(String uuid, long time, String apkname, String receiver, String payload)
     {
@@ -76,13 +116,13 @@ public class GomessThread
         return result;
     }
 
-    private GomessThread()
+    private GomessHandler()
     {
         workerThread = new Thread(workerRunner);
         workerThread.start();
     }
 
-    private static final Runnable workerRunner = new Runnable()
+    private final Runnable workerRunner = new Runnable()
     {
         @Override
         @SuppressWarnings("InfiniteLoopStatement")
@@ -93,15 +133,17 @@ public class GomessThread
                 GomessNode clientNode = GomessNodes.getBestNode("DE", 53.551086, 9.993682);
                 if (clientNode == null) continue;
 
-                Err err = enterGorillaSession(clientNode);
+                Err err = handleSession(clientNode);
                 if (err == null) continue;
 
-                Simple.sleep(1000);
+                break;
             }
         }
     };
 
-    private static Err enterGorillaSession(GomessNode cnode)
+    private GomessClient client;
+
+    private Err handleSession(GomessNode cnode)
     {
         Log.d("...");
 
@@ -112,7 +154,7 @@ public class GomessThread
         Err err = session.aquireIdentity();
         if (err != null) return err;
 
-        GomessClient client = new GomessClient(session, false);
+        client = new GomessClient(session);
         return client.clientHandler();
     }
 }

@@ -240,16 +240,22 @@ public class Simple
 
     public static String getHexBytesToString(byte[] bytes)
     {
+        if (bytes == null) return "null";
+
         return getHexBytesToString(bytes, 0, bytes.length, true);
     }
 
     public static String getHexBytesToString(byte[] bytes, boolean space)
     {
+        if (bytes == null) return "null";
+
         return getHexBytesToString(bytes, 0, bytes.length, space);
     }
 
     public static String getHexBytesToString(byte[] bytes, int offset, int length, boolean space)
     {
+        if (bytes == null) return "null";
+
         int clen = (length << 1) + (space ? (length - 1) : 0);
 
         char[] hexArray = "0123456789ABCDEF".toCharArray();

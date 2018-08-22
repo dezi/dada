@@ -1,5 +1,7 @@
 package com.aura.aosp.aura.crypter;
 
+import android.util.Base64;
+
 import java.security.SecureRandom;
 
 public class RND
@@ -29,4 +31,23 @@ public class RND
 
         return (int) (val % max);
     }
+
+    public static byte[] randomUUID()
+    {
+        byte[] uuid = randomBytes(16);
+
+        uuid[8] = (byte) ((uuid[8] & ~0xc0) | 0x80);
+
+        // version 4 (pseudo-random); see section 4.1.3
+
+        uuid[6] = (byte) ((uuid[6] & ~0xf0) | 0x40);
+
+        return uuid;
+    }
+
+    public static String randomUUIDBase64()
+    {
+        return Base64.encodeToString(randomUUID(), android.util.Base64.NO_WRAP);
+    }
+
 }

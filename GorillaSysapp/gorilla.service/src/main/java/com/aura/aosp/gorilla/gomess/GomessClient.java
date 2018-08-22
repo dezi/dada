@@ -16,6 +16,7 @@ import com.aura.aosp.aura.simple.Log;
 import com.aura.aosp.gorilla.goproto.GoprotoDefs;
 import com.aura.aosp.gorilla.goproto.GoprotoMessage;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
+import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
 import org.json.JSONArray;
 
@@ -24,19 +25,58 @@ import java.util.List;
 public class GomessClient
 {
     private GoprotoSession session;
-    private boolean boot;
 
     private List<GomessNode> availableNodes;
 
-    public GomessClient(GoprotoSession session, boolean boot)
+    public GomessClient(GoprotoSession session)
     {
         this.session = session;
-        this.boot = boot;
     }
 
     public List<GomessNode> getAvailableGomessNodes()
     {
         return availableNodes;
+    }
+
+    public Err nodesHandler()
+    {
+        Err err = nodesHandlerBody();
+
+        session.close();
+
+        return err;
+    }
+
+    private Err nodesHandlerBody()
+    {
+        Err err = sendAuthRequest();
+        if (err != null) return err;
+
+        while (true)
+        {
+            GoprotoMessage message = readMessage();
+            if (message == null) return Err.getLastErr();
+
+            err = handleClientMessage(message);
+            if (err != null) return err;
+
+            if (message.Command == GoprotoDefs.MsgAuthAccepted)
+            {
+                Log.d("request connect nodes...");
+
+                err = sendAuthReqNodes();
+                if (err != null) return err;
+            }
+
+            if (message.Command == GoprotoDefs.MsgAuthSndNodes)
+            {
+                Log.d("received connect nodes...");
+
+                break;
+            }
+        }
+
+        return null;
     }
 
     public Err clientHandler()
@@ -60,33 +100,7 @@ public class GomessClient
 
             err = handleClientMessage(message);
             if (err != null) return err;
-
-            //
-            // Boot part.
-            //
-            // Request all nodes and exit.
-            //
-
-            if (boot)
-            {
-                if (message.Command == GoprotoDefs.MsgAuthAccepted)
-                {
-                    Log.d("request connect nodes...");
-
-                    err = sendAuthReqNodes();
-                    if (err != null) return err;
-                }
-
-                if (message.Command == GoprotoDefs.MsgAuthSndNodes)
-                {
-                    Log.d("received connect nodes...");
-
-                    break;
-                }
-            }
         }
-
-        return null;
     }
 
     private Err handleClientMessage(GoprotoMessage message)
@@ -182,6 +196,47 @@ public class GomessClient
         return session.writeSession(packet);
     }
 
+    public Err sendMessageUpload(GoprotoTicket ticket)
+    {
+        ticket.dumpTicket();
+
+        //
+        // Build AES encoded message routing information.
+        //
+
+        int idsMask = GoprotoDefs.HasSHASignature
+                | GoprotoDefs.HasMessageUUID
+                | GoprotoDefs.HasReceiverUserUUID
+                | GoprotoDefs.HasReceiverDeviceUUID
+                | GoprotoDefs.HasAppUUID;
+
+        byte[] routingPlain = Simple.concatBuffers(
+                ticket.getMessageUUID(),
+                ticket.getReceiverUserUUID(),
+                ticket.getReceiverDeviceUUID(),
+                ticket.getAppUUID());
+
+        byte[] routingCrypt = AES.encryptAESBlock(session.getAESBlock(), routingPlain);
+        if (routingCrypt == null) return Err.getLastErr();
+
+        //
+        // Assemble response packet.
+        //
+
+        int llen = routingCrypt.length + ticket.Payload.length;
+
+        byte[] head = new GoprotoMessage(GoprotoDefs.MsgMessageUpload, idsMask, 0, llen).marshall();
+
+        Log.d("head=%s", Simple.getHexBytesToString(head));
+
+        byte[] sign = SHA.createSHASignature(session.AESKey, head, routingCrypt, ticket.Payload);
+        if (sign == null) return Err.getLastErr();
+
+        byte[] packet = Simple.concatBuffers(head, sign, routingCrypt, ticket.Payload);
+
+        return session.writeSession(packet);
+    }
+
     private Err chAuthChallenge(GoprotoMessage message)
     {
         Log.d("...");
@@ -257,7 +312,7 @@ public class GomessClient
         // We are finally connected now.
         //
 
-        session.SetIsConnected(true);
+        session.setIsConnected(true);
 
         return null;
     }
@@ -279,7 +334,6 @@ public class GomessClient
         availableNodes = GomessNodes.unMarshall(jClientNodes);
 
         Log.d("nodes=%s", new String(nodesBytes));
-        Log.d("nodes=%s", Json.toPretty(jClientNodes));
 
         return null;
     }
@@ -287,6 +341,9 @@ public class GomessClient
     private Err chMessageDownload(GoprotoMessage message)
     {
         Log.d("...");
+
+        Log.d("head=%s", Simple.getHexBytesToString(message.Head));
+
 
         return null;
     }

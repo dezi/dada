@@ -50,9 +50,20 @@ public class Identity
     }
 
     @Nullable
+    public static String getUserUUIDBase64()
+    {
+        return fakeUser;
+    }
+
+    @Nullable
     public static byte[] getDeviceUUID()
     {
         return Simple.decodeBase64(fakeDevice);
+    }
+
+    public static String getDeviceUUIDBase64()
+    {
+        return fakeDevice;
     }
 
     @Nullable

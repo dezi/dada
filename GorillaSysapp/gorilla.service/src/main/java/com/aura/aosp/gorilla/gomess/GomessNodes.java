@@ -130,9 +130,8 @@ public class GomessNodes
         Err err = session.aquireIdentity();
         if (err != null) return null;
 
-        GomessClient client = new GomessClient(session, true);
-
-        err = client.clientHandler();
+        GomessClient client = new GomessClient(session);
+        err = client.nodesHandler();
         if (err != null) return null;
 
         return client.getAvailableGomessNodes();

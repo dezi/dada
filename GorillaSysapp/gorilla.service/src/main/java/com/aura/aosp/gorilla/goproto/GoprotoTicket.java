@@ -3,6 +3,7 @@ package com.aura.aosp.gorilla.goproto;
 import android.support.annotation.NonNull;
 
 import com.aura.aosp.aura.simple.Err;
+import com.aura.aosp.aura.simple.Log;
 import com.aura.aosp.aura.simple.Simple;
 
 @SuppressWarnings("WeakerAccess")
@@ -10,18 +11,83 @@ public class GoprotoTicket
 {
     public int Idsmask;
 
-    public byte[] MessageUUID;
+    private byte[] MessageUUID;
 
-    public byte[] SenderUserUUID;
-    public byte[] SenderDeviceUUID;
+    private byte[] SenderUserUUID;
+    private byte[] SenderDeviceUUID;
 
-    public byte[] ReceiverUserUUID;
-    public byte[] ReceiverDeviceUUID;
+    private byte[] ReceiverUserUUID;
+    private byte[] ReceiverDeviceUUID;
 
-    public byte[] AppUUID;
+    private byte[] AppUUID;
 
     public byte[] Head;
     public byte[] Payload;
+
+    public byte[] getMessageUUID()
+    {
+        return MessageUUID;
+    }
+
+    public void setMessageUUID(byte[] messageUUID)
+    {
+        Idsmask |= GoprotoDefs.HasMessageUUID;
+        this.MessageUUID = messageUUID;
+    }
+
+    public byte[] getSenderUserUUID()
+    {
+        return SenderUserUUID;
+    }
+
+    public void setSenderUserUUID(byte[] senderUserUUID)
+    {
+        Idsmask |= GoprotoDefs.HasSenderUserUUID;
+        this.SenderUserUUID = senderUserUUID;
+    }
+
+    public byte[] getSenderDeviceUUID()
+    {
+        return SenderDeviceUUID;
+    }
+
+    public void setSenderDeviceUUID(byte[] senderDeviceUUID)
+    {
+        Idsmask |= GoprotoDefs.HasSenderDeviceUUID;
+        this.SenderDeviceUUID = senderDeviceUUID;
+    }
+    public byte[] getReceiverUserUUID()
+    {
+        return ReceiverUserUUID;
+    }
+
+    public void setReceiverUserUUID(byte[] receiverUserUUID)
+    {
+        Idsmask |= GoprotoDefs.HasReceiverUserUUID;
+        this.ReceiverUserUUID = receiverUserUUID;
+    }
+
+    public byte[] getReceiverDeviceUUID()
+    {
+        return ReceiverDeviceUUID;
+    }
+
+    public void setReceiverDeviceUUID(byte[] receiverDeviceUUID)
+    {
+        Idsmask |= GoprotoDefs.HasReceiverDeviceUUID;
+        this.ReceiverDeviceUUID = receiverDeviceUUID;
+    }
+
+    public byte[] getAppUUID()
+    {
+        return AppUUID;
+    }
+
+    public void setAppUUID(byte[] appUUID)
+    {
+        Idsmask |= GoprotoDefs.HasAppUUID;
+        this.AppUUID = appUUID;
+    }
 
     public int getTicketSize()
     {
@@ -200,5 +266,19 @@ public class GoprotoTicket
         Payload = Simple.sliceBytes(bytes, offset,bytes.length - offset);
 
         return null;
+    }
+
+    public void dumpTicket()
+    {
+        Log.d("Idsmask=%d", Idsmask);
+
+        Log.d("MessageUUID=%s", Simple.getHexBytesToString(MessageUUID));
+        Log.d("SenderUserUUID=%s", Simple.getHexBytesToString(SenderUserUUID));
+        Log.d("SenderDeviceUUID=%s", Simple.getHexBytesToString(SenderDeviceUUID));
+        Log.d("ReceiverUserUUID=%s", Simple.getHexBytesToString(ReceiverUserUUID));
+        Log.d("ReceiverDeviceUUID=%s", Simple.getHexBytesToString(ReceiverDeviceUUID));
+        Log.d("AppUUID=%s", Simple.getHexBytesToString(AppUUID));
+        Log.d("Head=%s", Simple.getHexBytesToString(Head));
+        Log.d("Payload=%s", Simple.getHexBytesToString(Payload));
     }
 }

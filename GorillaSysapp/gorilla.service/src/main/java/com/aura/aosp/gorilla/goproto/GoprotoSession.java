@@ -15,8 +15,6 @@ public class GoprotoSession
     public byte[] UUID;
 
     public Connect conn;
-    public int Version;
-    public final Object mutex = new Object();
 
     public byte[] UserUUID;
     public byte[] DeviceUUID;
@@ -26,8 +24,6 @@ public class GoprotoSession
 
     public byte[] AESKey;
     public AES.Block AESBlock;
-
-    public byte[] Challenge;
 
     public RSAPublicKey PeerPublicKey;
     public RSAPrivateKey ClientPrivKey;
@@ -74,23 +70,28 @@ public class GoprotoSession
         return conn.writeConnect(buffer);
     }
 
-    public boolean IsClosed()
+    public boolean isClosed()
     {
         return isClosed;
     }
 
-    public void SetIsClosed(boolean closed)
+    public void setIsClosed(boolean closed)
     {
         isClosed = closed;
     }
 
-    public boolean IsConnected()
+    public boolean isConnected()
     {
         return isConnected;
     }
 
-    public void SetIsConnected(boolean connected)
+    public void setIsConnected(boolean connected)
     {
         isConnected = connected;
+    }
+
+    public AES.Block getAESBlock()
+    {
+        return AESBlock;
     }
 }
