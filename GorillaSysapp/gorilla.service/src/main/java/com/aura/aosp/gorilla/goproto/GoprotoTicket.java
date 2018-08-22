@@ -9,7 +9,7 @@ import com.aura.aosp.aura.simple.Simple;
 @SuppressWarnings("WeakerAccess")
 public class GoprotoTicket
 {
-    public int Idsmask;
+    private int Idsmask;
 
     private byte[] MessageUUID;
 
@@ -21,7 +21,7 @@ public class GoprotoTicket
 
     private byte[] AppUUID;
 
-    public byte[] Payload;
+    private byte[] Payload;
 
     public byte[] getMessageUUID()
     {
@@ -88,17 +88,21 @@ public class GoprotoTicket
         this.AppUUID = appUUID;
     }
 
-    public int getTicketSize()
+    public byte[] getPayload()
+    {
+        return Payload;
+    }
+
+    public void setPayload(byte[] payload)
+    {
+        this.Payload = payload;
+    }
+
+    public int getRoutingSize()
     {
         int usiz = GoprotoDefs.GorillaUUIDSize;
 
-        int offset = 0;
-
-        //
-        // Idsmask itself.
-        //
-
-        offset += 2;
+        int size = 0;
 
         //
         // Variable fields.
@@ -106,40 +110,53 @@ public class GoprotoTicket
 
         if ((Idsmask & GoprotoDefs.HasMessageUUID) != 0)
         {
-            offset += usiz;
+            size += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasReceiverUserUUID) != 0)
         {
-            offset += usiz;
+            size += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasReceiverDeviceUUID) != 0)
         {
-            offset += usiz;
+            size += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasSenderUserUUID) != 0)
         {
-            offset += usiz;
+            size += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasSenderDeviceUUID) != 0)
         {
-            offset += usiz;
+            size += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasAppUUID) != 0)
         {
-            offset += usiz;
+            size += usiz;
         }
+
+        return size;
+    }
+
+    public int getTicketSize()
+    {
+        //
+        // Idsmask itself.
+        //
+
+        int size = 2;
+
+        size += getRoutingSize();
 
         if (Payload != null)
         {
-            offset += Payload.length;
+            size += Payload.length;
         }
 
-        return offset;
+        return size;
     }
 
     @NonNull

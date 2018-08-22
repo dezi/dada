@@ -204,8 +204,7 @@ public class GomessClient
         // Build AES encoded message routing information.
         //
 
-        int idsMask = GoprotoDefs.HasSHASignature
-                | GoprotoDefs.HasMessageUUID
+        int idsMask = GoprotoDefs.HasMessageUUID
                 | GoprotoDefs.HasReceiverUserUUID
                 | GoprotoDefs.HasReceiverDeviceUUID
                 | GoprotoDefs.HasAppUUID;
@@ -223,16 +222,16 @@ public class GomessClient
         // Assemble response packet.
         //
 
-        int llen = routingCrypt.length + ticket.Payload.length;
+        int llen = routingCrypt.length + ticket.getPayload().length;
 
-        byte[] head = new GoprotoMessage(GoprotoDefs.MsgMessageUpload, idsMask, 0, llen).marshall();
+        byte[] head = new GoprotoMessage(GoprotoDefs.MsgMessageUpload, idsMask + GoprotoDefs.HasSHASignature, 0, llen).marshall();
 
         Log.d("head=%s", Simple.getHexBytesToString(head));
 
-        byte[] sign = SHA.createSHASignature(session.AESKey, head, routingCrypt, ticket.Payload);
+        byte[] sign = SHA.createSHASignature(session.AESKey, head, routingCrypt, ticket.getPayload());
         if (sign == null) return Err.getLastErr();
 
-        byte[] packet = Simple.concatBuffers(head, sign, routingCrypt, ticket.Payload);
+        byte[] packet = Simple.concatBuffers(head, sign, routingCrypt, ticket.getPayload());
 
         return session.writeSession(packet);
     }

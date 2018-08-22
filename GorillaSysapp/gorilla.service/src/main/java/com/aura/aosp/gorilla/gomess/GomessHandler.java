@@ -68,7 +68,7 @@ public class GomessHandler
 
         ticket.setAppUUID(RND.randomUUID());
 
-        ticket.Payload = payload.getBytes();
+        ticket.setPayload(payload.getBytes());
 
         client.sendMessageUpload(ticket);
 
