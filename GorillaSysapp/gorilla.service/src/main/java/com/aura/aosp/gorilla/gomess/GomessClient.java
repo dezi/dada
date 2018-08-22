@@ -12,6 +12,7 @@ import com.aura.aosp.aura.simple.Err;
 import com.aura.aosp.aura.simple.Simple;
 import com.aura.aosp.aura.simple.Json;
 import com.aura.aosp.aura.simple.Log;
+import com.aura.aosp.gorilla.goproto.GoprotoDefs;
 import com.aura.aosp.gorilla.goproto.GoprotoMessage;
 import com.aura.aosp.gorilla.gorilla.GorillaNodes;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
@@ -68,7 +69,7 @@ public class GomessClient
 
             if (boot)
             {
-                if (message.Command == GoprotoMessage.MsgAuthAccepted)
+                if (message.Command == GoprotoDefs.MsgAuthAccepted)
                 {
                     Log.d("request connect nodes...");
 
@@ -76,7 +77,7 @@ public class GomessClient
                     if (err != null) return err;
                 }
 
-                if (message.Command == GoprotoMessage.MsgAuthSndNodes)
+                if (message.Command == GoprotoDefs.MsgAuthSndNodes)
                 {
                     Log.d("received connect nodes...");
 
@@ -94,23 +95,23 @@ public class GomessClient
 
         switch (message.Command)
         {
-            case GoprotoMessage.MsgAuthChallenge:
+            case GoprotoDefs.MsgAuthChallenge:
                 err = chAuthChallenge(message);
                 break;
 
-            case GoprotoMessage.MsgAuthAccepted:
+            case GoprotoDefs.MsgAuthAccepted:
                 err = chAuthAccepted(message);
                 break;
 
-            case GoprotoMessage.MsgAuthSndNodes:
+            case GoprotoDefs.MsgAuthSndNodes:
                 err = chAuthSndNodes(message);
                 break;
 
-            case GoprotoMessage.MsgMessageDownload:
+            case GoprotoDefs.MsgMessageDownload:
                 err = chMessageDownload(message);
                 break;
 
-            case GoprotoMessage.MsgGotGotelloAmt:
+            case GoprotoDefs.MsgGotGotelloAmt:
                 err = chGotGotelloAmt(message);
                 break;
         }
@@ -121,7 +122,7 @@ public class GomessClient
     @Nullable
     private GoprotoMessage readMessage()
     {
-        byte[] buffer = session.readSession(GoprotoMessage.GorillaHeaderSize);
+        byte[] buffer = session.readSession(GoprotoDefs.GorillaHeaderSize);
         if (buffer == null) return null;
 
         GoprotoMessage message = new GoprotoMessage();
@@ -130,8 +131,8 @@ public class GomessClient
         if (err != null) return null;
 
         if ((message.Size < 0) ||
-                ((message.Command != GoprotoMessage.MsgAuthSndNodes) &&
-                (message.Size > GoprotoMessage.GorillaMaxSize)))
+                ((message.Command != GoprotoDefs.MsgAuthSndNodes) &&
+                (message.Size > GoprotoDefs.GorillaMaxSize)))
         {
             Err.errp("size=%d fail!", message.Size);
 
@@ -141,17 +142,17 @@ public class GomessClient
         byte[] payload = session.readSession(message.Size);
         if (payload == null) return null;
 
-        if ((message.Idsmask & GoprotoMessage.HasRSASignature) != 0)
+        if ((message.Idsmask & GoprotoDefs.HasRSASignature) != 0)
         {
-            message.Sign = Simple.sliceBytes(payload, 0, GoprotoMessage.GorillaRSASignSize);
-            message.Base = Simple.sliceBytes(payload, GoprotoMessage.GorillaRSASignSize);
+            message.Sign = Simple.sliceBytes(payload, 0, GoprotoDefs.GorillaRSASignSize);
+            message.Base = Simple.sliceBytes(payload, GoprotoDefs.GorillaRSASignSize);
         }
         else
         {
-            if ((message.Idsmask & GoprotoMessage.HasSHASignature) != 0)
+            if ((message.Idsmask & GoprotoDefs.HasSHASignature) != 0)
             {
-                message.Sign = Simple.sliceBytes(payload, 0, GoprotoMessage.GorillaSHASignSize);
-                message.Base = Simple.sliceBytes(payload, GoprotoMessage.GorillaSHASignSize);
+                message.Sign = Simple.sliceBytes(payload, 0, GoprotoDefs.GorillaSHASignSize);
+                message.Base = Simple.sliceBytes(payload, GoprotoDefs.GorillaSHASignSize);
             }
             else
             {
@@ -164,14 +165,14 @@ public class GomessClient
 
     private Err sendAuthRequest()
     {
-        GoprotoMessage packet = new GoprotoMessage(GoprotoMessage.MsgAuthRequest);
+        GoprotoMessage packet = new GoprotoMessage(GoprotoDefs.MsgAuthRequest);
 
         return session.writeSession(packet.marshall());
     }
 
     private Err sendAuthReqNodes()
     {
-        byte[] head = new GoprotoMessage(GoprotoMessage.MsgAuthReqNodes, GoprotoMessage.HasSHASignature, 0, 0).marshall();
+        byte[] head = new GoprotoMessage(GoprotoDefs.MsgAuthReqNodes, GoprotoDefs.HasSHASignature, 0, 0).marshall();
 
         byte[] sign = SHA.createSHASignature(session.AESKey, head);
         if (sign == null) return Err.getLastErr();
@@ -185,7 +186,7 @@ public class GomessClient
     {
         Log.d("...");
 
-        if (message.Base.length < GoprotoMessage.GorillaChallengeSize)
+        if (message.Base.length < GoprotoDefs.GorillaChallengeSize)
         {
             return Err.errp("junk message!", message.Size);
         }
@@ -194,8 +195,8 @@ public class GomessClient
         // Disassemble message.
         //
 
-        byte[] challenge = Simple.sliceBytes(message.Base, 0, GoprotoMessage.GorillaChallengeSize);
-        byte[] publickey = Simple.sliceBytes(message.Base, GoprotoMessage.GorillaChallengeSize);
+        byte[] challenge = Simple.sliceBytes(message.Base, 0, GoprotoDefs.GorillaChallengeSize);
+        byte[] publickey = Simple.sliceBytes(message.Base, GoprotoDefs.GorillaChallengeSize);
 
         session.PeerPublicKey = RSA.unmarshalRSAPublicKey(publickey);
         if (session.PeerPublicKey == null) return Err.getLastErr();
@@ -217,7 +218,7 @@ public class GomessClient
         // Create random AES key and cipher.
         //
 
-        session.AESKey = RND.randomBytes(GoprotoMessage.GorillaAESKeySize);
+        session.AESKey = RND.randomBytes(GoprotoDefs.GorillaAESKeySize);
         session.AESBlock = AES.newAESCipher(session.AESKey);
 
         //
@@ -233,7 +234,7 @@ public class GomessClient
         // Assemble response packet.
         //
 
-        byte[] head = new GoprotoMessage(GoprotoMessage.MsgAuthSolved, GoprotoMessage.HasRSASignature, 0, crypt.length).marshall();
+        byte[] head = new GoprotoMessage(GoprotoDefs.MsgAuthSolved, GoprotoDefs.HasRSASignature, 0, crypt.length).marshall();
 
         byte[] sign = RSA.createRSASignature(session.ClientPrivKey, head, crypt);
         if (sign == null) return Err.getLastErr();
