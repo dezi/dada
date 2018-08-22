@@ -15,7 +15,6 @@ import com.aura.aosp.aura.simple.Log;
 
 import com.aura.aosp.gorilla.goproto.GoprotoDefs;
 import com.aura.aosp.gorilla.goproto.GoprotoMessage;
-import com.aura.aosp.gorilla.gorilla.GorillaNodes;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
 
 import org.json.JSONArray;
@@ -27,7 +26,7 @@ public class GomessClient
     private GoprotoSession session;
     private boolean boot;
 
-    private List<GorillaNodes.ClientNode> availableNodes;
+    private List<GomessNode> availableNodes;
 
     public GomessClient(GoprotoSession session, boolean boot)
     {
@@ -35,7 +34,7 @@ public class GomessClient
         this.boot = boot;
     }
 
-    public List<GorillaNodes.ClientNode> getAvailableClientNodes()
+    public List<GomessNode> getAvailableGomessNodes()
     {
         return availableNodes;
     }
@@ -277,7 +276,7 @@ public class GomessClient
 
         JSONArray jClientNodes = Json.fromStringArray(new String(nodesBytes));
 
-        availableNodes = GorillaNodes.ClientNode.unmarshall(jClientNodes);
+        availableNodes = GomessNodes.unMarshall(jClientNodes);
 
         Log.d("nodes=%s", new String(nodesBytes));
         Log.d("nodes=%s", Json.toPretty(jClientNodes));

@@ -12,4 +12,21 @@ public class RND
 
         return bytes;
     }
+
+    @SuppressWarnings("PointlessBitwiseExpression")
+    public static int randomInt(int max)
+    {
+        byte[] bytes = randomBytes(4);
+
+        // @formatter:off
+
+        long val = ((bytes[ 0 ] & 0xff) << 24)
+                 + ((bytes[ 1 ] & 0xff) << 16)
+                 + ((bytes[ 2 ] & 0xff) <<  8)
+                 + ((bytes[ 3 ] & 0xff) <<  0);
+
+        // @formatter:on
+
+        return (int) (val % max);
+    }
 }

@@ -3,8 +3,8 @@ package com.aura.aosp.gorilla.gomess;
 import android.content.Intent;
 
 import com.aura.aosp.aura.simple.Err;
+import com.aura.aosp.aura.simple.Simple;
 import com.aura.aosp.aura.sockets.Connect;
-import com.aura.aosp.gorilla.gorilla.GorillaNodes;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
 import com.aura.aosp.gorilla.service.GorillaBase;
 
@@ -34,6 +34,8 @@ public class GomessThread
 
         return instance;
     }
+
+    private final Thread workerThread;
 
     public JSONObject sendPayload(String uuid, long time, String apkname, String receiver, String payload)
     {
@@ -74,8 +76,6 @@ public class GomessThread
         return result;
     }
 
-    private final Thread workerThread;
-
     private GomessThread()
     {
         workerThread = new Thread(workerRunner);
@@ -90,15 +90,18 @@ public class GomessThread
         {
             while (true)
             {
-                GorillaNodes.ClientNode clientNode = GorillaNodes.getBestNode("DE", 53.551086, 9.993682);
+                GomessNode clientNode = GomessNodes.getBestNode("DE", 53.551086, 9.993682);
                 if (clientNode == null) continue;
 
-                enterGorillaSession(clientNode);
+                Err err = enterGorillaSession(clientNode);
+                if (err == null) continue;
+
+                Simple.sleep(1000);
             }
         }
     };
 
-    private static Err enterGorillaSession(GorillaNodes.ClientNode cnode)
+    private static Err enterGorillaSession(GomessNode cnode)
     {
         Log.d("...");
 
