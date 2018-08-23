@@ -36,7 +36,7 @@ public class Err
     @NonNull
     public static Err err(Exception ex)
     {
-        return new Err(ex, ex.getMessage());
+        return new Err(ex, ex.toString());
     }
 
     @NonNull

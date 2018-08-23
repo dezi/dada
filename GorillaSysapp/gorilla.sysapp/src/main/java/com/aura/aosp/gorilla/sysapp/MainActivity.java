@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.sysapp;
 
 import android.os.Handler;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +23,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         Log.d(LOGTAG, "onCreate: activity started.");
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+        StrictMode.setThreadPolicy(policy);
 
         Handler handler = new Handler();
 
