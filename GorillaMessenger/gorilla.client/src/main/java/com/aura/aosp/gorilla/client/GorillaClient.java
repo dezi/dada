@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.client;
 
 import android.annotation.SuppressLint;
+
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
