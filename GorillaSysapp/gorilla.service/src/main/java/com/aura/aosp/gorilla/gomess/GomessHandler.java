@@ -13,6 +13,7 @@ import com.aura.aosp.gorilla.service.GorillaBase;
 
 import com.aura.aosp.aura.simple.Json;
 import com.aura.aosp.aura.simple.Log;
+import com.aura.aosp.gorilla.service.GorillaMapper;
 
 import org.json.JSONObject;
 
@@ -69,7 +70,7 @@ public class GomessHandler
         ticket.setReceiverUserUUID(Simple.decodeBase64(userUUID));
         ticket.setReceiverDeviceUUID(Simple.decodeBase64(deviceUUID));
 
-        ticket.setAppUUID(RND.randomUUID());
+        ticket.setAppUUID(Simple.decodeBase64(GorillaMapper.mapAPK2UUID(apkname)));
 
         ticket.setPayload(payload.getBytes());
 

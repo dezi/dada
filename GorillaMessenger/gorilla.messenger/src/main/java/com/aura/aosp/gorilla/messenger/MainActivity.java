@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
-        Log.d(LOGTAG, "onCreate: started.");
+        Log.d(LOGTAG, "onCreate: started...");
 
         GorillaClient gc = GorillaClient.getInstance(this);
 
@@ -30,6 +30,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        gc.sendPayload("huhublabla", "hallo");
+        gc.sendPayload("r0Z7g7cnTF6Mi5/NRyU4Yw==", "lfTBPb1qQ9akd3ltWLWxaw==", "tubu");
     }
 }

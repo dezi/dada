@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run()
             {
-                sendMessage();
+                //sendMessage();
             }
         }, 4000);
     }

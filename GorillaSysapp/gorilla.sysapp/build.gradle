@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     defaultConfig {
-        applicationId "com.aura.android.gorilla.sysapp"
+        applicationId "com.aura.aosp.gorilla.sysapp"
         minSdkVersion 23
         targetSdkVersion 25
         versionCode 1
