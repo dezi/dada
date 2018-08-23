@@ -2,11 +2,10 @@ package com.aura.aosp.gorilla.gomess;
 
 import android.content.Intent;
 
-import com.aura.aosp.aura.crypter.RND;
 import com.aura.aosp.aura.simple.Err;
 import com.aura.aosp.aura.simple.Simple;
 import com.aura.aosp.aura.sockets.Connect;
-import com.aura.aosp.aura.univid.Identity;
+import com.aura.aosp.aura.univid.Owner;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 import com.aura.aosp.gorilla.service.GorillaBase;
@@ -62,10 +61,10 @@ public class GomessHandler
 
         GoprotoTicket ticket = new GoprotoTicket();
 
-        ticket.setMessageUUID(RND.randomUUID());
+        ticket.setMessageUUID(Simple.decodeBase64(uuid));
 
-        ticket.setSenderUserUUID(Identity.getUserUUID());
-        ticket.setSenderDeviceUUID(Identity.getDeviceUUID());
+        ticket.setSenderUserUUID(Owner.getUserUUID());
+        ticket.setSenderDeviceUUID(Owner.getDeviceUUID());
 
         ticket.setReceiverUserUUID(Simple.decodeBase64(userUUID));
         ticket.setReceiverDeviceUUID(Simple.decodeBase64(deviceUUID));

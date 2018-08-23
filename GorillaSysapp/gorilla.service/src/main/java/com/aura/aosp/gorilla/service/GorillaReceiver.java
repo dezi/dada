@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.aura.aosp.aura.simple.Err;
+import com.aura.aosp.aura.simple.Log;
 
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
@@ -15,13 +16,30 @@ public class GorillaReceiver extends BroadcastReceiver
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        if ((intent.getAction() == null) || !intent.getAction().equals("com.aura.aosp.gorilla.service.SEND_PAYLOAD"))
+        if (intent.getAction() == null)
         {
-            Err.errp("wrong action.");
+            Err.errp("no action.");
 
             return;
         }
 
+        if (intent.getAction().equals("com.aura.aosp.gorilla.service.SEND_PAYLOAD"))
+        {
+            sendPayload(context, intent);
+            return;
+        }
+
+        if (intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_PAYLOAD"))
+        {
+            recvPayload(context, intent);
+            return;
+        }
+
+        Err.errp("wrong action.");
+    }
+
+    private void sendPayload(Context context, Intent intent)
+    {
         String apkname = intent.getStringExtra("apkname");
 
         if (apkname == null)
@@ -31,10 +49,6 @@ public class GorillaReceiver extends BroadcastReceiver
             return;
         }
 
-        //
-        // Prepare a response broadcast.
-        //
-
         long time = intent.getLongExtra("time", -1);
         String uuid = intent.getStringExtra("uuid");
         String receiver = intent.getStringExtra("receiver");
@@ -43,12 +57,29 @@ public class GorillaReceiver extends BroadcastReceiver
 
         JSONObject result = GomessHandler.getInstance().sendPayload(uuid, time, apkname, receiver, device, payload);
 
+        //
+        // Prepare a response broadcast.
+        //
+
         Intent responseIntent = new Intent("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT");
 
         responseIntent.setPackage(apkname);
         responseIntent.putExtra("result", result.toString());
 
         context.sendBroadcast(responseIntent);
+    }
+
+    private void recvPayload(Context context, Intent intent)
+    {
+        long time = intent.getLongExtra("time", -1);
+        String uuid = intent.getStringExtra("uuid");
+        String sender = intent.getStringExtra("sender");
+        String device = intent.getStringExtra("device");
+        String payload = intent.getStringExtra("payload");
+
+        Log.d("uuid=" + uuid + " time=" + time);
+        Log.d("sender=" + sender + " device=" + device);
+        Log.d("payload=" + payload);
     }
 }
 

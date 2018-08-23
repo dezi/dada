@@ -7,9 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.aura.aosp.aura.crypter.RND;
-import com.aura.aosp.aura.univid.Identity;
+import com.aura.aosp.aura.univid.Owner;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
-import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
 import org.json.JSONObject;
 
@@ -20,12 +19,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
-
         Log.d(LOGTAG, "onCreate: activity started.");
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        super.onCreate(savedInstanceState);
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
         Handler handler = new Handler();
@@ -35,7 +33,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run()
             {
-                //sendMessage();
+                sendMessage();
             }
         }, 4000);
     }
@@ -46,8 +44,8 @@ public class MainActivity extends AppCompatActivity
         String uuid = RND.randomUUIDBase64();
 
         String apkname = getPackageName();
-        String userUUID = Identity.getUserUUIDBase64();
-        String deviceUUID = Identity.getDeviceUUIDBase64();
+        String userUUID = Owner.getUserUUIDBase64();
+        String deviceUUID = Owner.getDeviceUUIDBase64();
         String payload = "Huhu";
 
         JSONObject result = GomessHandler.getInstance().sendPayload(uuid, time, apkname, userUUID, deviceUUID, payload);

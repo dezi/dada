@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import com.aura.aosp.aura.crypter.AES;
 import com.aura.aosp.aura.simple.Err;
 import com.aura.aosp.aura.sockets.Connect;
-import com.aura.aosp.aura.univid.Identity;
+import com.aura.aosp.aura.univid.Owner;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -35,13 +35,13 @@ public class GoprotoSession
 
     public Err aquireIdentity()
     {
-        UserUUID = Identity.getUserUUID();
+        UserUUID = Owner.getUserUUID();
         if (UserUUID == null) return Err.getLastErr();
 
-        DeviceUUID = Identity.getDeviceUUID();
+        DeviceUUID = Owner.getDeviceUUID();
         if (DeviceUUID == null) return Err.getLastErr();
 
-        ClientPrivKey = Identity.getRSAPrivateKey();
+        ClientPrivKey = Owner.getRSAPrivateKey();
         if (ClientPrivKey == null) return Err.getLastErr();
 
         return null;

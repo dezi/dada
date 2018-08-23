@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.service;
 
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 
 import android.app.Application;
