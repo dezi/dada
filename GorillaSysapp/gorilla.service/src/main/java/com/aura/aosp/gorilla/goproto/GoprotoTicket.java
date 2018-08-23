@@ -23,6 +23,16 @@ public class GoprotoTicket
 
     private byte[] Payload;
 
+    public int getIdsmask()
+    {
+        return Idsmask;
+    }
+
+    public void setIdsmask(int idsmask)
+    {
+        this.Idsmask = idsmask;
+    }
+
     public byte[] getMessageUUID()
     {
         return MessageUUID;
@@ -30,7 +40,7 @@ public class GoprotoTicket
 
     public void setMessageUUID(byte[] messageUUID)
     {
-        Idsmask |= GoprotoDefs.HasMessageUUID;
+        this.Idsmask |= GoprotoDefs.HasMessageUUID;
         this.MessageUUID = messageUUID;
     }
 
@@ -41,7 +51,7 @@ public class GoprotoTicket
 
     public void setSenderUserUUID(byte[] senderUserUUID)
     {
-        Idsmask |= GoprotoDefs.HasSenderUserUUID;
+        this.Idsmask |= GoprotoDefs.HasSenderUserUUID;
         this.SenderUserUUID = senderUserUUID;
     }
 
@@ -52,7 +62,7 @@ public class GoprotoTicket
 
     public void setSenderDeviceUUID(byte[] senderDeviceUUID)
     {
-        Idsmask |= GoprotoDefs.HasSenderDeviceUUID;
+        this.Idsmask |= GoprotoDefs.HasSenderDeviceUUID;
         this.SenderDeviceUUID = senderDeviceUUID;
     }
     public byte[] getReceiverUserUUID()
@@ -62,7 +72,7 @@ public class GoprotoTicket
 
     public void setReceiverUserUUID(byte[] receiverUserUUID)
     {
-        Idsmask |= GoprotoDefs.HasReceiverUserUUID;
+        this.Idsmask |= GoprotoDefs.HasReceiverUserUUID;
         this.ReceiverUserUUID = receiverUserUUID;
     }
 
@@ -73,7 +83,7 @@ public class GoprotoTicket
 
     public void setReceiverDeviceUUID(byte[] receiverDeviceUUID)
     {
-        Idsmask |= GoprotoDefs.HasReceiverDeviceUUID;
+        this.Idsmask |= GoprotoDefs.HasReceiverDeviceUUID;
         this.ReceiverDeviceUUID = receiverDeviceUUID;
     }
 
@@ -84,7 +94,7 @@ public class GoprotoTicket
 
     public void setAppUUID(byte[] appUUID)
     {
-        Idsmask |= GoprotoDefs.HasAppUUID;
+        this.Idsmask |= GoprotoDefs.HasAppUUID;
         this.AppUUID = appUUID;
     }
 
@@ -103,10 +113,6 @@ public class GoprotoTicket
         int usiz = GoprotoDefs.GorillaUUIDSize;
 
         int size = 0;
-
-        //
-        // Variable fields.
-        //
 
         if ((Idsmask & GoprotoDefs.HasMessageUUID) != 0)
         {
@@ -143,11 +149,9 @@ public class GoprotoTicket
 
     public int getTicketSize()
     {
-        //
-        // Idsmask itself.
-        //
+        int size = 0;
 
-        int size = 2;
+        size += 2;
 
         size += getRoutingSize();
 
