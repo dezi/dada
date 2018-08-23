@@ -2,6 +2,7 @@ package com.aura.aosp.gorilla.goproto;
 
 import android.support.annotation.NonNull;
 
+import com.aura.aosp.aura.crypter.AES;
 import com.aura.aosp.aura.simple.Err;
 import com.aura.aosp.aura.simple.Log;
 import com.aura.aosp.aura.simple.Simple;
@@ -116,31 +117,37 @@ public class GoprotoTicket
 
         if ((Idsmask & GoprotoDefs.HasMessageUUID) != 0)
         {
+            Log.d("HasMessageUUID");
             size += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasReceiverUserUUID) != 0)
         {
+            Log.d("HasReceiverUserUUID");
             size += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasReceiverDeviceUUID) != 0)
         {
+            Log.d("HasReceiverDeviceUUID");
             size += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasSenderUserUUID) != 0)
         {
+            Log.d("HasSenderUserUUID");
             size += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasSenderDeviceUUID) != 0)
         {
+            Log.d("HasSenderDeviceUUID");
             size += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasAppUUID) != 0)
         {
+            Log.d("HasAppUUID");
             size += usiz;
         }
 
@@ -161,6 +168,80 @@ public class GoprotoTicket
         }
 
         return size;
+    }
+
+    public Err unMarshallCrypted(AES.Block aesblock, byte[] bytes)
+    {
+        if (bytes == null) return Err.errp();
+
+        int csize = getRoutingSize() + AES.AESBlockSize;
+
+        if (bytes.length < csize)
+        {
+            return Err.errp("wrong size=%d fail!", bytes.length);
+        }
+
+        Log.d("bytes=%d csize=%d", bytes.length, csize);
+
+        byte[] crypt = new byte[ csize ];
+        System.arraycopy(bytes,0, crypt, 0, crypt.length);
+
+        byte[] plain = AES.decryptAESBlock(aesblock, crypt);
+        if (plain == null) return Err.getLastErr();
+
+        Err err = unmarshallRouting(plain);
+        if (err != null) return err;
+
+        setPayload(Simple.sliceBytes(bytes, csize));
+
+        return null;
+    }
+
+    public byte[] marshallRouting(AES.Block aesblock)
+    {
+        int usiz = GoprotoDefs.GorillaUUIDSize;
+
+        byte[] bytes = new byte[ getRoutingSize() ];
+
+        int offset = 0;
+
+        if ((Idsmask & GoprotoDefs.HasMessageUUID) != 0)
+        {
+            System.arraycopy(MessageUUID,0, bytes, offset, usiz);
+            offset += usiz;
+        }
+
+        if ((Idsmask & GoprotoDefs.HasReceiverUserUUID) != 0)
+        {
+            System.arraycopy(ReceiverUserUUID,0, bytes, offset, usiz);
+            offset += usiz;
+        }
+
+        if ((Idsmask & GoprotoDefs.HasReceiverDeviceUUID) != 0)
+        {
+            System.arraycopy(ReceiverDeviceUUID,0, bytes, offset, usiz);
+            offset += usiz;
+        }
+
+        if ((Idsmask & GoprotoDefs.HasSenderUserUUID) != 0)
+        {
+            System.arraycopy(SenderUserUUID,0, bytes, offset, usiz);
+            offset += usiz;
+        }
+
+        if ((Idsmask & GoprotoDefs.HasSenderDeviceUUID) != 0)
+        {
+            System.arraycopy(SenderDeviceUUID,0, bytes, offset, usiz);
+            offset += usiz;
+        }
+
+        if ((Idsmask & GoprotoDefs.HasAppUUID) != 0)
+        {
+            System.arraycopy(AppUUID,0, bytes, offset, usiz);
+            //offset += usiz;
+        }
+
+        return AES.encryptAESBlock(aesblock, bytes);
     }
 
     @NonNull
@@ -241,48 +322,102 @@ public class GoprotoTicket
 
         if ((Idsmask & GoprotoDefs.HasMessageUUID) != 0)
         {
-            MessageUUID = Simple.sliceBytes(bytes, offset, usiz);
+            MessageUUID = Simple.sliceBytes(bytes, offset, offset+usiz);
             offset += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasReceiverUserUUID) != 0)
         {
-            ReceiverUserUUID = Simple.sliceBytes(bytes, offset, usiz);
+            ReceiverUserUUID = Simple.sliceBytes(bytes, offset, offset+usiz);
             offset += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasReceiverDeviceUUID) != 0)
         {
-            ReceiverDeviceUUID = Simple.sliceBytes(bytes, offset, usiz);
+            ReceiverDeviceUUID = Simple.sliceBytes(bytes, offset, offset+usiz);
             offset += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasSenderUserUUID) != 0)
         {
-            SenderUserUUID = Simple.sliceBytes(bytes, offset, usiz);
+            SenderUserUUID = Simple.sliceBytes(bytes, offset, offset+usiz);
             offset += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasSenderDeviceUUID) != 0)
         {
-            SenderDeviceUUID = Simple.sliceBytes(bytes, offset, usiz);
+            SenderDeviceUUID = Simple.sliceBytes(bytes, offset, offset+usiz);
             offset += usiz;
         }
 
         if ((Idsmask & GoprotoDefs.HasAppUUID) != 0)
         {
-            AppUUID = Simple.sliceBytes(bytes, offset, usiz);
+            AppUUID = Simple.sliceBytes(bytes, offset, offset+usiz);
             offset += usiz;
         }
 
-        Payload = Simple.sliceBytes(bytes, offset,bytes.length - offset);
+        Payload = Simple.sliceBytes(bytes, offset);
+
+        return null;
+    }
+
+    public Err unmarshallRouting(byte[] bytes)
+    {
+        int usiz = GoprotoDefs.GorillaUUIDSize;
+
+        if (bytes == null) return Err.errp();
+
+        if (getRoutingSize() < bytes.length)
+        {
+            return Err.errp("wrong size=%d", bytes.length);
+        }
+
+        int offset = 0;
+
+        if ((Idsmask & GoprotoDefs.HasMessageUUID) != 0)
+        {
+            MessageUUID = Simple.sliceBytes(bytes, offset, offset+usiz);
+            offset += usiz;
+        }
+
+        if ((Idsmask & GoprotoDefs.HasReceiverUserUUID) != 0)
+        {
+            ReceiverUserUUID = Simple.sliceBytes(bytes, offset, offset+usiz);
+            offset += usiz;
+        }
+
+        if ((Idsmask & GoprotoDefs.HasReceiverDeviceUUID) != 0)
+        {
+            ReceiverDeviceUUID = Simple.sliceBytes(bytes, offset, offset+usiz);
+            offset += usiz;
+        }
+
+        if ((Idsmask & GoprotoDefs.HasSenderUserUUID) != 0)
+        {
+            SenderUserUUID = Simple.sliceBytes(bytes, offset, offset+usiz);
+            offset += usiz;
+        }
+
+        if ((Idsmask & GoprotoDefs.HasSenderDeviceUUID) != 0)
+        {
+            SenderDeviceUUID = Simple.sliceBytes(bytes, offset, offset+usiz);
+            offset += usiz;
+        }
+
+        if ((Idsmask & GoprotoDefs.HasAppUUID) != 0)
+        {
+            AppUUID = Simple.sliceBytes(bytes, offset, offset+usiz);
+            offset += usiz;
+        }
+
+        Payload = Simple.sliceBytes(bytes, offset);
 
         return null;
     }
 
     public void dumpTicket()
     {
-        Log.d("Idsmask=%d", Idsmask);
+        Log.d("Idsmask=%04x", Idsmask);
 
         Log.d("MessageUUID=%s", Simple.getHexBytesToString(MessageUUID));
         Log.d("SenderUserUUID=%s", Simple.getHexBytesToString(SenderUserUUID));

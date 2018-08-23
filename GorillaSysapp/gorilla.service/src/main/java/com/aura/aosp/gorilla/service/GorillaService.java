@@ -34,7 +34,8 @@ public class GorillaService extends Service
     {
         Log.d("...");
 
-        return START_STICKY;
+        //return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override

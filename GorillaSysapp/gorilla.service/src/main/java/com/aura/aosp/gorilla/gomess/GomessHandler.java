@@ -40,7 +40,7 @@ public class GomessHandler
 
     private final Thread workerThread;
 
-    public JSONObject sendPayloadTest(String uuid, long time, String apkname, String userUUID, String deviceUUID, String payload)
+    public JSONObject sendPayload(String uuid, long time, String apkname, String userUUID, String deviceUUID, String payload)
     {
         Log.d("uuid=" + uuid + " time=" + time);
         Log.d("user=" + userUUID + " dev=" + deviceUUID);
@@ -56,6 +56,9 @@ public class GomessHandler
             return result;
         }
 
+        Json.put(result, "uuid", uuid);
+        Json.put(result, "time", time);
+
         GoprotoTicket ticket = new GoprotoTicket();
 
         ticket.setMessageUUID(RND.randomUUID());
@@ -70,20 +73,30 @@ public class GomessHandler
 
         ticket.setPayload(payload.getBytes());
 
-        client.sendMessageUpload(ticket);
+        Err err = client.sendMessageUpload(ticket);
 
-        Json.put(result, "status", "success");
+        if (err != null)
+        {
+            Json.put(result, "error", err.err);
+            Json.put(result, "status", "error");
+
+            return result;
+        }
+
+        Json.put(result, "status", "send");
 
         return result;
     }
 
-    public JSONObject sendPayload(String uuid, long time, String apkname, String receiver, String payload)
+    public JSONObject sendPayloadOld(String uuid, long time, String apkname, String userUUID, String deviceUUID, String payload)
     {
-        Log.d("uuid=" + uuid + " time=" + time + " apkname=" + apkname + " receiver=" + receiver + " payload=" + payload);
+        Log.d("uuid=" + uuid + " time=" + time);
+        Log.d("user=" + userUUID + " dev=" + deviceUUID);
+        Log.d("apkname=" + apkname + " payload=" + payload);
 
         JSONObject result = new JSONObject();
 
-        if ((uuid == null) || (apkname == null) || (receiver == null) || (payload == null) || (time <= 0))
+        if ((uuid == null) || (apkname == null) || (userUUID == null) || (payload == null) || (time <= 0))
         {
             Json.put(result, "error", "Request parameters missing");
             Json.put(result, "status", "error");
@@ -99,7 +112,8 @@ public class GomessHandler
             echoIntent.setPackage(apkname);
             echoIntent.putExtra("uuid", uuid);
             echoIntent.putExtra("time", time);
-            echoIntent.putExtra("sender", receiver);
+            echoIntent.putExtra("sender", userUUID);
+            echoIntent.putExtra("device", deviceUUID);
             echoIntent.putExtra("payload", payload);
 
             GorillaBase.getAppContext().sendBroadcast(echoIntent);

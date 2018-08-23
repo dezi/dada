@@ -10,7 +10,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class AES
 {
-    private final static int AESBlockSize = 16;
+    public final static int AESBlockSize = 16;
 
     private static boolean dryrunAES = false;
 

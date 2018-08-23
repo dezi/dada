@@ -200,22 +200,7 @@ public class GomessClient
     {
         ticket.dumpTicket();
 
-        //
-        // Build AES encoded message routing information.
-        //
-
-        int idsMask = GoprotoDefs.HasMessageUUID
-                | GoprotoDefs.HasReceiverUserUUID
-                | GoprotoDefs.HasReceiverDeviceUUID
-                | GoprotoDefs.HasAppUUID;
-
-        byte[] routingPlain = Simple.concatBuffers(
-                ticket.getMessageUUID(),
-                ticket.getReceiverUserUUID(),
-                ticket.getReceiverDeviceUUID(),
-                ticket.getAppUUID());
-
-        byte[] routingCrypt = AES.encryptAESBlock(session.getAESBlock(), routingPlain);
+        byte[] routingCrypt = ticket.marshallRouting(session.getAESBlock());
         if (routingCrypt == null) return Err.getLastErr();
 
         //
@@ -224,15 +209,12 @@ public class GomessClient
 
         int llen = routingCrypt.length + ticket.getPayload().length;
 
-        byte[] head = new GoprotoMessage(GoprotoDefs.MsgMessageUpload, idsMask + GoprotoDefs.HasSHASignature, 0, llen).marshall();
-
-        Log.d("head=%s", Simple.getHexBytesToString(head));
+        byte[] head = new GoprotoMessage(GoprotoDefs.MsgMessageUpload, ticket.getIdsmask() | GoprotoDefs.HasSHASignature, 0, llen).marshall();
 
         byte[] sign = SHA.createSHASignature(session.AESKey, head, routingCrypt, ticket.getPayload());
         if (sign == null) return Err.getLastErr();
 
         byte[] packet = Simple.concatBuffers(head, sign, routingCrypt, ticket.getPayload());
-
         return session.writeSession(packet);
     }
 
@@ -341,8 +323,22 @@ public class GomessClient
     {
         Log.d("...");
 
+        Err err = SHA.verifySHASignature(session.AESKey, message.Sign, message.Head, message.Base);
+        if (err != null) return err;
+
+        Log.d("received message!");
+
         Log.d("head=%s", Simple.getHexBytesToString(message.Head));
 
+        GoprotoTicket ticket = new GoprotoTicket();
+        ticket.setIdsmask(message.Idsmask);
+
+        err = ticket.unMarshallCrypted(session.AESBlock, message.Base);
+        if (err != null) return err;
+
+        ticket.dumpTicket();
+
+        Log.d("payload=%s", new String(ticket.getPayload()));
 
         return null;
     }

@@ -35,12 +35,13 @@ public class GorillaReceiver extends BroadcastReceiver
         // Prepare a response broadcast.
         //
 
-        String uuid = intent.getStringExtra("uuid");
         long time = intent.getLongExtra("time", -1);
+        String uuid = intent.getStringExtra("uuid");
         String receiver = intent.getStringExtra("receiver");
+        String device = intent.getStringExtra("device");
         String payload = intent.getStringExtra("payload");
 
-        JSONObject result = GomessHandler.getInstance().sendPayload(uuid, time, apkname, receiver, payload);
+        JSONObject result = GomessHandler.getInstance().sendPayload(uuid, time, apkname, receiver, device, payload);
 
         Intent responseIntent = new Intent("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT");
 

@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity
         String deviceUUID = Identity.getDeviceUUIDBase64();
         String payload = "Huhu";
 
-        JSONObject result = GomessHandler.getInstance().sendPayloadTest(uuid, time, apkname, userUUID, deviceUUID, payload);
+        JSONObject result = GomessHandler.getInstance().sendPayload(uuid, time, apkname, userUUID, deviceUUID, payload);
         Log.d(LOGTAG, "sendPayloadTest: result=" + result.toString());
     }
 }
