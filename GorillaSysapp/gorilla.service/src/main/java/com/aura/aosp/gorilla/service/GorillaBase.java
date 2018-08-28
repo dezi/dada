@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Handler;
 
 import com.aura.aosp.aura.simple.Log;
+import com.aura.aosp.aura.simple.Simple;
 
 public class GorillaBase extends Application
 {
@@ -34,15 +35,15 @@ public class GorillaBase extends Application
 
         super.onCreate();
 
+        Simple.initialize(this);
+
         //
         // Required for testing with Android Studio
         // because onBootCompleted is never issued
         // in this case.
         //
 
-        Handler handler = new Handler();
-
-        handler.post(new Runnable()
+        Simple.getHandler().post(new Runnable()
         {
             @Override
             public void run()

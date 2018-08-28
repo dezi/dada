@@ -8,7 +8,7 @@ import android.util.Log;
 import com.aura.aosp.aura.simple.Simple;
 import com.aura.aosp.gui.skills.GUICanFocusDelegate;
 
-public class GUIListView extends  GUILinearLayout
+public class GUIListView extends GUILinearLayout
 {
     private final static String LOGTAG = GUIListView.class.getSimpleName();
 
@@ -58,7 +58,7 @@ public class GUIListView extends  GUILinearLayout
 
             if (child instanceof GUIListEntry)
             {
-                if (! ((GUIListEntry) child).isinuse)
+                if (!((GUIListEntry) child).isinuse)
                 {
                     removeView(child);
                     inx--;
@@ -108,11 +108,10 @@ public class GUIListView extends  GUILinearLayout
         @Override
         public void onFocusChange(View view, boolean hasFocus)
         {
-                if (view instanceof GUIListEntry)
-                {
-                    onSelectionChanged((GUIListEntry) view, hasFocus);
-                }
-
+            if (view instanceof GUIListEntry)
+            {
+                onSelectionChanged((GUIListEntry) view, hasFocus);
+            }
         }
     };
 

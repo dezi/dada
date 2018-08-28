@@ -1,30 +1,39 @@
 package com.aura.aosp.gorilla.sysapp;
 
-import android.os.Handler;
-import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.aura.android.gorilla.R;
 import com.aura.aosp.aura.crypter.RND;
 import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.univid.Contacts;
+import com.aura.aosp.aura.univid.Identity;
 import com.aura.aosp.aura.univid.Owner;
-import com.aura.aosp.gorilla.gomess.GomessHandler;
+
+import com.aura.aosp.gui.base.GUIDefs;
+import com.aura.aosp.gui.base.GUIPrefs;
+import com.aura.aosp.gui.views.GUIButtonView;
 import com.aura.aosp.gui.views.GUIFrameLayout;
 import com.aura.aosp.gui.views.GUILinearLayout;
+import com.aura.aosp.gui.views.GUIListEntry;
+import com.aura.aosp.gui.views.GUIListView;
 import com.aura.aosp.gui.views.GUITextView;
 
+import com.aura.aosp.gorilla.gomess.GomessHandler;
+import com.aura.aosp.gorilla.R;
+
 import org.json.JSONObject;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
 {
     private static final String LOGTAG = MainActivity.class.getSimpleName();
+
+    private GUITextView identview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,16 +70,91 @@ public class MainActivity extends AppCompatActivity
         GUILinearLayout centerFrame = new GUILinearLayout(this);
         centerFrame.setOrientation(LinearLayout.VERTICAL);
         centerFrame.setGravity(Gravity.CENTER_HORIZONTAL);
-        centerFrame.setBackgroundColor(0x88880000);
 
         topFrame.addView(centerFrame);
 
         GUITextView titleView = new GUITextView(this);
-        titleView.setSizeDip(Simple.WC, Simple.WC);
         titleView.setText(R.string.select_identity);
-        titleView.setTextSizeDip(60);
-        titleView.setBackgroundColor(0x88008800);
+        titleView.setSizeDip(Simple.WC, Simple.WC);
+        titleView.setPaddingDip(GUIDefs.PADDING_NORMAL);
+        titleView.setTextSizeDip(32);
 
         centerFrame.addView(titleView);
+
+        GUIListView identitiesView = new GUIListView(this);
+        identitiesView.setSizeDip(Simple.WC, Simple.MP, 1.0f);
+        identitiesView.setBackgroundColor(0x88888888);
+
+        centerFrame.addView(identitiesView);
+
+        String myUserUUID = GUIPrefs.readPrefString("userUUID");
+
+        List<Identity> contacts = Contacts.getAllContacts();
+
+        for (Identity identity : contacts)
+        {
+            String nick = identity.getNick();
+            String info = identity.getUserUUIDBase64();
+
+            GUIListEntry entry = identitiesView.findGUIListEntryOrCreate(identity.getUserUUIDBase64());
+
+            entry.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View view)
+                {
+                    Identity identity = (Identity) view.getTag();
+                    identview.setText(identity.getNick());
+
+                    GUIPrefs.savePrefString("userUUID", identity.getUserUUIDBase64());
+                }
+            });
+
+            entry.setTag(identity);
+
+            entry.iconView.setImageResource(R.drawable.human_260);
+            entry.headerViev.setText(nick);
+            entry.infoView.setText(info);
+        }
+
+        identview = new GUITextView(this);
+        identview.setSizeDip(Simple.WC, Simple.WC);
+        identview.setPaddingDip(GUIDefs.PADDING_NORMAL);
+        identview.setTextSizeDip(48);
+
+        if (myUserUUID != null)
+        {
+            for (Identity identity : contacts)
+            {
+                if (identity.getUserUUIDBase64().equals(myUserUUID))
+                {
+                    identview.setText(identity.getNick());
+                }
+            }
+        }
+
+        centerFrame.addView(identview);
+
+        GUIButtonView doneButton = new GUIButtonView(this);
+
+        doneButton.setRoundedCorners(GUIDefs.ROUNDED_NORMAL, GUIDefs.COLOR_LIGHT_GRAY);
+        doneButton.setText(R.string.done_button);
+        doneButton.setSizeDip(Simple.WC, Simple.WC);
+        doneButton.setMarginBottomDip(GUIDefs.PADDING_NORMAL);
+
+        doneButton.setPaddingDip(
+                GUIDefs.PADDING_XLARGE, GUIDefs.PADDING_NORMAL,
+                GUIDefs.PADDING_XLARGE, GUIDefs.PADDING_NORMAL);
+
+        doneButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                MainActivity.this.finish();
+            }
+        });
+
+        centerFrame.addView(doneButton);
     }
 }

@@ -21,7 +21,7 @@ public class Contacts
         contacts.add(createContact("patrick",   "DE","Au+LSTjkTLyp1B9gDNJLmg==", "dHCFAHZ+TKik1DzFVFOAiQ=="));
         contacts.add(createContact("malte",     "DE","suHhYFrMTdC2+HcU8G6mMQ==", "x4MP2kuSQk6CK5vZgyzXfA=="));
         contacts.add(createContact("matthias",  "DE","KTnJt4OoQFeH//++sSGF+w==", "fSaNQ5XySVeTGWnXb7kAGQ=="));
-        contacts.add(createContact("mrhoi",     "DE","PGuS7XsrR1a+HMNCkosPJQ==", "5J1oeaPYRMeygtMvu6TxVw=="));
+        contacts.add(createContact("mr.hoi",    "DE","PGuS7XsrR1a+HMNCkosPJQ==", "5J1oeaPYRMeygtMvu6TxVw=="));
 
         // @formatter:on
 
@@ -31,5 +31,10 @@ public class Contacts
     private static Identity createContact(String nick, String country, String user, String device)
     {
         return new Identity(nick, country, user, device, Fakekey.fakeRSAPublicKey, Fakekey.fakeRSAPrivateKey);
+    }
+
+    public static List<Identity> getAllContacts()
+    {
+        return contacts;
     }
 }

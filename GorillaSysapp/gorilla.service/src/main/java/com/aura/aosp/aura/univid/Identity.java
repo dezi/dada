@@ -1,5 +1,6 @@
 package com.aura.aosp.aura.univid;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.crypter.RSA;
@@ -38,36 +39,37 @@ public class Identity
                 Simple.decodeBase64(privKey));
     }
 
-    @Nullable
+    @NonNull
     public String getNick()
     {
         return nick;
     }
 
-    @Nullable
+    @NonNull
     public byte[] getUserUUID()
     {
         return userUUID;
     }
 
-    @Nullable
+    @NonNull
     public String getUserUUIDBase64()
     {
         return Simple.encodeBase64(userUUID);
     }
 
-    @Nullable
+    @NonNull
     public byte[] getDeviceUUID()
     {
         return deviceUUID;
     }
 
+    @NonNull
     public String getDeviceUUIDBase64()
     {
         return Simple.encodeBase64(deviceUUID);
     }
 
-    @Nullable
+    @NonNull
     public RSAPublicKey getRSAPublicKey()
     {
         try
@@ -81,7 +83,7 @@ public class Identity
         }
     }
 
-    @Nullable
+    @NonNull
     public RSAPrivateKey getRSAPrivateKey()
     {
         try
