@@ -7,11 +7,11 @@ import android.view.View;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.aura.aosp.aura.crypter.RND;
+import com.aura.aosp.aura.common.crypter.RND;
 import com.aura.aosp.aura.common.simple.Simple;
-import com.aura.aosp.aura.univid.Contacts;
-import com.aura.aosp.aura.univid.Identity;
-import com.aura.aosp.aura.univid.Owner;
+import com.aura.aosp.aura.common.univid.Contacts;
+import com.aura.aosp.aura.common.univid.Identity;
+import com.aura.aosp.aura.common.univid.Owner;
 
 import com.aura.aosp.gui.base.GUIDefs;
 import com.aura.aosp.gui.views.GUIButtonView;

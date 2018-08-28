@@ -2,11 +2,11 @@ package com.aura.aosp.gorilla.gomess;
 
 import android.support.annotation.Nullable;
 
-import com.aura.aosp.aura.crypter.AES;
-import com.aura.aosp.aura.crypter.GZP;
-import com.aura.aosp.aura.crypter.RND;
-import com.aura.aosp.aura.crypter.RSA;
-import com.aura.aosp.aura.crypter.SHA;
+import com.aura.aosp.aura.common.crypter.AES;
+import com.aura.aosp.aura.common.crypter.GZP;
+import com.aura.aosp.aura.common.crypter.RND;
+import com.aura.aosp.aura.common.crypter.RSA;
+import com.aura.aosp.aura.common.crypter.SHA;
 
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Simple;

@@ -6,7 +6,7 @@ import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
-import com.aura.aosp.aura.utility.Regions;
+import com.aura.aosp.aura.common.utility.Regions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

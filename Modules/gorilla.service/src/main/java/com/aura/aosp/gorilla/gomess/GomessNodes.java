@@ -2,14 +2,14 @@ package com.aura.aosp.gorilla.gomess;
 
 import android.support.annotation.Nullable;
 
-import com.aura.aosp.aura.crypter.RND;
+import com.aura.aosp.aura.common.crypter.RND;
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
-import com.aura.aosp.aura.sockets.Connect;
-import com.aura.aosp.aura.univid.Identity;
-import com.aura.aosp.aura.univid.Owner;
+import com.aura.aosp.aura.common.sockets.Connect;
+import com.aura.aosp.aura.common.univid.Identity;
+import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
 import com.aura.aosp.gorilla.gorilla.PublicNode;
 import com.aura.aosp.gorilla.gorilla.PublicNodes;
