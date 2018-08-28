@@ -47,23 +47,6 @@ public class MainActivity extends AppCompatActivity
         //sendMessage();
     }
 
-    private void sendMessage()
-    {
-        Identity owner = Owner.getOwnerIdentity();
-        if (owner == null) return;
-
-        long time = System.currentTimeMillis();
-        String uuid = RND.randomUUIDBase64();
-
-        String apkname = getPackageName();
-        String userUUID = owner.getUserUUIDBase64();
-        String deviceUUID = owner.getDeviceUUIDBase64();
-        String payload = "Huhu";
-
-        JSONObject result = GomessHandler.getInstance().sendPayload(uuid, time, apkname, userUUID, deviceUUID, payload);
-        Log.d(LOGTAG, "sendPayloadTest: result=" + result.toString());
-    }
-
     private void createLayout()
     {
         GUIFrameLayout topFrame = new GUIFrameLayout(this);
@@ -166,5 +149,22 @@ public class MainActivity extends AppCompatActivity
         });
 
         centerFrame.addView(doneButton);
+    }
+
+    private void sendMessage()
+    {
+        Identity owner = Owner.getOwnerIdentity();
+        if (owner == null) return;
+
+        long time = System.currentTimeMillis();
+        String uuid = RND.randomUUIDBase64();
+
+        String apkname = getPackageName();
+        String userUUID = owner.getUserUUIDBase64();
+        String deviceUUID = owner.getDeviceUUIDBase64();
+        String payload = "Huhu";
+
+        JSONObject result = GomessHandler.getInstance().sendPayload(uuid, time, apkname, userUUID, deviceUUID, payload);
+        Log.d(LOGTAG, "sendPayloadTest: result=" + result.toString());
     }
 }
