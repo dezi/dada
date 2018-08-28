@@ -188,7 +188,7 @@ public class GomessHandler
 
                 JSONObject result = new JSONObject();
                 Json.put(result, "uuid", ticket.getMessageUUIDBase64());
-                Json.put(result, "status", "send");
+                Json.put(result, "status", "sendxx");
 
                 if (err != null)
                 {

@@ -1,1 +1,2 @@
-include ':gorilla.messenger', ':gorilla.client'
+include ':gorilla.client'
+include ':gorilla.messenger'

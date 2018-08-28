@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
-        Log.d(LOGTAG, "onCreate: started....");
+        Log.d(LOGTAG, "onCreate: started.....");
 
         GorillaClient gc = GorillaClient.getInstance(this);
 
