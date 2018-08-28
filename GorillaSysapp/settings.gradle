@@ -1,1 +1,3 @@
-include ':gorilla.sysapp', ':gorilla.service', ':aura.common'
+include ':aura.common'
+include ':gorilla.service'
+include ':gorilla.sysapp'
