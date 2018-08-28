@@ -4,8 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.aura.aosp.aura.simple.Err;
-import com.aura.aosp.aura.simple.Log;
+import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Log;
 
 public class GorillaBoot extends BroadcastReceiver
 {

@@ -3,12 +3,7 @@ package com.aura.aosp.aura.univid;
 import android.annotation.SuppressLint;
 import android.support.annotation.Nullable;
 
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-
-import com.aura.aosp.aura.crypter.RSA;
-import com.aura.aosp.aura.simple.Err;
-import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.common.simple.Simple;
 
 public class Owner
 {

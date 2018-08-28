@@ -3,7 +3,7 @@ package com.aura.aosp.gorilla.goproto;
 import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.crypter.AES;
-import com.aura.aosp.aura.simple.Err;
+import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.sockets.Connect;
 import com.aura.aosp.aura.univid.Identity;
 import com.aura.aosp.aura.univid.Owner;

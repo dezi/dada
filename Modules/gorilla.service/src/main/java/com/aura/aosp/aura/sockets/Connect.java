@@ -7,8 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 
-import com.aura.aosp.aura.simple.Err;
-import com.aura.aosp.aura.simple.Log;
+import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Log;
 
 public class Connect
 {
@@ -125,7 +125,7 @@ public class Connect
         {
             try
             {
-                com.aura.aosp.aura.simple.Log.d("size=%d", buffer.length);
+                Log.d("size=%d", buffer.length);
 
                 output.write(buffer);
 

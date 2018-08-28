@@ -7,7 +7,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.util.Log;
 
-import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.gui.base.GUIDefs;
 import com.aura.aosp.gui.views.GUIEditText;
 

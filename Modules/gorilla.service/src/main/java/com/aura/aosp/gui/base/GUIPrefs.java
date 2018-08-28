@@ -2,9 +2,9 @@ package com.aura.aosp.gui.base;
 
 import android.annotation.SuppressLint;
 
-import com.aura.aosp.aura.simple.Simple;
-import com.aura.aosp.aura.simple.Json;
-import com.aura.aosp.aura.simple.Log;
+import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.aura.common.simple.Json;
+import com.aura.aosp.aura.common.simple.Log;
 
 import org.json.JSONObject;
 

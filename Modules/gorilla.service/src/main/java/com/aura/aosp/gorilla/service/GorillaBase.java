@@ -1,14 +1,12 @@
 package com.aura.aosp.gorilla.service;
 
-import android.os.StrictMode;
 import android.support.annotation.NonNull;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.Handler;
 
-import com.aura.aosp.aura.simple.Log;
-import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.common.simple.Log;
+import com.aura.aosp.aura.common.simple.Simple;
 
 public class GorillaBase extends Application
 {

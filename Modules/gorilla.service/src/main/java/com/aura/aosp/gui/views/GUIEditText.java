@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.view.KeyEvent;
 import android.view.View;
 
-import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.gui.skills.GUICanDip;
 import com.aura.aosp.gui.skills.GUICanFocus;
 import com.aura.aosp.gui.skills.GUICanFocusDelegate;

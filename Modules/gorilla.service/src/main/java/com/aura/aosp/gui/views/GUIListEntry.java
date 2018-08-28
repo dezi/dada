@@ -6,7 +6,7 @@ import android.view.Gravity;
 import android.view.View;
 
 import com.aura.aosp.gui.base.GUIDefs;
-import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.common.simple.Simple;
 
 public class GUIListEntry extends GUILinearLayout
 {

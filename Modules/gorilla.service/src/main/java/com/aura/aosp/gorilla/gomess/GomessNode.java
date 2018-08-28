@@ -1,14 +1,9 @@
 package com.aura.aosp.gorilla.gomess;
 
-import android.support.annotation.Nullable;
+import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Json;
 
-import com.aura.aosp.aura.simple.Err;
-import com.aura.aosp.aura.simple.Json;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 public class GomessNode
 {

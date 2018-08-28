@@ -3,7 +3,7 @@ package com.aura.aosp.aura.univid;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.aura.aosp.aura.simple.Err;
+import com.aura.aosp.aura.common.simple.Err;
 
 import java.util.ArrayList;
 import java.util.List;

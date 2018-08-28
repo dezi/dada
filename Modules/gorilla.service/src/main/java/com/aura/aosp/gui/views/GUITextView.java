@@ -18,7 +18,7 @@ import com.aura.aosp.gui.skills.GUICanRestoreBackgroundDelegate;
 import com.aura.aosp.gui.skills.GUICanRoundedCorners;
 import com.aura.aosp.gui.skills.GUICanRoundedCornersDelegate;
 import com.aura.aosp.gui.skills.GUICanToast;
-import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.common.simple.Simple;
 
 //
 // adb shell setprop log.tag.TextView WARN

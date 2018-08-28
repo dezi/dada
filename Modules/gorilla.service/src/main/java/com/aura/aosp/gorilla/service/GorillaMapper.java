@@ -1,6 +1,6 @@
 package com.aura.aosp.gorilla.service;
 
-import com.aura.aosp.aura.simple.Err;
+import com.aura.aosp.aura.common.simple.Err;
 
 public class GorillaMapper
 {

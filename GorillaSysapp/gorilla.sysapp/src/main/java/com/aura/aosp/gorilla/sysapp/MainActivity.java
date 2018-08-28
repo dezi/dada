@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.aura.aosp.aura.crypter.RND;
-import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.univid.Contacts;
 import com.aura.aosp.aura.univid.Identity;
 import com.aura.aosp.aura.univid.Owner;

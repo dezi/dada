@@ -7,7 +7,7 @@ import android.os.IBinder;
 
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
-import com.aura.aosp.aura.simple.Log;
+import com.aura.aosp.aura.common.simple.Log;
 
 public class GorillaService extends Service
 {

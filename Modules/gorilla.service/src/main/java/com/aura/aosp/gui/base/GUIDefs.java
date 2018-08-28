@@ -2,7 +2,7 @@ package com.aura.aosp.gui.base;
 
 import android.graphics.Color;
 
-import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.common.simple.Simple;
 
 public class GUIDefs
 {

@@ -2,7 +2,7 @@ package com.aura.aosp.aura.crypter;
 
 import android.support.annotation.Nullable;
 
-import com.aura.aosp.aura.simple.Err;
+import com.aura.aosp.aura.common.simple.Err;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;

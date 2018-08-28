@@ -2,7 +2,7 @@ package com.aura.aosp.gorilla.goproto;
 
 import android.support.annotation.NonNull;
 
-import com.aura.aosp.aura.simple.Err;
+import com.aura.aosp.aura.common.simple.Err;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class GoprotoMessage

@@ -3,7 +3,7 @@ package com.aura.aosp.gui.skills;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 
-import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.common.simple.Simple;
 
 public class GUICanRoundedCornersDelegate implements GUICanRoundedCorners
 {

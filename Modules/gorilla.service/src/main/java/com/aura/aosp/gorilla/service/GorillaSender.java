@@ -2,9 +2,9 @@ package com.aura.aosp.gorilla.service;
 
 import android.content.Intent;
 
-import com.aura.aosp.aura.simple.Err;
-import com.aura.aosp.aura.simple.Log;
-import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Log;
+import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
 import org.json.JSONObject;

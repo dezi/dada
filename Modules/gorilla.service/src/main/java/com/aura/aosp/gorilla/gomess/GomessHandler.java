@@ -1,18 +1,15 @@
 package com.aura.aosp.gorilla.gomess;
 
-import android.content.Intent;
-
-import com.aura.aosp.aura.simple.Err;
-import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.sockets.Connect;
 import com.aura.aosp.aura.univid.Identity;
 import com.aura.aosp.aura.univid.Owner;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
-import com.aura.aosp.gorilla.service.GorillaBase;
 
-import com.aura.aosp.aura.simple.Json;
-import com.aura.aosp.aura.simple.Log;
+import com.aura.aosp.aura.common.simple.Json;
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.service.GorillaMapper;
 import com.aura.aosp.gorilla.service.GorillaSender;
 
@@ -20,7 +17,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class GomessHandler

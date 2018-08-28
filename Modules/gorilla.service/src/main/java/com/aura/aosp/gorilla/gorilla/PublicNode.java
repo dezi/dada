@@ -1,7 +1,7 @@
 package com.aura.aosp.gorilla.gorilla;
 
-import com.aura.aosp.aura.simple.Err;
-import com.aura.aosp.aura.simple.Json;
+import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Json;
 
 import org.json.JSONObject;
 

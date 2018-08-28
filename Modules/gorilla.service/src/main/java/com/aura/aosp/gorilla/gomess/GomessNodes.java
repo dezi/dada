@@ -3,10 +3,10 @@ package com.aura.aosp.gorilla.gomess;
 import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.crypter.RND;
-import com.aura.aosp.aura.simple.Err;
-import com.aura.aosp.aura.simple.Log;
-import com.aura.aosp.aura.simple.Json;
-import com.aura.aosp.aura.simple.Simple;
+import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Log;
+import com.aura.aosp.aura.common.simple.Json;
+import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.sockets.Connect;
 import com.aura.aosp.aura.univid.Identity;
 import com.aura.aosp.aura.univid.Owner;

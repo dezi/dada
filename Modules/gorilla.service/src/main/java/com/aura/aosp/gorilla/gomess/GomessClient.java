@@ -8,10 +8,10 @@ import com.aura.aosp.aura.crypter.RND;
 import com.aura.aosp.aura.crypter.RSA;
 import com.aura.aosp.aura.crypter.SHA;
 
-import com.aura.aosp.aura.simple.Err;
-import com.aura.aosp.aura.simple.Simple;
-import com.aura.aosp.aura.simple.Json;
-import com.aura.aosp.aura.simple.Log;
+import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.aura.common.simple.Json;
+import com.aura.aosp.aura.common.simple.Log;
 
 import com.aura.aosp.gorilla.goproto.GoprotoDefs;
 import com.aura.aosp.gorilla.goproto.GoprotoMessage;
