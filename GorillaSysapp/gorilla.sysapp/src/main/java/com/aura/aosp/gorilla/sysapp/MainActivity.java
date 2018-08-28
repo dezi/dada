@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.aura.android.gorilla.R;
 import com.aura.aosp.aura.crypter.RND;
+import com.aura.aosp.aura.simple.Simple;
 import com.aura.aosp.aura.univid.Owner;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 import com.aura.aosp.gui.views.GUIFrameLayout;
@@ -65,10 +66,10 @@ public class MainActivity extends AppCompatActivity
         topFrame.addView(centerFrame);
 
         GUITextView titleView = new GUITextView(this);
+        titleView.setSizeDip(Simple.WC, Simple.WC);
         titleView.setText(R.string.select_identity);
         titleView.setTextSizeDip(60);
-
-        centerFrame.setBackgroundColor(0x88008800);
+        titleView.setBackgroundColor(0x88008800);
 
         centerFrame.addView(titleView);
     }
