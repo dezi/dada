@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Gorilla.Sysapp</string>
+    <string name="select_identity">Please select Identity</string>
 </resources>
