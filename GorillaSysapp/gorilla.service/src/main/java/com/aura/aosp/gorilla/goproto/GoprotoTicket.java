@@ -39,6 +39,11 @@ public class GoprotoTicket
         return MessageUUID;
     }
 
+    public String getMessageUUIDBase64()
+    {
+        return Simple.encodeBase64(MessageUUID);
+    }
+
     public void setMessageUUID(byte[] messageUUID)
     {
         this.Idsmask |= GoprotoDefs.HasMessageUUID;

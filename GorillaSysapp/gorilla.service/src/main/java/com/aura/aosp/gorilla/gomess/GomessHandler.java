@@ -13,8 +13,13 @@ import com.aura.aosp.gorilla.service.GorillaBase;
 import com.aura.aosp.aura.simple.Json;
 import com.aura.aosp.aura.simple.Log;
 import com.aura.aosp.gorilla.service.GorillaMapper;
+import com.aura.aosp.gorilla.service.GorillaSender;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class GomessHandler
@@ -38,7 +43,10 @@ public class GomessHandler
         return instance;
     }
 
-    private final Thread workerThread;
+    private final Thread readerThread;
+    private final Thread writerThread;
+
+    private final List<GoprotoTicket> tickets = new ArrayList<>();
 
     public JSONObject sendPayload(String uuid, long time, String apkname, String userUUID, String deviceUUID, String payload)
     {
@@ -73,70 +81,31 @@ public class GomessHandler
 
         ticket.setPayload(payload.getBytes());
 
-        Err err = client.sendMessageUpload(ticket);
+        addTicketToQueue(ticket);
 
-        if (err != null)
-        {
-            Json.put(result, "error", err.err);
-            Json.put(result, "status", "error");
-
-            return result;
-        }
-
-        Json.put(result, "status", "send");
-
-        return result;
-    }
-
-    public JSONObject sendPayloadOld(String uuid, long time, String apkname, String userUUID, String deviceUUID, String payload)
-    {
-        Log.d("uuid=" + uuid + " time=" + time);
-        Log.d("user=" + userUUID + " dev=" + deviceUUID);
-        Log.d("apkname=" + apkname + " payload=" + payload);
-
-        JSONObject result = new JSONObject();
-
-        if ((uuid == null) || (apkname == null) || (userUUID == null) || (payload == null) || (time <= 0))
-        {
-            Json.put(result, "error", "Request parameters missing");
-            Json.put(result, "status", "error");
-        }
-        else
-        {
-            //
-            // Simply echo the payload for now...
-            //
-
-            Intent echoIntent = new Intent("com.aura.aosp.gorilla.service.RECV_PAYLOAD");
-
-            echoIntent.setPackage(apkname);
-            echoIntent.putExtra("uuid", uuid);
-            echoIntent.putExtra("time", time);
-            echoIntent.putExtra("sender", userUUID);
-            echoIntent.putExtra("device", deviceUUID);
-            echoIntent.putExtra("payload", payload);
-
-            GorillaBase.getAppContext().sendBroadcast(echoIntent);
-
-            //
-            // Return success for now.
-            //
-
-            Json.put(result, "uuid", uuid);
-            Json.put(result, "time", time);
-            Json.put(result, "status", "send");
-        }
+        Json.put(result, "status", "queued");
 
         return result;
     }
 
     private GomessHandler()
     {
-        workerThread = new Thread(workerRunner);
-        workerThread.start();
+        readerThread = new Thread(readerRunner);
+        readerThread.start();
+
+        writerThread = new Thread(writerRunner);
+        writerThread.start();
     }
 
-    private final Runnable workerRunner = new Runnable()
+    private void addTicketToQueue(GoprotoTicket ticket)
+    {
+        synchronized (tickets)
+        {
+            tickets.add(ticket);
+        }
+    }
+
+    private final Runnable readerRunner = new Runnable()
     {
         @Override
         @SuppressWarnings("InfiniteLoopStatement")
@@ -148,9 +117,65 @@ public class GomessHandler
                 if (clientNode == null) continue;
 
                 Err err = handleSession(clientNode);
+                if (err != null) Log.e("err=%s", err);
+
+                Simple.sleep(1000);
+            }
+        }
+    };
+
+    private final Runnable writerRunner = new Runnable()
+    {
+        @Override
+        @SuppressWarnings("InfiniteLoopStatement")
+        public void run()
+        {
+            while (true)
+            {
+                if (client == null)
+                {
+                    Simple.sleep(100);
+
+                    continue;
+                }
+
+                GoprotoTicket ticket = null;
+
+                synchronized (tickets)
+                {
+                    if (tickets.size() > 0)
+                    {
+                        ticket = tickets.remove(0);
+                    }
+                }
+
+                if (ticket == null)
+                {
+                    Simple.sleep(100);
+
+                    continue;
+                }
+
+                Err err = client.sendMessageUpload(ticket);
+
+                JSONObject result = new JSONObject();
+                Json.put(result, "uuid", ticket.getMessageUUIDBase64());
+                Json.put(result, "status", "send");
+
+                if (err != null)
+                {
+                    Json.put(result, "error", err.err);
+                    Json.put(result, "status", "error");
+                }
+
+                GorillaSender.sendBroadCastResult(ticket, result);
+
                 if (err == null) continue;
 
-                break;
+                tickets.add(0, ticket);
+                Log.e("err=%s", err);
+
+                Simple.sleep(100);
             }
         }
     };

@@ -7,25 +7,42 @@ import com.aura.aosp.aura.simple.Log;
 import com.aura.aosp.aura.simple.Simple;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
+import org.json.JSONObject;
+
 public class GorillaSender
 {
-    public static Err sendBroadCast(GoprotoTicket ticket)
+    public static Err sendBroadCastPayload(GoprotoTicket ticket)
     {
-        Intent echoIntent = new Intent("com.aura.aosp.gorilla.service.RECV_PAYLOAD");
+        Intent payloadIntent = new Intent("com.aura.aosp.gorilla.service.RECV_PAYLOAD");
 
         String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
         Log.d("apkname=%s", apkname);
 
-        echoIntent.setPackage(apkname);
+        payloadIntent.setPackage(apkname);
 
-        echoIntent.putExtra("time", System.currentTimeMillis());
+        payloadIntent.putExtra("time", System.currentTimeMillis());
 
-        echoIntent.putExtra("uuid", Simple.encodeBase64(ticket.getMessageUUID()));
-        echoIntent.putExtra("sender", Simple.encodeBase64(ticket.getSenderUserUUID()));
-        echoIntent.putExtra("device", Simple.encodeBase64(ticket.getSenderDeviceUUID()));
-        echoIntent.putExtra("payload", new String(ticket.getPayload()));
+        payloadIntent.putExtra("uuid", Simple.encodeBase64(ticket.getMessageUUID()));
+        payloadIntent.putExtra("sender", Simple.encodeBase64(ticket.getSenderUserUUID()));
+        payloadIntent.putExtra("device", Simple.encodeBase64(ticket.getSenderDeviceUUID()));
+        payloadIntent.putExtra("payload", new String(ticket.getPayload()));
 
-        GorillaBase.getAppContext().sendBroadcast(echoIntent);
+        GorillaBase.getAppContext().sendBroadcast(payloadIntent);
+
+        return null;
+    }
+
+    public static Err sendBroadCastResult(GoprotoTicket ticket, JSONObject result)
+    {
+        Intent resultIntent = new Intent("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT");
+
+        String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
+        Log.d("apkname=%s", apkname);
+
+        resultIntent.setPackage(apkname);
+        resultIntent.putExtra("result",result.toString());
+
+        GorillaBase.getAppContext().sendBroadcast(resultIntent);
 
         return null;
     }

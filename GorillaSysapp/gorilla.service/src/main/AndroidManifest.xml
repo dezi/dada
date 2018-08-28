@@ -26,8 +26,9 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.aura.aosp.gorilla.service.SEND_PAYLOAD"/>
                 <action android:name="com.aura.aosp.gorilla.service.RECV_PAYLOAD"/>
+                <action android:name="com.aura.aosp.gorilla.service.SEND_PAYLOAD"/>
+                <action android:name="com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT"/>
             </intent-filter>
         </receiver>
 

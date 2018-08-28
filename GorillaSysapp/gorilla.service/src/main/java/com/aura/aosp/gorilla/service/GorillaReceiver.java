@@ -23,15 +23,21 @@ public class GorillaReceiver extends BroadcastReceiver
             return;
         }
 
+        if (intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_PAYLOAD"))
+        {
+            recvPayload(context, intent);
+            return;
+        }
+
         if (intent.getAction().equals("com.aura.aosp.gorilla.service.SEND_PAYLOAD"))
         {
             sendPayload(context, intent);
             return;
         }
 
-        if (intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_PAYLOAD"))
+        if (intent.getAction().equals("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT"))
         {
-            recvPayload(context, intent);
+            sendPayloadResult(context, intent);
             return;
         }
 
@@ -67,6 +73,13 @@ public class GorillaReceiver extends BroadcastReceiver
         responseIntent.putExtra("result", result.toString());
 
         context.sendBroadcast(responseIntent);
+    }
+
+    private void sendPayloadResult(Context context, Intent intent)
+    {
+        String result = intent.getStringExtra("result");
+
+        Log.d("result=%s", result);
     }
 
     private void recvPayload(Context context, Intent intent)
