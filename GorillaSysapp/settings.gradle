@@ -1,3 +1,4 @@
+include ':aura.gui'
 include ':aura.common'
 include ':gorilla.service'
 include ':gorilla.sysapp'
