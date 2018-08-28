@@ -5,6 +5,7 @@ import android.content.Intent;
 import com.aura.aosp.aura.simple.Err;
 import com.aura.aosp.aura.simple.Simple;
 import com.aura.aosp.aura.sockets.Connect;
+import com.aura.aosp.aura.univid.Identity;
 import com.aura.aosp.aura.univid.Owner;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
@@ -64,6 +65,15 @@ public class GomessHandler
             return result;
         }
 
+        Identity owner = Owner.getOwnerIdentity();
+        if (owner == null)
+        {
+            Json.put(result, "error", "Device owner not set");
+            Json.put(result, "status", "error");
+
+            return result;
+        }
+
         Json.put(result, "uuid", uuid);
         Json.put(result, "time", time);
 
@@ -71,8 +81,8 @@ public class GomessHandler
 
         ticket.setMessageUUID(Simple.decodeBase64(uuid));
 
-        ticket.setSenderUserUUID(Owner.getUserUUID());
-        ticket.setSenderDeviceUUID(Owner.getDeviceUUID());
+        ticket.setSenderUserUUID(owner.getUserUUID());
+        ticket.setSenderDeviceUUID(owner.getDeviceUUID());
 
         ticket.setReceiverUserUUID(Simple.decodeBase64(userUUID));
         ticket.setReceiverDeviceUUID(Simple.decodeBase64(deviceUUID));

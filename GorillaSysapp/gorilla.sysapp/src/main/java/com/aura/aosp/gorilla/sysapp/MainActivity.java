@@ -1,11 +1,11 @@
 package com.aura.aosp.gorilla.sysapp;
 
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
+import android.widget.LinearLayout;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.os.Bundle;
+import android.util.Log;
 
 import com.aura.aosp.aura.crypter.RND;
 import com.aura.aosp.aura.simple.Simple;
@@ -14,7 +14,6 @@ import com.aura.aosp.aura.univid.Identity;
 import com.aura.aosp.aura.univid.Owner;
 
 import com.aura.aosp.gui.base.GUIDefs;
-import com.aura.aosp.gui.base.GUIPrefs;
 import com.aura.aosp.gui.views.GUIButtonView;
 import com.aura.aosp.gui.views.GUIFrameLayout;
 import com.aura.aosp.gui.views.GUILinearLayout;
@@ -49,12 +48,15 @@ public class MainActivity extends AppCompatActivity
 
     private void sendMessage()
     {
+        Identity owner = Owner.getOwnerIdentity();
+        if (owner == null) return;
+
         long time = System.currentTimeMillis();
         String uuid = RND.randomUUIDBase64();
 
         String apkname = getPackageName();
-        String userUUID = Owner.getUserUUIDBase64();
-        String deviceUUID = Owner.getDeviceUUIDBase64();
+        String userUUID = owner.getUserUUIDBase64();
+        String deviceUUID = owner.getDeviceUUIDBase64();
         String payload = "Huhu";
 
         JSONObject result = GomessHandler.getInstance().sendPayload(uuid, time, apkname, userUUID, deviceUUID, payload);
@@ -87,7 +89,7 @@ public class MainActivity extends AppCompatActivity
 
         centerFrame.addView(identitiesView);
 
-        String myUserUUID = GUIPrefs.readPrefString("userUUID");
+        String ownerUUID = Owner.getOwnerUUIDBase64();
 
         List<Identity> contacts = Contacts.getAllContacts();
 
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity
                     Identity identity = (Identity) view.getTag();
                     identview.setText(identity.getNick());
 
-                    GUIPrefs.savePrefString("userUUID", identity.getUserUUIDBase64());
+                    Owner.setOwnerUUIDBase64(identity.getUserUUIDBase64());
                 }
             });
 
@@ -122,11 +124,11 @@ public class MainActivity extends AppCompatActivity
         identview.setPaddingDip(GUIDefs.PADDING_NORMAL);
         identview.setTextSizeDip(48);
 
-        if (myUserUUID != null)
+        if (ownerUUID != null)
         {
             for (Identity identity : contacts)
             {
-                if (identity.getUserUUIDBase64().equals(myUserUUID))
+                if (identity.getUserUUIDBase64().equals(ownerUUID))
                 {
                     identview.setText(identity.getNick());
                 }
