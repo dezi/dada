@@ -8,6 +8,8 @@ import com.aura.aosp.aura.simple.Log;
 import com.aura.aosp.aura.simple.Json;
 import com.aura.aosp.aura.simple.Simple;
 import com.aura.aosp.aura.sockets.Connect;
+import com.aura.aosp.aura.univid.Identity;
+import com.aura.aosp.aura.univid.Owner;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
 import com.aura.aosp.gorilla.gorilla.PublicNode;
 import com.aura.aosp.gorilla.gorilla.PublicNodes;
@@ -122,6 +124,9 @@ public class GomessNodes
     private static List<GomessNode> readGomessNodesFromGorilla(PublicNode pnode)
     {
         Log.d("...");
+
+        Identity owner = Owner.getOwnerIdentity();
+        if (owner == null) return null;
 
         Connect conn = new Connect(pnode.Addr, pnode.Port);
         if (conn.connect() != null) return null;

@@ -34,6 +34,11 @@ public class GomessClient
         this.session = session;
     }
 
+    public void disconnect()
+    {
+        session.close();
+    }
+
     public List<GomessNode> getAvailableGomessNodes()
     {
         return availableNodes;

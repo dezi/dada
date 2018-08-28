@@ -19,6 +19,7 @@ import com.aura.aosp.gui.views.GUIFrameLayout;
 import com.aura.aosp.gui.views.GUILinearLayout;
 import com.aura.aosp.gui.views.GUIListEntry;
 import com.aura.aosp.gui.views.GUIListView;
+import com.aura.aosp.gui.views.GUIScrollView;
 import com.aura.aosp.gui.views.GUITextView;
 
 import com.aura.aosp.gorilla.gomess.GomessHandler;
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity
 
         createLayout();
 
-        sendMessage();
+        //sendMessage();
     }
 
     private void sendMessage()
@@ -78,16 +79,22 @@ public class MainActivity extends AppCompatActivity
         GUITextView titleView = new GUITextView(this);
         titleView.setText(R.string.select_identity);
         titleView.setSizeDip(Simple.WC, Simple.WC);
+        titleView.setGravity(Gravity.CENTER_HORIZONTAL);
         titleView.setPaddingDip(GUIDefs.PADDING_NORMAL);
         titleView.setTextSizeDip(32);
 
         centerFrame.addView(titleView);
 
+        GUIScrollView identitiesScroll = new GUIScrollView(this);
+        identitiesScroll.setSizeDip(Simple.WC, Simple.MP, 1.0f);
+
+        centerFrame.addView(identitiesScroll);
+
         GUIListView identitiesView = new GUIListView(this);
         identitiesView.setSizeDip(Simple.WC, Simple.MP, 1.0f);
         identitiesView.setBackgroundColor(0x88888888);
 
-        centerFrame.addView(identitiesView);
+        identitiesScroll.addView(identitiesView);
 
         String ownerUUID = Owner.getOwnerUUIDBase64();
 
@@ -109,6 +116,7 @@ public class MainActivity extends AppCompatActivity
                     identview.setText(identity.getNick());
 
                     Owner.setOwnerUUIDBase64(identity.getUserUUIDBase64());
+                    GomessHandler.getInstance().resetSession();
                 }
             });
 

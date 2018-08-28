@@ -81,9 +81,6 @@ public class GomessHandler
 
         ticket.setMessageUUID(Simple.decodeBase64(uuid));
 
-        ticket.setSenderUserUUID(owner.getUserUUID());
-        ticket.setSenderDeviceUUID(owner.getDeviceUUID());
-
         ticket.setReceiverUserUUID(Simple.decodeBase64(userUUID));
         ticket.setReceiverDeviceUUID(Simple.decodeBase64(deviceUUID));
 
@@ -96,6 +93,18 @@ public class GomessHandler
         Json.put(result, "status", "queued");
 
         return result;
+    }
+
+    public void resetSession()
+    {
+        if (client != null)
+        {
+            Log.d("reset starting...");
+
+            client.disconnect();
+
+            Log.d("reset done.");
+        }
     }
 
     private GomessHandler()
@@ -123,13 +132,26 @@ public class GomessHandler
         {
             while (true)
             {
+                Simple.sleep(1000);
+
+                Identity owner = Owner.getOwnerIdentity();
+
+                if (owner == null)
+                {
+                    Log.e("owner not defined!");
+                    continue;
+                }
+
                 GomessNode clientNode = GomessNodes.getBestNode("DE", 53.551086, 9.993682);
-                if (clientNode == null) continue;
+
+                if (clientNode == null)
+                {
+                    Log.e("gorilla nodes not defined!");
+                    continue;
+                }
 
                 Err err = handleSession(clientNode);
                 if (err != null) Log.e("err=%s", err);
-
-                Simple.sleep(1000);
             }
         }
     };
