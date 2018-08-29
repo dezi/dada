@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
@@ -56,6 +57,15 @@ public class MainActivity extends AppCompatActivity
             public void onOwnerReceived(JSONObject owner)
             {
                 Log.d(LOGTAG, "onOwnerReceived: owner=" + owner.toString());
+
+                String ownerUUID = Json.getString(owner, "ownerUUID");
+                Identity ownerIdent = Contacts.getContact(ownerUUID);
+                if (ownerIdent == null) return;
+
+                Log.d(LOGTAG, "ownerIdent=" + ownerIdent.toString());
+
+                String title = getTitle() + " " + ownerIdent.getNick();
+                setTitle(title);
             }
         });
 
@@ -69,6 +79,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         gc.wantOwner(this);
+
         //gc.sendPayload(this,"r0Z7g7cnTF6Mi5/NRyU4Yw==", "lfTBPb1qQ9akd3ltWLWxaw==", "tubu");
     }
 

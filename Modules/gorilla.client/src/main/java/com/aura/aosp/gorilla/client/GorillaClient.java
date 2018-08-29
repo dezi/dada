@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -65,6 +67,8 @@ public class GorillaClient extends BroadcastReceiver
 
     //region Instance implemention.
 
+    private Handler handler = new Handler();
+
     private OnResultReceivedListener onResultReceivedListener;
     private OnOwnerReceivedListener onOwnerReceivedListener;
     private OnMessageReceivedListener onMessageReceivedListener;
@@ -72,15 +76,45 @@ public class GorillaClient extends BroadcastReceiver
     @Override
     public void onReceive(Context context, Intent intent)
     {
+        getInstance().onReceiveInstance(context, intent);
+    }
+
+    private void onReceiveInstance(Context context, Intent intent)
+    {
+        if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_OWNER"))
+        {
+            final OnOwnerReceivedListener listener = onOwnerReceivedListener;
+            final String ownerUUID = intent.getStringExtra("ownerUUID");
+            final JSONObject owner = new JSONObject();
+
+            putJSON(owner, "ownerUUID", ownerUUID);
+
+            if (listener != null)
+            {
+                handler.post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        listener.onOwnerReceived(owner);
+                    }
+                });
+            }
+
+            Log.d(LOGTAG, "onReceive: RECV_OWNER: ownerUUID=" + ownerUUID);
+
+            return;
+        }
+
         if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT"))
         {
-            String result = intent.getStringExtra("result");
+            JSONObject result = fromStringJSONOBject(intent.getStringExtra("result"));
 
             Log.d(LOGTAG,"onReceive: SEND_PAYLOAD_RESULT result=" + result);
 
             if (onResultReceivedListener != null)
             {
-                onResultReceivedListener.onResultReceived(fromStringJSONOBject(result));
+                onResultReceivedListener.onResultReceived(result);
             }
 
             return;
@@ -97,16 +131,18 @@ public class GorillaClient extends BroadcastReceiver
 
             Log.d(LOGTAG,"onReceive: RECV_PAYLOAD uuid=" + uuid + " time=" + time + " sender=" + sender + " device=" + device + " payload=" + payload);
 
-            return;
-        }
+            if (onMessageReceivedListener != null)
+            {
+                JSONObject message = new JSONObject();
 
-        if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_OWNER"))
-        {
-            String ownerUUID = intent.getStringExtra("ownerUUID");
+                putJSON(message, "uuid", uuid);
+                putJSON(message, "time", time);
+                putJSON(message, "sender", sender);
+                putJSON(message, "device", device);
+                putJSON(message, "payload", payload);
 
-            Log.d(LOGTAG, "onReceive: RECV_OWNER: ownerUUID=" + ownerUUID);
-
-            getInstance().setOwner(ownerUUID);
+                onMessageReceivedListener.onMessageReceived(message);
+            }
 
             return;
         }
@@ -179,37 +215,31 @@ public class GorillaClient extends BroadcastReceiver
         this.onMessageReceivedListener = onMessageReceivedListener;
     }
 
-    private void setOwner(String ownerUUID)
-    {
-    }
-
     public void putJSON(JSONObject json, String key, Object val)
     {
         try
         {
             json.put(key, val);
         }
-        catch (Exception ex)
+        catch (Exception ignore)
         {
-            Log.d(LOGTAG, ex.toString());
         }
     }
 
+    @Nullable
     public JSONObject fromStringJSONOBject(String jsonstr)
     {
-        if (jsonstr != null)
-        {
-            try
-            {
-                return new JSONObject(jsonstr);
-            }
-            catch (Exception ex)
-            {
-                Log.d(LOGTAG, ex.toString());
-            }
-        }
+        if (jsonstr == null) return null;
 
-        return new JSONObject();
+        try
+        {
+            return new JSONObject(jsonstr);
+        }
+        catch (Exception ex)
+        {
+            Log.d(LOGTAG, ex.toString());
+            return null;
+        }
     }
 
     //endregion Instance implemention.

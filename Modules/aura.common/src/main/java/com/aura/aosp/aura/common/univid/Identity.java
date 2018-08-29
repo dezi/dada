@@ -45,6 +45,12 @@ public class Identity
     }
 
     @NonNull
+    public String getCountry()
+    {
+        return country;
+    }
+
+    @NonNull
     public byte[] getUserUUID()
     {
         return userUUID;
@@ -94,5 +100,14 @@ public class Identity
             Err.errp(ex);
             return null;
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return "nick=" + getNick()
+                + " country=" + getCountry()
+                + " userUUID=" + getUserUUIDBase64()
+                + " deviceUUID=" + getDeviceUUIDBase64();
     }
 }
