@@ -3,9 +3,12 @@ package com.aura.aosp.gorilla.messenger;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
+import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.gui.base.GUIDefs;
 import com.aura.aosp.aura.gui.views.GUIEditText;
@@ -13,18 +16,27 @@ import com.aura.aosp.aura.gui.views.GUIFrameLayout;
 import com.aura.aosp.aura.gui.views.GUIIconView;
 import com.aura.aosp.aura.gui.views.GUILinearLayout;
 import com.aura.aosp.aura.gui.views.GUIScrollView;
+import com.aura.aosp.gorilla.client.GorillaClient;
+
+import org.json.JSONObject;
 
 public class ChatActivity extends AppCompatActivity
 {
+    private static final String LOGTAG = ChatActivity.class.getSimpleName();
+
     private GUIScrollView contentScroll;
     private GUILinearLayout chatContent;
     private GUIEditText editText;
     private GUIIconView sendButton;
 
+    private ChatProfile chatProfile;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        Log.d(LOGTAG, "onCreate: started.....");
 
         createLayout();
 
@@ -34,9 +46,27 @@ public class ChatActivity extends AppCompatActivity
         Bundle params = intent.getExtras();
         if (params == null) return;
 
-        String nick = params.getString("nick");
+        String remoteNick = params.getString("nick");
+        String remoteUserUUID = params.getString("userUUID");
+        String remoteDeviceUUID = params.getString("deviceUUID");
 
-        setTitle(nick);
+        chatProfile = new ChatProfile(this, remoteNick, remoteUserUUID, remoteDeviceUUID);
+
+        MainActivity.addChatProfile(chatProfile);
+
+        setTitle(remoteNick);
+
+        //dummyMessages();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+
+        MainActivity.delChatProfile(chatProfile);
+
+        Log.d(LOGTAG, "onDestroy: ended.....");
     }
 
     private void createLayout()
@@ -70,21 +100,6 @@ public class ChatActivity extends AppCompatActivity
 
         centerFrame.addView(bottomBox);
 
-        ChatFragment cf = new ChatFragment(this);
-        cf.setContentInfo("Heute");
-
-        chatContent.addView(cf);
-
-        cf = new ChatFragment(this);
-        cf.setContent(true, "20181812123456", "dezi", null, "Hdkjsafhs fdsf sdf dsf dsf dsf dsf dsf ds");
-
-        chatContent.addView(cf);
-
-        cf = new ChatFragment(this);
-        cf.setContent(false, "20181812125656", "patrick", null, "Huhu wie gehts");
-
-        chatContent.addView(cf);
-
         editText = new GUIEditText(this);
         editText.setSizeDip(Simple.WC, Simple.WC, 1.0f);
 
@@ -98,11 +113,63 @@ public class ChatActivity extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
+                String message = editText.getText().toString();
+                editText.setText("");
 
+                ChatFragment cf = new ChatFragment(view.getContext());
+                cf.setContent(true, "20181812123456", MainActivity.ownerIdent.getNick(), null, message);
+                chatContent.addView(cf);
+
+                scrollDown();
+
+                GorillaClient.getInstance().sendPayload(view.getContext(), chatProfile.remoteUserUUID, chatProfile.remoteDeviceUUID, message);
             }
         });
 
         bottomBox.addView(sendButton);
+    }
+
+    private void dummyMessages()
+    {
+        ChatFragment cf = new ChatFragment(this);
+        cf.setContentInfo("Heute");
+
+        chatContent.addView(cf);
+
+        cf = new ChatFragment(this);
+        cf.setContent(true, "20181812123456", MainActivity.ownerIdent.getNick(), null, "Hdkjsafhs fdsf sdf dsf dsf dsf dsf dsf ds");
+
+        chatContent.addView(cf);
+
+        cf = new ChatFragment(this);
+        cf.setContent(false, "20181812125656", chatProfile.remoteNick, null, "Huhu wie gehts");
+
+        chatContent.addView(cf);
+    }
+
+    public void dispatchMessage(JSONObject message)
+    {
+        Log.d(LOGTAG, "dispatchMessage: message=" + message);
+
+        String text = Json.getString(message, "payload");
+
+        ChatFragment cf = new ChatFragment(this);
+        cf.setContent(false, "20181812123456", chatProfile.remoteNick, null, text);
+        chatContent.addView(cf);
+
+        scrollDown();
+    }
+
+    private void scrollDown()
+    {
+        contentScroll.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                contentScroll.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
     }
 }
 

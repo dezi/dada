@@ -23,11 +23,26 @@ import com.aura.aosp.gorilla.client.GorillaClient;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
 {
     private static final String LOGTAG = MainActivity.class.getSimpleName();
+
+    public static Identity ownerIdent;
+
+    public static List<ChatProfile> chatProfiles = new ArrayList<>();
+
+    public static void addChatProfile(ChatProfile chatProfile)
+    {
+        chatProfiles.add(chatProfile);
+    }
+
+    public static void delChatProfile(ChatProfile chatProfile)
+    {
+        chatProfiles.remove(chatProfile);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -42,15 +57,6 @@ public class MainActivity extends AppCompatActivity
 
         GorillaClient gc = GorillaClient.getInstance();
 
-        gc.setOnResultReceivedListener(new GorillaClient.OnResultReceivedListener()
-        {
-            @Override
-            public void onResultReceived(JSONObject result)
-            {
-                Log.d(LOGTAG, "onResultReceived: result=" + result.toString());
-            }
-        });
-
         gc.setOnOwnerReceivedListener(new GorillaClient.OnOwnerReceivedListener()
         {
             @Override
@@ -59,7 +65,8 @@ public class MainActivity extends AppCompatActivity
                 Log.d(LOGTAG, "onOwnerReceived: owner=" + owner.toString());
 
                 String ownerUUID = Json.getString(owner, "ownerUUID");
-                Identity ownerIdent = Contacts.getContact(ownerUUID);
+
+                ownerIdent = Contacts.getContact(ownerUUID);
                 if (ownerIdent == null) return;
 
                 Log.d(LOGTAG, "ownerIdent=" + ownerIdent.toString());
@@ -74,13 +81,32 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onMessageReceived(JSONObject message)
             {
-                Log.d(LOGTAG, "onOwnerReceived: message=" + message.toString());
+                Log.d(LOGTAG, "onMessageReceived: message=" + message.toString());
+
+                String remoteUserUUID = Json.getString(message, "sender");
+                String remoteDeviceUUID = Json.getString(message, "device");
+
+                for (ChatProfile chatProfile : chatProfiles)
+                {
+                    if (! chatProfile.remoteUserUUID.equals(remoteUserUUID)) continue;
+                    if (! chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
+
+                    chatProfile.activity.dispatchMessage(message);
+                    break;
+                }
+            }
+        });
+
+        gc.setOnResultReceivedListener(new GorillaClient.OnResultReceivedListener()
+        {
+            @Override
+            public void onResultReceived(JSONObject result)
+            {
+                Log.d(LOGTAG, "onResultReceived: result=" + result.toString());
             }
         });
 
         gc.wantOwner(this);
-
-        //gc.sendPayload(this,"r0Z7g7cnTF6Mi5/NRyU4Yw==", "lfTBPb1qQ9akd3ltWLWxaw==", "tubu");
     }
 
     private void createLayout()
