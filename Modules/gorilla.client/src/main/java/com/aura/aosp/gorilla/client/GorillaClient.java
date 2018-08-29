@@ -2,6 +2,7 @@ package com.aura.aosp.gorilla.client;
 
 import android.annotation.SuppressLint;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -11,7 +12,7 @@ import org.json.JSONObject;
 import java.util.UUID;
 
 @SuppressLint("StaticFieldLeak")
-public class GorillaClient
+public class GorillaClient extends BroadcastReceiver
 {
     private static final String LOGTAG = GorillaClient.class.getSimpleName();
 
@@ -20,7 +21,7 @@ public class GorillaClient
     private static final Object mutex = new Object();
     private static GorillaClient instance;
 
-    public static GorillaClient getInstance(Context context)
+    public static GorillaClient getInstance()
     {
         if (instance == null)
         {
@@ -28,7 +29,7 @@ public class GorillaClient
             {
                 if (instance == null)
                 {
-                    instance = new GorillaClient(context);
+                    instance = new GorillaClient();
                 }
             }
         }
@@ -36,11 +37,27 @@ public class GorillaClient
         return instance;
     }
 
-    public static class OnResultListener
+    public static class OnResultReceivedListener
     {
-        public void onResult(JSONObject result)
+        public void onResultReceived(JSONObject result)
         {
-            Log.d(LOGTAG, "onResult: STUB!");
+            Log.d(LOGTAG, "onResultReceived: STUB!");
+        }
+    }
+
+    public static class OnOwnerReceivedListener
+    {
+        public void onOwnerReceived(JSONObject owner)
+        {
+            Log.d(LOGTAG, "onOwnerReceived: STUB!");
+        }
+    }
+
+    public static class OnMessageReceivedListener
+    {
+        public void onMessageReceived(JSONObject message)
+        {
+            Log.d(LOGTAG, "onMessageReceived: STUB!");
         }
     }
 
@@ -48,23 +65,23 @@ public class GorillaClient
 
     //region Instance implemention.
 
-    private Context context;
-    private OnResultListener onResultListener;
+    private OnResultReceivedListener onResultReceivedListener;
+    private OnOwnerReceivedListener onOwnerReceivedListener;
+    private OnMessageReceivedListener onMessageReceivedListener;
 
-    private GorillaClient(Context context)
+    @Override
+    public void onReceive(Context context, Intent intent)
     {
-        this.context = context;
-    }
-
-    public void onReceive(Intent intent)
-    {
-        //Log.d(LOGTAG, "onReceive: intent=" + intent.toString());
-
         if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT"))
         {
             String result = intent.getStringExtra("result");
 
             Log.d(LOGTAG,"onReceive: SEND_PAYLOAD_RESULT result=" + result);
+
+            if (onResultReceivedListener != null)
+            {
+                onResultReceivedListener.onResultReceived(Json.fromStringObject(result));
+            }
 
             return;
         }
@@ -83,6 +100,17 @@ public class GorillaClient
             return;
         }
 
+        if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_OWNER"))
+        {
+            String ownerUUID = intent.getStringExtra("ownerUUID");
+
+            Log.d(LOGTAG, "onReceive: RECV_OWNER: ownerUUID=" + ownerUUID);
+
+            getInstance().setOwner(ownerUUID);
+
+            return;
+        }
+
         //
         // Silently ignore.
         //
@@ -90,7 +118,20 @@ public class GorillaClient
         Log.d(LOGTAG, "onReceive: wrong action.");
     }
 
-    public void sendPayload(String receiver, String device, String payload)
+    public void wantOwner(Context context)
+    {
+        Intent requestIntent = new Intent();
+
+        requestIntent.setPackage("com.aura.aosp.gorilla.sysapp");
+        requestIntent.setAction("com.aura.aosp.gorilla.service.WANT_OWNER");
+        requestIntent.putExtra("apkname", context.getPackageName());
+
+        Log.d(LOGTAG, "wantOwner: requestIntent=" + requestIntent.toString());
+
+        context.sendBroadcast(requestIntent);
+    }
+
+    public void sendPayload(Context context, String receiver, String device, String payload)
     {
         JSONObject result = new JSONObject();
 
@@ -117,15 +158,29 @@ public class GorillaClient
 
         context.sendBroadcast(requestIntent);
 
-        if (onResultListener != null)
+        if (onResultReceivedListener != null)
         {
-            onResultListener.onResult(result);
+            onResultReceivedListener.onResultReceived(result);
         }
     }
 
-    public void setOnResultListener(OnResultListener onResultListener)
+    public void setOnResultReceivedListener(OnResultReceivedListener onResultReceivedListener)
     {
-        this.onResultListener = onResultListener;
+        this.onResultReceivedListener = onResultReceivedListener;
+    }
+
+    public void setOnOwnerReceivedListener(OnOwnerReceivedListener onOwnerReceivedListener)
+    {
+        this.onOwnerReceivedListener = onOwnerReceivedListener;
+    }
+
+    public void setOnMessageReceivedListener(OnMessageReceivedListener onMessageReceivedListener)
+    {
+        this.onMessageReceivedListener = onMessageReceivedListener;
+    }
+
+    private void setOwner(String ownerUUID)
+    {
     }
 
     //endregion Instance implemention.

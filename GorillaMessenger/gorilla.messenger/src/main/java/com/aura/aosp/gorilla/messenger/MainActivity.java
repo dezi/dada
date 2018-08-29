@@ -39,18 +39,37 @@ public class MainActivity extends AppCompatActivity
 
         createLayout();
 
-        GorillaClient gc = GorillaClient.getInstance(this);
+        GorillaClient gc = GorillaClient.getInstance();
 
-        gc.setOnResultListener(new GorillaClient.OnResultListener()
+        gc.setOnResultReceivedListener(new GorillaClient.OnResultReceivedListener()
         {
             @Override
-            public void onResult(JSONObject result)
+            public void onResultReceived(JSONObject result)
             {
-                Log.d(LOGTAG, "onResult: sendPayload: result=" + result.toString());
+                Log.d(LOGTAG, "onResultReceived: result=" + result.toString());
             }
         });
 
-        gc.sendPayload("r0Z7g7cnTF6Mi5/NRyU4Yw==", "lfTBPb1qQ9akd3ltWLWxaw==", "tubu");
+        gc.setOnOwnerReceivedListener(new GorillaClient.OnOwnerReceivedListener()
+        {
+            @Override
+            public void onOwnerReceived(JSONObject owner)
+            {
+                Log.d(LOGTAG, "onOwnerReceived: owner=" + owner.toString());
+            }
+        });
+
+        gc.setOnMessageReceivedListener(new GorillaClient.OnMessageReceivedListener()
+        {
+            @Override
+            public void onMessageReceived(JSONObject message)
+            {
+                Log.d(LOGTAG, "onOwnerReceived: message=" + message.toString());
+            }
+        });
+
+        gc.wantOwner(this);
+        //gc.sendPayload(this,"r0Z7g7cnTF6Mi5/NRyU4Yw==", "lfTBPb1qQ9akd3ltWLWxaw==", "tubu");
     }
 
     private void createLayout()
