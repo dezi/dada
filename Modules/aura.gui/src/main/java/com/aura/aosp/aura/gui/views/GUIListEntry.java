@@ -69,6 +69,7 @@ public class GUIListEntry extends GUILinearLayout
 
         dateView = new GUITextView(context);
         dateView.setTextSizeDip(GUIDefs.FONTSIZE_INFOS);
+        dateView.setTextColor(GUIDefs.COLOR_GRAY);
         dateView.setSingleLine(true);
         dateView.setSizeDip(Simple.WC,Simple.WC);
         dateView.setText("Montag");
