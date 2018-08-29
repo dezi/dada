@@ -3,10 +3,14 @@ package com.aura.aosp.gorilla.messenger;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.aura.gui.base.GUIDefs;
+import com.aura.aosp.aura.gui.views.GUIEditText;
 import com.aura.aosp.aura.gui.views.GUIFrameLayout;
+import com.aura.aosp.aura.gui.views.GUIIconView;
 import com.aura.aosp.aura.gui.views.GUILinearLayout;
 import com.aura.aosp.aura.gui.views.GUIScrollView;
 
@@ -14,6 +18,8 @@ public class ChatActivity extends AppCompatActivity
 {
     private GUIScrollView contentScroll;
     private GUILinearLayout chatContent;
+    private GUIEditText editText;
+    private GUIIconView sendButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -57,8 +63,9 @@ public class ChatActivity extends AppCompatActivity
         contentScroll.addView(chatContent);
 
         GUILinearLayout bottomBox = new GUILinearLayout(this);
-        bottomBox.setSizeDip(Simple.MP, 100);
-        bottomBox.setOrientation(LinearLayout.VERTICAL);
+        bottomBox.setSizeDip(Simple.MP, Simple.WC);
+        bottomBox.setOrientation(LinearLayout.HORIZONTAL);
+        bottomBox.setPaddingDip(GUIDefs.PADDING_SMALL);
         bottomBox.setBackgroundColor(0x88008800);
 
         centerFrame.addView(bottomBox);
@@ -77,6 +84,25 @@ public class ChatActivity extends AppCompatActivity
         cf.setContent(false, "20181812125656", "patrick", null, "Huhu wie gehts");
 
         chatContent.addView(cf);
+
+        editText = new GUIEditText(this);
+        editText.setSizeDip(Simple.WC, Simple.WC, 1.0f);
+
+        bottomBox.addView(editText);
+
+        sendButton = new GUIIconView(this);
+        sendButton.setImageResource(R.drawable.human_260);
+
+        sendButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+
+            }
+        });
+
+        bottomBox.addView(sendButton);
     }
 }
 
