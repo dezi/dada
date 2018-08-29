@@ -71,7 +71,7 @@ public class ChatActivity extends AppCompatActivity
         centerFrame.addView(bottomBox);
 
         ChatFragment cf = new ChatFragment(this);
-        cf.setContentInfo("Huhu");
+        cf.setContentInfo("Heute");
 
         chatContent.addView(cf);
 
