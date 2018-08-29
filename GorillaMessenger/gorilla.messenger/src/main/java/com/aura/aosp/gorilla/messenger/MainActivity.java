@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.messenger;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,14 +11,13 @@ import android.widget.LinearLayout;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
-import com.aura.aosp.aura.common.univid.Owner;
-import com.aura.aosp.aura.gui.base.GUIDefs;
+
 import com.aura.aosp.aura.gui.views.GUIFrameLayout;
 import com.aura.aosp.aura.gui.views.GUILinearLayout;
 import com.aura.aosp.aura.gui.views.GUIListEntry;
 import com.aura.aosp.aura.gui.views.GUIListView;
 import com.aura.aosp.aura.gui.views.GUIScrollView;
-import com.aura.aosp.aura.gui.views.GUITextView;
+
 import com.aura.aosp.gorilla.client.GorillaClient;
 
 import org.json.JSONObject;
@@ -77,8 +77,6 @@ public class MainActivity extends AppCompatActivity
 
         identitiesScroll.addView(identitiesView);
 
-        String ownerUUID = Owner.getOwnerUUIDBase64();
-
         List<Identity> contacts = Contacts.getAllContacts();
 
         for (Identity identity : contacts)
@@ -93,6 +91,17 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view)
                 {
+                    Identity identity = (Identity) view.getTag();
+
+                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+
+                    Bundle params = new Bundle();
+                    params.putString("nick", identity.getNick());
+                    params.putString("userUUID", identity.getUserUUIDBase64());
+                    params.putString("deviceUUID", identity.getDeviceUUIDBase64());
+                    intent.putExtras(params);
+
+                    startActivity(intent);
                 }
             });
 
