@@ -27,6 +27,11 @@ public class Contacts
         contacts.add(createContact("matthias",  "DE","KTnJt4OoQFeH//++sSGF+w==", "fSaNQ5XySVeTGWnXb7kAGQ=="));
         contacts.add(createContact("mr.hoi",    "DE","PGuS7XsrR1a+HMNCkosPJQ==", "5J1oeaPYRMeygtMvu6TxVw=="));
         contacts.add(createContact("patrick",   "DE","Au+LSTjkTLyp1B9gDNJLmg==", "dHCFAHZ+TKik1DzFVFOAiQ=="));
+        contacts.add(createContact("test1",     "DE","slT30vl3SHWq6eliNUYutA==", "BM9VdXOhRsGONlGnswqsdw=="));
+        contacts.add(createContact("test2",     "DE","fmrJgf9ZRUmoXmV1obLe7Q==", "oUJviGv7TG60eyO9gYhc6g=="));
+        contacts.add(createContact("test3",     "DE","44IO662iS4yFQpZuKllfDw==", "FYFsXrraRqqLoCKPher94A=="));
+        contacts.add(createContact("test4",     "DE","M3hmdS3TTCmxJ2K1dvPe7w==", "e9BfWRLqQUCVug4bKnV4lw=="));
+        contacts.add(createContact("test5",     "DE","G5ZNv1JGRF2x2JxnHCrjNQ==", "hPyf3uMaSuWecQOuTAusWA=="));
 
         // @formatter:on
 

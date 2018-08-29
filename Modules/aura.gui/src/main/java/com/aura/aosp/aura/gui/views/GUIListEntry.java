@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.aura.aosp.aura.gui.base.GUIDefs;
 import com.aura.aosp.aura.common.simple.Simple;
@@ -15,8 +16,12 @@ public class GUIListEntry extends GUILinearLayout
 
     public GUIFrameLayout levelView;
     public GUIIconView iconView;
+    public GUILinearLayout headerBox;
     public GUITextView headerViev;
+    public GUITextView dateView;
     public GUITextView infoView;
+    public GUIRelativeLayout actionView;
+    public GUIImageView actionIcon;
 
     public GUIListEntry(Context context)
     {
@@ -26,7 +31,7 @@ public class GUIListEntry extends GUILinearLayout
 
         setFocusable(true);
         setOrientation(HORIZONTAL);
-        setPaddingDip(GUIDefs.PADDING_TINY);
+        setPaddingDip(GUIDefs.PADDING_ZERO);
         setBackgroundColor(GUIDefs.COLOR_LIGHT_TRANSPARENT);
 
         levelView = new GUIFrameLayout(context);
@@ -48,12 +53,27 @@ public class GUIListEntry extends GUILinearLayout
 
         entryCenter.addView(entryBox);
 
+        headerBox = new GUILinearLayout(context);
+        headerBox.setOrientation(HORIZONTAL);
+        headerBox.setSizeDip(Simple.MP,Simple.WC);
+
+        entryBox.addView(headerBox);
+
         headerViev = new GUITextView(context);
         headerViev.setTextSizeDip(GUIDefs.FONTSIZE_HEADERS);
         headerViev.setSingleLine(true);
         headerViev.setEllipsize(TextUtils.TruncateAt.END);
+        headerViev.setSizeDip(Simple.MP,Simple.WC, 1.0f);
 
-        entryBox.addView(headerViev);
+        headerBox.addView(headerViev);
+
+        dateView = new GUITextView(context);
+        dateView.setTextSizeDip(GUIDefs.FONTSIZE_INFOS);
+        dateView.setSingleLine(true);
+        dateView.setSizeDip(Simple.WC,Simple.WC);
+        dateView.setText("Montag");
+
+        headerBox.addView(dateView);
 
         infoView = new GUITextView(context);
         infoView.setTextSizeDip(GUIDefs.FONTSIZE_INFOS);
@@ -61,6 +81,19 @@ public class GUIListEntry extends GUILinearLayout
         infoView.setEllipsize(TextUtils.TruncateAt.END);
 
         entryBox.addView(infoView);
+
+        actionView = new GUIRelativeLayout(context);
+        actionView.setSizeDip(Simple.WC,Simple.MP);
+        actionView.setGravity(Gravity.CENTER_VERTICAL);
+
+        addView(actionView);
+
+        actionIcon = new GUIImageView(context);
+        actionIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        actionIcon.setSizeDip(30, Simple.MP);
+        actionIcon.setPaddingDip(GUIDefs.ICON_PADD);
+
+        actionView.addView(actionIcon);
     }
 
     public void setLevel(int level)

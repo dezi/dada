@@ -1,2 +1,4 @@
+include ':aura.gui'
+include ':aura.common'
 include ':gorilla.client'
 include ':gorilla.messenger'
