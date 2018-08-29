@@ -6,8 +6,6 @@ import android.content.Intent;
 
 public class GorillaReceiver extends BroadcastReceiver
 {
-    private static final String LOGTAG = GorillaReceiver.class.getSimpleName();
-
     @Override
     public void onReceive(Context context, Intent intent)
     {

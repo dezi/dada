@@ -1,4 +1,7 @@
 include ':aura.gui'
+project(':aura.gui').projectDir = new File(settingsDir, '../Modules/aura.gui')
 include ':aura.common'
+project(':aura.common').projectDir = new File(settingsDir, '../Modules/aura.common')
 include ':gorilla.client'
+project(':gorilla.client').projectDir = new File(settingsDir, '../Modules/gorilla.client')
 include ':gorilla.messenger'

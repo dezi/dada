@@ -728,22 +728,6 @@ public class Simple
         int brightness = Math.round(hsv[2] * 100);
     }
 
-    public static void turnBeepOnOff(boolean on)
-    {
-        if ((audioManager != null) && !Simple.isTV())
-        {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            {
-                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, on
-                        ? AudioManager.ADJUST_UNMUTE : AudioManager.ADJUST_MUTE, 0);
-            }
-            else
-            {
-                audioManager.setStreamMute(AudioManager.STREAM_MUSIC, !on);
-            }
-        }
-    }
-
     public static Iterator<String> sortedIterator(Iterator<String> iterator)
     {
         ArrayList<String> list = new ArrayList<>();
