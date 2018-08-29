@@ -80,7 +80,7 @@ public class GorillaClient extends BroadcastReceiver
 
             if (onResultReceivedListener != null)
             {
-                onResultReceivedListener.onResultReceived(Json.fromStringObject(result));
+                onResultReceivedListener.onResultReceived(fromStringJSONOBject(result));
             }
 
             return;
@@ -138,9 +138,9 @@ public class GorillaClient extends BroadcastReceiver
         String uuid = UUID.randomUUID().toString();
         long time = System.currentTimeMillis();
 
-        Json.put(result, "uuid", uuid);
-        Json.put(result, "time", time);
-        Json.put(result, "status", "pending");
+        putJSON(result, "uuid", uuid);
+        putJSON(result, "time", time);
+        putJSON(result, "status", "pending");
 
         Intent requestIntent = new Intent();
 
@@ -181,6 +181,35 @@ public class GorillaClient extends BroadcastReceiver
 
     private void setOwner(String ownerUUID)
     {
+    }
+
+    public void putJSON(JSONObject json, String key, Object val)
+    {
+        try
+        {
+            json.put(key, val);
+        }
+        catch (Exception ex)
+        {
+            Log.d(LOGTAG, ex.toString());
+        }
+    }
+
+    public JSONObject fromStringJSONOBject(String jsonstr)
+    {
+        if (jsonstr != null)
+        {
+            try
+            {
+                return new JSONObject(jsonstr);
+            }
+            catch (Exception ex)
+            {
+                Log.d(LOGTAG, ex.toString());
+            }
+        }
+
+        return new JSONObject();
     }
 
     //endregion Instance implemention.
