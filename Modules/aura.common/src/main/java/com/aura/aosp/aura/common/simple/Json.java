@@ -391,31 +391,6 @@ public class Json
         return null;
     }
 
-    public static String toJavaScript(JSONObject jsonObject)
-    {
-        return (jsonObject == null) ? "{}" : Json.toPretty(jsonObject);
-    }
-
-    public static String toJavaScript(JSONArray jsonArray)
-    {
-        return (jsonArray == null) ? "[]" : Json.toPretty(jsonArray);
-    }
-
-    public static void makeFormat(JSONObject jsonObject, String key, Object... args)
-    {
-        if (jsonObject != null)
-        {
-            String value = getString(jsonObject, key);
-
-            if (value != null)
-            {
-                value = String.format(value, args);
-
-                put(jsonObject, key, value);
-            }
-        }
-    }
-
     @Nullable
     public static String toPretty(JSONObject jsonObject)
     {
@@ -527,20 +502,12 @@ public class Json
         List<JSONObject> jsonValues = new ArrayList<>();
 
         for (int inx = 0; inx < array.length(); inx++)
+        {
             jsonValues.add(getObject(array, inx));
+        }
 
         Collections.sort(jsonValues, new comparedat());
 
         return new JSONArray(jsonValues);
-    }
-
-    public static void fixUpNumber2String(JSONObject obj, String key)
-    {
-        if (has(obj, key) && (getString(obj, key) == null))
-        {
-            long val = getLong(obj, key);
-
-            put(obj, key, String.valueOf(val));
-        }
     }
 }
