@@ -49,6 +49,10 @@ public class MainActivity extends AppCompatActivity
 
     private void createLayout()
     {
+
+        List<Identity> contacts = Contacts.getAllContacts();
+        String ownerUUID = Owner.getOwnerUUIDBase64();
+
         GUIFrameLayout topFrame = new GUIFrameLayout(this);
 
         setContentView(topFrame);
@@ -59,14 +63,25 @@ public class MainActivity extends AppCompatActivity
 
         topFrame.addView(centerFrame);
 
-        GUITextView titleView = new GUITextView(this);
-        titleView.setText(R.string.select_identity);
-        titleView.setSizeDip(Simple.WC, Simple.WC);
-        titleView.setGravity(Gravity.CENTER_HORIZONTAL);
-        titleView.setPaddingDip(GUIDefs.PADDING_NORMAL);
-        titleView.setTextSizeDip(32);
+        identview = new GUITextView(this);
+        identview.setText(R.string.select_identity);
+        identview.setSizeDip(Simple.WC, Simple.WC);
+        identview.setGravity(Gravity.CENTER_HORIZONTAL);
+        identview.setPaddingDip(GUIDefs.PADDING_MEDIUM);
+        identview.setTextSizeDip(24);
 
-        centerFrame.addView(titleView);
+        centerFrame.addView(identview);
+
+        if (ownerUUID != null)
+        {
+            for (Identity identity : contacts)
+            {
+                if (identity.getUserUUIDBase64().equals(ownerUUID))
+                {
+                    identview.setText(identity.getNick());
+                }
+            }
+        }
 
         GUIScrollView identitiesScroll = new GUIScrollView(this);
         identitiesScroll.setSizeDip(Simple.WC, Simple.MP, 1.0f);
@@ -78,10 +93,6 @@ public class MainActivity extends AppCompatActivity
         identitiesView.setBackgroundColor(0x88888888);
 
         identitiesScroll.addView(identitiesView);
-
-        String ownerUUID = Owner.getOwnerUUIDBase64();
-
-        List<Identity> contacts = Contacts.getAllContacts();
 
         for (Identity identity : contacts)
         {
@@ -110,34 +121,17 @@ public class MainActivity extends AppCompatActivity
             entry.infoView.setText(info);
         }
 
-        identview = new GUITextView(this);
-        identview.setSizeDip(Simple.WC, Simple.WC);
-        identview.setPaddingDip(GUIDefs.PADDING_NORMAL);
-        identview.setTextSizeDip(48);
-
-        if (ownerUUID != null)
-        {
-            for (Identity identity : contacts)
-            {
-                if (identity.getUserUUIDBase64().equals(ownerUUID))
-                {
-                    identview.setText(identity.getNick());
-                }
-            }
-        }
-
-        centerFrame.addView(identview);
-
         GUIButtonView doneButton = new GUIButtonView(this);
 
         doneButton.setRoundedCorners(GUIDefs.ROUNDED_NORMAL, GUIDefs.COLOR_LIGHT_GRAY);
         doneButton.setText(R.string.done_button);
         doneButton.setSizeDip(Simple.WC, Simple.WC);
+        doneButton.setMarginTopDip(GUIDefs.PADDING_NORMAL);
         doneButton.setMarginBottomDip(GUIDefs.PADDING_NORMAL);
 
         doneButton.setPaddingDip(
-                GUIDefs.PADDING_XLARGE, GUIDefs.PADDING_NORMAL,
-                GUIDefs.PADDING_XLARGE, GUIDefs.PADDING_NORMAL);
+                GUIDefs.PADDING_XLARGE, GUIDefs.PADDING_SMALL,
+                GUIDefs.PADDING_XLARGE, GUIDefs.PADDING_SMALL);
 
         doneButton.setOnClickListener(new View.OnClickListener()
         {
