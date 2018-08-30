@@ -4,8 +4,7 @@ public class Log
 {
     private final static boolean debug = true;
 
-    @SuppressWarnings("MismatchedReadAndWriteOfArray")
-    private final static String[] allow = new String[]{};
+    private final static String[] allow = new String[]{ "*" };
 
     public static void d(String format, Object... args)
     {
@@ -85,12 +84,17 @@ public class Log
         {
             check = check.toLowerCase();
 
-            if (check.endsWith("*") && (check.length() > 2) && logtag.startsWith(check.substring(0, check.length() - 2)))
+            if (check.equals("*"))
             {
                 return true;
             }
 
             if (check.equalsIgnoreCase(logtag))
+            {
+                return true;
+            }
+
+            if (check.endsWith("*") && (check.length() > 2) && logtag.startsWith(check.substring(0, check.length() - 2)))
             {
                 return true;
             }

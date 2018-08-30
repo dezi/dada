@@ -57,6 +57,8 @@ public class MainActivity extends AppCompatActivity
 
         GorillaClient gc = GorillaClient.getInstance();
 
+        gc.bindGorillaService(this);
+
         gc.setOnOwnerReceivedListener(new GorillaClient.OnOwnerReceivedListener()
         {
             @Override

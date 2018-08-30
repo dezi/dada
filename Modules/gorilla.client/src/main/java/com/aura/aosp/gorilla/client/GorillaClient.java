@@ -3,11 +3,20 @@ package com.aura.aosp.gorilla.client;
 import android.annotation.SuppressLint;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
+import com.aura.aosp.aura.common.gorilla.GorillaRemote;
 
 import org.json.JSONObject;
 
@@ -37,6 +46,55 @@ public class GorillaClient extends BroadcastReceiver
         }
 
         return instance;
+    }
+
+    private ServiceConnection myConnection;
+    private GorillaRemote myService;
+    private boolean isBound;
+
+    public GorillaClient()
+    {
+        super();
+
+        myConnection = new ServiceConnection()
+        {
+            public void onServiceConnected(ComponentName className, IBinder service)
+            {
+                Log.d(LOGTAG, "onServiceConnected:");
+                myService = GorillaRemote.Stub.asInterface(service);
+                isBound = true;
+
+                sendServiceMessage();
+            }
+
+            public void onServiceDisconnected(ComponentName className)
+            {
+                Log.d(LOGTAG, "onServiceDisconnected:.");
+                myService = null;
+                isBound = false;
+            }
+        };
+    }
+
+    public void bindGorillaService(Context context)
+    {
+        Intent intent = new Intent("com.aura.android.gorillaservice.REMOTE_CONNECT");
+        intent.setPackage("com.aura.aosp.gorilla.sysapp");
+        context.bindService(intent, myConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    public void sendServiceMessage()
+    {
+        if (!isBound) return;
+
+        try
+        {
+            Log.d(LOGTAG, "sendServiceMessage: add=" + myService.addNumbers(12, 13));
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     public static class OnResultReceivedListener
