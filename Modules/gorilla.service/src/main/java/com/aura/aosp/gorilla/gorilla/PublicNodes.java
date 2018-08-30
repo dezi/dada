@@ -40,6 +40,8 @@ public class PublicNodes
         if (auraregion == null) return null;
 
         String awsregion = Regions.MapToAWS(auraregion);
+        if (awsregion == null) return null;
+
         String bucketFile = "gorilla-public-nodes-" + country + ".json";
         String bucketUrl = "https://s3." + awsregion + ".amazonaws.com/aura-public/" + bucketFile;
 

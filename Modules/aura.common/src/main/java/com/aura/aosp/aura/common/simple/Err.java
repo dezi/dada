@@ -7,7 +7,7 @@ public class Err
 {
     //region Static stuff.
 
-    private static Err lastErr;
+    private static Err lastErr = new Err("no error");
 
     @NonNull
     public static Err getLastErr()
@@ -121,6 +121,7 @@ public class Err
         lastErr = this;
     }
 
+    @Override
     public String toString()
     {
         return err;

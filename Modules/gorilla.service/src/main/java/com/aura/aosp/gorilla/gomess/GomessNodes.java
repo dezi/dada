@@ -65,9 +65,13 @@ public class GomessNodes
     @Nullable
     public static List<GomessNode> unMarshall(JSONArray jGomessNodes)
     {
-        if (jGomessNodes == null) return null;
+        if (jGomessNodes == null)
+        {
+            Err.errp();
+            return null;
+        }
 
-        List<GomessNode> GomessNodesList = new ArrayList<>();
+        List<GomessNode> gomessNodes = new ArrayList<>();
 
         for (int inx = 0; inx < jGomessNodes.length(); inx++)
         {
@@ -77,16 +81,17 @@ public class GomessNodes
             Err err = gomessNode.unMarshall(jGomessNode);
             if (err != null) continue;
 
-            GomessNodesList.add(gomessNode);
+            gomessNodes.add(gomessNode);
         }
 
-        return GomessNodesList;
+        return gomessNodes;
     }
 
     @Nullable
     private static List<GomessNode> readGomessNodes(String country)
     {
         List<PublicNode> pNodes = PublicNodes.getPublicNodes(country);
+
         if ((pNodes == null) || (pNodes.size() == 0)) return null;
 
         List<GomessNode> cNodes = null;

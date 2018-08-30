@@ -2,22 +2,17 @@ package com.aura.aosp.aura.common.simple;
 
 public class Log
 {
-    public static boolean debug = true;
+    private final static boolean debug = true;
 
-    public static String[] allow = new String[]
-            {
-            };
+    @SuppressWarnings("MismatchedReadAndWriteOfArray")
+    private final static String[] allow = new String[]{};
 
     public static void d(String format, Object... args)
     {
         d(4,format,args);
     }
 
-    public static void derr(String format, Object... args)
-    {
-        d(5,format,args);
-    }
-
+    @SuppressWarnings("SameParameterValue")
     private static void d(int index, String format, Object... args)
     {
         //
@@ -40,7 +35,7 @@ public class Log
             format = ste.getMethodName() + ": " + format;
         }
 
-        if (debug || checkLog(allow, logtag))
+        if (debug || checkLog(logtag))
         {
             android.util.Log.d(logtag, String.format(format, args));
         }
@@ -81,15 +76,16 @@ public class Log
         android.util.Log.e(logtag, String.format(format, args));
     }
 
-    private static boolean checkLog(String[] checks, String logtag)
+    @SuppressWarnings("SameParameterValue")
+    private static boolean checkLog(String logtag)
     {
         logtag = logtag.toLowerCase();
 
-        for (String check : checks)
+        for (String check : allow)
         {
             check = check.toLowerCase();
 
-            if (check.endsWith("*") && logtag.startsWith(check.substring(0, check.length() - 2)))
+            if (check.endsWith("*") && (check.length() > 2) && logtag.startsWith(check.substring(0, check.length() - 2)))
             {
                 return true;
             }

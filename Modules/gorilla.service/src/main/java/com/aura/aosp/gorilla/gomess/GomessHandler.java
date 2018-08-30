@@ -214,7 +214,7 @@ public class GomessHandler
     {
         Log.d("...");
 
-        Connect conn = new Connect(cnode.Addr, cnode.Port);
+        Connect conn = new Connect(cnode.addr, cnode.port);
         if (conn.connect() != null) return Err.getLastErr();
 
         GoprotoSession session = new GoprotoSession(conn);

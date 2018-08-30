@@ -2,9 +2,10 @@ package com.aura.aosp.aura.common.sockets;
 
 import android.support.annotation.Nullable;
 
-import java.net.Socket;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 import com.aura.aosp.aura.common.simple.Err;
@@ -12,8 +13,8 @@ import com.aura.aosp.aura.common.simple.Log;
 
 public class Connect
 {
-    private String addr;
-    private int port;
+    private final String addr;
+    private final int port;
     private Socket socket;
     private InputStream input;
     private OutputStream output;
@@ -121,6 +122,12 @@ public class Connect
     @Nullable
     public Err writeConnect(byte[] buffer)
     {
+        if (buffer == null)
+        {
+            Err.errp();
+            return null;
+        }
+
         synchronized (mutex)
         {
             try

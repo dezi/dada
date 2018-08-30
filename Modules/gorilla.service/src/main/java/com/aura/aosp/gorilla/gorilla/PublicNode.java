@@ -28,6 +28,6 @@ public class PublicNode
     @Override
     public String toString()
     {
-        return "Addr=" + Addr + " Port=" + Port;
+        return "addr=" + Addr + " port=" + Port;
     }
 }

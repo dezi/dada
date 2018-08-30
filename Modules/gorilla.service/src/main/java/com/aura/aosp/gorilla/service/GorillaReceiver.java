@@ -6,8 +6,8 @@ import android.content.Intent;
 
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Log;
-
 import com.aura.aosp.aura.common.univid.Owner;
+
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 import org.json.JSONObject;
@@ -20,7 +20,6 @@ public class GorillaReceiver extends BroadcastReceiver
         if (intent.getAction() == null)
         {
             Err.errp("no action.");
-
             return;
         }
 
