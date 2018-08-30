@@ -13,5 +13,6 @@
                 <action android:name="com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT"/>
             </intent-filter>
         </receiver>
+
     </application>
 </manifest>

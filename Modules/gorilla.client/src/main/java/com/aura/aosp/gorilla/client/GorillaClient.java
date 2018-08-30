@@ -7,12 +7,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -22,6 +18,7 @@ import org.json.JSONObject;
 
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 @SuppressLint("StaticFieldLeak")
 public class GorillaClient extends BroadcastReceiver
 {
@@ -48,7 +45,7 @@ public class GorillaClient extends BroadcastReceiver
         return instance;
     }
 
-    private ServiceConnection myConnection;
+    private final ServiceConnection myConnection;
     private GorillaRemote myService;
     private boolean isBound;
 
@@ -60,7 +57,7 @@ public class GorillaClient extends BroadcastReceiver
         {
             public void onServiceConnected(ComponentName className, IBinder service)
             {
-                Log.d(LOGTAG, "onServiceConnected:");
+                Log.d(LOGTAG, "onServiceConnected: className=" + className.toString());
                 myService = GorillaRemote.Stub.asInterface(service);
                 isBound = true;
 
@@ -83,7 +80,7 @@ public class GorillaClient extends BroadcastReceiver
         context.bindService(intent, myConnection, Context.BIND_AUTO_CREATE);
     }
 
-    public void sendServiceMessage()
+    private void sendServiceMessage()
     {
         if (!isBound) return;
 
@@ -125,7 +122,7 @@ public class GorillaClient extends BroadcastReceiver
 
     //region Instance implemention.
 
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
     private OnResultReceivedListener onResultReceivedListener;
     private OnOwnerReceivedListener onOwnerReceivedListener;
@@ -273,7 +270,7 @@ public class GorillaClient extends BroadcastReceiver
         this.onMessageReceivedListener = onMessageReceivedListener;
     }
 
-    public void putJSON(JSONObject json, String key, Object val)
+    private void putJSON(JSONObject json, String key, Object val)
     {
         try
         {
@@ -285,7 +282,7 @@ public class GorillaClient extends BroadcastReceiver
     }
 
     @Nullable
-    public JSONObject fromStringJSONOBject(String jsonstr)
+    private JSONObject fromStringJSONOBject(String jsonstr)
     {
         if (jsonstr == null) return null;
 
