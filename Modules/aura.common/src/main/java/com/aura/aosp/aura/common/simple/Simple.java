@@ -282,8 +282,9 @@ public class Simple
     public static String getHexBytesToString(byte[] bytes, int offset, int length, boolean space)
     {
         if (bytes == null) return "null";
+        if (bytes.length == 0) return "empty";
 
-        int clen = (length << 1) + (space ? (length - 1) : 0);
+        int clen = (length << 1) + (space && (length > 0) ? (length - 1) : 0);
 
         char[] hexArray = "0123456789ABCDEF".toCharArray();
         char[] hexChars = new char[ clen ];
@@ -294,7 +295,6 @@ public class Simple
         {
             if (space && (inx > offset)) hexChars[ pos++ ] = ' ';
 
-            //noinspection PointlessArithmeticExpression
             hexChars[ pos++ ] = hexArray[ (bytes[ inx ] >> 4) & 0x0f ];
             //noinspection PointlessBitwiseExpression
             hexChars[ pos++ ] = hexArray[ (bytes[ inx ] >> 0) & 0x0f ];
