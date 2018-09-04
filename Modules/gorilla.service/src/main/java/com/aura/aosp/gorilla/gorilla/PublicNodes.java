@@ -19,6 +19,7 @@ import java.util.Map;
 public class PublicNodes
 {
     private static final Map<String,List<PublicNode>> publicNodes = new HashMap<>();
+    private static final String gorillPublicBucketName = "aura-gorilla-public";
 
     @Nullable
     public static List<PublicNode> getPublicNodes(String country)
@@ -43,7 +44,11 @@ public class PublicNodes
         if (awsregion == null) return null;
 
         String bucketFile = "gorilla-public-nodes-" + country + ".json";
-        String bucketUrl = "https://s3." + awsregion + ".amazonaws.com/aura-public/" + bucketFile;
+        String bucketUrl = String.format("https://s3.%s.amazonaws.com/%s/%s",
+                awsregion,
+                gorillPublicBucketName,
+                bucketFile
+        );
 
         Log.d("bucketUrl=%s", bucketUrl);
 
