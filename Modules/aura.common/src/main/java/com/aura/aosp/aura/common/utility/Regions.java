@@ -2,6 +2,7 @@ package com.aura.aosp.aura.common.utility;
 
 import android.support.annotation.Nullable;
 
+import com.aura.aosp.aura.common.crypter.RND;
 import com.aura.aosp.aura.common.simple.Err;
 
 import java.util.HashMap;
@@ -63,6 +64,49 @@ public class Regions
     }
 
     //
+    // Aura regions short form.
+    //
+
+    private static Map<String, String> auraToShortRegions = createAuraToShortRegions();
+
+    private static Map<String, String> createAuraToShortRegions()
+    {
+        Map<String, String> initmap = new HashMap<>();
+
+        // @formatter:off
+
+        initmap.put("aura-us-central-1",   "usce1");
+
+        initmap.put("aura-us-east-1",      "usea1");
+        initmap.put("aura-us-east-2",      "usea2");
+        initmap.put("aura-us-west-1",      "uswe1");
+        initmap.put("aura-us-west-2",      "uswe2");
+
+        initmap.put("aura-ca-central-1",   "cace1");
+
+        initmap.put("aura-eu-central-1",   "euce1");
+        initmap.put("aura-eu-west-1",      "euwe1");
+        initmap.put("aura-eu-west-2",      "euwe2");
+        initmap.put("aura-eu-west-3",      "euwe3");
+
+        initmap.put("aura-ap-northeast-1", "apne1");
+        initmap.put("aura-ap-northeast-2", "apne2");
+        initmap.put("aura-ap-northeast-3", "apne3");
+        initmap.put("aura-ap-southeast-1", "apse1");
+        initmap.put("aura-ap-southeast-2", "apse2");
+        initmap.put("aura-ap-south-1",     "apso1");
+
+        initmap.put("aura-sa-east-1",      "saea1");
+
+        initmap.put("aura-af-central-1",   "afce1");
+        initmap.put("aura-ru-central-1",   "ruce1");
+
+        // @formatter:on
+
+        return initmap;
+    }
+
+    //
     // Amazon Web Services regions.
     //
 
@@ -118,6 +162,19 @@ public class Regions
         return initmap;
     }
 
+    private static Map<String, Integer> countryToAuraCode = createCountryToAuraCode();
+
+    private static Map<String, Integer> createCountryToAuraCode()
+    {
+        Map<String, Integer> initmap = new HashMap<>();
+
+        initmap.put("DE", 0x42);
+        initmap.put("US", 0x47);
+        initmap.put("VN", 0x12);
+
+        return initmap;
+    }
+
     //
     // Country to region.
     //
@@ -129,6 +186,40 @@ public class Regions
         if (region == null) Err.errp("unknown country=%s", country);
 
         return region;
+    }
+
+    //
+    // Country to country code.
+    //
+    @Nullable
+    public static Integer CountryToCode(String country)
+    {
+        Integer code = countryToAuraCode.get(country);
+
+        if (code == null) Err.errp("unknown country=%s", country);
+
+        return code;
+    }
+
+    @Nullable
+    public static byte[] randomUUIDForCountry(String country)
+    {
+        Integer code = CountryToCode(country);
+        if (code == null) return null;
+
+        while (true)
+        {
+            byte[] uuid = RND.randomUUID();
+
+            int xor = 0x00;
+
+            for (byte uuidbyte : uuid)
+            {
+                xor = xor ^ (uuidbyte & 0xff);
+            }
+
+            if (xor == code) return uuid;
+        }
     }
 
     //

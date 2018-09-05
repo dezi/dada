@@ -18,20 +18,20 @@ public class Contacts
 
         // @formatter:off
 
-        contacts.add(createContact("abi",       "DE","5d2hoSCETUK6gZ/2R0faZg==", "9qxRX4afQjmA5AgJD1hlFQ=="));
-        contacts.add(createContact("andreas",   "DE","ISz1SevwQxSgtvvY90nEQQ==", "kTpaAi0rS12ez6UCGzTm5Q=="));
-        contacts.add(createContact("dezi",      "DE","r0Z7g7cnTF6Mi5/NRyU4Yw==", "lfTBPb1qQ9akd3ltWLWxaw=="));
-        contacts.add(createContact("diana",     "DE","p+D96IBkRQKEAfvOcrmycg==", "zpfrcO2bTnOVTKCPSt6zYA=="));
-        contacts.add(createContact("laurie",    "DE","WVLHKpFJRNOxisodPZSLkw==", "dgaQPUdXRD2SydYPS762BA=="));
-        contacts.add(createContact("malte",     "DE","suHhYFrMTdC2+HcU8G6mMQ==", "x4MP2kuSQk6CK5vZgyzXfA=="));
-        contacts.add(createContact("matthias",  "DE","KTnJt4OoQFeH//++sSGF+w==", "fSaNQ5XySVeTGWnXb7kAGQ=="));
-        contacts.add(createContact("mr.hoi",    "DE","PGuS7XsrR1a+HMNCkosPJQ==", "5J1oeaPYRMeygtMvu6TxVw=="));
-        contacts.add(createContact("patrick",   "DE","Au+LSTjkTLyp1B9gDNJLmg==", "dHCFAHZ+TKik1DzFVFOAiQ=="));
-        contacts.add(createContact("test1",     "DE","slT30vl3SHWq6eliNUYutA==", "BM9VdXOhRsGONlGnswqsdw=="));
-        contacts.add(createContact("test2",     "DE","fmrJgf9ZRUmoXmV1obLe7Q==", "oUJviGv7TG60eyO9gYhc6g=="));
-        contacts.add(createContact("test3",     "DE","44IO662iS4yFQpZuKllfDw==", "FYFsXrraRqqLoCKPher94A=="));
-        contacts.add(createContact("test4",     "DE","M3hmdS3TTCmxJ2K1dvPe7w==", "e9BfWRLqQUCVug4bKnV4lw=="));
-        contacts.add(createContact("test5",     "DE","G5ZNv1JGRF2x2JxnHCrjNQ==", "hPyf3uMaSuWecQOuTAusWA=="));
+        contacts.add(createContact("abi",       "DE","1ZTtJ8s5TLezIXJI1Hdtpg==", "DChxgM55SHq5KNAnrV1Z3Q=="));
+        contacts.add(createContact("andreas",   "DE","PGw2419YRMyIIIubEYIWdQ==", "A6vvjQRTR5uNQPafdLrqgw=="));
+        contacts.add(createContact("dezi",      "DE","KutRTwvxSt6sA8nDoqVrOg==", "tB13AgMRRJeEQiAJkuSjZQ=="));
+        contacts.add(createContact("diana",     "DE","BeFrH3xeSyuiLiZwyB20Kw==", "ME4r3IxSQq681SgnskwHZg=="));
+        contacts.add(createContact("laurie",    "DE","78cV5W8dQ8eb4Ff0YwUQwg==", "pg8QyFc3T5ePKjGq3cgPrw=="));
+        contacts.add(createContact("malte",     "DE","4uccKtZ8RG2XhLw8IpxQjw==", "bsVarLYnTCWk2qmryH1DbQ=="));
+        contacts.add(createContact("matthias",  "DE","sntNpaRYRHmmL521CzeapQ==", "5Se5xssgS7uai1zgKMghiA=="));
+        contacts.add(createContact("mr.hoi",    "DE","rqJcDULVSXqUGDJs3pQmBQ==", "gJMoxnr5TsuoQZsfJlsqgw=="));
+        contacts.add(createContact("patrick",   "DE","UNYkTd3KS1maAHEMEvtnwQ==", "jE7VdkVTTZueaWPt9U7Q8Q=="));
+        contacts.add(createContact("test1",     "DE","YwltULGaRNS0PxLsUdyL3Q==", "B17gP6EHR7iG56T6yixdGQ=="));
+        contacts.add(createContact("test2",     "DE","oIJc9YHDT6emPCMlkocc9g==", "pdR2r1XRQaebhawDFJg1gA=="));
+        contacts.add(createContact("test3",     "DE","ZnSYB8ehTE2G4YYrPY1Yig==", "GtUB7VmiTYiJ2vj6vIWIvw=="));
+        contacts.add(createContact("test4",     "DE","zfpLhMdCSkamwMnSGUVURg==", "rTj8YejkSbSZZKuL7JYRDQ=="));
+        contacts.add(createContact("test5",     "DE","WrajnIYPSiqHhOQj9uTWeA==", "CAdgnoxURLOur76gmb05ng=="));
 
         // @formatter:on
 

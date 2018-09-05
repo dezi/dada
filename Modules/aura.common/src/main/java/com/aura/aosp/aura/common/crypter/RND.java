@@ -36,6 +36,8 @@ public class RND
     {
         byte[] uuid = randomBytes(16);
 
+        // variant bits; see section 4.1.1
+
         uuid[8] = (byte) ((uuid[8] & ~0xc0) | 0x80);
 
         // version 4 (pseudo-random); see section 4.1.3
@@ -49,5 +51,4 @@ public class RND
     {
         return Base64.encodeToString(randomUUID(), android.util.Base64.NO_WRAP);
     }
-
 }
