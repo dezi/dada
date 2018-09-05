@@ -39,7 +39,7 @@ public class Contacts
     }
 
     @NonNull
-    private static Identity createContact(String nick, String country, String user, String device)
+    public static Identity createContact(String nick, String country, String user, String device)
     {
         return new Identity(nick, country, user, device, Fakekey.fakeRSAPublicKey, Fakekey.fakeRSAPrivateKey);
     }

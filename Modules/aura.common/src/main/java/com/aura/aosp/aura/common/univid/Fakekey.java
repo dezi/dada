@@ -29,7 +29,7 @@ public class Fakekey
             + "d5hhp6tcjRk+GqI7EMX1D85NTCTS8cGy9cubcp6cJ9sWd0zfJy+86sF4SDJFP09hx5XoubhXZkDb4dQD"
             + "CnU1SH5etb3cMQeH3BWQIfS8E0JoC4+nr9vVxYlpLirVFvn7Sv19IUJxhmbfbosqA5ckWYRP2PTdyO+Q"
             + "qqfzKLEZNn/2jkOrLi+ZivBmx13MjoUQU9KN79v+DhwrLEK1ASGeDoBwRDxkjRmCkFtP7UFh9uy6IK+G"
-            + "bxZcV";
+            + "bxZcV6lV9KGE8pbWKuBsvaVy/uim1saIiQIDAQAB";
 
     public final static String fakeRSAPrivateKeyOld = ""
             + "MIIEpAIBAAKCAQEAxVDNf//ohaOSH3VFybRUiyEBUURwmrxuxFp+KY34e9I7m8xHqZbL7RReq/ldFPnn"

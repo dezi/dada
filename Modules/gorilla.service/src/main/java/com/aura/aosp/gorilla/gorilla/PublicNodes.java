@@ -19,7 +19,7 @@ import java.util.Map;
 public class PublicNodes
 {
     private static final Map<String,List<PublicNode>> publicNodes = new HashMap<>();
-    private static final String gorillPublicBucketName = "aura-gorilla-public";
+    private static final String gorillPublicBucketName = "aura-gorilla-euce1-public";
 
     @Nullable
     public static List<PublicNode> getPublicNodes(String country)

@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity
 
     private void createLayout()
     {
-
         List<Identity> contacts = Contacts.getAllContacts();
         String ownerUUID = Owner.getOwnerUUIDBase64();
 
