@@ -14,8 +14,8 @@ android {
         applicationId "com.aura.aosp.gorilla.messenger"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        versionCode 0
+        versionName '0.001'
         versionNameSuffix '-romantic_jackson'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

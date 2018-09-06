@@ -14,8 +14,8 @@ android {
         applicationId "com.aura.aosp.gorilla.sysapp"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        versionCode 0
+        versionName '0.001'
         versionNameSuffix '-romantic_jackson'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -24,9 +24,15 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
+            debuggable false
         }
         debug {
             signingConfig signingConfigs.debug
+            debuggable true
+            }
+        preview {
+            signingConfig signingConfigs.debug
+            debuggable true
         }
     }
     productFlavors {
