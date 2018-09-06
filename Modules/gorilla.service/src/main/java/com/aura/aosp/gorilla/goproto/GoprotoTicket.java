@@ -175,7 +175,7 @@ public class GoprotoTicket
         return size;
     }
 
-    public Err unMarshallCrypted(AES.Block aesblock, byte[] bytes)
+    public Err unMarshallCrypted(AES.AESBlock aesblock, byte[] bytes)
     {
         if (bytes == null) return Err.errp();
 
@@ -202,7 +202,7 @@ public class GoprotoTicket
         return null;
     }
 
-    public byte[] marshallRouting(AES.Block aesblock)
+    public byte[] marshallRouting(AES.AESBlock aesblock)
     {
         int usiz = GoprotoDefs.GorillaUUIDSize;
 

@@ -9,7 +9,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 
-import com.aura.aosp.aura.common.gorilla.GorillaRemote;
+import com.aura.aosp.gorilla.client.GorillaRemote;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 import com.aura.aosp.aura.common.simple.Log;

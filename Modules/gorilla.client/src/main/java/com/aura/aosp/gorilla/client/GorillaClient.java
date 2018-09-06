@@ -12,8 +12,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.aura.aosp.aura.common.gorilla.GorillaRemote;
-
 import org.json.JSONObject;
 
 import java.util.UUID;

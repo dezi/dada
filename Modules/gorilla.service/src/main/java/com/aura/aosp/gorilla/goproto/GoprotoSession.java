@@ -24,7 +24,7 @@ public class GoprotoSession
     private boolean isClosed;
 
     public byte[] AESKey;
-    public AES.Block AESBlock;
+    public AES.AESBlock AESBlock;
 
     public RSAPublicKey PeerPublicKey;
     public RSAPrivateKey ClientPrivKey;
@@ -89,7 +89,7 @@ public class GoprotoSession
         isConnected = connected;
     }
 
-    public AES.Block getAESBlock()
+    public AES.AESBlock getAESBlock()
     {
         return AESBlock;
     }

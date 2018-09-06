@@ -1,4 +1,4 @@
-package com.aura.aosp.aura.common.gorilla;
+package com.aura.aosp.gorilla.client;
 
 interface GorillaRemote
 {

@@ -20,14 +20,14 @@ public class AES
     }
 
     @Nullable
-    public static Block newAESCipher(byte[] aeskey)
+    public static AESBlock newAESCipher(byte[] aeskey)
     {
         try
         {
             SecretKeySpec skeySpec = new SecretKeySpec(aeskey, "AES");
             Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
 
-            return new Block(skeySpec, cipher);
+            return new AESBlock(skeySpec, cipher);
         }
         catch (Exception ex)
         {
@@ -37,12 +37,12 @@ public class AES
         return null;
     }
 
-    public static class Block
+    public static class AESBlock
     {
         private SecretKeySpec skeySpec;
         private Cipher cipher;
 
-        private Block(SecretKeySpec skeySpec, Cipher cipher)
+        private AESBlock(SecretKeySpec skeySpec, Cipher cipher)
         {
             this.skeySpec = skeySpec;
             this.cipher = cipher;
@@ -50,7 +50,7 @@ public class AES
     }
 
     @Nullable
-    public static byte[] encryptAESBlock(Block block, byte[]... buffers)
+    public static byte[] encryptAESBlock(AESBlock block, byte[]... buffers)
     {
         int total = 0;
 
@@ -103,13 +103,13 @@ public class AES
     @Nullable
     public static byte[] encryptAES(byte[] aeskey, byte[]... buffers)
     {
-        Block block = newAESCipher(aeskey);
+        AESBlock block = newAESCipher(aeskey);
 
         return encryptAESBlock(block, buffers);
     }
 
     @Nullable
-    public static byte[] decryptAESBlock(Block block, byte[] ciphertext)
+    public static byte[] decryptAESBlock(AESBlock block, byte[] ciphertext)
     {
         if (ciphertext.length < AESBlockSize * 2)
         {
@@ -145,7 +145,7 @@ public class AES
     @Nullable
     public static byte[] decryptAES(byte[] aeskey, byte[] ciphertext)
     {
-        Block block = newAESCipher(aeskey);
+        AESBlock block = newAESCipher(aeskey);
 
         return decryptAESBlock(block, ciphertext);
     }
