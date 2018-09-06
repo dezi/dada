@@ -16,6 +16,7 @@ android {
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
+        versionNameSuffix '-romantic_jackson'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
