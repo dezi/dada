@@ -30,7 +30,7 @@ android {
             signingConfig signingConfigs.debug
             debuggable true
             }
-        preview {
+        team {
             signingConfig signingConfigs.debug
             debuggable true
         }

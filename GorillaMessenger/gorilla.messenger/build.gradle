@@ -28,6 +28,9 @@ android {
         debug {
             signingConfig signingConfigs.debug
         }
+        team {
+            signingConfig signingConfigs.debug
+        }
     }
     productFlavors {
     }
