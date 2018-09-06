@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        debug {
+            keyAlias 'debug'
+            keyPassword 'debugdat'
+            storeFile file('/Users/dezi/aura/dada/GorillaSysapp/debugkeystore.jks')
+            storePassword 'debugdat'
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.aura.aosp.gorilla.sysapp"
@@ -14,6 +22,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+        debug {
+            signingConfig signingConfigs.debug
         }
     }
     productFlavors {
@@ -22,11 +34,9 @@ android {
 
 dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
-
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-
     implementation project(':aura.gui')
     implementation project(':aura.common')
     implementation project(':gorilla.service')

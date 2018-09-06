@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        debug {
+            keyAlias 'debug'
+            keyPassword 'debugdat'
+            storeFile file('/Users/dezi/aura/dada/GorillaMessenger/debugkeystore.jks')
+            storePassword 'debugdat'
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.aura.aosp.gorilla.messenger"
@@ -15,6 +23,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+        debug {
+            signingConfig signingConfigs.debug
         }
     }
     productFlavors {

@@ -1,15 +1,15 @@
 package com.aura.aosp.gorilla.client;
 
 import android.annotation.SuppressLint;
+import android.support.annotation.Nullable;
 
 import android.content.BroadcastReceiver;
+import android.content.ServiceConnection;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -64,7 +64,7 @@ public class GorillaClient extends BroadcastReceiver
 
             public void onServiceDisconnected(ComponentName className)
             {
-                Log.d(LOGTAG, "onServiceDisconnected:.");
+                Log.d(LOGTAG, "onServiceDisconnected: ...");
                 myService = null;
                 isBound = false;
             }
@@ -73,7 +73,8 @@ public class GorillaClient extends BroadcastReceiver
 
     public void bindGorillaService(Context context)
     {
-        Intent intent = new Intent("com.aura.android.gorillaservice.REMOTE_CONNECT");
+        Intent intent = new Intent();
+        intent.setAction("com.aura.android.gorillaservice.REMOTE_CONNECT");
         intent.setPackage("com.aura.aosp.gorilla.sysapp");
         context.bindService(intent, myConnection, Context.BIND_AUTO_CREATE);
     }
