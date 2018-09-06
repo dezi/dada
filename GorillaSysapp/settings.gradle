@@ -7,4 +7,7 @@ project(':aura.common').projectDir = new File(settingsDir, '../Modules/aura.comm
 include ':gorilla.service'
 project(':gorilla.service').projectDir = new File(settingsDir, '../Modules/gorilla.service')
 
+include ':gorilla.client'
+project(':gorilla.client').projectDir = new File(settingsDir, '../Modules/gorilla.client')
+
 include ':gorilla.sysapp'

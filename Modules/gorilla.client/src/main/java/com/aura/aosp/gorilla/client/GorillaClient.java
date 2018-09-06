@@ -255,6 +255,7 @@ public class GorillaClient extends BroadcastReceiver
         }
     }
 
+
     public void setOnResultReceivedListener(OnResultReceivedListener onResultReceivedListener)
     {
         this.onResultReceivedListener = onResultReceivedListener;

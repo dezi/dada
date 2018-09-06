@@ -29,4 +29,5 @@ dependencies {
     implementation project(':aura.gui')
     implementation project(':aura.common')
     implementation project(':gorilla.service')
+    implementation project(':gorilla.client')
 }

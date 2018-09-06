@@ -29,21 +29,9 @@ public class GorillaReceiver extends BroadcastReceiver
             return;
         }
 
-        if (intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_PAYLOAD"))
-        {
-            recvPayload(context, intent);
-            return;
-        }
-
         if (intent.getAction().equals("com.aura.aosp.gorilla.service.SEND_PAYLOAD"))
         {
             sendPayload(context, intent);
-            return;
-        }
-
-        if (intent.getAction().equals("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT"))
-        {
-            sendPayloadResult(context, intent);
             return;
         }
 
