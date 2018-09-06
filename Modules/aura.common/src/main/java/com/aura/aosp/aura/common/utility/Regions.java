@@ -3,6 +3,7 @@ package com.aura.aosp.aura.common.utility;
 import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.common.crypter.RND;
+import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.simple.Err;
 
 import java.util.HashMap;
@@ -209,7 +210,7 @@ public class Regions
 
         while (true)
         {
-            byte[] uuid = RND.randomUUID();
+            byte[] uuid = UID.randomUUID();
 
             int xor = 0x00;
 

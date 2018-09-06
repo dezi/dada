@@ -14,6 +14,7 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 @SuppressWarnings("unused")
@@ -41,56 +42,6 @@ public class GorillaClient extends BroadcastReceiver
         }
 
         return instance;
-    }
-
-    private final ServiceConnection myConnection;
-    private GorillaRemote myService;
-    private boolean isBound;
-
-    public GorillaClient()
-    {
-        super();
-
-        myConnection = new ServiceConnection()
-        {
-            public void onServiceConnected(ComponentName className, IBinder service)
-            {
-                Log.d(LOGTAG, "onServiceConnected: className=" + className.toString());
-                myService = GorillaRemote.Stub.asInterface(service);
-                isBound = true;
-
-                sendServiceMessage();
-            }
-
-            public void onServiceDisconnected(ComponentName className)
-            {
-                Log.d(LOGTAG, "onServiceDisconnected: ...");
-                myService = null;
-                isBound = false;
-            }
-        };
-    }
-
-    public void bindGorillaService(Context context)
-    {
-        Intent intent = new Intent();
-        intent.setAction("com.aura.android.gorillaservice.REMOTE_CONNECT");
-        intent.setPackage("com.aura.aosp.gorilla.sysapp");
-        context.bindService(intent, myConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    private void sendServiceMessage()
-    {
-        if (!isBound) return;
-
-        try
-        {
-            Log.d(LOGTAG, "sendServiceMessage: add=" + myService.addNumbers(12, 13));
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
     }
 
     public static class OnResultReceivedListener
@@ -123,9 +74,59 @@ public class GorillaClient extends BroadcastReceiver
 
     private final Handler handler = new Handler();
 
+    private final ServiceConnection serviceConnection;
+    private GorillaRemote gorillaRemote;
+    private boolean isBound;
+
     private OnResultReceivedListener onResultReceivedListener;
     private OnOwnerReceivedListener onOwnerReceivedListener;
     private OnMessageReceivedListener onMessageReceivedListener;
+
+    public GorillaClient()
+    {
+        super();
+
+        serviceConnection = new ServiceConnection()
+        {
+            public void onServiceConnected(ComponentName className, IBinder service)
+            {
+                Log.d(LOGTAG, "onServiceConnected: className=" + className.toString());
+                gorillaRemote = GorillaRemote.Stub.asInterface(service);
+                isBound = true;
+
+                sendServiceMessage();
+            }
+
+            public void onServiceDisconnected(ComponentName className)
+            {
+                Log.d(LOGTAG, "onServiceDisconnected: className=" + className.toString());
+                gorillaRemote = null;
+                isBound = false;
+            }
+        };
+    }
+
+    public void bindGorillaService(Context context)
+    {
+        Intent intent = new Intent();
+        intent.setAction("com.aura.android.gorillaservice.REMOTE_CONNECT");
+        intent.setPackage("com.aura.aosp.gorilla.sysapp");
+        context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private void sendServiceMessage()
+    {
+        if (!isBound) return;
+
+        try
+        {
+            Log.d(LOGTAG, "sendServiceMessage: add=" + gorillaRemote.addNumbers(12, 13));
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
 
     @Override
     public void onReceive(Context context, Intent intent)
@@ -164,7 +165,7 @@ public class GorillaClient extends BroadcastReceiver
         {
             JSONObject result = fromStringJSONOBject(intent.getStringExtra("result"));
 
-            Log.d(LOGTAG,"onReceive: SEND_PAYLOAD_RESULT result=" + result);
+            Log.d(LOGTAG, "onReceive: SEND_PAYLOAD_RESULT result=" + result);
 
             if (onResultReceivedListener != null)
             {
@@ -183,7 +184,7 @@ public class GorillaClient extends BroadcastReceiver
             String device = intent.getStringExtra("device");
             String payload = intent.getStringExtra("payload");
 
-            Log.d(LOGTAG,"onReceive: RECV_PAYLOAD uuid=" + uuid + " time=" + time + " sender=" + sender + " device=" + device + " payload=" + payload);
+            Log.d(LOGTAG, "onReceive: RECV_PAYLOAD uuid=" + uuid + " time=" + time + " sender=" + sender + " device=" + device + " payload=" + payload);
 
             if (onMessageReceivedListener != null)
             {
@@ -225,8 +226,14 @@ public class GorillaClient extends BroadcastReceiver
     {
         JSONObject result = new JSONObject();
 
-        String uuid = UUID.randomUUID().toString();
+        UUID uuid1 = UUID.randomUUID();
+        String uuid = uuid1.toString();
         long time = System.currentTimeMillis();
+
+        Log.d(LOGTAG, "sendPayload: uuid=" + uuid);
+
+        byte[] uuidbytes = asBytes(uuid1);
+        Log.d(LOGTAG, "sendPayload: hexu=" + getHexBytesToString(uuidbytes, 0, uuidbytes.length, false));
 
         putJSON(result, "uuid", uuid);
         putJSON(result, "time", time);
@@ -295,6 +302,46 @@ public class GorillaClient extends BroadcastReceiver
             Log.d(LOGTAG, ex.toString());
             return null;
         }
+    }
+
+    private UUID asUuid(byte[] bytes)
+    {
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+        long firstLong = bb.getLong();
+        long secondLong = bb.getLong();
+        return new UUID(firstLong, secondLong);
+    }
+
+    private byte[] asBytes(UUID uuid)
+    {
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        return bb.array();
+    }
+
+    private String getHexBytesToString(byte[] bytes, int offset, int length, boolean space)
+    {
+        if (bytes == null) return "null";
+        if (bytes.length == 0) return "empty";
+
+        int clen = (length << 1) + (space && (length > 0) ? (length - 1) : 0);
+
+        char[] hexArray = "0123456789ABCDEF".toCharArray();
+        char[] hexChars = new char[ clen ];
+
+        int pos = 0;
+
+        for (int inx = offset; inx < (length + offset); inx++)
+        {
+            if (space && (inx > offset)) hexChars[ pos++ ] = ' ';
+
+            hexChars[ pos++ ] = hexArray[ (bytes[ inx ] >> 4) & 0x0f ];
+            //noinspection PointlessBitwiseExpression
+            hexChars[ pos++ ] = hexArray[ (bytes[ inx ] >> 0) & 0x0f ];
+        }
+
+        return String.valueOf(hexChars);
     }
 
     //endregion Instance implemention.

@@ -2,10 +2,11 @@ package com.aura.aosp.aura.common.crypter;
 
 import android.support.annotation.Nullable;
 
+import java.security.MessageDigest;
+import java.util.Arrays;
+
 import com.aura.aosp.aura.common.simple.Err;
 
-import java.util.Arrays;
-import java.security.MessageDigest;
 
 public class SHA
 {
