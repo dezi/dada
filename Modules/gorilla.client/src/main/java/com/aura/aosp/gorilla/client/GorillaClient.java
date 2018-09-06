@@ -75,7 +75,7 @@ public class GorillaClient extends BroadcastReceiver
     private final Handler handler = new Handler();
 
     private final ServiceConnection serviceConnection;
-    private GorillaRemote gorillaRemote;
+    private IGorillaRemote gorillaRemote;
     private boolean isBound;
 
     private OnResultReceivedListener onResultReceivedListener;
@@ -91,7 +91,7 @@ public class GorillaClient extends BroadcastReceiver
             public void onServiceConnected(ComponentName className, IBinder service)
             {
                 Log.d(LOGTAG, "onServiceConnected: className=" + className.toString());
-                gorillaRemote = GorillaRemote.Stub.asInterface(service);
+                gorillaRemote = IGorillaRemote.Stub.asInterface(service);
                 isBound = true;
 
                 sendServiceMessage();

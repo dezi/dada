@@ -98,7 +98,7 @@ public class GomessNodes
 
         while (pNodes.size() > 0)
         {
-            int index = RND.randomInt(pNodes.size());
+            int index = RND.randomIntn(pNodes.size());
 
             PublicNode pNode = pNodes.get(index);
 

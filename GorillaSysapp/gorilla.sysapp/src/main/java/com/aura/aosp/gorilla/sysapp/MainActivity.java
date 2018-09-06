@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.aura.aosp.aura.common.crypter.RND;
+import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
@@ -152,7 +153,7 @@ public class MainActivity extends AppCompatActivity
         if (owner == null) return;
 
         long time = System.currentTimeMillis();
-        String uuid = RND.randomUUIDBase64();
+        String uuid = UID.randomUUIDBase64();
 
         String apkname = getPackageName();
         String userUUID = owner.getUserUUIDBase64();

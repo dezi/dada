@@ -1,6 +1,6 @@
 package com.aura.aosp.gorilla.client;
 
-interface GorillaRemote
+interface IGorillaRemote
 {
     int addNumbers(int int1, int int2);
 }
