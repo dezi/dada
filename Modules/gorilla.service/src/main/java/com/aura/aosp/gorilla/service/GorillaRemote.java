@@ -1,17 +1,19 @@
 package com.aura.aosp.gorilla.service;
 
 import android.support.annotation.Nullable;
+
 import android.util.Base64;
 
 import com.aura.aosp.aura.common.crypter.RND;
-import com.aura.aosp.gorilla.client.IGorillaRemote;
-
+import com.aura.aosp.aura.common.crypter.SHA;
+import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Log;
 
-import java.security.MessageDigest;
+import com.aura.aosp.gorilla.client.IGorillaRemote;
 
 public class GorillaRemote extends IGorillaRemote.Stub
 {
+    @Override
     public void sendClientSecret(String apkname, String clientSecret)
     {
         Log.d("apkname=%s clientSecret=%s",apkname, clientSecret);
@@ -23,19 +25,20 @@ public class GorillaRemote extends IGorillaRemote.Stub
         GorillaMapper.setServerSecret(apkname, serverSecretBytes);
 
         String serverSecret = Base64.encodeToString(serverSecretBytes, Base64.NO_WRAP);
-        String challenge = createSHASignatureBase64(clientSecretBytes);
+        String challenge = SHA.createSHASignatureBase64(clientSecretBytes);
 
         GorillaSender.sendBroadCastSecret(apkname, serverSecret, challenge);
     }
 
+    @Override
     public boolean validateConnect(String apkname, String challenge)
     {
         byte[] serverSecretBytes = GorillaMapper.getServerSecret(apkname);
-        String solution = createSHASignatureBase64(serverSecretBytes);
+        String solution = SHA.createSHASignatureBase64(serverSecretBytes);
 
         if ((challenge == null) || (solution == null) || ! challenge.equals(solution))
         {
-            Log.e("failed!");
+            Log.e("challenge failed!");
             return false;
         }
 
@@ -44,39 +47,26 @@ public class GorillaRemote extends IGorillaRemote.Stub
         return true;
     }
 
+    @Override
+    public String getOwnerUUID(String apkname, String checksum)
+    {
+        byte[] serverSecretBytes = GorillaMapper.getServerSecret(apkname);
+        String solution = SHA.createSHASignatureBase64(serverSecretBytes, apkname.getBytes());
+
+        if ((checksum == null) || (solution == null) || ! checksum.equals(solution))
+        {
+            Log.e("checksum failed!");
+            return null;
+        }
+
+        return Owner.getOwnerUUIDBase64();
+    }
+
+    @Override
     public int addNumbers(int int1, int int2)
     {
         Log.d("...");
 
         return int1 + int2;
     }
-
-    private static String createSHASignatureBase64(byte[] secret, byte[]... buffers)
-    {
-        return Base64.encodeToString(createSHASignature(secret, buffers), Base64.NO_WRAP);
-    }
-
-    @Nullable
-    private static byte[] createSHASignature(byte[] secret, byte[]... buffers)
-    {
-        try
-        {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-
-            md.update(secret);
-
-            for (byte[] buffer : buffers)
-            {
-                md.update(buffer);
-            }
-
-            return md.digest();
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-            return null;
-        }
-    }
-
 }

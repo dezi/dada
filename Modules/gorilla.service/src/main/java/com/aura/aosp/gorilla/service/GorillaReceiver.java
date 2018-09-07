@@ -61,19 +61,6 @@ public class GorillaReceiver extends BroadcastReceiver
         context.sendBroadcast(responseIntent);
     }
 
-    private void recvPayload(Context context, Intent intent)
-    {
-        long time = intent.getLongExtra("time", -1);
-        String uuid = intent.getStringExtra("uuid");
-        String sender = intent.getStringExtra("sender");
-        String device = intent.getStringExtra("device");
-        String payload = intent.getStringExtra("payload");
-
-        Log.d("uuid=" + uuid + " time=" + time);
-        Log.d("sender=" + sender + " device=" + device);
-        Log.d("payload=" + payload);
-    }
-
     private void sendPayload(Context context, Intent intent)
     {
         String apkname = intent.getStringExtra("apkname");
@@ -103,13 +90,6 @@ public class GorillaReceiver extends BroadcastReceiver
         responseIntent.putExtra("result", result.toString());
 
         context.sendBroadcast(responseIntent);
-    }
-
-    private void sendPayloadResult(Context context, Intent intent)
-    {
-        String result = intent.getStringExtra("result");
-
-        Log.d("result=%s", result);
     }
 }
 

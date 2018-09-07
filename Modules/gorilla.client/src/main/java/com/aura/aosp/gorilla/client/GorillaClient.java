@@ -67,6 +67,7 @@ public class GorillaClient
 
     private ServiceConnection serviceConnection;
     private IGorillaRemote gorillaRemote;
+    private String ownerUUID;
 
     private String apkname;
     private boolean validated;
@@ -179,11 +180,46 @@ public class GorillaClient
 
             validated = gr.validateConnect(apkname, challenge);
 
-            Log.d(LOGTAG, "receiveServerSecret: validated=" + validated);
+            if (! validated)
+            {
+                Log.e(LOGTAG, "receiveServerSecret: validate failed!");
+                return;
+            }
+
+            Log.d(LOGTAG, "receiveServerSecret: validated.");
+
+            String checksum = createSHASignatureBase64(serverSecret, apkname.getBytes());
+
+            receiveOwner(gr.getOwnerUUID(apkname, checksum));
         }
         catch (Exception ex)
         {
             ex.printStackTrace();
+        }
+    }
+
+    private void receiveOwner(String ownerUUID)
+    {
+        this.ownerUUID = ownerUUID;
+
+        Log.d(LOGTAG, "receiveOwner: ownerUUID=" + ownerUUID);
+
+        final JSONObject owner = new JSONObject();
+
+        putJSON(owner, "ownerUUID", ownerUUID);
+
+        final OnOwnerReceivedListener listener = onOwnerReceivedListener;
+
+        if (listener != null)
+        {
+            handler.post(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    listener.onOwnerReceived(owner);
+                }
+            });
         }
     }
 
@@ -215,21 +251,6 @@ public class GorillaClient
         }
     }
 
-    private void testServiceMessage()
-    {
-        IGorillaRemote gr = gorillaRemote;
-        if (gr == null) return;
-
-        try
-        {
-            Log.d(LOGTAG, "testServiceMessage: add=" + gr.addNumbers(12, 13));
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-
     void onReceive(Context context, Intent intent)
     {
         if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_SECRET"))
@@ -240,27 +261,7 @@ public class GorillaClient
 
         if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_OWNER"))
         {
-            final String ownerUUID = intent.getStringExtra("ownerUUID");
-            final JSONObject owner = new JSONObject();
-
-            putJSON(owner, "ownerUUID", ownerUUID);
-
-            Log.d(LOGTAG, "onReceive: RECV_OWNER: ownerUUID=" + ownerUUID);
-
-            final OnOwnerReceivedListener listener = onOwnerReceivedListener;
-
-            if (listener != null)
-            {
-                handler.post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        listener.onOwnerReceived(owner);
-                    }
-                });
-            }
-
+            receiveOwner(intent.getStringExtra("ownerUUID"));
             return;
         }
 

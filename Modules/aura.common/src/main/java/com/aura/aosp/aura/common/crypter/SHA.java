@@ -1,12 +1,12 @@
 package com.aura.aosp.aura.common.crypter;
 
 import android.support.annotation.Nullable;
+import android.util.Base64;
 
 import java.security.MessageDigest;
 import java.util.Arrays;
 
 import com.aura.aosp.aura.common.simple.Err;
-
 
 public class SHA
 {
@@ -31,6 +31,12 @@ public class SHA
             Err.errp(ex);
             return null;
         }
+    }
+
+    @Nullable
+    public static String createSHASignatureBase64(byte[] secret, byte[]... buffers)
+    {
+        return Base64.encodeToString(createSHASignature(secret, buffers), Base64.NO_WRAP);
     }
 
     public static Err verifySHASignature(byte[] secret, byte[] signature, byte[]... buffers)
