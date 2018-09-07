@@ -30,6 +30,7 @@ android {
         }
         team {
             signingConfig signingConfigs.debug
+            debuggable true
         }
     }
     productFlavors {

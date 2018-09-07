@@ -7,6 +7,7 @@ import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.utility.Regions;
+import com.aura.aosp.gorilla.service.BuildConfig;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,6 +36,7 @@ public class PublicNodes
     }
 
     @Nullable
+    @SuppressWarnings("ConstantConditions")
     private static List<PublicNode> readPublicNodes(String country)
     {
         String auraregion = Regions.CountryToRegion(country);
@@ -43,10 +45,16 @@ public class PublicNodes
         String awsregion = Regions.MapToAWS(auraregion);
         if (awsregion == null) return null;
 
+        String version = BuildConfig.BUILD_TYPE;
+
+        if (version.equals("debug")) version = "dev";
+        if (version.equals("release")) version = "prod";
+
         String bucketFile = "gorilla-public-nodes-" + country + ".json";
-        String bucketUrl = String.format("https://s3.%s.amazonaws.com/%s/%s",
+        String bucketUrl = String.format("https://s3.%s.amazonaws.com/%s/%s/%s",
                 awsregion,
                 gorillPublicBucketName,
+                version,
                 bucketFile
         );
 

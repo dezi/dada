@@ -23,8 +23,7 @@
         <service
             android:name="com.aura.aosp.gorilla.service.GorillaService"
             android:enabled="true"
-            android:exported="true"
-            android:permission="com.aura.aosp.gorillaservice.MESSAGE_PERMISSION">
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="com.aura.android.gorillaservice.START_SERVICE" />
@@ -36,8 +35,7 @@
         <receiver
             android:name="com.aura.aosp.gorilla.service.GorillaReceiver"
             android:enabled="true"
-            android:exported="true"
-            android:permission="com.aura.android.gorillaservice.MESSAGE_PERMISSION">
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="com.aura.aosp.gorilla.service.WANT_OWNER" />
