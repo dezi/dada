@@ -108,9 +108,12 @@ public class GorillaClient extends BroadcastReceiver
 
     public void bindGorillaService(Context context)
     {
+        Log.d(LOGTAG, "bindGorillaService: ...");
+
         Intent intent = new Intent();
-        intent.setAction("com.aura.android.gorillaservice.REMOTE_CONNECT");
         intent.setPackage("com.aura.aosp.gorilla.sysapp");
+        intent.setAction("com.aura.android.gorillaservice.REMOTE_CONNECT");
+
         context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 

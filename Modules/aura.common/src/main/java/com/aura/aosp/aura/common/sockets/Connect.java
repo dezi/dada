@@ -97,7 +97,19 @@ public class Connect
             {
                 try
                 {
+                    //
+                    // Real bullshit implementation of InputStream.read:
+                    //
+                    // DOES NOT throw execption on broken pipe but returns -1.
+                    //
+
                     int xfer = input.read(buffer, offset, size - offset);
+
+                    if (xfer < 0)
+                    {
+                        Err.errp("broken pipe");
+                        return null;
+                    }
 
                     offset += xfer;
 
@@ -106,10 +118,16 @@ public class Connect
                 catch (SocketTimeoutException ignore)
                 {
                 }
+                catch (Exception ex)
+                {
+                    Err.errp(ex);
+                    return null;
+                }
             }
 
             return buffer;
         }
+
         catch (Exception ex)
         {
             disconnect();

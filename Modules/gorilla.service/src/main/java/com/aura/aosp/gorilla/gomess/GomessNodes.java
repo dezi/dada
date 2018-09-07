@@ -26,6 +26,14 @@ public class GomessNodes
 {
     private static final Map<String,List<GomessNode>> GomessNodes = new HashMap<>();
 
+    public static void removeDeadNode(String country, GomessNode cNode)
+    {
+        List<GomessNode> cNodes = getGomessNodes(country);
+        if (cNodes == null) return;
+
+        cNodes.remove(cNode);
+    }
+
     @Nullable
     public static GomessNode getBestNode(String country, Double lat, Double lon)
     {
@@ -45,7 +53,7 @@ public class GomessNodes
             }
 
             Simple.sleep(sleep * 1000);
-            if (sleep < 512) sleep = sleep * 2;
+            if (sleep < 64) sleep = sleep * 2;
         }
     }
 

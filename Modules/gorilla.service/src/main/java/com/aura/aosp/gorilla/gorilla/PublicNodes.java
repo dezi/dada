@@ -51,6 +51,7 @@ public class PublicNodes
         if (version.equals("release")) version = "prod";
 
         String bucketFile = "gorilla-public-nodes-" + country + ".json";
+
         String bucketUrl = String.format("https://s3.%s.amazonaws.com/%s/%s/%s",
                 awsregion,
                 gorillPublicBucketName,

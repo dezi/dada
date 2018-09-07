@@ -61,12 +61,28 @@ public class GoprotoSession
     @Nullable
     public byte[] readSession(int size)
     {
-        return conn.readConnect(size);
+        try
+        {
+            return conn.readConnect(size);
+        }
+        catch (Exception ex)
+        {
+            Err.err(ex);
+            return null;
+        }
     }
 
     public Err writeSession(byte[] buffer)
     {
-        return conn.writeConnect(buffer);
+        try
+        {
+            return conn.writeConnect(buffer);
+        }
+        catch (Exception ex)
+        {
+            Err.err(ex);
+            return null;
+        }
     }
 
     public boolean isClosed()

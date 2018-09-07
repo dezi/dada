@@ -148,6 +148,8 @@ public class GomessHandler
 
                 Err err = handleSession(clientNode);
                 if (err != null) Log.e("err=%s", err);
+
+                GomessNodes.removeDeadNode("DE", clientNode);
             }
         }
     };
