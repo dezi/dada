@@ -7,8 +7,6 @@ import android.view.View;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.aura.aosp.aura.common.crypter.RND;
-import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
@@ -26,7 +24,6 @@ import com.aura.aosp.aura.gui.views.GUITextView;
 
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
-import com.aura.aosp.gorilla.R;
 
 import org.json.JSONObject;
 
@@ -46,8 +43,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         createLayout();
-
-        sendMessage();
     }
 
     private void createLayout()
@@ -147,24 +142,7 @@ public class MainActivity extends AppCompatActivity
         centerFrame.addView(doneButton);
     }
 
-    private void sendMessageOld()
-    {
-        Identity owner = Owner.getOwnerIdentity();
-        if (owner == null) return;
-
-        long time = System.currentTimeMillis();
-        String uuid = UID.randomUUIDBase64();
-
-        String apkname = getPackageName();
-        String userUUID = owner.getUserUUIDBase64();
-        String deviceUUID = owner.getDeviceUUIDBase64();
-        String payload = "Huhu";
-
-        JSONObject result = GomessHandler.getInstance().sendPayload(uuid, time, apkname, userUUID, deviceUUID, payload);
-        Log.d(LOGTAG, "sendPayloadTest: result=" + result.toString());
-    }
-
-    private void sendMessage()
+    private void testConnect()
     {
         final GorillaClient gc = GorillaClient.getInstance();
 

@@ -46,4 +46,18 @@ public class GorillaSender
 
         return null;
     }
+
+    public static Err sendBroadCastSecret(String apkname, String serverSecret, String challenge)
+    {
+        Intent secretIntent = new Intent("com.aura.aosp.gorilla.service.RECV_SECRET");
+
+        secretIntent.setPackage(apkname);
+
+        secretIntent.putExtra("serverSecret", serverSecret);
+        secretIntent.putExtra("challenge", challenge);
+
+        GorillaBase.getAppContext().sendBroadcast(secretIntent);
+
+        return null;
+    }
 }

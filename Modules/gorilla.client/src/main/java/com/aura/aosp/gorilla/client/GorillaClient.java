@@ -3,44 +3,34 @@ package com.aura.aosp.gorilla.client;
 import android.annotation.SuppressLint;
 import android.support.annotation.Nullable;
 
-import android.content.BroadcastReceiver;
 import android.content.ServiceConnection;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Base64;
 import android.util.Log;
 
 import org.json.JSONObject;
 
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.UUID;
 
 @SuppressWarnings("unused")
 @SuppressLint("StaticFieldLeak")
-public class GorillaClient extends BroadcastReceiver
+public class GorillaClient
 {
     private static final String LOGTAG = GorillaClient.class.getSimpleName();
 
     //region Static implemention.
 
-    private static final Object mutex = new Object();
-    private static GorillaClient instance;
+    private static GorillaClient instance = new GorillaClient();
 
     public static GorillaClient getInstance()
     {
-        if (instance == null)
-        {
-            synchronized (mutex)
-            {
-                if (instance == null)
-                {
-                    instance = new GorillaClient();
-                }
-            }
-        }
-
         return instance;
     }
 
@@ -72,58 +62,92 @@ public class GorillaClient extends BroadcastReceiver
 
     //region Instance implemention.
 
-    private final Handler handler = new Handler();
+    private Context context;
+    private Handler handler;
 
-    private final ServiceConnection serviceConnection;
+    private ServiceConnection serviceConnection;
     private IGorillaRemote gorillaRemote;
-    private boolean isBound;
+
+    private String apkname;
+    private boolean validated;
+    private byte[] clientSecret;
+    private byte[] serverSecret;
 
     private OnResultReceivedListener onResultReceivedListener;
     private OnOwnerReceivedListener onOwnerReceivedListener;
     private OnMessageReceivedListener onMessageReceivedListener;
 
-    public GorillaClient()
+    public void bindGorillaService(Context context)
     {
-        super();
+        Log.d(LOGTAG, "bindGorillaService: ...");
+
+        this.context = context;
+        this.handler = new Handler();
+        this.apkname = context.getPackageName();
 
         serviceConnection = new ServiceConnection()
         {
             public void onServiceConnected(ComponentName className, IBinder service)
             {
                 Log.d(LOGTAG, "onServiceConnected: className=" + className.toString());
-                gorillaRemote = IGorillaRemote.Stub.asInterface(service);
-                isBound = true;
 
-                sendServiceMessage();
+                gorillaRemote = IGorillaRemote.Stub.asInterface(service);
+
+                sendClientSecret();
             }
 
             public void onServiceDisconnected(ComponentName className)
             {
                 Log.d(LOGTAG, "onServiceDisconnected: className=" + className.toString());
+
                 gorillaRemote = null;
-                isBound = false;
+
+                validated = false;
+                clientSecret = null;
+                serverSecret = null;
+
+                handler.post(serviceConnector);
             }
         };
+
+        handler.post(serviceConnector);
     }
 
-    public void bindGorillaService(Context context)
+    private final Runnable serviceConnector = new Runnable()
     {
-        Log.d(LOGTAG, "bindGorillaService: ...");
+        @Override
+        public void run()
+        {
+            if (gorillaRemote == null)
+            {
+                Log.d(LOGTAG, "serviceConnector: ...");
 
-        Intent intent = new Intent();
-        intent.setPackage("com.aura.aosp.gorilla.sysapp");
-        intent.setAction("com.aura.android.gorillaservice.REMOTE_CONNECT");
+                Intent intent = new Intent();
+                intent.setPackage("com.aura.aosp.gorilla.sysapp");
+                intent.setAction("com.aura.android.gorillaservice.REMOTE_CONNECT");
 
-        context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-    }
+                context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
-    private void sendServiceMessage()
+                handler.postDelayed(serviceConnector, 1000);
+            }
+        }
+    };
+
+    private void sendClientSecret()
     {
-        if (!isBound) return;
+        IGorillaRemote gr = gorillaRemote;
+        if (gr == null) return;
 
         try
         {
-            Log.d(LOGTAG, "sendServiceMessage: add=" + gorillaRemote.addNumbers(12, 13));
+            clientSecret = new byte[16];
+            SecureRandom random = new SecureRandom();
+            random.nextBytes(clientSecret);
+
+            String secret = Base64.encodeToString(clientSecret, Base64.NO_WRAP);
+            gr.sendClientSecret(apkname, secret);
+
+            Log.d(LOGTAG, "sendClientSecret: clientSecret=" + secret);
         }
         catch (Exception ex)
         {
@@ -131,21 +155,99 @@ public class GorillaClient extends BroadcastReceiver
         }
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent)
+    private void receiveServerSecret(Context context, Intent intent)
     {
-        getInstance().onReceiveInstance(context, intent);
+        IGorillaRemote gr = gorillaRemote;
+        if (gr == null) return;
+
+        try
+        {
+            String secret = intent.getStringExtra("serverSecret");
+            String challenge = intent.getStringExtra("challenge");
+            String solution = createSHASignatureBase64(clientSecret);
+
+            if ((challenge == null) || (solution == null) || !challenge.equals(solution))
+            {
+                Log.e(LOGTAG, "receiveServerSecret: failed!");
+                return;
+            }
+
+            serverSecret = Base64.decode(secret, Base64.DEFAULT);
+            Log.d(LOGTAG, "receiveServerSecret: serverSecret=" + secret);
+
+            challenge = createSHASignatureBase64(serverSecret);
+
+            validated = gr.validateConnect(apkname, challenge);
+
+            Log.d(LOGTAG, "receiveServerSecret: validated=" + validated);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
-    private void onReceiveInstance(Context context, Intent intent)
+    private static String createSHASignatureBase64(byte[] secret, byte[]... buffers)
     {
+        return Base64.encodeToString(createSHASignature(secret, buffers), Base64.NO_WRAP);
+    }
+
+    @Nullable
+    private static byte[] createSHASignature(byte[] secret, byte[]... buffers)
+    {
+        try
+        {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+
+            md.update(secret);
+
+            for (byte[] buffer : buffers)
+            {
+                md.update(buffer);
+            }
+
+            return md.digest();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    private void testServiceMessage()
+    {
+        IGorillaRemote gr = gorillaRemote;
+        if (gr == null) return;
+
+        try
+        {
+            Log.d(LOGTAG, "testServiceMessage: add=" + gr.addNumbers(12, 13));
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    void onReceive(Context context, Intent intent)
+    {
+        if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_SECRET"))
+        {
+            receiveServerSecret(context, intent);
+            return;
+        }
+
         if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_OWNER"))
         {
-            final OnOwnerReceivedListener listener = onOwnerReceivedListener;
             final String ownerUUID = intent.getStringExtra("ownerUUID");
             final JSONObject owner = new JSONObject();
 
             putJSON(owner, "ownerUUID", ownerUUID);
+
+            Log.d(LOGTAG, "onReceive: RECV_OWNER: ownerUUID=" + ownerUUID);
+
+            final OnOwnerReceivedListener listener = onOwnerReceivedListener;
 
             if (listener != null)
             {
@@ -158,8 +260,6 @@ public class GorillaClient extends BroadcastReceiver
                     }
                 });
             }
-
-            Log.d(LOGTAG, "onReceive: RECV_OWNER: ownerUUID=" + ownerUUID);
 
             return;
         }
@@ -229,14 +329,8 @@ public class GorillaClient extends BroadcastReceiver
     {
         JSONObject result = new JSONObject();
 
-        UUID uuid1 = UUID.randomUUID();
-        String uuid = uuid1.toString();
+        String uuid = UUID.randomUUID().toString();
         long time = System.currentTimeMillis();
-
-        Log.d(LOGTAG, "sendPayload: uuid=" + uuid);
-
-        byte[] uuidbytes = asBytes(uuid1);
-        Log.d(LOGTAG, "sendPayload: hexu=" + getHexBytesToString(uuidbytes, 0, uuidbytes.length, false));
 
         putJSON(result, "uuid", uuid);
         putJSON(result, "time", time);
@@ -249,7 +343,7 @@ public class GorillaClient extends BroadcastReceiver
 
         requestIntent.putExtra("uuid", uuid);
         requestIntent.putExtra("time", time);
-        requestIntent.putExtra("apkname", context.getPackageName());
+        requestIntent.putExtra("apkname", apkname);
         requestIntent.putExtra("receiver", receiver);
         requestIntent.putExtra("device", device);
         requestIntent.putExtra("payload", payload);
@@ -263,7 +357,6 @@ public class GorillaClient extends BroadcastReceiver
             onResultReceivedListener.onResultReceived(result);
         }
     }
-
 
     public void setOnResultReceivedListener(OnResultReceivedListener onResultReceivedListener)
     {

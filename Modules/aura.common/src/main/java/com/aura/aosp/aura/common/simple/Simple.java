@@ -134,15 +134,14 @@ public class Simple
             {
                 string.append(new String(buffer, 0, xfer));
             }
+
+            return string.toString();
         }
         catch (IOException ex)
         {
-            ex.printStackTrace();
-
+            Err.errp(ex);
             return null;
         }
-
-        return string.toString();
     }
 
     @Nullable
@@ -158,15 +157,14 @@ public class Simple
             {
                 buffer = appendBytes(buffer, chunk, 0, xfer);
             }
+
+            return buffer;
         }
         catch (IOException ex)
         {
-            ex.printStackTrace();
-
+            Err.errp(ex);
             return null;
         }
-
-        return buffer;
     }
 
     @Nullable
@@ -208,10 +206,9 @@ public class Simple
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Err.errp(ex);
+            return null;
         }
-
-        return null;
     }
 
     @Nullable
@@ -231,10 +228,9 @@ public class Simple
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Err.errp(ex);
+            return null;
         }
-
-        return null;
     }
 
     @Nullable

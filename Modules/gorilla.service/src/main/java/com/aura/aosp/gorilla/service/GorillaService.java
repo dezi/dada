@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.app.Service;
 import android.os.IBinder;
 
-import com.aura.aosp.gorilla.client.IGorillaRemote;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 import com.aura.aosp.aura.common.simple.Log;

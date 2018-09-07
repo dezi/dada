@@ -148,8 +148,6 @@ public class GomessHandler
 
                 Err err = handleSession(clientNode);
                 if (err != null) Log.e("err=%s", err);
-
-                GomessNodes.removeDeadNode("DE", clientNode);
             }
         }
     };
@@ -217,7 +215,17 @@ public class GomessHandler
         Log.d("...");
 
         Connect conn = new Connect(cnode.addr, cnode.port);
-        if (conn.connect() != null) return Err.getLastErr();
+
+        if (conn.connect() != null)
+        {
+            //
+            // Connection refused means server is dead.
+            //
+
+            GomessNodes.removeDeadNode("DE", cnode);
+
+            return Err.getLastErr();
+        }
 
         GoprotoSession session = new GoprotoSession(conn);
         Err err = session.aquireIdentity();
