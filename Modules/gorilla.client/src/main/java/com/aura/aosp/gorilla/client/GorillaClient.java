@@ -305,7 +305,7 @@ public class GorillaClient
 
         if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_OWNER"))
         {
-            //receiveOwnerUUID(context, intent);
+            receiveOwnerUUID(context, intent);
             return;
         }
 
