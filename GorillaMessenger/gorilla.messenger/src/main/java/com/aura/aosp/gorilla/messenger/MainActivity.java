@@ -57,8 +57,6 @@ public class MainActivity extends AppCompatActivity
 
         GorillaClient gc = GorillaClient.getInstance();
 
-        gc.bindGorillaService(this);
-
         gc.setOnOwnerReceivedListener(new GorillaClient.OnOwnerReceivedListener()
         {
             @Override
@@ -107,6 +105,8 @@ public class MainActivity extends AppCompatActivity
                 Log.d(LOGTAG, "onResultReceived: result=" + result.toString());
             }
         });
+
+        gc.bindGorillaService(this);
     }
 
     private void createLayout()
