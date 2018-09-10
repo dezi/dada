@@ -14,7 +14,6 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.UUID;
@@ -33,6 +32,10 @@ public class GorillaClient
     {
         return instance;
     }
+
+    //endregion Static implemention.
+
+    //region Listener templates.
 
     public static class OnResultReceivedListener
     {
@@ -58,7 +61,7 @@ public class GorillaClient
         }
     }
 
-    //endregion Static implemention.
+    //endregion Listener templates.
 
     //region Instance implemention.
 
@@ -74,8 +77,8 @@ public class GorillaClient
     private byte[] clientSecret;
     private byte[] serverSecret;
 
-    private OnResultReceivedListener onResultReceivedListener;
     private OnOwnerReceivedListener onOwnerReceivedListener;
+    private OnResultReceivedListener onResultReceivedListener;
     private OnMessageReceivedListener onMessageReceivedListener;
 
     public void bindGorillaService(Context context)
@@ -101,9 +104,8 @@ public class GorillaClient
             {
                 Log.d(LOGTAG, "onServiceDisconnected: className=" + className.toString());
 
-                gorillaRemote = null;
-
                 validated = false;
+                gorillaRemote = null;
                 clientSecret = null;
                 serverSecret = null;
 
@@ -123,11 +125,11 @@ public class GorillaClient
             {
                 Log.d(LOGTAG, "serviceConnector: ...");
 
-                Intent intent = new Intent();
-                intent.setPackage("com.aura.aosp.gorilla.sysapp");
-                intent.setAction("com.aura.android.gorillaservice.REMOTE_CONNECT");
+                Intent serviceIntent = new Intent();
+                serviceIntent.setPackage("com.aura.aosp.gorilla.sysapp");
+                serviceIntent.setAction("com.aura.android.gorillaservice.REMOTE_CONNECT");
 
-                context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+                context.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
                 handler.postDelayed(serviceConnector, 1000);
             }
@@ -190,7 +192,7 @@ public class GorillaClient
 
             String checksum = createSHASignatureBase64(serverSecret, apkname.getBytes());
 
-            receiveOwner(gr.getOwnerUUID(apkname, checksum));
+            receiveOwnerUUID(gr.getOwnerUUID(apkname, checksum));
         }
         catch (Exception ex)
         {
@@ -198,7 +200,32 @@ public class GorillaClient
         }
     }
 
-    private void receiveOwner(String ownerUUID)
+    private void receiveOwnerUUID(Context context, Intent intent)
+    {
+        String ownerUUID = intent.getStringExtra("ownerUUID");
+        String checksum = intent.getStringExtra("checksum");
+
+        String solution;
+
+        if (ownerUUID == null)
+        {
+            solution = createSHASignatureBase64(clientSecret, apkname.getBytes());
+        }
+        else
+        {
+            solution = createSHASignatureBase64(clientSecret, apkname.getBytes(), ownerUUID.getBytes());
+        }
+
+        if ((checksum == null) || (solution == null) || !checksum.equals(solution))
+        {
+            Log.e(LOGTAG, "receiveOwnerUUID: failed!");
+            return;
+        }
+
+        receiveOwnerUUID(ownerUUID);
+    }
+
+    private void receiveOwnerUUID(String ownerUUID)
     {
         this.ownerUUID = ownerUUID;
 
@@ -223,31 +250,48 @@ public class GorillaClient
         }
     }
 
-    private static String createSHASignatureBase64(byte[] secret, byte[]... buffers)
+    private void receivePayloadResult(Context context, Intent intent)
     {
-        return Base64.encodeToString(createSHASignature(secret, buffers), Base64.NO_WRAP);
+        String resultStr = intent.getStringExtra("result");
+        String checksum = intent.getStringExtra("checksum");
+
+        String solution;
+
+        solution = createSHASignatureBase64(clientSecret, apkname.getBytes(), resultStr.getBytes());
+
+        if ((checksum == null) || (solution == null) || !checksum.equals(solution))
+        {
+            Log.e(LOGTAG, "receivePayloadResult: failed!");
+            return;
+        }
+
+        JSONObject result = fromStringJSONOBject(resultStr);
+
+        if (result == null)
+        {
+            Log.e(LOGTAG, "receivePayloadResult: result failed!");
+            return;
+        }
+
+        receivePayloadResult(result);
     }
 
-    @Nullable
-    private static byte[] createSHASignature(byte[] secret, byte[]... buffers)
+    private void receivePayloadResult(final JSONObject result)
     {
-        try
+        Log.d(LOGTAG, "receivePayloadResult: result=" + result.toString());
+
+        final OnResultReceivedListener listener = onResultReceivedListener;
+
+        if (listener != null)
         {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-
-            md.update(secret);
-
-            for (byte[] buffer : buffers)
+            handler.post(new Runnable()
             {
-                md.update(buffer);
-            }
-
-            return md.digest();
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-            return null;
+                @Override
+                public void run()
+                {
+                    listener.onResultReceived(result);
+                }
+            });
         }
     }
 
@@ -261,20 +305,13 @@ public class GorillaClient
 
         if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_OWNER"))
         {
-            receiveOwner(intent.getStringExtra("ownerUUID"));
+            //receiveOwnerUUID(context, intent);
             return;
         }
 
         if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT"))
         {
-            JSONObject result = fromStringJSONOBject(intent.getStringExtra("result"));
-
-            Log.d(LOGTAG, "onReceive: SEND_PAYLOAD_RESULT result=" + result);
-
-            if (onResultReceivedListener != null)
-            {
-                onResultReceivedListener.onResultReceived(result);
-            }
+            receivePayloadResult(context, intent);
 
             return;
         }
@@ -319,7 +356,7 @@ public class GorillaClient
 
         requestIntent.setPackage("com.aura.aosp.gorilla.sysapp");
         requestIntent.setAction("com.aura.aosp.gorilla.service.WANT_OWNER");
-        requestIntent.putExtra("apkname", context.getPackageName());
+        requestIntent.putExtra("apkname", apkname);
 
         Log.d(LOGTAG, "wantOwner: requestIntent=" + requestIntent.toString());
 
@@ -401,44 +438,32 @@ public class GorillaClient
         }
     }
 
-    private UUID asUuid(byte[] bytes)
+    private static String createSHASignatureBase64(byte[] secret, byte[]... buffers)
     {
-        ByteBuffer bb = ByteBuffer.wrap(bytes);
-        long firstLong = bb.getLong();
-        long secondLong = bb.getLong();
-        return new UUID(firstLong, secondLong);
+        return Base64.encodeToString(createSHASignature(secret, buffers), Base64.NO_WRAP);
     }
 
-    private byte[] asBytes(UUID uuid)
+    @Nullable
+    private static byte[] createSHASignature(byte[] secret, byte[]... buffers)
     {
-        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-        bb.putLong(uuid.getMostSignificantBits());
-        bb.putLong(uuid.getLeastSignificantBits());
-        return bb.array();
-    }
-
-    private String getHexBytesToString(byte[] bytes, int offset, int length, boolean space)
-    {
-        if (bytes == null) return "null";
-        if (bytes.length == 0) return "empty";
-
-        int clen = (length << 1) + (space && (length > 0) ? (length - 1) : 0);
-
-        char[] hexArray = "0123456789ABCDEF".toCharArray();
-        char[] hexChars = new char[ clen ];
-
-        int pos = 0;
-
-        for (int inx = offset; inx < (length + offset); inx++)
+        try
         {
-            if (space && (inx > offset)) hexChars[ pos++ ] = ' ';
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
 
-            hexChars[ pos++ ] = hexArray[ (bytes[ inx ] >> 4) & 0x0f ];
-            //noinspection PointlessBitwiseExpression
-            hexChars[ pos++ ] = hexArray[ (bytes[ inx ] >> 0) & 0x0f ];
+            md.update(secret);
+
+            for (byte[] buffer : buffers)
+            {
+                if (buffer != null) md.update(buffer);
+            }
+
+            return md.digest();
         }
-
-        return String.valueOf(hexChars);
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
     }
 
     //endregion Instance implemention.

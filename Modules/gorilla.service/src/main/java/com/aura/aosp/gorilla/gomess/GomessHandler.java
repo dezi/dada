@@ -196,7 +196,7 @@ public class GomessHandler
                     Json.put(result, "status", "error");
                 }
 
-                GorillaSender.sendBroadCastResult(ticket, result);
+                GorillaSender.sendBroadCastPayloadResult(ticket, result);
 
                 if (err == null) continue;
 

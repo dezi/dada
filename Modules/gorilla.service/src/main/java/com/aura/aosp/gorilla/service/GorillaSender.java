@@ -12,42 +12,6 @@ import org.json.JSONObject;
 
 public class GorillaSender
 {
-    public static Err sendBroadCastPayload(GoprotoTicket ticket)
-    {
-        Intent payloadIntent = new Intent("com.aura.aosp.gorilla.service.RECV_PAYLOAD");
-
-        String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
-        Log.d("apkname=%s", apkname);
-
-        payloadIntent.setPackage(apkname);
-
-        payloadIntent.putExtra("time", System.currentTimeMillis());
-
-        payloadIntent.putExtra("uuid", Simple.encodeBase64(ticket.getMessageUUID()));
-        payloadIntent.putExtra("sender", Simple.encodeBase64(ticket.getSenderUserUUID()));
-        payloadIntent.putExtra("device", Simple.encodeBase64(ticket.getSenderDeviceUUID()));
-        payloadIntent.putExtra("payload", new String(ticket.getPayload()));
-
-        GorillaBase.getAppContext().sendBroadcast(payloadIntent);
-
-        return null;
-    }
-
-    public static Err sendBroadCastResult(GoprotoTicket ticket, JSONObject result)
-    {
-        Intent resultIntent = new Intent("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT");
-
-        String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
-        Log.d("apkname=%s", apkname);
-
-        resultIntent.setPackage(apkname);
-        resultIntent.putExtra("result",result.toString());
-
-        GorillaBase.getAppContext().sendBroadcast(resultIntent);
-
-        return null;
-    }
-
     public static Err sendBroadCastSecret(String apkname, String serverSecret, String challenge)
     {
         Intent secretIntent = new Intent();
@@ -86,9 +50,55 @@ public class GorillaSender
         ownerIntent.putExtra("ownerUUID", ownerUUID);
         ownerIntent.putExtra("checksum", checksum);
 
-        Log.d("ownerUUID=%s apk=%s", ownerUUID, apkname);
+        Log.d("apkname=%s ownerUUID=%s", apkname, ownerUUID);
 
         GorillaBase.getAppContext().sendBroadcast(ownerIntent);
+
+        return null;
+    }
+
+    public static Err sendBroadCastPayloadResult(GoprotoTicket ticket, JSONObject result)
+    {
+        String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
+        if (apkname == null) return Err.getLastErr();
+
+        byte[] clientSecretBytes = GorillaMapper.getClientSecret(apkname);
+
+        String resultStr = result.toString();
+        String checksum = SHA.createSHASignatureBase64(clientSecretBytes, apkname.getBytes(), resultStr.getBytes());
+
+        Intent resultIntent = new Intent();
+
+        resultIntent.setPackage(apkname);
+        resultIntent.setAction("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT");
+
+        resultIntent.putExtra("result", resultStr);
+        resultIntent.putExtra("checksum", checksum);
+
+        Log.d("apkname=%s result=%s", apkname, resultStr);
+
+        GorillaBase.getAppContext().sendBroadcast(resultIntent);
+
+        return null;
+    }
+
+    public static Err sendBroadCastPayload(GoprotoTicket ticket)
+    {
+        String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
+        if (apkname == null) return Err.getLastErr();
+
+        Intent payloadIntent = new Intent();
+
+        payloadIntent.setPackage(apkname);
+        payloadIntent.setAction("com.aura.aosp.gorilla.service.RECV_PAYLOAD");
+
+        payloadIntent.putExtra("time", System.currentTimeMillis());
+        payloadIntent.putExtra("uuid", Simple.encodeBase64(ticket.getMessageUUID()));
+        payloadIntent.putExtra("sender", Simple.encodeBase64(ticket.getSenderUserUUID()));
+        payloadIntent.putExtra("device", Simple.encodeBase64(ticket.getSenderDeviceUUID()));
+        payloadIntent.putExtra("payload", new String(ticket.getPayload()));
+
+        GorillaBase.getAppContext().sendBroadcast(payloadIntent);
 
         return null;
     }
