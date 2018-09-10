@@ -2,6 +2,7 @@ package com.aura.aosp.gorilla.service;
 
 import android.content.Intent;
 
+import com.aura.aosp.aura.common.crypter.SHA;
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
@@ -49,14 +50,45 @@ public class GorillaSender
 
     public static Err sendBroadCastSecret(String apkname, String serverSecret, String challenge)
     {
-        Intent secretIntent = new Intent("com.aura.aosp.gorilla.service.RECV_SECRET");
+        Intent secretIntent = new Intent();
 
         secretIntent.setPackage(apkname);
+        secretIntent.setAction("com.aura.aosp.gorilla.service.RECV_SECRET");
 
         secretIntent.putExtra("serverSecret", serverSecret);
         secretIntent.putExtra("challenge", challenge);
 
         GorillaBase.getAppContext().sendBroadcast(secretIntent);
+
+        return null;
+    }
+
+    public static Err sendBroadCastOwner(String apkname, String ownerUUID)
+    {
+        byte[] clientSecretBytes = GorillaMapper.getClientSecret(apkname);
+
+        String checksum;
+
+        if (ownerUUID == null)
+        {
+            checksum = SHA.createSHASignatureBase64(clientSecretBytes, apkname.getBytes());
+        }
+        else
+        {
+            checksum = SHA.createSHASignatureBase64(clientSecretBytes, apkname.getBytes(), ownerUUID.getBytes());
+        }
+
+        Intent ownerIntent = new Intent();
+
+        ownerIntent.setPackage(apkname);
+        ownerIntent.setAction("com.aura.aosp.gorilla.service.RECV_OWNER");
+
+        ownerIntent.putExtra("ownerUUID", ownerUUID);
+        ownerIntent.putExtra("checksum", checksum);
+
+        Log.d("ownerUUID=%s apk=%s", ownerUUID, apkname);
+
+        GorillaBase.getAppContext().sendBroadcast(ownerIntent);
 
         return null;
     }

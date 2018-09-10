@@ -51,14 +51,7 @@ public class GorillaReceiver extends BroadcastReceiver
 
         String ownerUUID = Owner.getOwnerUUIDBase64();
 
-        Intent responseIntent = new Intent("com.aura.aosp.gorilla.service.RECV_OWNER");
-
-        responseIntent.setPackage(apkname);
-        responseIntent.putExtra("ownerUUID", ownerUUID);
-
-        Log.d("ownerUUID=%s apk=%s", ownerUUID, apkname);
-
-        context.sendBroadcast(responseIntent);
+        GorillaSender.sendBroadCastOwner(apkname, ownerUUID);
     }
 
     private void sendPayload(Context context, Intent intent)

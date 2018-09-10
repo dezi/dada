@@ -61,12 +61,4 @@ public class GorillaRemote extends IGorillaRemote.Stub
 
         return Owner.getOwnerUUIDBase64();
     }
-
-    @Override
-    public int addNumbers(int int1, int int2)
-    {
-        Log.d("...");
-
-        return int1 + int2;
-    }
 }

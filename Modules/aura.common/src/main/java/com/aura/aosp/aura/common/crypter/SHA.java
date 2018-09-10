@@ -21,7 +21,7 @@ public class SHA
 
             for (byte[] buffer : buffers)
             {
-                md.update(buffer);
+                if (buffer != null) md.update(buffer);
             }
 
             return md.digest();
