@@ -75,11 +75,14 @@ public class ChatFragment extends GUILinearLayout
         recvPart.setOrientation(VERTICAL);
         recvPart.setGravity(Gravity.START);
         recvPart.setSizeDip(Simple.MP, Simple.WC);
+        recvPart.setSizeDip(Simple.MP, Simple.WC);
+        recvPart.setBackgroundColor(0x88008800);
 
         GUILinearLayout sendPart = new GUILinearLayout(getContext());
         sendPart.setOrientation(VERTICAL);
         sendPart.setGravity(Gravity.END);
         sendPart.setSizeDip(Simple.MP, Simple.WC);
+        sendPart.setBackgroundColor(0x88000088);
 
         ((LayoutParams) recvPart.getLayoutParams()).weight = send ? 0.75f : 0.25f;
         ((LayoutParams) sendPart.getLayoutParams()).weight = send ? 0.25f : 0.75f;

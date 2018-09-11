@@ -1,7 +1,6 @@
 package com.aura.aosp.gorilla.client;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.Nullable;
 
 import android.content.ServiceConnection;
 import android.content.ComponentName;
@@ -14,9 +13,7 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
-import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.util.UUID;
 
 @SuppressWarnings("unused")
 @SuppressLint("StaticFieldLeak")
@@ -36,6 +33,14 @@ public class GorillaClient
     //endregion Static implemention.
 
     //region Listener templates.
+
+    public static class OnStatusReceivedListener
+    {
+        public void onStatusReceived(JSONObject result)
+        {
+            Log.d(LOGTAG, "onStatusReceived: STUB!");
+        }
+    }
 
     public static class OnResultReceivedListener
     {
@@ -73,10 +78,12 @@ public class GorillaClient
     private String ownerUUID;
 
     private String apkname;
-    private boolean validated;
+    private boolean svlink;
+    private boolean uplink;
     private byte[] clientSecret;
     private byte[] serverSecret;
 
+    private OnStatusReceivedListener onStatusReceivedListener;
     private OnOwnerReceivedListener onOwnerReceivedListener;
     private OnResultReceivedListener onResultReceivedListener;
     private OnMessageReceivedListener onMessageReceivedListener;
@@ -104,12 +111,15 @@ public class GorillaClient
             {
                 Log.d(LOGTAG, "onServiceDisconnected: className=" + className.toString());
 
-                validated = false;
+                uplink = false;
+                svlink = false;
                 gorillaRemote = null;
                 clientSecret = null;
                 serverSecret = null;
 
                 handler.post(serviceConnector);
+
+                receiveStatus();
             }
         };
 
@@ -167,7 +177,7 @@ public class GorillaClient
         {
             String secret = intent.getStringExtra("serverSecret");
             String challenge = intent.getStringExtra("challenge");
-            String solution = createSHASignatureBase64(clientSecret);
+            String solution = GorillaHelpers.createSHASignatureBase64(clientSecret);
 
             if ((challenge == null) || (solution == null) || !challenge.equals(solution))
             {
@@ -178,11 +188,11 @@ public class GorillaClient
             serverSecret = Base64.decode(secret, Base64.DEFAULT);
             Log.d(LOGTAG, "receiveServerSecret: serverSecret=" + secret);
 
-            challenge = createSHASignatureBase64(serverSecret);
+            challenge = GorillaHelpers.createSHASignatureBase64(serverSecret);
 
-            validated = gr.validateConnect(apkname, challenge);
+            svlink = gr.validateConnect(apkname, challenge);
 
-            if (! validated)
+            if (!svlink)
             {
                 Log.e(LOGTAG, "receiveServerSecret: validate failed!");
                 return;
@@ -190,14 +200,49 @@ public class GorillaClient
 
             Log.d(LOGTAG, "receiveServerSecret: validated.");
 
-            String checksum = createSHASignatureBase64(serverSecret, apkname.getBytes());
+            String checksum = GorillaHelpers.createSHASignatureBase64(serverSecret, apkname.getBytes());
 
-            receiveOwnerUUID(gr.getOwnerUUID(apkname, checksum));
+            uplink = gr.getOnlineStatus(apkname, checksum);
+
+            receiveStatus();
+
+            checksum = GorillaHelpers.createSHASignatureBase64(serverSecret, apkname.getBytes());
+
+            String ownerUUID = gr.getOwnerUUID(apkname, checksum);
+
+            receiveOwnerUUID(ownerUUID);
         }
         catch (Exception ex)
         {
             ex.printStackTrace();
         }
+    }
+
+    private void receiveStatus()
+    {
+        JSONObject status = new JSONObject();
+
+        GorillaHelpers.putJSON(status, "svlink", svlink);
+        GorillaHelpers.putJSON(status, "uplink", uplink);
+
+        receiveStatus(status);
+    }
+
+    private void receiveStatus(final JSONObject status)
+    {
+        Log.d(LOGTAG, "receiveStatus: status=" + status.toString());
+
+        final OnStatusReceivedListener listener = onStatusReceivedListener;
+        if (listener == null) return;
+
+        handler.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                listener.onStatusReceived(status);
+            }
+        });
     }
 
     private void receiveOwnerUUID(Context context, Intent intent)
@@ -209,11 +254,11 @@ public class GorillaClient
 
         if (ownerUUID == null)
         {
-            solution = createSHASignatureBase64(clientSecret, apkname.getBytes());
+            solution = GorillaHelpers.createSHASignatureBase64(clientSecret, apkname.getBytes());
         }
         else
         {
-            solution = createSHASignatureBase64(clientSecret, apkname.getBytes(), ownerUUID.getBytes());
+            solution = GorillaHelpers.createSHASignatureBase64(clientSecret, apkname.getBytes(), ownerUUID.getBytes());
         }
 
         if ((checksum == null) || (solution == null) || !checksum.equals(solution))
@@ -232,22 +277,26 @@ public class GorillaClient
         Log.d(LOGTAG, "receiveOwner: ownerUUID=" + ownerUUID);
 
         final JSONObject owner = new JSONObject();
+        GorillaHelpers.putJSON(owner, "ownerUUID", ownerUUID);
 
-        putJSON(owner, "ownerUUID", ownerUUID);
+        receiveOwnerUUID(owner);
+    }
+
+    private void receiveOwnerUUID(final JSONObject owner)
+    {
+        Log.d(LOGTAG, "receiveOwnerUUID: owner=" + owner.toString());
 
         final OnOwnerReceivedListener listener = onOwnerReceivedListener;
+        if (listener == null) return;
 
-        if (listener != null)
+        handler.post(new Runnable()
         {
-            handler.post(new Runnable()
+            @Override
+            public void run()
             {
-                @Override
-                public void run()
-                {
-                    listener.onOwnerReceived(owner);
-                }
-            });
-        }
+                listener.onOwnerReceived(owner);
+            }
+        });
     }
 
     private void receivePayload(Context context, Intent intent)
@@ -263,11 +312,11 @@ public class GorillaClient
 
         final JSONObject message = new JSONObject();
 
-        putJSON(message, "uuid", uuid);
-        putJSON(message, "time", time);
-        putJSON(message, "sender", sender);
-        putJSON(message, "device", device);
-        putJSON(message, "payload", payload);
+        GorillaHelpers.putJSON(message, "uuid", uuid);
+        GorillaHelpers.putJSON(message, "time", time);
+        GorillaHelpers.putJSON(message, "sender", sender);
+        GorillaHelpers.putJSON(message, "device", device);
+        GorillaHelpers.putJSON(message, "payload", payload);
 
         receivePayload(message);
     }
@@ -277,18 +326,16 @@ public class GorillaClient
         Log.d(LOGTAG, "receivePayload: message=" + message.toString());
 
         final OnMessageReceivedListener listener = onMessageReceivedListener;
+        if (listener == null) return;
 
-        if (listener != null)
+        handler.post(new Runnable()
         {
-            handler.post(new Runnable()
+            @Override
+            public void run()
             {
-                @Override
-                public void run()
-                {
-                    listener.onMessageReceived(message);
-                }
-            });
-        }
+                listener.onMessageReceived(message);
+            }
+        });
     }
 
     private void receivePayloadResult(Context context, Intent intent)
@@ -298,7 +345,7 @@ public class GorillaClient
 
         String solution;
 
-        solution = createSHASignatureBase64(clientSecret, apkname.getBytes(), resultStr.getBytes());
+        solution = GorillaHelpers.createSHASignatureBase64(clientSecret, apkname.getBytes(), resultStr.getBytes());
 
         if ((checksum == null) || (solution == null) || !checksum.equals(solution))
         {
@@ -306,7 +353,7 @@ public class GorillaClient
             return;
         }
 
-        JSONObject result = fromStringJSONOBject(resultStr);
+        JSONObject result = GorillaHelpers.fromStringJSONOBject(resultStr);
 
         if (result == null)
         {
@@ -322,18 +369,16 @@ public class GorillaClient
         Log.d(LOGTAG, "receivePayloadResult: result=" + result.toString());
 
         final OnResultReceivedListener listener = onResultReceivedListener;
+        if (listener == null) return;
 
-        if (listener != null)
+        handler.post(new Runnable()
         {
-            handler.post(new Runnable()
+            @Override
+            public void run()
             {
-                @Override
-                public void run()
-                {
-                    listener.onResultReceived(result);
-                }
-            });
-        }
+                listener.onResultReceived(result);
+            }
+        });
     }
 
     void onReceive(Context context, Intent intent)
@@ -376,7 +421,7 @@ public class GorillaClient
 
         try
         {
-            String checksum = createSHASignatureBase64(serverSecret,
+            String checksum = GorillaHelpers.createSHASignatureBase64(serverSecret,
                     apkname.getBytes(),
                     userUUID.getBytes(),
                     deviceUUID.getBytes(),
@@ -387,7 +432,7 @@ public class GorillaClient
 
             Log.d(LOGTAG, "sendPayload: resultStr=" + resultStr);
 
-            JSONObject result = fromStringJSONOBject(resultStr);
+            JSONObject result = GorillaHelpers.fromStringJSONOBject(resultStr);
 
             if (result == null)
             {
@@ -403,9 +448,9 @@ public class GorillaClient
         }
     }
 
-    public void setOnResultReceivedListener(OnResultReceivedListener onResultReceivedListener)
+    public void setOnStatusReceivedListener(OnStatusReceivedListener onStatusReceivedListener)
     {
-        this.onResultReceivedListener = onResultReceivedListener;
+        this.onStatusReceivedListener = onStatusReceivedListener;
     }
 
     public void setOnOwnerReceivedListener(OnOwnerReceivedListener onOwnerReceivedListener)
@@ -413,64 +458,14 @@ public class GorillaClient
         this.onOwnerReceivedListener = onOwnerReceivedListener;
     }
 
+    public void setOnResultReceivedListener(OnResultReceivedListener onResultReceivedListener)
+    {
+        this.onResultReceivedListener = onResultReceivedListener;
+    }
+
     public void setOnMessageReceivedListener(OnMessageReceivedListener onMessageReceivedListener)
     {
         this.onMessageReceivedListener = onMessageReceivedListener;
-    }
-
-    private void putJSON(JSONObject json, String key, Object val)
-    {
-        try
-        {
-            json.put(key, val);
-        }
-        catch (Exception ignore)
-        {
-        }
-    }
-
-    @Nullable
-    private JSONObject fromStringJSONOBject(String jsonstr)
-    {
-        if (jsonstr == null) return null;
-
-        try
-        {
-            return new JSONObject(jsonstr);
-        }
-        catch (Exception ex)
-        {
-            Log.d(LOGTAG, ex.toString());
-            return null;
-        }
-    }
-
-    private static String createSHASignatureBase64(byte[] secret, byte[]... buffers)
-    {
-        return Base64.encodeToString(createSHASignature(secret, buffers), Base64.NO_WRAP);
-    }
-
-    @Nullable
-    private static byte[] createSHASignature(byte[] secret, byte[]... buffers)
-    {
-        try
-        {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-
-            md.update(secret);
-
-            for (byte[] buffer : buffers)
-            {
-                if (buffer != null) md.update(buffer);
-            }
-
-            return md.digest();
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-            return null;
-        }
     }
 
     //endregion Instance implemention.

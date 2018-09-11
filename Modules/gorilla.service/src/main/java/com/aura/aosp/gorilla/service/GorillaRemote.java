@@ -49,6 +49,25 @@ public class GorillaRemote extends IGorillaRemote.Stub
     }
 
     @Override
+    public boolean getOnlineStatus(String apkname, String checksum)
+    {
+        byte[] serverSecretBytes = GorillaMapper.getServerSecret(apkname);
+        String solution = SHA.createSHASignatureBase64(serverSecretBytes, apkname.getBytes());
+
+        if ((checksum == null) || (solution == null) || ! checksum.equals(solution))
+        {
+            Log.e("checksum failed!");
+            return false;
+        }
+
+        boolean status = GomessHandler.getInstance().getOnlineStatus();
+
+        Log.d("status=%b apkname=%s", status, apkname);
+
+        return status;
+    }
+
+    @Override
     public String getOwnerUUID(String apkname, String checksum)
     {
         byte[] serverSecretBytes = GorillaMapper.getServerSecret(apkname);

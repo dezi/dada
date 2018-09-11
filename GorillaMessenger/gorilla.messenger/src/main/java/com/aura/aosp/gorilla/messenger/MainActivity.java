@@ -44,6 +44,10 @@ public class MainActivity extends AppCompatActivity
         chatProfiles.remove(chatProfile);
     }
 
+    private String title;
+    private boolean svlink;
+    private boolean uplink;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -55,7 +59,23 @@ public class MainActivity extends AppCompatActivity
 
         createLayout();
 
+        title = getTitle().toString();
+
         GorillaClient gc = GorillaClient.getInstance();
+
+        gc.setOnStatusReceivedListener(new GorillaClient.OnStatusReceivedListener()
+        {
+            @Override
+            public void onStatusReceived(JSONObject status)
+            {
+                Log.d(LOGTAG, "onStatusReceived: status=" + status.toString());
+
+                svlink = Json.getBoolean(status, "svlink");
+                uplink = Json.getBoolean(status, "uplink");
+
+                updateTitle();
+            }
+        });
 
         gc.setOnOwnerReceivedListener(new GorillaClient.OnOwnerReceivedListener()
         {
@@ -71,8 +91,7 @@ public class MainActivity extends AppCompatActivity
 
                 Log.d(LOGTAG, "ownerIdent=" + ownerIdent.toString());
 
-                String title = getTitle() + " " + ownerIdent.getNick();
-                setTitle(title);
+                updateTitle();
             }
         });
 
@@ -107,6 +126,18 @@ public class MainActivity extends AppCompatActivity
         });
 
         gc.bindGorillaService(this);
+    }
+
+    private void updateTitle()
+    {
+        String newtitle = title;
+
+        if (ownerIdent != null) newtitle += " " + ownerIdent.getNick();
+
+        if (svlink) newtitle += " (system)";
+        if (uplink) newtitle += " (online)";
+
+        setTitle(newtitle);
     }
 
     private void createLayout()

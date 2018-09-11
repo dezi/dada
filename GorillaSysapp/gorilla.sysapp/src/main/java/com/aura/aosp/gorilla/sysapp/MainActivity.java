@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity
                     identview.setText(identity.getNick());
 
                     Owner.setOwnerUUIDBase64(identity.getUserUUIDBase64());
-                    GomessHandler.getInstance().resetSession();
+                    GomessHandler.getInstance().killSession();
                 }
             });
 

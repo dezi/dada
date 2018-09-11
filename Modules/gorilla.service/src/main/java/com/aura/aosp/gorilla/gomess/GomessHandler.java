@@ -5,6 +5,7 @@ import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.sockets.Connect;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.common.univid.Owner;
+import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
@@ -45,6 +46,11 @@ public class GomessHandler
     private final Thread writerThread;
 
     private final List<GoprotoTicket> tickets = new ArrayList<>();
+
+    public boolean getOnlineStatus()
+    {
+        return true;
+    }
 
     public JSONObject sendPayload(String apkname, String userUUID, String deviceUUID, String payload)
     {
@@ -95,16 +101,24 @@ public class GomessHandler
         return result;
     }
 
-    public void resetSession()
+    public void killSession()
     {
         if (client != null)
         {
-            Log.d("reset starting...");
+            Log.d("kill starting...");
 
             client.disconnect();
 
-            Log.d("reset done.");
+            Log.d("kill done.");
         }
+    }
+
+    public boolean sessionIsConnected()
+    {
+        GomessClient myclient = client;
+        if (myclient == null) return false;
+
+        return myclient.isConnected();
     }
 
     private GomessHandler()
@@ -164,7 +178,7 @@ public class GomessHandler
         {
             while (true)
             {
-                if (client == null)
+                if (! sessionIsConnected())
                 {
                     Simple.sleep(100);
 
@@ -188,7 +202,21 @@ public class GomessHandler
                     continue;
                 }
 
-                Err err = client.sendMessageUpload(ticket);
+                GomessClient myclient = client;
+
+                if ((myclient == null) || ! sessionIsConnected())
+                {
+                    synchronized (tickets)
+                    {
+                        tickets.add(0, ticket);
+                    }
+
+                    Simple.sleep(100);
+
+                    continue;
+                }
+
+                Err err = myclient.sendMessageUpload(ticket);
 
                 JSONObject result = new JSONObject();
                 Json.put(result, "uuid", ticket.getMessageUUIDBase64());
@@ -203,9 +231,12 @@ public class GomessHandler
                 GorillaSender.sendBroadCastPayloadResult(ticket, result);
 
                 if (err == null) continue;
-
-                tickets.add(0, ticket);
                 Log.e("err=%s", err);
+
+                synchronized (tickets)
+                {
+                    tickets.add(0, ticket);
+                }
 
                 Simple.sleep(100);
             }
@@ -236,6 +267,11 @@ public class GomessHandler
         if (err != null) return err;
 
         client = new GomessClient(session);
-        return client.clientHandler();
+
+        err = client.clientHandler();
+
+        client = null;
+
+        return err;
     }
 }

@@ -9,6 +9,7 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
+                <action android:name="com.aura.aosp.gorilla.service.RECV_STATUS"/>
                 <action android:name="com.aura.aosp.gorilla.service.RECV_SECRET"/>
                 <action android:name="com.aura.aosp.gorilla.service.RECV_OWNER"/>
                 <action android:name="com.aura.aosp.gorilla.service.RECV_PAYLOAD"/>

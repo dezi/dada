@@ -85,6 +85,11 @@ public class GomessClient
         return null;
     }
 
+    public boolean isConnected()
+    {
+        return session.isConnected();
+    }
+
     public Err clientHandler()
     {
         Err err = clientHandlerBody();
