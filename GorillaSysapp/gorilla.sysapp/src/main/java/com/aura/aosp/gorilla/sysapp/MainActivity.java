@@ -24,6 +24,7 @@ import com.aura.aosp.aura.gui.views.GUITextView;
 
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
+import com.aura.aosp.gorilla.service.GorillaService;
 
 import org.json.JSONObject;
 
@@ -108,6 +109,7 @@ public class MainActivity extends AppCompatActivity
 
                     Owner.setOwnerUUIDBase64(identity.getUserUUIDBase64());
                     GomessHandler.getInstance().killSession();
+                    GorillaService.SelfStopMainService();
                 }
             });
 

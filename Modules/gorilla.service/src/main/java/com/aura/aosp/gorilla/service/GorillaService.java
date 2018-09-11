@@ -25,6 +25,15 @@ public class GorillaService extends Service
         Log.d("service started...");
     }
 
+    public static void SelfStopMainService()
+    {
+        Context context = GorillaBase.getAppContext();
+        Intent serviceIntent = new Intent(context, GorillaService.class);
+        context.stopService(serviceIntent);
+
+        Log.d("service stopped...");
+    }
+
     //endregion Static stuff.
 
     //region Instance stuff.

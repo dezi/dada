@@ -35,20 +35,7 @@ public class GorillaBase extends Application
 
         Simple.initialize(this);
 
-        //
-        // Required for testing with Android Studio
-        // because onBootCompleted is never issued
-        // in this case.
-        //
-
-        Simple.getHandler().post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                GorillaService.SelfStartMainService();
-            }
-        });
+        GorillaService.SelfStartMainService();
     }
 
     //endregion Instance stuff.

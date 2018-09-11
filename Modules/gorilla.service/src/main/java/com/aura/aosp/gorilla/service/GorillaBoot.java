@@ -14,7 +14,7 @@ public class GorillaBoot extends BroadcastReceiver
     {
         Log.d("intent=" + intent.toString());
 
-        if ((intent.getAction() == null) || ! intent.getAction().equals("android.intent.action.BOOT_COMPLETED"))
+        if (! Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()))
         {
             Err.errp("invalid intent.");
 
