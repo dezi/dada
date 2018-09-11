@@ -32,18 +32,6 @@
 
         </service>
 
-        <receiver
-            android:name="com.aura.aosp.gorilla.service.GorillaReceiver"
-            android:enabled="true"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="com.aura.aosp.gorilla.service.WANT_OWNER" />
-                <action android:name="com.aura.aosp.gorilla.service.SEND_PAYLOAD" />
-            </intent-filter>
-
-        </receiver>
-
     </application>
 
 </manifest>

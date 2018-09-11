@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class GomessHandler
@@ -45,15 +46,14 @@ public class GomessHandler
 
     private final List<GoprotoTicket> tickets = new ArrayList<>();
 
-    public JSONObject sendPayload(String uuid, long time, String apkname, String userUUID, String deviceUUID, String payload)
+    public JSONObject sendPayload(String apkname, String userUUID, String deviceUUID, String payload)
     {
-        Log.d("uuid=" + uuid + " time=" + time);
         Log.d("user=" + userUUID + " dev=" + deviceUUID);
         Log.d("apkname=" + apkname + " payload=" + payload);
 
         JSONObject result = new JSONObject();
 
-        if ((uuid == null) || (apkname == null) || (userUUID == null) || (deviceUUID == null) || (payload == null) || (time <= 0))
+        if ((apkname == null) || (userUUID == null) || (deviceUUID == null) || (payload == null))
         {
             Json.put(result, "error", "Request parameters missing");
             Json.put(result, "status", "error");
@@ -69,6 +69,10 @@ public class GomessHandler
 
             return result;
         }
+
+        String uuid = UUID.randomUUID().toString();
+        long time = System.currentTimeMillis();
+        Log.d("uuid=" + uuid + " time=" + time);
 
         Json.put(result, "uuid", uuid);
         Json.put(result, "time", time);

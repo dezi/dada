@@ -250,6 +250,47 @@ public class GorillaClient
         }
     }
 
+    private void receivePayload(Context context, Intent intent)
+    {
+        long time = intent.getLongExtra("time", -1);
+
+        String uuid = intent.getStringExtra("uuid");
+        String sender = intent.getStringExtra("sender");
+        String device = intent.getStringExtra("device");
+        String payload = intent.getStringExtra("payload");
+
+        Log.d(LOGTAG, "onReceive: RECV_PAYLOAD uuid=" + uuid + " time=" + time + " sender=" + sender + " device=" + device + " payload=" + payload);
+
+        final JSONObject message = new JSONObject();
+
+        putJSON(message, "uuid", uuid);
+        putJSON(message, "time", time);
+        putJSON(message, "sender", sender);
+        putJSON(message, "device", device);
+        putJSON(message, "payload", payload);
+
+        receivePayload(message);
+    }
+
+    private void receivePayload(final JSONObject message)
+    {
+        Log.d(LOGTAG, "receivePayload: message=" + message.toString());
+
+        final OnMessageReceivedListener listener = onMessageReceivedListener;
+
+        if (listener != null)
+        {
+            handler.post(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    listener.onMessageReceived(message);
+                }
+            });
+        }
+    }
+
     private void receivePayloadResult(Context context, Intent intent)
     {
         String resultStr = intent.getStringExtra("result");
@@ -312,34 +353,12 @@ public class GorillaClient
         if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT"))
         {
             receivePayloadResult(context, intent);
-
             return;
         }
 
         if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_PAYLOAD"))
         {
-            long time = intent.getLongExtra("time", -1);
-
-            String uuid = intent.getStringExtra("uuid");
-            String sender = intent.getStringExtra("sender");
-            String device = intent.getStringExtra("device");
-            String payload = intent.getStringExtra("payload");
-
-            Log.d(LOGTAG, "onReceive: RECV_PAYLOAD uuid=" + uuid + " time=" + time + " sender=" + sender + " device=" + device + " payload=" + payload);
-
-            if (onMessageReceivedListener != null)
-            {
-                JSONObject message = new JSONObject();
-
-                putJSON(message, "uuid", uuid);
-                putJSON(message, "time", time);
-                putJSON(message, "sender", sender);
-                putJSON(message, "device", device);
-                putJSON(message, "payload", payload);
-
-                onMessageReceivedListener.onMessageReceived(message);
-            }
-
+            receivePayload(context, intent);
             return;
         }
 
@@ -350,49 +369,37 @@ public class GorillaClient
         Log.d(LOGTAG, "onReceive: wrong action.");
     }
 
-    public void wantOwner(Context context)
+    public void sendPayload(Context context, String userUUID, String deviceUUID, String payload)
     {
-        Intent requestIntent = new Intent();
+        IGorillaRemote gr = gorillaRemote;
+        if (gr == null) return;
 
-        requestIntent.setPackage("com.aura.aosp.gorilla.sysapp");
-        requestIntent.setAction("com.aura.aosp.gorilla.service.WANT_OWNER");
-        requestIntent.putExtra("apkname", apkname);
-
-        Log.d(LOGTAG, "wantOwner: requestIntent=" + requestIntent.toString());
-
-        context.sendBroadcast(requestIntent);
-    }
-
-    public void sendPayload(Context context, String receiver, String device, String payload)
-    {
-        JSONObject result = new JSONObject();
-
-        String uuid = UUID.randomUUID().toString();
-        long time = System.currentTimeMillis();
-
-        putJSON(result, "uuid", uuid);
-        putJSON(result, "time", time);
-        putJSON(result, "status", "pending");
-
-        Intent requestIntent = new Intent();
-
-        requestIntent.setPackage("com.aura.aosp.gorilla.sysapp");
-        requestIntent.setAction("com.aura.aosp.gorilla.service.SEND_PAYLOAD");
-
-        requestIntent.putExtra("uuid", uuid);
-        requestIntent.putExtra("time", time);
-        requestIntent.putExtra("apkname", apkname);
-        requestIntent.putExtra("receiver", receiver);
-        requestIntent.putExtra("device", device);
-        requestIntent.putExtra("payload", payload);
-
-        Log.d(LOGTAG, "sendPayload: requestIntent=" + requestIntent.toString());
-
-        context.sendBroadcast(requestIntent);
-
-        if (onResultReceivedListener != null)
+        try
         {
-            onResultReceivedListener.onResultReceived(result);
+            String checksum = createSHASignatureBase64(serverSecret,
+                    apkname.getBytes(),
+                    userUUID.getBytes(),
+                    deviceUUID.getBytes(),
+                    payload.getBytes()
+            );
+
+            String resultStr = gr.sendPayload(apkname, userUUID, deviceUUID, payload, checksum);
+
+            Log.d(LOGTAG, "sendPayload: resultStr=" + resultStr);
+
+            JSONObject result = fromStringJSONOBject(resultStr);
+
+            if (result == null)
+            {
+                Log.e(LOGTAG, "sendPayload: result failed!");
+                return;
+            }
+
+            receivePayloadResult(result);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
     }
 

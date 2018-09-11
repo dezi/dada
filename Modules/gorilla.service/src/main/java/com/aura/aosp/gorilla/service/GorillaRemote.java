@@ -1,7 +1,5 @@
 package com.aura.aosp.gorilla.service;
 
-import android.support.annotation.Nullable;
-
 import android.util.Base64;
 
 import com.aura.aosp.aura.common.crypter.RND;
@@ -10,6 +8,9 @@ import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Log;
 
 import com.aura.aosp.gorilla.client.IGorillaRemote;
+import com.aura.aosp.gorilla.gomess.GomessHandler;
+
+import org.json.JSONObject;
 
 public class GorillaRemote extends IGorillaRemote.Stub
 {
@@ -60,5 +61,28 @@ public class GorillaRemote extends IGorillaRemote.Stub
         }
 
         return Owner.getOwnerUUIDBase64();
+    }
+
+    @Override
+    public String sendPayload(String apkname, String userUUID, String deviceUUID, String payload, String checksum)
+    {
+        byte[] serverSecretBytes = GorillaMapper.getServerSecret(apkname);
+
+        String solution = SHA.createSHASignatureBase64(serverSecretBytes,
+                apkname.getBytes(),
+                userUUID.getBytes(),
+                deviceUUID.getBytes(),
+                payload.getBytes()
+        );
+
+        if ((checksum == null) || (solution == null) || ! checksum.equals(solution))
+        {
+            Log.e("checksum failed!");
+            return null;
+        }
+
+        JSONObject result = GomessHandler.getInstance().sendPayload(apkname, userUUID, deviceUUID, payload);
+
+        return result.toString();
     }
 }

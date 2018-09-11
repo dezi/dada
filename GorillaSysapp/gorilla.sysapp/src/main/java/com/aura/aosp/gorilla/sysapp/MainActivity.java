@@ -186,7 +186,5 @@ public class MainActivity extends AppCompatActivity
                 Log.d(LOGTAG, "onResultReceived: result=" + result.toString());
             }
         });
-
-        gc.wantOwner(this);
     }
 }
