@@ -60,7 +60,7 @@ public class GorillaRemote extends IGorillaRemote.Stub
             return false;
         }
 
-        boolean status = GomessHandler.getInstance().getOnlineStatus();
+        boolean status = GomessHandler.getInstance().isSessionConnected();
 
         Log.d("status=%b apkname=%s", status, apkname);
 

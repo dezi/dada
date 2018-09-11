@@ -10,6 +10,8 @@ import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class GorillaSender
 {
     public static Err sendBroadCastSecret(String apkname, String serverSecret, String challenge)
@@ -53,6 +55,37 @@ public class GorillaSender
         Log.d("apkname=%s ownerUUID=%s", apkname, ownerUUID);
 
         GorillaBase.getAppContext().sendBroadcast(ownerIntent);
+
+        return null;
+    }
+
+    public static Err sendBroadCastStatus(boolean uplink)
+    {
+        byte[] bytes = new byte[1];
+        bytes[ 0 ] = (byte) (uplink ? 1 : 0);
+
+        List<String> apknames = GorillaMapper.getAllAttachedAPKNames();
+
+        for (String apkname : apknames)
+        {
+            byte[] clientSecretBytes = GorillaMapper.getClientSecret(apkname);
+
+            String checksum;
+
+            checksum = SHA.createSHASignatureBase64(clientSecretBytes, apkname.getBytes(), bytes);
+
+            Intent statusIntent = new Intent();
+
+            statusIntent.setPackage(apkname);
+            statusIntent.setAction("com.aura.aosp.gorilla.service.RECV_STATUS");
+
+            statusIntent.putExtra("uplink", uplink);
+            statusIntent.putExtra("checksum", checksum);
+
+            Log.d("apkname=%s uplink=%b", apkname, uplink);
+
+            GorillaBase.getAppContext().sendBroadcast(statusIntent);
+        }
 
         return null;
     }

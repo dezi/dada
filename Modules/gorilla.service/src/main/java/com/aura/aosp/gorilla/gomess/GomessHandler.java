@@ -5,7 +5,6 @@ import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.sockets.Connect;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.common.univid.Owner;
-import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
@@ -42,14 +41,20 @@ public class GomessHandler
         return instance;
     }
 
+    private GomessClient client;
+
     private final Thread readerThread;
     private final Thread writerThread;
 
     private final List<GoprotoTicket> tickets = new ArrayList<>();
 
-    public boolean getOnlineStatus()
+    private GomessHandler()
     {
-        return true;
+        readerThread = new Thread(readerRunner);
+        readerThread.start();
+
+        writerThread = new Thread(writerRunner);
+        writerThread.start();
     }
 
     public JSONObject sendPayload(String apkname, String userUUID, String deviceUUID, String payload)
@@ -68,6 +73,7 @@ public class GomessHandler
         }
 
         Identity owner = Owner.getOwnerIdentity();
+
         if (owner == null)
         {
             Json.put(result, "error", "Device owner not set");
@@ -113,21 +119,12 @@ public class GomessHandler
         }
     }
 
-    public boolean sessionIsConnected()
+    public boolean isSessionConnected()
     {
         GomessClient myclient = client;
         if (myclient == null) return false;
 
         return myclient.isConnected();
-    }
-
-    private GomessHandler()
-    {
-        readerThread = new Thread(readerRunner);
-        readerThread.start();
-
-        writerThread = new Thread(writerRunner);
-        writerThread.start();
     }
 
     private void addTicketToQueue(GoprotoTicket ticket)
@@ -178,12 +175,26 @@ public class GomessHandler
         {
             while (true)
             {
-                if (! sessionIsConnected())
+                //
+                // Draw a detached copy of client instance.
+                //
+
+                GomessClient myclient = client;
+
+                //
+                // Check if detached client instance copy is connected.
+                //
+
+                if ((myclient == null) || ! myclient.isConnected())
                 {
                     Simple.sleep(100);
 
                     continue;
                 }
+
+                //
+                // Try to obtain a ticket.
+                //
 
                 GoprotoTicket ticket = null;
 
@@ -195,6 +206,10 @@ public class GomessHandler
                     }
                 }
 
+                //
+                // Nix to do.
+                //
+
                 if (ticket == null)
                 {
                     Simple.sleep(100);
@@ -202,21 +217,15 @@ public class GomessHandler
                     continue;
                 }
 
-                GomessClient myclient = client;
-
-                if ((myclient == null) || ! sessionIsConnected())
-                {
-                    synchronized (tickets)
-                    {
-                        tickets.add(0, ticket);
-                    }
-
-                    Simple.sleep(100);
-
-                    continue;
-                }
+                //
+                // Dispatch ticket to remote gorilla server.
+                //
 
                 Err err = myclient.sendMessageUpload(ticket);
+
+                //
+                // Prepare result json.
+                //
 
                 JSONObject result = new JSONObject();
                 Json.put(result, "uuid", ticket.getMessageUUIDBase64());
@@ -228,22 +237,30 @@ public class GomessHandler
                     Json.put(result, "status", "error");
                 }
 
+                //
+                // Push result via broadcast back to client apk.
+                //
+
                 GorillaSender.sendBroadCastPayloadResult(ticket, result);
 
-                if (err == null) continue;
-                Log.e("err=%s", err);
-
-                synchronized (tickets)
+                if (err != null)
                 {
-                    tickets.add(0, ticket);
-                }
+                    Log.e("err=%s", err);
 
-                Simple.sleep(100);
+                    //
+                    // Push back ticket to queue for next change.
+                    //
+
+                    synchronized (tickets)
+                    {
+                        tickets.add(0, ticket);
+                    }
+
+                    Simple.sleep(100);
+                }
             }
         }
     };
-
-    private GomessClient client;
 
     private Err handleSession(GomessNode cnode)
     {

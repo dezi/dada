@@ -5,14 +5,18 @@ import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.common.simple.Err;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 public class GorillaMapper
 {
     private static class AppData
     {
-        private String apkName;
         private byte[] serverSecret;
         private byte[] clientSecret;
     }
@@ -56,15 +60,26 @@ public class GorillaMapper
     @NonNull
     private static AppData getAppData(String apkname)
     {
-        AppData appData = apkDatas.get(apkname);
-
-        if (appData == null)
+        synchronized (apkDatas)
         {
-            appData = new AppData();
-            apkDatas.put(apkname, appData);
-        }
+            AppData appData = apkDatas.get(apkname);
 
-        return appData;
+            if (appData == null)
+            {
+                appData = new AppData();
+                apkDatas.put(apkname, appData);
+            }
+
+            return appData;
+        }
+    }
+
+    public static List<String> getAllAttachedAPKNames()
+    {
+        synchronized (apkDatas)
+        {
+            return new ArrayList<>(apkDatas.keySet());
+        }
     }
 
     public static void setServerSecret(String apkname, byte[] secret)

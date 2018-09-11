@@ -22,6 +22,7 @@ public class GoprotoSession
 
     private boolean isConnected;
     private boolean isClosed;
+    private boolean isBoot;
 
     public byte[] AESKey;
     public AES.AESBlock AESBlock;
@@ -103,6 +104,16 @@ public class GoprotoSession
     public void setIsConnected(boolean connected)
     {
         isConnected = connected;
+    }
+
+    public boolean isBoot()
+    {
+        return isBoot;
+    }
+
+    public void setIsBoot(boolean boot)
+    {
+        isBoot = boot;
     }
 
     public AES.AESBlock getAESBlock()
