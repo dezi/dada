@@ -110,29 +110,6 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public boolean getOnlineStatus(String apkname, String checksum)
     {
@@ -157,10 +134,12 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public String getOwnerUUID(String apkname, String checksum)
     {
-        byte[] serverSecretBytes = GorillaIntercon.getServerSecret(apkname);
-        String solution = SHA.createSHASignatureBase64(serverSecretBytes, apkname.getBytes());
+        String solution = SHA.createSHASignatureBase64(
+                GorillaIntercon.getServerSecret(apkname),
+                GorillaIntercon.getClientSecret(apkname),
+                apkname.getBytes());
 
-        if ((checksum == null) || (solution == null) || ! checksum.equals(solution))
+        if ((checksum == null) || ! checksum.equals(solution))
         {
             Log.e("checksum failed!");
             return null;
@@ -168,6 +147,18 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
 
         return Owner.getOwnerUUIDBase64();
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public String sendPayload(String apkname, String userUUID, String deviceUUID, String payload, String checksum)

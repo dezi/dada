@@ -4,7 +4,7 @@ import android.util.Log;
 
 public class GorillaClientService extends IGorillaClientService.Stub
 {
-    private static final String LOGTAG = GorillaClientService.class.getSimpleName();
+    private final static String LOGTAG = GorillaClientService.class.getSimpleName();
 
     @Override
     public boolean initServerSecret(String apkname, String serverSecret, String checksum)
@@ -26,6 +26,12 @@ public class GorillaClientService extends IGorillaClientService.Stub
         }
 
         Log.d(LOGTAG, "initServerSecret: impl apkname=" + apkname + " serverSecret=" + serverSecret + " svlink=" + svlink);
+
+        if (svlink)
+        {
+            GorillaClient.getInstance().getOnlineStatus();
+            GorillaClient.getInstance().getOwnerUUID();
+        }
 
         return svlink;
     }

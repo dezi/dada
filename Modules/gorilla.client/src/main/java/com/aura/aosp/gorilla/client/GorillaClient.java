@@ -186,6 +186,55 @@ public class GorillaClient
         }
     }
 
+    void getOnlineStatus()
+    {
+        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        if (gr == null) return;
+
+        try
+        {
+            String checksum = GorillaHelpers.createSHASignatureBase64(
+                    GorillaIntercon.getServerSecret(sysApkName),
+                    GorillaIntercon.getClientSecret(sysApkName),
+                    apkname.getBytes()
+            );
+
+            boolean uplink = gr.getOnlineStatus(apkname, checksum);
+
+            if (GorillaIntercon.setUplinkStatus(sysApkName, uplink))
+            {
+                GorillaClient.getInstance().receiveStatus();
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    void getOwnerUUID()
+    {
+        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        if (gr == null) return;
+
+        try
+        {
+            String checksum = GorillaHelpers.createSHASignatureBase64(
+                    GorillaIntercon.getServerSecret(sysApkName),
+                    GorillaIntercon.getClientSecret(sysApkName),
+                    apkname.getBytes()
+            );
+
+            String ownerUUID = gr.getOwnerUUID(apkname, checksum);
+
+            receiveOwnerUUID(ownerUUID);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
     private void receiveStatus(Context context, Intent intent)
     {
         boolean uplink = intent.getBooleanExtra("uplink", false);
