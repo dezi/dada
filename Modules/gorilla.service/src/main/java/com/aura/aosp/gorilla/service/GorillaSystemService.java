@@ -29,14 +29,11 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     {
         GorillaIntercon.setClientSecret(apkname, clientSecret);
 
-        String challenge = SHA.createSHASignatureBase64(GorillaIntercon.getClientSecret(apkname));
-
-        GorillaSender.sendBroadCastSecret(apkname, GorillaIntercon.getServerSecretBase64(apkname), challenge);
-
         startClientService(apkname);
 
         String solution = SHA.createSHASignatureBase64(
                 GorillaIntercon.getServerSecret(apkname),
+                GorillaIntercon.getClientSecret(apkname),
                 apkname.getBytes(),
                 clientSecret.getBytes()
         );
@@ -47,28 +44,6 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
         Log.d("impl apkname=%s clientSecret=%s svlink=%b", apkname, clientSecret, svlink);
 
         return svlink;
-    }
-
-    @Override
-    public void replyClientSecret(String apkname, String clientSecret, String checksum)
-    {
-    }
-
-    @Override
-    public boolean validateConnect(String apkname, String challenge)
-    {
-        byte[] serverSecretBytes = GorillaIntercon.getServerSecret(apkname);
-        String solution = SHA.createSHASignatureBase64(serverSecretBytes);
-
-        if ((challenge == null) || (solution == null) || ! challenge.equals(solution))
-        {
-            Log.e("challenge failed!");
-            return false;
-        }
-
-        Log.d("validated apkname=%s",apkname);
-
-        return true;
     }
 
     private void startClientService(final String apkname)
@@ -118,6 +93,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
             String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
 
             String checksum = SHA.createSHASignatureBase64(
+                    GorillaIntercon.getServerSecret(apkname),
                     GorillaIntercon.getClientSecret(apkname),
                     sysApkName.getBytes(),
                     serverSecret.getBytes()
@@ -160,10 +136,12 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public boolean getOnlineStatus(String apkname, String checksum)
     {
-        byte[] serverSecretBytes = GorillaIntercon.getServerSecret(apkname);
-        String solution = SHA.createSHASignatureBase64(serverSecretBytes, apkname.getBytes());
+        String solution = SHA.createSHASignatureBase64(
+                GorillaIntercon.getServerSecret(apkname),
+                GorillaIntercon.getClientSecret(apkname),
+                apkname.getBytes());
 
-        if ((checksum == null) || (solution == null) || ! checksum.equals(solution))
+        if ((checksum == null) || ! checksum.equals(solution))
         {
             Log.e("checksum failed!");
             return false;

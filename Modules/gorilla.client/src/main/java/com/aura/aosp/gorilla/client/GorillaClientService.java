@@ -12,14 +12,18 @@ public class GorillaClientService extends IGorillaClientService.Stub
         GorillaIntercon.setServerSecret(apkname, serverSecret);
 
         String solution = GorillaHelpers.createSHASignatureBase64(
+                GorillaIntercon.getServerSecret(apkname),
                 GorillaIntercon.getClientSecret(apkname),
                 apkname.getBytes(),
                 serverSecret.getBytes()
         );
 
         boolean svlink = ((checksum != null) && checksum.equals(solution));
-        boolean change = GorillaIntercon.setServiceStatus(apkname, svlink);
-        if (change) GorillaClient.getInstance().receiveStatus();
+
+        if (GorillaIntercon.setServiceStatus(apkname, svlink))
+        {
+            GorillaClient.getInstance().receiveStatus();
+        }
 
         Log.d(LOGTAG, "initServerSecret: impl apkname=" + apkname + " serverSecret=" + serverSecret + " svlink=" + svlink);
 

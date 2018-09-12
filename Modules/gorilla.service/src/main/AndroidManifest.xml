@@ -6,10 +6,6 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <permission
-        android:name="com.aura.aosp.gorillaservice.MESSAGE_PERMISSION"
-        android:label="Gorilla Message Services"
-        android:protectionLevel="normal" />
 
     <application android:name="com.aura.aosp.gorilla.service.GorillaBase">
 
@@ -24,12 +20,6 @@
             android:name="com.aura.aosp.gorilla.service.GorillaService"
             android:enabled="true"
             android:exported="true">
-
-            <intent-filter>
-                <action android:name="com.aura.android.gorillaservice.START_SERVICE" />
-                <action android:name="com.aura.android.gorillaservice.REMOTE_CONNECT" />
-            </intent-filter>
-
         </service>
 
     </application>

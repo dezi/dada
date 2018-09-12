@@ -151,67 +151,34 @@ public class GorillaClient
 
             String checksum = GorillaHelpers.createSHASignatureBase64(
                     GorillaIntercon.getServerSecret(sysApkName),
-                    apkname.getBytes(), clientSecret.getBytes());
+                    GorillaIntercon.getClientSecret(sysApkName),
+                    apkname.getBytes(),
+                    clientSecret.getBytes()
+            );
 
             boolean svlink = gr.initClientSecret(apkname, clientSecret, checksum);
-            boolean changed = GorillaIntercon.setServiceStatus(sysApkName, svlink);
-            if (changed) receiveStatus();
+
+            if (GorillaIntercon.setServiceStatus(sysApkName, svlink))
+            {
+                receiveStatus();
+            }
 
             Log.d(LOGTAG, "initClientSecret: call apkname=" + apkname + " clientSecret=" + clientSecret + " svlink=" + svlink);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
 
-    private void receiveServerSecret(Context context, Intent intent)
-    {
-        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
-        if (gr == null) return;
+            if (! svlink) return;
 
-        try
-        {
-            byte[] clientSecret = GorillaIntercon.getClientSecret(sysApkName);
-            String secret = intent.getStringExtra("serverSecret");
-            String challenge = intent.getStringExtra("challenge");
-            String solution = GorillaHelpers.createSHASignatureBase64(clientSecret);
-
-            if ((challenge == null) || (solution == null) || !challenge.equals(solution))
-            {
-                Log.e(LOGTAG, "receiveServerSecret: failed!");
-                return;
-            }
-
-            GorillaIntercon.setServerSecret(sysApkName, secret);
-            Log.d(LOGTAG, "receiveServerSecret: serverSecret=" + secret);
-
-            challenge = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getServerSecret(sysApkName));
-
-            boolean svlink = gr.validateConnect(apkname, challenge);
-            boolean change = GorillaIntercon.setServiceStatus(sysApkName, svlink);
-            if (change) receiveStatus();
-
-            if (!svlink)
-            {
-                Log.e(LOGTAG, "receiveServerSecret: validate failed!");
-                return;
-            }
-
-            Log.d(LOGTAG, "receiveServerSecret: validated.");
-
-            String checksum = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getServerSecret(sysApkName), apkname.getBytes());
+            checksum = GorillaHelpers.createSHASignatureBase64(
+                    GorillaIntercon.getServerSecret(sysApkName),
+                    GorillaIntercon.getClientSecret(sysApkName),
+                    apkname.getBytes()
+            );
 
             boolean uplink = gr.getOnlineStatus(apkname, checksum);
-            GorillaIntercon.setUplinkStatus(sysApkName, uplink);
 
-            receiveStatus();
-
-            checksum = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getServerSecret(sysApkName), apkname.getBytes());
-
-            String ownerUUID = gr.getOwnerUUID(apkname, checksum);
-
-            receiveOwnerUUID(ownerUUID);
+            if (GorillaIntercon.setUplinkStatus(sysApkName, uplink))
+            {
+                receiveStatus();
+            }
         }
         catch (Exception ex)
         {
@@ -410,12 +377,6 @@ public class GorillaClient
 
     void onReceive(Context context, Intent intent)
     {
-        if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_SECRET"))
-        {
-            receiveServerSecret(context, intent);
-            return;
-        }
-
         if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_OWNER"))
         {
             receiveOwnerUUID(context, intent);
