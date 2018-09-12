@@ -20,6 +20,7 @@ public class GorillaIntercon
         private byte[] clientSecret = newSecret();
 
         private boolean svlink;
+        private boolean uplink;
 
         private byte[] newSecret()
         {
@@ -116,5 +117,25 @@ public class GorillaIntercon
     public static IGorillaSystemService getSystemService(String apkname)
     {
         return getAppData(apkname).systemService;
+    }
+
+    public static void setServiceStatus(String apkname, boolean svlink)
+    {
+        getAppData(apkname).svlink = svlink;
+    }
+
+    public static boolean getServiceStatus(String apkname)
+    {
+        return getAppData(apkname).svlink;
+    }
+
+    public static void setUplinkStatus(String apkname, boolean uplink)
+    {
+        getAppData(apkname).uplink = uplink;
+    }
+
+    public static boolean getUplinkStatus(String apkname)
+    {
+        return getAppData(apkname).uplink;
     }
 }

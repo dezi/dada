@@ -8,12 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Base64;
 import android.util.Log;
 
 import org.json.JSONObject;
-
-import java.security.SecureRandom;
 
 @SuppressWarnings("unused")
 @SuppressLint("StaticFieldLeak")
@@ -79,8 +76,6 @@ public class GorillaClient
     private String ownerUUID;
 
     private String apkname;
-    private boolean svlink;
-    private boolean uplink;
 
     private OnStatusReceivedListener onStatusReceivedListener;
     private OnOwnerReceivedListener onOwnerReceivedListener;
@@ -112,9 +107,8 @@ public class GorillaClient
                 Log.d(LOGTAG, "onServiceDisconnected: className=" + className.toString());
 
                 GorillaIntercon.setSystemService(sysApkName, null);
-
-                uplink = false;
-                svlink = false;
+                GorillaIntercon.setServiceStatus(sysApkName, false);
+                GorillaIntercon.setUplinkStatus(sysApkName, false);
 
                 handler.post(serviceConnector);
 
@@ -192,7 +186,8 @@ public class GorillaClient
 
             challenge = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getServerSecret(sysApkName));
 
-            svlink = gr.validateConnect(apkname, challenge);
+            boolean svlink = gr.validateConnect(apkname, challenge);
+            GorillaIntercon.setServiceStatus(sysApkName, svlink);
 
             if (!svlink)
             {
@@ -204,7 +199,8 @@ public class GorillaClient
 
             String checksum = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getServerSecret(sysApkName), apkname.getBytes());
 
-            uplink = gr.getOnlineStatus(apkname, checksum);
+            boolean uplink = gr.getOnlineStatus(apkname, checksum);
+            GorillaIntercon.setUplinkStatus(sysApkName, uplink);
 
             receiveStatus();
 
@@ -241,7 +237,7 @@ public class GorillaClient
             return;
         }
 
-        this.uplink = uplink;
+        GorillaIntercon.setUplinkStatus(sysApkName, uplink);
 
         receiveStatus();
     }
@@ -250,8 +246,8 @@ public class GorillaClient
     {
         JSONObject status = new JSONObject();
 
-        GorillaHelpers.putJSON(status, "svlink", svlink);
-        GorillaHelpers.putJSON(status, "uplink", uplink);
+        GorillaHelpers.putJSON(status, "svlink", GorillaIntercon.getServiceStatus(sysApkName));
+        GorillaHelpers.putJSON(status, "uplink", GorillaIntercon.getUplinkStatus(sysApkName));
 
         receiveStatus(status);
     }
