@@ -41,11 +41,12 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
                 clientSecret.getBytes()
         );
 
-        boolean valid = ((checksum != null) && checksum.equals(solution));
+        boolean svlink = ((checksum != null) && checksum.equals(solution));
+        GorillaIntercon.setServiceStatus(apkname, svlink);
 
-        Log.d("impl apkname=%s clientSecret=%s valid=%b",apkname, clientSecret, valid);
+        Log.d("impl apkname=%s clientSecret=%s svlink=%b", apkname, clientSecret, svlink);
 
-        return false;
+        return svlink;
     }
 
     @Override
@@ -122,9 +123,10 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
                     serverSecret.getBytes()
             );
 
-            boolean valid = gr.initServerSecret(sysApkName, serverSecret, checksum);
+            boolean svlink = gr.initServerSecret(sysApkName, serverSecret, checksum);
+            GorillaIntercon.setServiceStatus(apkname, svlink);
 
-            Log.d("call apkname=" + sysApkName + " serverSecret=" + serverSecret + " valid=" + valid);
+            Log.d("call apkname=" + sysApkName + " serverSecret=" + serverSecret + " svlink=" + svlink);
         }
         catch (Exception ex)
         {

@@ -17,11 +17,12 @@ public class GorillaClientService extends IGorillaClientService.Stub
                 serverSecret.getBytes()
         );
 
-        boolean valid = ((checksum != null) && checksum.equals(solution));
+        boolean svlink = ((checksum != null) && checksum.equals(solution));
+        GorillaIntercon.setServiceStatus(apkname, svlink);
 
-        Log.d(LOGTAG, "initServerSecret: impl apkname=" + apkname + " serverSecret=" + serverSecret + " valid=" + valid);
+        Log.d(LOGTAG, "initServerSecret: impl apkname=" + apkname + " serverSecret=" + serverSecret + " svlink=" + svlink);
 
-        return valid;
+        return svlink;
     }
 
     @Override

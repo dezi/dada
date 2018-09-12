@@ -74,7 +74,6 @@ public class GorillaClient
 
     private ServiceConnection serviceConnection;
     private String ownerUUID;
-
     private String apkname;
 
     private OnStatusReceivedListener onStatusReceivedListener;
@@ -153,9 +152,10 @@ public class GorillaClient
                     GorillaIntercon.getServerSecret(sysApkName),
                     apkname.getBytes(), clientSecret.getBytes());
 
-            boolean valid = gr.initClientSecret(apkname, clientSecret, checksum);
+            boolean svlink = gr.initClientSecret(apkname, clientSecret, checksum);
+            GorillaIntercon.setServiceStatus(sysApkName, svlink);
 
-            Log.d(LOGTAG, "initClientSecret: call apkname=" + apkname + " clientSecret=" + clientSecret + " valid=" + valid);
+            Log.d(LOGTAG, "initClientSecret: call apkname=" + apkname + " clientSecret=" + clientSecret + " svlink=" + svlink);
         }
         catch (Exception ex)
         {
