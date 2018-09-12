@@ -50,14 +50,6 @@ public class GorillaIntercon
         }
     }
 
-    public static void delAppData(String apkname)
-    {
-        synchronized (apkDatas)
-        {
-            apkDatas.remove(apkname);
-        }
-    }
-
     public static void setServerSecret(String apkname, byte[] secret)
     {
         getAppData(apkname).serverSecret = secret;
@@ -68,18 +60,16 @@ public class GorillaIntercon
         setServerSecret(apkname, Base64.decode(secretBase64, Base64.DEFAULT));
     }
 
-    @Nullable
+    @NonNull
     public static byte[] getServerSecret(String apkname)
     {
         return getAppData(apkname).serverSecret;
     }
 
-    @Nullable
+    @NonNull
     public static String getServerSecretBase64(String apkname)
     {
         byte[] serverSecret = getServerSecret(apkname);
-        if (serverSecret == null) return null;
-
         return Base64.encodeToString(serverSecret, Base64.NO_WRAP);
     }
 
@@ -93,18 +83,16 @@ public class GorillaIntercon
         setClientSecret(apkname, Base64.decode(secretBase64, Base64.DEFAULT));
     }
 
-    @Nullable
+    @NonNull
     public static byte[] getClientSecret(String apkname)
     {
         return getAppData(apkname).clientSecret;
     }
 
-    @Nullable
+    @NonNull
     public static String getClientSecretBase64(String apkname)
     {
         byte[] clientSecret = getClientSecret(apkname);
-        if (clientSecret == null) return null;
-
         return Base64.encodeToString(clientSecret, Base64.NO_WRAP);
     }
 

@@ -12,6 +12,7 @@ import com.aura.aosp.aura.common.crypter.SHA;
 import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Log;
 
+import com.aura.aosp.gorilla.client.GorillaHelpers;
 import com.aura.aosp.gorilla.client.GorillaIntercon;
 import com.aura.aosp.gorilla.client.IGorillaClientService;
 import com.aura.aosp.gorilla.client.IGorillaSystemService;
@@ -21,28 +22,35 @@ import org.json.JSONObject;
 
 public class GorillaSystemService extends IGorillaSystemService.Stub
 {
-    @Override
-    public void initClientSecret(String apkname, String clientSecret)
-    {
-        Log.d("apkname=%s clientSecret=%s",apkname, clientSecret);
+    private final static String sysApkName = "com.aura.aosp.gorilla.sysapp";
 
+    @Override
+    public boolean initClientSecret(String apkname, String clientSecret, String checksum)
+    {
         GorillaIntercon.setClientSecret(apkname, clientSecret);
 
-        byte[] serverSecretBytes = RND.randomBytes(16);
-        GorillaIntercon.setServerSecret(apkname, serverSecretBytes);
-
-        String serverSecret = Base64.encodeToString(serverSecretBytes, Base64.NO_WRAP);
         String challenge = SHA.createSHASignatureBase64(GorillaIntercon.getClientSecret(apkname));
 
-        GorillaSender.sendBroadCastSecret(apkname, serverSecret, challenge);
+        GorillaSender.sendBroadCastSecret(apkname, GorillaIntercon.getServerSecretBase64(apkname), challenge);
 
         startClientService(apkname);
+
+        String solution = SHA.createSHASignatureBase64(
+                GorillaIntercon.getServerSecret(apkname),
+                apkname.getBytes(),
+                clientSecret.getBytes()
+        );
+
+        boolean valid = ((checksum != null) && checksum.equals(solution));
+
+        Log.d("impl apkname=%s clientSecret=%s valid=%b",apkname, clientSecret, valid);
+
+        return false;
     }
 
     @Override
     public void replyClientSecret(String apkname, String clientSecret, String checksum)
     {
-
     }
 
     @Override
@@ -75,6 +83,8 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
 
                 IGorillaClientService gorillaRemote = IGorillaClientService.Stub.asInterface(service);
                 GorillaIntercon.setClientService(apkname, gorillaRemote);
+
+                initServerSecret(apkname);
             }
 
             public void onServiceDisconnected(ComponentName className)
@@ -95,6 +105,31 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
         serviceIntent.setComponent(componentName);
 
         GorillaBase.getAppContext().bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private void initServerSecret(String apkname)
+    {
+        IGorillaClientService gr = GorillaIntercon.getClientService(apkname);
+        if (gr == null) return;
+
+        try
+        {
+            String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
+
+            String checksum = SHA.createSHASignatureBase64(
+                    GorillaIntercon.getClientSecret(apkname),
+                    sysApkName.getBytes(),
+                    serverSecret.getBytes()
+            );
+
+            boolean valid = gr.initServerSecret(sysApkName, serverSecret, checksum);
+
+            Log.d("call apkname=" + sysApkName + " serverSecret=" + serverSecret + " valid=" + valid);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
 

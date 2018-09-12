@@ -2,7 +2,12 @@ package com.aura.aosp.gorilla.client;
 
 interface IGorillaSystemService
 {
-    void initClientSecret(String apkname, String clientSecret);
+    boolean initClientSecret(String apkname, String clientSecret, String checksum);
+
+
+
+
+
 
     void replyClientSecret(String apkname, String clientSecret, String checksum);
 

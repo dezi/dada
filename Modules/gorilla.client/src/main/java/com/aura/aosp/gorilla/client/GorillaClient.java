@@ -153,10 +153,15 @@ public class GorillaClient
 
         try
         {
-            String secret = GorillaIntercon.getClientSecretBase64(sysApkName);
-            gr.initClientSecret(apkname, secret);
+            String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
 
-            Log.d(LOGTAG, "initClientSecret: clientSecret=" + secret);
+            String checksum = GorillaHelpers.createSHASignatureBase64(
+                    GorillaIntercon.getServerSecret(sysApkName),
+                    apkname.getBytes(), clientSecret.getBytes());
+
+            boolean valid = gr.initClientSecret(apkname, clientSecret, checksum);
+
+            Log.d(LOGTAG, "initClientSecret: call apkname=" + apkname + " clientSecret=" + clientSecret + " valid=" + valid);
         }
         catch (Exception ex)
         {
