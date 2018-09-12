@@ -119,9 +119,11 @@ public class GorillaIntercon
         return getAppData(apkname).systemService;
     }
 
-    public static void setServiceStatus(String apkname, boolean svlink)
+    public static boolean setServiceStatus(String apkname, boolean svlink)
     {
+        boolean change = (getAppData(apkname).svlink != svlink);
         getAppData(apkname).svlink = svlink;
+        return change;
     }
 
     public static boolean getServiceStatus(String apkname)
@@ -129,9 +131,11 @@ public class GorillaIntercon
         return getAppData(apkname).svlink;
     }
 
-    public static void setUplinkStatus(String apkname, boolean uplink)
+    public static boolean setUplinkStatus(String apkname, boolean uplink)
     {
+        boolean change = (getAppData(apkname).uplink != uplink);
         getAppData(apkname).uplink = uplink;
+        return change;
     }
 
     public static boolean getUplinkStatus(String apkname)

@@ -18,21 +18,11 @@ public class GorillaClientService extends IGorillaClientService.Stub
         );
 
         boolean svlink = ((checksum != null) && checksum.equals(solution));
-        GorillaIntercon.setServiceStatus(apkname, svlink);
+        boolean change = GorillaIntercon.setServiceStatus(apkname, svlink);
+        if (change) GorillaClient.getInstance().receiveStatus();
 
         Log.d(LOGTAG, "initServerSecret: impl apkname=" + apkname + " serverSecret=" + serverSecret + " svlink=" + svlink);
 
         return svlink;
-    }
-
-    @Override
-    public void replyServerSecret(String apkname, String serverSecret, String checksum)
-    {
-    }
-
-    @Override
-    public boolean validateConnect(String apkname, String challenge)
-    {
-        return false;
     }
 }

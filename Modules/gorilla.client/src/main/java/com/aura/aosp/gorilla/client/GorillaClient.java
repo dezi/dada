@@ -106,12 +106,13 @@ public class GorillaClient
                 Log.d(LOGTAG, "onServiceDisconnected: className=" + className.toString());
 
                 GorillaIntercon.setSystemService(sysApkName, null);
-                GorillaIntercon.setServiceStatus(sysApkName, false);
-                GorillaIntercon.setUplinkStatus(sysApkName, false);
+
+                boolean c1 = GorillaIntercon.setServiceStatus(sysApkName, false);
+                boolean c2 = GorillaIntercon.setUplinkStatus(sysApkName, false);
+
+                if (c1 || c2) receiveStatus();
 
                 handler.post(serviceConnector);
-
-                receiveStatus();
             }
         };
 
@@ -153,7 +154,8 @@ public class GorillaClient
                     apkname.getBytes(), clientSecret.getBytes());
 
             boolean svlink = gr.initClientSecret(apkname, clientSecret, checksum);
-            GorillaIntercon.setServiceStatus(sysApkName, svlink);
+            boolean changed = GorillaIntercon.setServiceStatus(sysApkName, svlink);
+            if (changed) receiveStatus();
 
             Log.d(LOGTAG, "initClientSecret: call apkname=" + apkname + " clientSecret=" + clientSecret + " svlink=" + svlink);
         }
@@ -187,7 +189,8 @@ public class GorillaClient
             challenge = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getServerSecret(sysApkName));
 
             boolean svlink = gr.validateConnect(apkname, challenge);
-            GorillaIntercon.setServiceStatus(sysApkName, svlink);
+            boolean change = GorillaIntercon.setServiceStatus(sysApkName, svlink);
+            if (change) receiveStatus();
 
             if (!svlink)
             {
@@ -242,7 +245,7 @@ public class GorillaClient
         receiveStatus();
     }
 
-    private void receiveStatus()
+    void receiveStatus()
     {
         JSONObject status = new JSONObject();
 
