@@ -13,51 +13,6 @@ import org.json.JSONObject;
 
 public class GorillaSender
 {
-    public static Err sendBroadCastSecret(String apkname, String serverSecret, String challenge)
-    {
-        Intent secretIntent = new Intent();
-
-        secretIntent.setPackage(apkname);
-        secretIntent.setAction("com.aura.aosp.gorilla.service.RECV_SECRET");
-
-        secretIntent.putExtra("serverSecret", serverSecret);
-        secretIntent.putExtra("challenge", challenge);
-
-        GorillaBase.getAppContext().sendBroadcast(secretIntent);
-
-        return null;
-    }
-
-    public static Err sendBroadCastOwner(String apkname, String ownerUUID)
-    {
-        byte[] clientSecretBytes = GorillaIntercon.getClientSecret(apkname);
-
-        String checksum;
-
-        if (ownerUUID == null)
-        {
-            checksum = SHA.createSHASignatureBase64(clientSecretBytes, apkname.getBytes());
-        }
-        else
-        {
-            checksum = SHA.createSHASignatureBase64(clientSecretBytes, apkname.getBytes(), ownerUUID.getBytes());
-        }
-
-        Intent ownerIntent = new Intent();
-
-        ownerIntent.setPackage(apkname);
-        ownerIntent.setAction("com.aura.aosp.gorilla.service.RECV_OWNER");
-
-        ownerIntent.putExtra("ownerUUID", ownerUUID);
-        ownerIntent.putExtra("checksum", checksum);
-
-        Log.d("apkname=%s ownerUUID=%s", apkname, ownerUUID);
-
-        GorillaBase.getAppContext().sendBroadcast(ownerIntent);
-
-        return null;
-    }
-
     public static Err sendBroadCastStatus(boolean uplink)
     {
 

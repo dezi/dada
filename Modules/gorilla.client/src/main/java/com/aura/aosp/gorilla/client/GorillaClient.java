@@ -466,6 +466,7 @@ public class GorillaClient
         {
             String checksum = GorillaHelpers.createSHASignatureBase64(
                     GorillaIntercon.getServerSecret(sysApkName),
+                    GorillaIntercon.getClientSecret(sysApkName),
                     apkname.getBytes(),
                     userUUID.getBytes(),
                     deviceUUID.getBytes(),

@@ -148,31 +148,19 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
         return Owner.getOwnerUUIDBase64();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public String sendPayload(String apkname, String userUUID, String deviceUUID, String payload, String checksum)
     {
-        byte[] serverSecretBytes = GorillaIntercon.getServerSecret(apkname);
-
-        String solution = SHA.createSHASignatureBase64(serverSecretBytes,
+        String solution = SHA.createSHASignatureBase64(
+                GorillaIntercon.getServerSecret(apkname),
+                GorillaIntercon.getClientSecret(apkname),
                 apkname.getBytes(),
                 userUUID.getBytes(),
                 deviceUUID.getBytes(),
                 payload.getBytes()
         );
 
-        if ((checksum == null) || (solution == null) || ! checksum.equals(solution))
+        if ((checksum == null) || ! checksum.equals(solution))
         {
             Log.e("checksum failed!");
             return null;
