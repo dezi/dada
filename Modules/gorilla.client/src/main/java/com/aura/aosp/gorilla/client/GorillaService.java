@@ -28,6 +28,6 @@ public class GorillaService extends Service
     {
         Log.d(LOGTAG,"onBind: intent=" + intent.toString());
 
-        return new GorillaRemote();
+        return new GorillaClientService();
     }
 }

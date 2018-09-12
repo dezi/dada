@@ -12,30 +12,36 @@ import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 import org.json.JSONObject;
 
-public class GorillaRemote extends IGorillaSystemService.Stub
+public class GorillaSystemService extends IGorillaSystemService.Stub
 {
     @Override
-    public void sendClientSecret(String apkname, String clientSecret)
+    public void initClientSecret(String apkname, String clientSecret)
     {
         Log.d("apkname=%s clientSecret=%s",apkname, clientSecret);
 
-        GorillaMapper.setClientSecret(apkname, clientSecret);
+        GorillaIntercon.setClientSecret(apkname, clientSecret);
 
         byte[] serverSecretBytes = RND.randomBytes(16);
-        GorillaMapper.setServerSecret(apkname, serverSecretBytes);
+        GorillaIntercon.setServerSecret(apkname, serverSecretBytes);
 
         String serverSecret = Base64.encodeToString(serverSecretBytes, Base64.NO_WRAP);
-        String challenge = SHA.createSHASignatureBase64(GorillaMapper.getClientSecret(apkname));
+        String challenge = SHA.createSHASignatureBase64(GorillaIntercon.getClientSecret(apkname));
 
         GorillaSender.sendBroadCastSecret(apkname, serverSecret, challenge);
 
-        GorillaMapper.startClientService(apkname);
+        GorillaIntercon.startClientService(apkname);
+    }
+
+    @Override
+    public void replyClientSecret(String apkname, String clientSecret, String checksum)
+    {
+
     }
 
     @Override
     public boolean validateConnect(String apkname, String challenge)
     {
-        byte[] serverSecretBytes = GorillaMapper.getServerSecret(apkname);
+        byte[] serverSecretBytes = GorillaIntercon.getServerSecret(apkname);
         String solution = SHA.createSHASignatureBase64(serverSecretBytes);
 
         if ((challenge == null) || (solution == null) || ! challenge.equals(solution))
@@ -49,10 +55,33 @@ public class GorillaRemote extends IGorillaSystemService.Stub
         return true;
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @Override
     public boolean getOnlineStatus(String apkname, String checksum)
     {
-        byte[] serverSecretBytes = GorillaMapper.getServerSecret(apkname);
+        byte[] serverSecretBytes = GorillaIntercon.getServerSecret(apkname);
         String solution = SHA.createSHASignatureBase64(serverSecretBytes, apkname.getBytes());
 
         if ((checksum == null) || (solution == null) || ! checksum.equals(solution))
@@ -71,7 +100,7 @@ public class GorillaRemote extends IGorillaSystemService.Stub
     @Override
     public String getOwnerUUID(String apkname, String checksum)
     {
-        byte[] serverSecretBytes = GorillaMapper.getServerSecret(apkname);
+        byte[] serverSecretBytes = GorillaIntercon.getServerSecret(apkname);
         String solution = SHA.createSHASignatureBase64(serverSecretBytes, apkname.getBytes());
 
         if ((checksum == null) || (solution == null) || ! checksum.equals(solution))
@@ -86,7 +115,7 @@ public class GorillaRemote extends IGorillaSystemService.Stub
     @Override
     public String sendPayload(String apkname, String userUUID, String deviceUUID, String payload, String checksum)
     {
-        byte[] serverSecretBytes = GorillaMapper.getServerSecret(apkname);
+        byte[] serverSecretBytes = GorillaIntercon.getServerSecret(apkname);
 
         String solution = SHA.createSHASignatureBase64(serverSecretBytes,
                 apkname.getBytes(),

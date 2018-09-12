@@ -104,7 +104,7 @@ public class GorillaClient
 
                 gorillaRemote = IGorillaSystemService.Stub.asInterface(service);
 
-                sendClientSecret();
+                initClientSecret();
             }
 
             public void onServiceDisconnected(ComponentName className)
@@ -150,7 +150,7 @@ public class GorillaClient
         }
     };
 
-    private void sendClientSecret()
+    private void initClientSecret()
     {
         IGorillaSystemService gr = gorillaRemote;
         if (gr == null) return;
@@ -162,9 +162,9 @@ public class GorillaClient
             random.nextBytes(clientSecret);
 
             String secret = Base64.encodeToString(clientSecret, Base64.NO_WRAP);
-            gr.sendClientSecret(apkname, secret);
+            gr.initClientSecret(apkname, secret);
 
-            Log.d(LOGTAG, "sendClientSecret: clientSecret=" + secret);
+            Log.d(LOGTAG, "initClientSecret: clientSecret=" + secret);
         }
         catch (Exception ex)
         {

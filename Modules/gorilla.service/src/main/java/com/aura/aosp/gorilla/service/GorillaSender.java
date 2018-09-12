@@ -10,8 +10,6 @@ import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
 import org.json.JSONObject;
 
-import java.util.List;
-
 public class GorillaSender
 {
     public static Err sendBroadCastSecret(String apkname, String serverSecret, String challenge)
@@ -31,7 +29,7 @@ public class GorillaSender
 
     public static Err sendBroadCastOwner(String apkname, String ownerUUID)
     {
-        byte[] clientSecretBytes = GorillaMapper.getClientSecret(apkname);
+        byte[] clientSecretBytes = GorillaIntercon.getClientSecret(apkname);
 
         String checksum;
 
@@ -70,7 +68,7 @@ public class GorillaSender
         String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
         if (apkname == null) return Err.getLastErr();
 
-        byte[] clientSecretBytes = GorillaMapper.getClientSecret(apkname);
+        byte[] clientSecretBytes = GorillaIntercon.getClientSecret(apkname);
 
         String resultStr = result.toString();
         String checksum = SHA.createSHASignatureBase64(clientSecretBytes, apkname.getBytes(), resultStr.getBytes());

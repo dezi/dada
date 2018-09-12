@@ -65,7 +65,7 @@ public class GorillaService extends Service
     {
         Log.d("intent=%s", intent.toString());
 
-        return new GorillaRemote();
+        return new GorillaSystemService();
     }
 
     //endregion Instance stuff.
