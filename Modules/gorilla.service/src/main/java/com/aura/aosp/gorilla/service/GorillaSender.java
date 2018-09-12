@@ -6,6 +6,7 @@ import com.aura.aosp.aura.common.crypter.SHA;
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.gorilla.client.GorillaIntercon;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
 import org.json.JSONObject;

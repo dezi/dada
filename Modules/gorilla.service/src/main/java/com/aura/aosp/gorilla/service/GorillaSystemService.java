@@ -1,5 +1,10 @@
 package com.aura.aosp.gorilla.service;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.util.Base64;
 
 import com.aura.aosp.aura.common.crypter.RND;
@@ -7,6 +12,8 @@ import com.aura.aosp.aura.common.crypter.SHA;
 import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Log;
 
+import com.aura.aosp.gorilla.client.GorillaIntercon;
+import com.aura.aosp.gorilla.client.IGorillaClientService;
 import com.aura.aosp.gorilla.client.IGorillaSystemService;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
@@ -29,7 +36,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
 
         GorillaSender.sendBroadCastSecret(apkname, serverSecret, challenge);
 
-        GorillaIntercon.startClientService(apkname);
+        startClientService(apkname);
     }
 
     @Override
@@ -53,6 +60,41 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
         Log.d("validated apkname=%s",apkname);
 
         return true;
+    }
+
+    private void startClientService(final String apkname)
+    {
+        IGorillaClientService service = GorillaIntercon.getClientService(apkname);
+        if (service != null) return;
+
+        ServiceConnection serviceConnection = new ServiceConnection()
+        {
+            public void onServiceConnected(ComponentName className, IBinder service)
+            {
+                Log.d("Client apkname=%s className=%s", apkname, className.toString());
+
+                IGorillaClientService gorillaRemote = IGorillaClientService.Stub.asInterface(service);
+                GorillaIntercon.setClientService(apkname, gorillaRemote);
+            }
+
+            public void onServiceDisconnected(ComponentName className)
+            {
+                Log.d("Client apkname=%s className=%s", apkname, className.toString());
+
+                GorillaIntercon.setClientService(apkname, null);
+
+                GorillaBase.getAppContext().unbindService(this);
+            }
+        };
+
+        Log.d("apkname=%s", apkname);
+
+        ComponentName componentName = new ComponentName(apkname, "com.aura.aosp.gorilla.client.GorillaService");
+
+        Intent serviceIntent = new Intent();
+        serviceIntent.setComponent(componentName);
+
+        GorillaBase.getAppContext().bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
 

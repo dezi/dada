@@ -21,6 +21,8 @@ public class GorillaClient
 {
     private static final String LOGTAG = GorillaClient.class.getSimpleName();
 
+    private final static String sysApkName = "com.aura.aosp.gorilla.sysapp";
+
     //region Static implemention.
 
     private static GorillaClient instance = new GorillaClient();
@@ -74,14 +76,11 @@ public class GorillaClient
     private Handler handler;
 
     private ServiceConnection serviceConnection;
-    private IGorillaSystemService gorillaRemote;
     private String ownerUUID;
 
     private String apkname;
     private boolean svlink;
     private boolean uplink;
-    private byte[] clientSecret;
-    private byte[] serverSecret;
 
     private OnStatusReceivedListener onStatusReceivedListener;
     private OnOwnerReceivedListener onOwnerReceivedListener;
@@ -102,7 +101,8 @@ public class GorillaClient
             {
                 Log.d(LOGTAG, "onServiceConnected: className=" + className.toString());
 
-                gorillaRemote = IGorillaSystemService.Stub.asInterface(service);
+                IGorillaSystemService gorillaRemote = IGorillaSystemService.Stub.asInterface(service);
+                GorillaIntercon.setSystemService(sysApkName, gorillaRemote);
 
                 initClientSecret();
             }
@@ -111,11 +111,10 @@ public class GorillaClient
             {
                 Log.d(LOGTAG, "onServiceDisconnected: className=" + className.toString());
 
+                GorillaIntercon.setSystemService(sysApkName, null);
+
                 uplink = false;
                 svlink = false;
-                gorillaRemote = null;
-                clientSecret = null;
-                serverSecret = null;
 
                 handler.post(serviceConnector);
 
@@ -131,14 +130,11 @@ public class GorillaClient
         @Override
         public void run()
         {
-            if (gorillaRemote == null)
+            if (GorillaIntercon.getSystemService(sysApkName) == null)
             {
                 Log.d(LOGTAG, "serviceConnector: ...");
 
-                ComponentName componentName = new ComponentName(
-                        "com.aura.aosp.gorilla.sysapp",
-                        "com.aura.aosp.gorilla.service.GorillaService"
-                );
+                ComponentName componentName = new ComponentName(sysApkName, "com.aura.aosp.gorilla.service.GorillaService");
 
                 Intent serviceIntent = new Intent();
                 serviceIntent.setComponent(componentName);
@@ -152,16 +148,12 @@ public class GorillaClient
 
     private void initClientSecret()
     {
-        IGorillaSystemService gr = gorillaRemote;
+        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
         if (gr == null) return;
 
         try
         {
-            clientSecret = new byte[16];
-            SecureRandom random = new SecureRandom();
-            random.nextBytes(clientSecret);
-
-            String secret = Base64.encodeToString(clientSecret, Base64.NO_WRAP);
+            String secret = GorillaIntercon.getClientSecretBase64(sysApkName);
             gr.initClientSecret(apkname, secret);
 
             Log.d(LOGTAG, "initClientSecret: clientSecret=" + secret);
@@ -174,11 +166,12 @@ public class GorillaClient
 
     private void receiveServerSecret(Context context, Intent intent)
     {
-        IGorillaSystemService gr = gorillaRemote;
+        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
         if (gr == null) return;
 
         try
         {
+            byte[] clientSecret = GorillaIntercon.getClientSecret(sysApkName);
             String secret = intent.getStringExtra("serverSecret");
             String challenge = intent.getStringExtra("challenge");
             String solution = GorillaHelpers.createSHASignatureBase64(clientSecret);
@@ -189,10 +182,10 @@ public class GorillaClient
                 return;
             }
 
-            serverSecret = Base64.decode(secret, Base64.DEFAULT);
+            GorillaIntercon.setServerSecret(sysApkName, secret);
             Log.d(LOGTAG, "receiveServerSecret: serverSecret=" + secret);
 
-            challenge = GorillaHelpers.createSHASignatureBase64(serverSecret);
+            challenge = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getServerSecret(sysApkName));
 
             svlink = gr.validateConnect(apkname, challenge);
 
@@ -204,13 +197,13 @@ public class GorillaClient
 
             Log.d(LOGTAG, "receiveServerSecret: validated.");
 
-            String checksum = GorillaHelpers.createSHASignatureBase64(serverSecret, apkname.getBytes());
+            String checksum = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getServerSecret(sysApkName), apkname.getBytes());
 
             uplink = gr.getOnlineStatus(apkname, checksum);
 
             receiveStatus();
 
-            checksum = GorillaHelpers.createSHASignatureBase64(serverSecret, apkname.getBytes());
+            checksum = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getServerSecret(sysApkName), apkname.getBytes());
 
             String ownerUUID = gr.getOwnerUUID(apkname, checksum);
 
@@ -235,7 +228,7 @@ public class GorillaClient
 
         String solution;
 
-        solution = GorillaHelpers.createSHASignatureBase64(clientSecret, apkname.getBytes(), bytes);
+        solution = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getClientSecret(sysApkName), apkname.getBytes(), bytes);
 
         if ((checksum == null) || (solution == null) || !checksum.equals(solution))
         {
@@ -284,11 +277,11 @@ public class GorillaClient
 
         if (ownerUUID == null)
         {
-            solution = GorillaHelpers.createSHASignatureBase64(clientSecret, apkname.getBytes());
+            solution = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getClientSecret(sysApkName), apkname.getBytes());
         }
         else
         {
-            solution = GorillaHelpers.createSHASignatureBase64(clientSecret, apkname.getBytes(), ownerUUID.getBytes());
+            solution = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getClientSecret(sysApkName), apkname.getBytes(), ownerUUID.getBytes());
         }
 
         if ((checksum == null) || (solution == null) || !checksum.equals(solution))
@@ -375,7 +368,7 @@ public class GorillaClient
 
         String solution;
 
-        solution = GorillaHelpers.createSHASignatureBase64(clientSecret, apkname.getBytes(), resultStr.getBytes());
+        solution = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getClientSecret(sysApkName), apkname.getBytes(), resultStr.getBytes());
 
         if ((checksum == null) || (solution == null) || !checksum.equals(solution))
         {
@@ -452,12 +445,13 @@ public class GorillaClient
 
     public void sendPayload(Context context, String userUUID, String deviceUUID, String payload)
     {
-        IGorillaSystemService gr = gorillaRemote;
+        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
         if (gr == null) return;
 
         try
         {
-            String checksum = GorillaHelpers.createSHASignatureBase64(serverSecret,
+            String checksum = GorillaHelpers.createSHASignatureBase64(
+                    GorillaIntercon.getServerSecret(sysApkName),
                     apkname.getBytes(),
                     userUUID.getBytes(),
                     deviceUUID.getBytes(),

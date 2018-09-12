@@ -1,23 +1,13 @@
-package com.aura.aosp.gorilla.service;
+package com.aura.aosp.gorilla.client;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import android.content.ServiceConnection;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
 import android.util.Base64;
-import android.os.IBinder;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.aura.aosp.aura.common.simple.Err;
-import com.aura.aosp.aura.common.simple.Log;
-
-import com.aura.aosp.gorilla.client.IGorillaClientService;
-import com.aura.aosp.gorilla.client.IGorillaSystemService;
 
 public class GorillaIntercon
 {
@@ -26,10 +16,19 @@ public class GorillaIntercon
         private IGorillaClientService clientService;
         private IGorillaSystemService systemService;
 
-        private byte[] serverSecret;
-        private byte[] clientSecret;
+        private byte[] serverSecret = newSecret();
+        private byte[] clientSecret = newSecret();
 
         private boolean svlink;
+
+        private byte[] newSecret()
+        {
+            byte[] secret = new byte[16];
+            SecureRandom random = new SecureRandom();
+            random.nextBytes(secret);
+
+            return secret;
+        }
     }
 
     private final static Map<String, AppData> apkDatas = new HashMap<>();
@@ -66,7 +65,7 @@ public class GorillaIntercon
 
     public static void setServerSecret(String apkname, String secretBase64)
     {
-        getAppData(apkname).serverSecret = Base64.decode(secretBase64, Base64.DEFAULT);;
+        setServerSecret(apkname, Base64.decode(secretBase64, Base64.DEFAULT));
     }
 
     @Nullable
@@ -129,61 +128,5 @@ public class GorillaIntercon
     public static IGorillaSystemService getSystemService(String apkname)
     {
         return getAppData(apkname).systemService;
-    }
-
-    public static void startClientService(final String apkname)
-    {
-        IGorillaClientService service = getAppData(apkname).clientService;
-        if (service != null) return;
-
-        ServiceConnection serviceConnection = new ServiceConnection()
-        {
-            public void onServiceConnected(ComponentName className, IBinder service)
-            {
-                Log.d("Client apkname=%s className=%s", apkname, className.toString());
-
-                IGorillaClientService gorillaRemote = IGorillaClientService.Stub.asInterface(service);
-
-                GorillaIntercon.setClientService(apkname, gorillaRemote);
-
-                initServerSecret(apkname);
-            }
-
-            public void onServiceDisconnected(ComponentName className)
-            {
-                Log.d("Client apkname=%s className=%s", apkname, className.toString());
-
-                GorillaIntercon.delAppData(apkname);
-
-                GorillaBase.getAppContext().unbindService(this);
-            }
-        };
-
-        Log.d("apkname=%s", apkname);
-
-        ComponentName componentName = new ComponentName(apkname, "com.aura.aosp.gorilla.client.GorillaService");
-
-        Intent serviceIntent = new Intent();
-        serviceIntent.setComponent(componentName);
-
-        GorillaBase.getAppContext().bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    private static void initServerSecret(String apkname)
-    {
-        IGorillaClientService gr = GorillaIntercon.getClientService(apkname);
-        if (gr == null) return;
-
-        try
-        {
-            //gr.initServerSecret(apkname, secret);
-
-            //android.util.Log.d("initClientSecret: serverSecret=" + secret);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-
     }
 }
