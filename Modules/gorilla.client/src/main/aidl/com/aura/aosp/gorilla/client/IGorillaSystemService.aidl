@@ -1,8 +1,9 @@
 package com.aura.aosp.gorilla.client;
 
-interface IGorillaRemote
+interface IGorillaSystemService
 {
     void sendClientSecret(String apkname, String clientSecret);
+
     boolean validateConnect(String apkname, String challenge);
 
     boolean getOnlineStatus(String apkname, String checksum);

@@ -1,7 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.aura.aosp.gorilla.client">
 
-    <uses-permission android:name="com.aura.aosp.gorillaservice.MESSAGE_PERMISSION" />
-
     <application>
 
         <receiver
@@ -16,6 +14,12 @@
                 <action android:name="com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT"/>
             </intent-filter>
         </receiver>
+
+        <service
+            android:name="com.aura.aosp.gorilla.client.GorillaService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
 
     </application>
 </manifest>

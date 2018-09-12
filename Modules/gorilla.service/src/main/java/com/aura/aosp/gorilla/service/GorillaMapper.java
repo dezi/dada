@@ -1,9 +1,17 @@
 package com.aura.aosp.gorilla.service;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Base64;
 
 import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Log;
+import com.aura.aosp.gorilla.client.IGorillaClientService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +25,8 @@ public class GorillaMapper
 {
     private static class AppData
     {
+        private IGorillaClientService clientService;
+
         private byte[] serverSecret;
         private byte[] clientSecret;
     }
@@ -74,6 +84,14 @@ public class GorillaMapper
         }
     }
 
+    public static void delAppData(String apkname)
+    {
+        synchronized (apkDatas)
+        {
+            apkDatas.remove(apkname);
+        }
+    }
+
     public static List<String> getAllAttachedAPKNames()
     {
         synchronized (apkDatas)
@@ -98,9 +116,61 @@ public class GorillaMapper
         getAppData(apkname).clientSecret = secret;
     }
 
+    public static void setClientSecret(String apkname, String secretBase64)
+    {
+        getAppData(apkname).clientSecret = Base64.decode(secretBase64, Base64.DEFAULT);
+    }
+
     @Nullable
     public static byte[] getClientSecret(String apkname)
     {
         return getAppData(apkname).clientSecret;
+    }
+
+    public static void setClientService(String apkname, IGorillaClientService service)
+    {
+        getAppData(apkname).clientService = service;
+    }
+
+    @Nullable
+    public static IGorillaClientService getClientService(String apkname)
+    {
+        return getAppData(apkname).clientService;
+    }
+
+    public static void startClientService(final String apkname)
+    {
+        IGorillaClientService service = getAppData(apkname).clientService;
+        if (service != null) return;
+
+        ServiceConnection serviceConnection = new ServiceConnection()
+        {
+            public void onServiceConnected(ComponentName className, IBinder service)
+            {
+                Log.d("Client apkname=%s className=%s", apkname, className.toString());
+
+                IGorillaClientService gorillaRemote = IGorillaClientService.Stub.asInterface(service);
+
+                GorillaMapper.setClientService(apkname, gorillaRemote);
+            }
+
+            public void onServiceDisconnected(ComponentName className)
+            {
+                Log.d("Client apkname=%s className=%s", apkname, className.toString());
+
+                GorillaMapper.delAppData(apkname);
+
+                GorillaBase.getAppContext().unbindService(this);
+            }
+        };
+
+        Log.d("apkname=%s", apkname);
+
+        ComponentName componentName = new ComponentName(apkname, "com.aura.aosp.gorilla.client.GorillaService");
+
+        Intent serviceIntent = new Intent();
+        serviceIntent.setComponent(componentName);
+
+        GorillaBase.getAppContext().bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 }

@@ -74,7 +74,7 @@ public class GorillaClient
     private Handler handler;
 
     private ServiceConnection serviceConnection;
-    private IGorillaRemote gorillaRemote;
+    private IGorillaSystemService gorillaRemote;
     private String ownerUUID;
 
     private String apkname;
@@ -102,7 +102,7 @@ public class GorillaClient
             {
                 Log.d(LOGTAG, "onServiceConnected: className=" + className.toString());
 
-                gorillaRemote = IGorillaRemote.Stub.asInterface(service);
+                gorillaRemote = IGorillaSystemService.Stub.asInterface(service);
 
                 sendClientSecret();
             }
@@ -135,9 +135,13 @@ public class GorillaClient
             {
                 Log.d(LOGTAG, "serviceConnector: ...");
 
+                ComponentName componentName = new ComponentName(
+                        "com.aura.aosp.gorilla.sysapp",
+                        "com.aura.aosp.gorilla.service.GorillaService"
+                );
+
                 Intent serviceIntent = new Intent();
-                serviceIntent.setPackage("com.aura.aosp.gorilla.sysapp");
-                serviceIntent.setAction("com.aura.android.gorillaservice.REMOTE_CONNECT");
+                serviceIntent.setComponent(componentName);
 
                 context.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
@@ -148,7 +152,7 @@ public class GorillaClient
 
     private void sendClientSecret()
     {
-        IGorillaRemote gr = gorillaRemote;
+        IGorillaSystemService gr = gorillaRemote;
         if (gr == null) return;
 
         try
@@ -170,7 +174,7 @@ public class GorillaClient
 
     private void receiveServerSecret(Context context, Intent intent)
     {
-        IGorillaRemote gr = gorillaRemote;
+        IGorillaSystemService gr = gorillaRemote;
         if (gr == null) return;
 
         try
@@ -448,7 +452,7 @@ public class GorillaClient
 
     public void sendPayload(Context context, String userUUID, String deviceUUID, String payload)
     {
-        IGorillaRemote gr = gorillaRemote;
+        IGorillaSystemService gr = gorillaRemote;
         if (gr == null) return;
 
         try

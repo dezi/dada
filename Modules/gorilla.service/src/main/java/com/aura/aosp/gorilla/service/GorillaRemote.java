@@ -7,28 +7,29 @@ import com.aura.aosp.aura.common.crypter.SHA;
 import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Log;
 
-import com.aura.aosp.gorilla.client.IGorillaRemote;
+import com.aura.aosp.gorilla.client.IGorillaSystemService;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 import org.json.JSONObject;
 
-public class GorillaRemote extends IGorillaRemote.Stub
+public class GorillaRemote extends IGorillaSystemService.Stub
 {
     @Override
     public void sendClientSecret(String apkname, String clientSecret)
     {
         Log.d("apkname=%s clientSecret=%s",apkname, clientSecret);
 
-        byte[] clientSecretBytes = Base64.decode(clientSecret, Base64.DEFAULT);
-        GorillaMapper.setClientSecret(apkname, clientSecretBytes);
+        GorillaMapper.setClientSecret(apkname, clientSecret);
 
         byte[] serverSecretBytes = RND.randomBytes(16);
         GorillaMapper.setServerSecret(apkname, serverSecretBytes);
 
         String serverSecret = Base64.encodeToString(serverSecretBytes, Base64.NO_WRAP);
-        String challenge = SHA.createSHASignatureBase64(clientSecretBytes);
+        String challenge = SHA.createSHASignatureBase64(GorillaMapper.getClientSecret(apkname));
 
         GorillaSender.sendBroadCastSecret(apkname, serverSecret, challenge);
+
+        GorillaMapper.startClientService(apkname);
     }
 
     @Override
