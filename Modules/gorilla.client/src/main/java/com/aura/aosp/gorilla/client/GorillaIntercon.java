@@ -11,6 +11,8 @@ import java.util.Map;
 
 public class GorillaIntercon
 {
+    private final static Map<String, AppData> apkDatas = new HashMap<>();
+
     private static class AppData
     {
         private IGorillaClientService clientService;
@@ -31,8 +33,6 @@ public class GorillaIntercon
             return secret;
         }
     }
-
-    private final static Map<String, AppData> apkDatas = new HashMap<>();
 
     @NonNull
     private static AppData getAppData(String apkname)

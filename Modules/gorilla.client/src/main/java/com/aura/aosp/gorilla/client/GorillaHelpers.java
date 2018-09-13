@@ -2,7 +2,6 @@ package com.aura.aosp.gorilla.client;
 
 import android.support.annotation.Nullable;
 import android.util.Base64;
-import android.util.Log;
 
 import org.json.JSONObject;
 

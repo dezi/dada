@@ -7,7 +7,6 @@ import android.view.View;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
@@ -22,11 +21,8 @@ import com.aura.aosp.aura.gui.views.GUIListView;
 import com.aura.aosp.aura.gui.views.GUIScrollView;
 import com.aura.aosp.aura.gui.views.GUITextView;
 
-import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 import com.aura.aosp.gorilla.service.GorillaService;
-
-import org.json.JSONObject;
 
 import java.util.List;
 
@@ -142,51 +138,5 @@ public class MainActivity extends AppCompatActivity
         });
 
         centerFrame.addView(doneButton);
-    }
-
-    private void testConnect()
-    {
-        final GorillaClient gc = GorillaClient.getInstance();
-
-        gc.bindGorillaService(this);
-
-        gc.setOnOwnerReceivedListener(new GorillaClient.OnOwnerReceivedListener()
-        {
-            @Override
-            public void onOwnerReceived(JSONObject owner)
-            {
-                Log.d(LOGTAG, "onOwnerReceived: owner=" + owner.toString());
-
-                String ownerUUID = Json.getString(owner, "ownerUUID");
-
-                Identity ownerIdent = Contacts.getContact(ownerUUID);
-                if (ownerIdent == null) return;
-
-                Log.d(LOGTAG, "ownerIdent=" + ownerIdent.toString());
-
-                String title = getTitle() + " " + ownerIdent.getNick();
-                setTitle(title);
-
-                gc.sendPayload(MainActivity.this, ownerIdent.getUserUUIDBase64(), ownerIdent.getDeviceUUIDBase64(), "Tubuhuhu");
-            }
-        });
-
-        gc.setOnMessageReceivedListener(new GorillaClient.OnMessageReceivedListener()
-        {
-            @Override
-            public void onMessageReceived(JSONObject message)
-            {
-                Log.d(LOGTAG, "onMessageReceived: message=" + message.toString());
-                }
-        });
-
-        gc.setOnResultReceivedListener(new GorillaClient.OnResultReceivedListener()
-        {
-            @Override
-            public void onResultReceived(JSONObject result)
-            {
-                Log.d(LOGTAG, "onResultReceived: result=" + result.toString());
-            }
-        });
     }
 }
