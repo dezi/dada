@@ -10,6 +10,7 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class GorillaIntercon
 {
     private final static Map<String, AppData> apkDatas = new HashMap<>();
