@@ -1,16 +1,9 @@
 package com.aura.aosp.gorilla.service;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
-
 import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Log;
 
 import com.aura.aosp.gorilla.client.GorillaIntercon;
-import com.aura.aosp.gorilla.client.IGorillaClientService;
 import com.aura.aosp.gorilla.client.IGorillaSystemService;
 
 import com.aura.aosp.gorilla.gomess.GomessHandler;
@@ -19,14 +12,12 @@ import org.json.JSONObject;
 
 public class GorillaSystemService extends IGorillaSystemService.Stub
 {
-    private final static String sysApkName = "com.aura.aosp.gorilla.sysapp";
-
     @Override
     public boolean initClientSecret(String apkname, String clientSecret, String checksum)
     {
         GorillaIntercon.setClientSecret(apkname, clientSecret);
 
-        startClientService(apkname);
+        GorillaService.startClientService(apkname);
 
         String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, clientSecret);
 
@@ -36,65 +27,6 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
         Log.d("impl apkname=%s clientSecret=%s svlink=%b", apkname, clientSecret, svlink);
 
         return svlink;
-    }
-
-    private void startClientService(final String apkname)
-    {
-        IGorillaClientService service = GorillaIntercon.getClientService(apkname);
-        if (service != null) return;
-
-        ServiceConnection serviceConnection = new ServiceConnection()
-        {
-            public void onServiceConnected(ComponentName className, IBinder service)
-            {
-                Log.d("Client apkname=%s className=%s", apkname, className.toString());
-
-                IGorillaClientService gorillaRemote = IGorillaClientService.Stub.asInterface(service);
-                GorillaIntercon.setClientService(apkname, gorillaRemote);
-
-                initServerSecret(apkname);
-            }
-
-            public void onServiceDisconnected(ComponentName className)
-            {
-                Log.d("Client apkname=%s className=%s", apkname, className.toString());
-
-                GorillaIntercon.setClientService(apkname, null);
-
-                GorillaBase.getAppContext().unbindService(this);
-            }
-        };
-
-        Log.d("apkname=%s", apkname);
-
-        ComponentName componentName = new ComponentName(apkname, "com.aura.aosp.gorilla.client.GorillaService");
-
-        Intent serviceIntent = new Intent();
-        serviceIntent.setComponent(componentName);
-
-        GorillaBase.getAppContext().bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    private void initServerSecret(String apkname)
-    {
-        IGorillaClientService gr = GorillaIntercon.getClientService(apkname);
-        if (gr == null) return;
-
-        try
-        {
-            String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
-
-            String checksum = GorillaIntercon.createSHASignatureBase64(apkname, sysApkName, serverSecret);
-
-            boolean svlink = gr.initServerSecret(sysApkName, serverSecret, checksum);
-            GorillaIntercon.setServiceStatus(apkname, svlink);
-
-            Log.d("call apkname=" + sysApkName + " serverSecret=" + serverSecret + " svlink=" + svlink);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
     }
 
     @Override
