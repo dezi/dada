@@ -1,8 +1,5 @@
 package com.aura.aosp.gorilla.service;
 
-import android.content.Intent;
-
-import com.aura.aosp.aura.common.crypter.SHA;
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.gorilla.client.GorillaIntercon;
@@ -17,7 +14,6 @@ public class GorillaSender
 
     public static Err sendBroadCastStatus(boolean uplink)
     {
-
         return null;
     }
 
@@ -35,7 +31,7 @@ public class GorillaSender
 
         String resultStr = result.toString();
 
-        String checksum = SHA.createSHASignatureBase64(
+        String checksum = GorillaIntercon.createSHASignatureBase64(
                 GorillaIntercon.getServerSecret(apkname),
                 GorillaIntercon.getClientSecret(apkname),
                 sysApkName.getBytes(),
@@ -78,7 +74,7 @@ public class GorillaSender
         String deviceUUID = Simple.encodeBase64(ticket.getSenderDeviceUUID());
         String payload = new String(ticket.getPayload());
 
-        String checksum = SHA.createSHASignatureBase64(
+        String checksum = GorillaIntercon.createSHASignatureBase64(
                 GorillaIntercon.getServerSecret(apkname),
                 GorillaIntercon.getClientSecret(apkname),
                 sysApkName.getBytes(),

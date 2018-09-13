@@ -144,13 +144,13 @@ public class GorillaIntercon
         return getAppData(apkname).uplink;
     }
 
-    static String createSHASignatureBase64(byte[] secret, byte[]... buffers)
+    public static String createSHASignatureBase64(byte[] secret, byte[]... buffers)
     {
         return Base64.encodeToString(createSHASignature(secret, buffers), Base64.NO_WRAP);
     }
 
     @Nullable
-    static byte[] createSHASignature(byte[] secret, byte[]... buffers)
+    public static byte[] createSHASignature(byte[] secret, byte[]... buffers)
     {
         try
         {
