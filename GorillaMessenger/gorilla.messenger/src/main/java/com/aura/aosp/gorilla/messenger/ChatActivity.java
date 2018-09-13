@@ -122,29 +122,11 @@ public class ChatActivity extends AppCompatActivity
 
                 scrollDown();
 
-                GorillaClient.getInstance().sendPayload(view.getContext(), chatProfile.remoteUserUUID, chatProfile.remoteDeviceUUID, message);
+                GorillaClient.getInstance().sendPayload(chatProfile.remoteUserUUID, chatProfile.remoteDeviceUUID, message);
             }
         });
 
         bottomBox.addView(sendButton);
-    }
-
-    private void dummyMessages()
-    {
-        ChatFragment cf = new ChatFragment(this);
-        cf.setContentInfo("Heute");
-
-        chatContent.addView(cf);
-
-        cf = new ChatFragment(this);
-        cf.setContent(true, "20181812123456", MainActivity.ownerIdent.getNick(), null, "Hdkjsafhs fdsf sdf dsf dsf dsf dsf dsf ds");
-
-        chatContent.addView(cf);
-
-        cf = new ChatFragment(this);
-        cf.setContent(false, "20181812125656", chatProfile.remoteNick, null, "Huhu wie gehts");
-
-        chatContent.addView(cf);
     }
 
     public void dispatchMessage(JSONObject message)

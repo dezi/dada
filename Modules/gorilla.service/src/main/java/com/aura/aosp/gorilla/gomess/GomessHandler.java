@@ -241,7 +241,12 @@ public class GomessHandler
                 // Push result via broadcast back to client apk.
                 //
 
-                GorillaSender.sendBroadCastPayloadResult(ticket, result);
+                Err err1 = GorillaSender.sendPayloadResult(ticket, result);
+
+                if (err1 != null)
+                {
+                    Log.e("err=%s", err1);
+                }
 
                 if (err != null)
                 {

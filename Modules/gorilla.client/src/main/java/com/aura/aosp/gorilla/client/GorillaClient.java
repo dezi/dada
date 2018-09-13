@@ -12,7 +12,6 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
-@SuppressWarnings("unused")
 @SuppressLint("StaticFieldLeak")
 public class GorillaClient
 {
@@ -235,32 +234,6 @@ public class GorillaClient
         }
     }
 
-    private void receiveStatus(Context context, Intent intent)
-    {
-        boolean uplink = intent.getBooleanExtra("uplink", false);
-
-        Log.d(LOGTAG, "receiveStatus: uplink=" + uplink);
-
-        byte[] bytes = new byte[ 1 ];
-        bytes[ 0 ] = (byte) (uplink ? 1 : 0);
-
-        String checksum = intent.getStringExtra("checksum");
-
-        String solution;
-
-        solution = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getClientSecret(sysApkName), apkname.getBytes(), bytes);
-
-        if ((checksum == null) || (solution == null) || !checksum.equals(solution))
-        {
-            Log.e(LOGTAG, "receiveStatus: failed!");
-            return;
-        }
-
-        GorillaIntercon.setUplinkStatus(sysApkName, uplink);
-
-        receiveStatus();
-    }
-
     void receiveStatus()
     {
         JSONObject status = new JSONObject();
@@ -286,31 +259,6 @@ public class GorillaClient
                 listener.onStatusReceived(status);
             }
         });
-    }
-
-    private void receiveOwnerUUID(Context context, Intent intent)
-    {
-        String ownerUUID = intent.getStringExtra("ownerUUID");
-        String checksum = intent.getStringExtra("checksum");
-
-        String solution;
-
-        if (ownerUUID == null)
-        {
-            solution = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getClientSecret(sysApkName), apkname.getBytes());
-        }
-        else
-        {
-            solution = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getClientSecret(sysApkName), apkname.getBytes(), ownerUUID.getBytes());
-        }
-
-        if ((checksum == null) || (solution == null) || !checksum.equals(solution))
-        {
-            Log.e(LOGTAG, "receiveOwnerUUID: failed!");
-            return;
-        }
-
-        receiveOwnerUUID(ownerUUID);
     }
 
     private void receiveOwnerUUID(String ownerUUID)
@@ -342,28 +290,6 @@ public class GorillaClient
         });
     }
 
-    private void receivePayload(Context context, Intent intent)
-    {
-        long time = intent.getLongExtra("time", -1);
-
-        String uuid = intent.getStringExtra("uuid");
-        String sender = intent.getStringExtra("sender");
-        String device = intent.getStringExtra("device");
-        String payload = intent.getStringExtra("payload");
-
-        Log.d(LOGTAG, "onReceive: RECV_PAYLOAD uuid=" + uuid + " time=" + time + " sender=" + sender + " device=" + device + " payload=" + payload);
-
-        final JSONObject message = new JSONObject();
-
-        GorillaHelpers.putJSON(message, "uuid", uuid);
-        GorillaHelpers.putJSON(message, "time", time);
-        GorillaHelpers.putJSON(message, "sender", sender);
-        GorillaHelpers.putJSON(message, "device", device);
-        GorillaHelpers.putJSON(message, "payload", payload);
-
-        receivePayload(message);
-    }
-
     void receivePayload(long time, String uuid, String senderUUID, String deviceUUID, String payload)
     {
         final JSONObject message = new JSONObject();
@@ -377,7 +303,7 @@ public class GorillaClient
         receivePayload(message);
     }
 
-    void receivePayload(final JSONObject message)
+    private void receivePayload(final JSONObject message)
     {
         Log.d(LOGTAG, "receivePayload: message=" + message.toString());
 
@@ -392,32 +318,6 @@ public class GorillaClient
                 listener.onMessageReceived(message);
             }
         });
-    }
-
-    private void receivePayloadResult(Context context, Intent intent)
-    {
-        String resultStr = intent.getStringExtra("result");
-        String checksum = intent.getStringExtra("checksum");
-
-        String solution;
-
-        solution = GorillaHelpers.createSHASignatureBase64(GorillaIntercon.getClientSecret(sysApkName), apkname.getBytes(), resultStr.getBytes());
-
-        if ((checksum == null) || (solution == null) || !checksum.equals(solution))
-        {
-            Log.e(LOGTAG, "receivePayloadResult: failed!");
-            return;
-        }
-
-        JSONObject result = GorillaHelpers.fromStringJSONOBject(resultStr);
-
-        if (result == null)
-        {
-            Log.e(LOGTAG, "receivePayloadResult: result failed!");
-            return;
-        }
-
-        receivePayloadResult(result);
     }
 
     void receivePayloadResult(String resultStr)
@@ -450,40 +350,7 @@ public class GorillaClient
         });
     }
 
-    void onReceive(Context context, Intent intent)
-    {
-        if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_OWNER"))
-        {
-            receiveOwnerUUID(context, intent);
-            return;
-        }
-
-        if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_STATUS"))
-        {
-            receiveStatus(context, intent);
-            return;
-        }
-
-        if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT"))
-        {
-            receivePayloadResult(context, intent);
-            return;
-        }
-
-        if ((intent.getAction() != null) && intent.getAction().equals("com.aura.aosp.gorilla.service.RECV_PAYLOAD"))
-        {
-            receivePayload(context, intent);
-            return;
-        }
-
-        //
-        // Silently ignore.
-        //
-
-        Log.d(LOGTAG, "onReceive: wrong action.");
-    }
-
-    public void sendPayload(Context context, String userUUID, String deviceUUID, String payload)
+    public void sendPayload(String userUUID, String deviceUUID, String payload)
     {
         IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
         if (gr == null) return;

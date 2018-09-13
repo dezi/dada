@@ -358,7 +358,7 @@ public class GomessClient
 
         Log.d("payload=%s", new String(ticket.getPayload()));
 
-        return GorillaSender.sendBroadCastPayload(ticket);
+        return GorillaSender.sendPayload(ticket);
     }
 
     private Err chGotGotelloAmt(GoprotoMessage message)

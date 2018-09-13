@@ -1,19 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.aura.aosp.gorilla.client">
 
     <application>
-
-        <receiver
-            android:name="com.aura.aosp.gorilla.client.GorillaReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.aura.aosp.gorilla.service.RECV_SECRET"/>
-                <action android:name="com.aura.aosp.gorilla.service.RECV_STATUS"/>
-                <action android:name="com.aura.aosp.gorilla.service.RECV_OWNER"/>
-                <action android:name="com.aura.aosp.gorilla.service.RECV_PAYLOAD"/>
-                <action android:name="com.aura.aosp.gorilla.service.SEND_PAYLOAD_RESULT"/>
-            </intent-filter>
-        </receiver>
 
         <service
             android:name="com.aura.aosp.gorilla.client.GorillaService"
@@ -22,4 +10,5 @@
         </service>
 
     </application>
+
 </manifest>
