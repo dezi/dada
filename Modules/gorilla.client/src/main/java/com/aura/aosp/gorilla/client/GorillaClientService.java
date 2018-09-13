@@ -39,15 +39,13 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public boolean receivePayload(String apkname, long time, String uuid, String senderUUID, String deviceUUID, String payload, String checksum)
     {
-        String solution = GorillaIntercon.createSHASignatureBase64(
-                GorillaIntercon.getServerSecret(apkname),
-                GorillaIntercon.getClientSecret(apkname),
-                apkname.getBytes(),
-                Long.toString(time).getBytes(),
-                uuid.getBytes(),
-                senderUUID.getBytes(),
-                deviceUUID.getBytes(),
-                payload.getBytes()
+        String solution = GorillaIntercon.createSHASignatureBase64(apkname,
+                apkname,
+                Long.toString(time),
+                uuid,
+                senderUUID,
+                deviceUUID,
+                payload
         );
 
         boolean valid = ((checksum != null) && checksum.equals(solution));
