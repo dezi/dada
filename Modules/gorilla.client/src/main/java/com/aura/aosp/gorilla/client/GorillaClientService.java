@@ -35,4 +35,52 @@ public class GorillaClientService extends IGorillaClientService.Stub
 
         return svlink;
     }
+
+    @Override
+    public boolean receivePayload(String apkname, long time, String uuid, String senderUUID, String deviceUUID, String payload, String checksum)
+    {
+        String solution = GorillaHelpers.createSHASignatureBase64(
+                GorillaIntercon.getServerSecret(apkname),
+                GorillaIntercon.getClientSecret(apkname),
+                apkname.getBytes(),
+                Long.toString(time).getBytes(),
+                uuid.getBytes(),
+                senderUUID.getBytes(),
+                deviceUUID.getBytes(),
+                payload.getBytes()
+        );
+
+        boolean valid = ((checksum != null) && checksum.equals(solution));
+
+        Log.d(LOGTAG, "#########receivePayload: payload=" + payload + " valid=" + valid);
+
+        if (valid)
+        {
+            GorillaClient.getInstance().receivePayload(time, uuid, senderUUID, deviceUUID, payload);
+        }
+
+        return valid;
+    }
+
+    @Override
+    public boolean receivePayloadResult(String apkname, String result, String checksum)
+    {
+        String solution = GorillaHelpers.createSHASignatureBase64(
+                GorillaIntercon.getServerSecret(apkname),
+                GorillaIntercon.getClientSecret(apkname),
+                apkname.getBytes(),
+                result.getBytes()
+        );
+
+        boolean valid = ((checksum != null) && checksum.equals(solution));
+
+        Log.d(LOGTAG, "#########receivePayloadResult: result=" + result + " valid=" + valid);
+
+        if (valid)
+        {
+            GorillaClient.getInstance().receivePayloadResult(result);
+        }
+
+        return valid;
+    }
 }

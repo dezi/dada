@@ -364,7 +364,20 @@ public class GorillaClient
         receivePayload(message);
     }
 
-    private void receivePayload(final JSONObject message)
+    void receivePayload(long time, String uuid, String senderUUID, String deviceUUID, String payload)
+    {
+        final JSONObject message = new JSONObject();
+
+        GorillaHelpers.putJSON(message, "uuid", uuid);
+        GorillaHelpers.putJSON(message, "time", time);
+        GorillaHelpers.putJSON(message, "sender", senderUUID);
+        GorillaHelpers.putJSON(message, "device", deviceUUID);
+        GorillaHelpers.putJSON(message, "payload", payload);
+
+        receivePayload(message);
+    }
+
+    void receivePayload(final JSONObject message)
     {
         Log.d(LOGTAG, "receivePayload: message=" + message.toString());
 
@@ -396,6 +409,19 @@ public class GorillaClient
             return;
         }
 
+        JSONObject result = GorillaHelpers.fromStringJSONOBject(resultStr);
+
+        if (result == null)
+        {
+            Log.e(LOGTAG, "receivePayloadResult: result failed!");
+            return;
+        }
+
+        receivePayloadResult(result);
+    }
+
+    void receivePayloadResult(String resultStr)
+    {
         JSONObject result = GorillaHelpers.fromStringJSONOBject(resultStr);
 
         if (result == null)

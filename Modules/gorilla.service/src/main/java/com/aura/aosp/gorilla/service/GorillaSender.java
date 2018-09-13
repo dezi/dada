@@ -6,13 +6,17 @@ import com.aura.aosp.aura.common.crypter.SHA;
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.gorilla.client.GorillaHelpers;
 import com.aura.aosp.gorilla.client.GorillaIntercon;
+import com.aura.aosp.gorilla.client.IGorillaClientService;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
 import org.json.JSONObject;
 
 public class GorillaSender
 {
+    private final static String sysApkName = "com.aura.aosp.gorilla.sysapp";
+
     public static Err sendBroadCastStatus(boolean uplink)
     {
 
@@ -24,9 +28,39 @@ public class GorillaSender
         String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
         if (apkname == null) return Err.getLastErr();
 
-        byte[] clientSecretBytes = GorillaIntercon.getClientSecret(apkname);
+        IGorillaClientService remote = GorillaIntercon.getClientService(apkname);
+
+        if (remote == null)
+        {
+            return Err.err("unknown/unconnected apkname=%s", apkname);
+        }
 
         String resultStr = result.toString();
+
+        String checksum = SHA.createSHASignatureBase64(
+                GorillaIntercon.getServerSecret(apkname),
+                GorillaIntercon.getClientSecret(apkname),
+                sysApkName.getBytes(),
+                resultStr.getBytes()
+        );
+
+        try
+        {
+            boolean valid = remote.receivePayloadResult(sysApkName, resultStr, checksum);
+
+            if (! valid)
+            {
+                return Err.err("invalid service apkname=%s", apkname);
+            }
+        }
+        catch (Exception ex)
+        {
+            return Err.err(ex);
+        }
+
+        /*
+        byte[] clientSecretBytes = GorillaIntercon.getClientSecret(apkname);
+
         String checksum = SHA.createSHASignatureBase64(clientSecretBytes, apkname.getBytes(), resultStr.getBytes());
 
         Intent resultIntent = new Intent();
@@ -40,6 +74,7 @@ public class GorillaSender
         Log.d("apkname=%s result=%s", apkname, resultStr);
 
         GorillaBase.getAppContext().sendBroadcast(resultIntent);
+        */
 
         return null;
     }
@@ -49,6 +84,46 @@ public class GorillaSender
         String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
         if (apkname == null) return Err.getLastErr();
 
+        IGorillaClientService remote = GorillaIntercon.getClientService(apkname);
+
+        if (remote == null)
+        {
+            return Err.err("unknown/unconnected apkname=%s", apkname);
+        }
+
+        long time = System.currentTimeMillis();
+
+        String uuid = Simple.encodeBase64(ticket.getMessageUUID());
+        String senderUUID = Simple.encodeBase64(ticket.getSenderUserUUID());
+        String deviceUUID = Simple.encodeBase64(ticket.getSenderDeviceUUID());
+        String payload = new String(ticket.getPayload());
+
+        String checksum = SHA.createSHASignatureBase64(
+                GorillaIntercon.getServerSecret(apkname),
+                GorillaIntercon.getClientSecret(apkname),
+                sysApkName.getBytes(),
+                Long.toString(time).getBytes(),
+                uuid.getBytes(),
+                senderUUID.getBytes(),
+                deviceUUID.getBytes(),
+                payload.getBytes()
+        );
+
+        try
+        {
+            boolean valid = remote.receivePayload(sysApkName, time, uuid, senderUUID, deviceUUID, payload, checksum);
+
+            if (! valid)
+            {
+                return Err.err("invalid service apkname=%s", apkname);
+            }
+        }
+        catch (Exception ex)
+        {
+            return Err.err(ex);
+        }
+
+        /*
         Intent payloadIntent = new Intent();
 
         payloadIntent.setPackage(apkname);
@@ -61,6 +136,7 @@ public class GorillaSender
         payloadIntent.putExtra("payload", new String(ticket.getPayload()));
 
         GorillaBase.getAppContext().sendBroadcast(payloadIntent);
+        */
 
         return null;
     }

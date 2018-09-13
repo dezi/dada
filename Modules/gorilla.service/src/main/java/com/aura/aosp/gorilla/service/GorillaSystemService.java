@@ -5,17 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.util.Base64;
 
-import com.aura.aosp.aura.common.crypter.RND;
 import com.aura.aosp.aura.common.crypter.SHA;
 import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Log;
 
-import com.aura.aosp.gorilla.client.GorillaHelpers;
 import com.aura.aosp.gorilla.client.GorillaIntercon;
 import com.aura.aosp.gorilla.client.IGorillaClientService;
 import com.aura.aosp.gorilla.client.IGorillaSystemService;
+
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 import org.json.JSONObject;
