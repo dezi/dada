@@ -31,12 +31,7 @@ public class GorillaSender
 
         String resultStr = result.toString();
 
-        String checksum = GorillaIntercon.createSHASignatureBase64(
-                GorillaIntercon.getServerSecret(apkname),
-                GorillaIntercon.getClientSecret(apkname),
-                sysApkName.getBytes(),
-                resultStr.getBytes()
-        );
+        String checksum = GorillaIntercon.createSHASignatureBase64(apkname, sysApkName, resultStr);
 
         try
         {
@@ -74,16 +69,7 @@ public class GorillaSender
         String deviceUUID = Simple.encodeBase64(ticket.getSenderDeviceUUID());
         String payload = new String(ticket.getPayload());
 
-        String checksum = GorillaIntercon.createSHASignatureBase64(
-                GorillaIntercon.getServerSecret(apkname),
-                GorillaIntercon.getClientSecret(apkname),
-                sysApkName.getBytes(),
-                Long.toString(time).getBytes(),
-                uuid.getBytes(),
-                senderUUID.getBytes(),
-                deviceUUID.getBytes(),
-                payload.getBytes()
-        );
+        String checksum = GorillaIntercon.createSHASignatureBase64(apkname, sysApkName, time, uuid, senderUUID, deviceUUID, payload);
 
         try
         {
