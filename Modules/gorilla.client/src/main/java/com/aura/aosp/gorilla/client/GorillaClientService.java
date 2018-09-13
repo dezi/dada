@@ -11,12 +11,7 @@ public class GorillaClientService extends IGorillaClientService.Stub
     {
         GorillaIntercon.setServerSecret(apkname, serverSecret);
 
-        String solution = GorillaIntercon.createSHASignatureBase64(
-                GorillaIntercon.getServerSecret(apkname),
-                GorillaIntercon.getClientSecret(apkname),
-                apkname.getBytes(),
-                serverSecret.getBytes()
-        );
+        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, serverSecret);
 
         boolean svlink = ((checksum != null) && checksum.equals(solution));
 
@@ -39,18 +34,11 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public boolean receivePayload(String apkname, long time, String uuid, String senderUUID, String deviceUUID, String payload, String checksum)
     {
-        String solution = GorillaIntercon.createSHASignatureBase64(apkname,
-                apkname,
-                Long.toString(time),
-                uuid,
-                senderUUID,
-                deviceUUID,
-                payload
-        );
+        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, time, uuid, senderUUID, deviceUUID, payload);
 
         boolean valid = ((checksum != null) && checksum.equals(solution));
 
-        Log.d(LOGTAG, "#########receivePayload: payload=" + payload + " valid=" + valid);
+        Log.d(LOGTAG, "receivePayload: payload=" + payload + " valid=" + valid);
 
         if (valid)
         {
@@ -63,16 +51,11 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public boolean receivePayloadResult(String apkname, String result, String checksum)
     {
-        String solution = GorillaIntercon.createSHASignatureBase64(
-                GorillaIntercon.getServerSecret(apkname),
-                GorillaIntercon.getClientSecret(apkname),
-                apkname.getBytes(),
-                result.getBytes()
-        );
+        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, result);
 
         boolean valid = ((checksum != null) && checksum.equals(solution));
 
-        Log.d(LOGTAG, "#########receivePayloadResult: result=" + result + " valid=" + valid);
+        Log.d(LOGTAG, "receivePayloadResult: result=" + result + " valid=" + valid);
 
         if (valid)
         {
