@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -148,7 +149,7 @@ public class GorillaClient
         {
             String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
 
-            String checksum = GorillaHelpers.createSHASignatureBase64(
+            String checksum = GorillaIntercon.createSHASignatureBase64(
                     GorillaIntercon.getServerSecret(sysApkName),
                     GorillaIntercon.getClientSecret(sysApkName),
                     apkname.getBytes(),
@@ -166,7 +167,7 @@ public class GorillaClient
 
             if (! svlink) return;
 
-            checksum = GorillaHelpers.createSHASignatureBase64(
+            checksum = GorillaIntercon.createSHASignatureBase64(
                     GorillaIntercon.getServerSecret(sysApkName),
                     GorillaIntercon.getClientSecret(sysApkName),
                     apkname.getBytes()
@@ -192,7 +193,7 @@ public class GorillaClient
 
         try
         {
-            String checksum = GorillaHelpers.createSHASignatureBase64(
+            String checksum = GorillaIntercon.createSHASignatureBase64(
                     GorillaIntercon.getServerSecret(sysApkName),
                     GorillaIntercon.getClientSecret(sysApkName),
                     apkname.getBytes()
@@ -218,7 +219,7 @@ public class GorillaClient
 
         try
         {
-            String checksum = GorillaHelpers.createSHASignatureBase64(
+            String checksum = GorillaIntercon.createSHASignatureBase64(
                     GorillaIntercon.getServerSecret(sysApkName),
                     GorillaIntercon.getClientSecret(sysApkName),
                     apkname.getBytes()
@@ -238,8 +239,8 @@ public class GorillaClient
     {
         JSONObject status = new JSONObject();
 
-        GorillaHelpers.putJSON(status, "svlink", GorillaIntercon.getServiceStatus(sysApkName));
-        GorillaHelpers.putJSON(status, "uplink", GorillaIntercon.getUplinkStatus(sysApkName));
+        putJSON(status, "svlink", GorillaIntercon.getServiceStatus(sysApkName));
+        putJSON(status, "uplink", GorillaIntercon.getUplinkStatus(sysApkName));
 
         receiveStatus(status);
     }
@@ -268,7 +269,7 @@ public class GorillaClient
         Log.d(LOGTAG, "receiveOwner: ownerUUID=" + ownerUUID);
 
         final JSONObject owner = new JSONObject();
-        GorillaHelpers.putJSON(owner, "ownerUUID", ownerUUID);
+        putJSON(owner, "ownerUUID", ownerUUID);
 
         receiveOwnerUUID(owner);
     }
@@ -294,11 +295,11 @@ public class GorillaClient
     {
         final JSONObject message = new JSONObject();
 
-        GorillaHelpers.putJSON(message, "uuid", uuid);
-        GorillaHelpers.putJSON(message, "time", time);
-        GorillaHelpers.putJSON(message, "sender", senderUUID);
-        GorillaHelpers.putJSON(message, "device", deviceUUID);
-        GorillaHelpers.putJSON(message, "payload", payload);
+        putJSON(message, "uuid", uuid);
+        putJSON(message, "time", time);
+        putJSON(message, "sender", senderUUID);
+        putJSON(message, "device", deviceUUID);
+        putJSON(message, "payload", payload);
 
         receivePayload(message);
     }
@@ -322,7 +323,7 @@ public class GorillaClient
 
     void receivePayloadResult(String resultStr)
     {
-        JSONObject result = GorillaHelpers.fromStringJSONOBject(resultStr);
+        JSONObject result = fromStringJSONOBject(resultStr);
 
         if (result == null)
         {
@@ -357,7 +358,7 @@ public class GorillaClient
 
         try
         {
-            String checksum = GorillaHelpers.createSHASignatureBase64(
+            String checksum = GorillaIntercon.createSHASignatureBase64(
                     GorillaIntercon.getServerSecret(sysApkName),
                     GorillaIntercon.getClientSecret(sysApkName),
                     apkname.getBytes(),
@@ -370,7 +371,7 @@ public class GorillaClient
 
             Log.d(LOGTAG, "sendPayload: resultStr=" + resultStr);
 
-            JSONObject result = GorillaHelpers.fromStringJSONOBject(resultStr);
+            JSONObject result = fromStringJSONOBject(resultStr);
 
             if (result == null)
             {
@@ -407,4 +408,36 @@ public class GorillaClient
     }
 
     //endregion Instance implemention.
+
+    //endregion Private helpers.
+
+    static void putJSON(JSONObject json, String key, Object val)
+    {
+        try
+        {
+            json.put(key, val);
+        }
+        catch (Exception ignore)
+        {
+        }
+    }
+
+    @Nullable
+    static JSONObject fromStringJSONOBject(String jsonstr)
+    {
+        if (jsonstr == null) return null;
+
+        try
+        {
+            return new JSONObject(jsonstr);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+
+            return null;
+        }
+    }
+
+    //endregion Private helpers.
 }

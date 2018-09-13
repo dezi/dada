@@ -11,7 +11,7 @@ public class GorillaClientService extends IGorillaClientService.Stub
     {
         GorillaIntercon.setServerSecret(apkname, serverSecret);
 
-        String solution = GorillaHelpers.createSHASignatureBase64(
+        String solution = GorillaIntercon.createSHASignatureBase64(
                 GorillaIntercon.getServerSecret(apkname),
                 GorillaIntercon.getClientSecret(apkname),
                 apkname.getBytes(),
@@ -39,7 +39,7 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public boolean receivePayload(String apkname, long time, String uuid, String senderUUID, String deviceUUID, String payload, String checksum)
     {
-        String solution = GorillaHelpers.createSHASignatureBase64(
+        String solution = GorillaIntercon.createSHASignatureBase64(
                 GorillaIntercon.getServerSecret(apkname),
                 GorillaIntercon.getClientSecret(apkname),
                 apkname.getBytes(),
@@ -65,7 +65,7 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public boolean receivePayloadResult(String apkname, String result, String checksum)
     {
-        String solution = GorillaHelpers.createSHASignatureBase64(
+        String solution = GorillaIntercon.createSHASignatureBase64(
                 GorillaIntercon.getServerSecret(apkname),
                 GorillaIntercon.getClientSecret(apkname),
                 apkname.getBytes(),
