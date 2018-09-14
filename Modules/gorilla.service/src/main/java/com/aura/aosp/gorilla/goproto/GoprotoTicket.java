@@ -454,6 +454,14 @@ public class GoprotoTicket
             offset += usiz;
         }
 
+        if ((Idsmask & GoprotoDefs.HasMetadata) != 0)
+        {
+            Metadata = new GoprotoMetadata();
+            Metadata.unMarshal(Simple.sliceBytes(bytes, offset, offset+usiz));
+
+            offset += usiz;
+        }
+
         Payload = Simple.sliceBytes(bytes, offset);
 
         return null;

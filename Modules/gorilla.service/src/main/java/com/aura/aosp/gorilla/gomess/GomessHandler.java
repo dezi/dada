@@ -5,6 +5,7 @@ import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.sockets.Connect;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.common.univid.Owner;
+import com.aura.aosp.gorilla.goproto.GoprotoMetadata;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
@@ -89,9 +90,13 @@ public class GomessHandler
         Json.put(result, "uuid", uuid);
         Json.put(result, "time", time);
 
+        GoprotoMetadata metadata = new GoprotoMetadata();
+        metadata.setTimeStamp(time);
+
         GoprotoTicket ticket = new GoprotoTicket();
 
         ticket.setMessageUUID(Simple.decodeBase64(uuid));
+        ticket.setMetadata(metadata);
 
         ticket.setReceiverUserUUID(Simple.decodeBase64(userUUID));
         ticket.setReceiverDeviceUUID(Simple.decodeBase64(deviceUUID));
