@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity
     public static Identity ownerIdent;
 
     public static List<ChatProfile> chatProfiles = new ArrayList<>();
-    private static boolean svlink;
-    private static boolean uplink;
+    private static Boolean svlink;
+    private static Boolean uplink;
 
     public static void addChatProfile(ChatProfile chatProfile)
     {
@@ -134,6 +134,11 @@ public class MainActivity extends AppCompatActivity
             public void onResultReceived(JSONObject result)
             {
                 Log.d(LOGTAG, "onResultReceived: result=" + result.toString());
+
+                for (ChatProfile chatProfile : chatProfiles)
+                {
+                    chatProfile.activity.dispatchStatus(result);
+                }
             }
         });
 

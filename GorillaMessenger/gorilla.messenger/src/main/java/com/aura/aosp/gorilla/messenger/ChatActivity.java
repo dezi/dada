@@ -35,8 +35,8 @@ public class ChatActivity extends AppCompatActivity
     private String remoteUserUUID;
     private String remoteDeviceUUID;
 
-    private boolean svlink;
-    private boolean uplink;
+    private Boolean svlink;
+    private Boolean uplink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -105,6 +105,7 @@ public class ChatActivity extends AppCompatActivity
 
         editText = new GUIEditText(this);
         editText.setSizeDip(Simple.WC, Simple.WC, 1.0f);
+        editText.setText("schniddel more lore ipsum");
 
         bottomBox.addView(editText);
 
@@ -137,10 +138,10 @@ public class ChatActivity extends AppCompatActivity
         bottomBox.addView(sendButton);
     }
 
-    public void setStatus(boolean svlink, boolean uplink)
+    public void setStatus(Boolean svlink, Boolean uplink)
     {
-        this.uplink = uplink;
-        this.svlink = svlink;
+        if (uplink != null) this.uplink = uplink;
+        if (svlink != null) this.svlink = svlink;
     }
 
     public void updateTitle()
@@ -166,6 +167,30 @@ public class ChatActivity extends AppCompatActivity
         chatContent.addView(cf);
 
         scrollDown();
+    }
+
+    public void dispatchStatus(JSONObject result)
+    {
+        String uuid = Json.getString(result, "uuid");
+        String status = Json.getString(result, "status");
+
+        if ((uuid == null) || (status == null)) return;
+
+        Log.d(LOGTAG, "dispatchStatus: uuid=" + uuid + " status=" + status + " childCount=" + chatContent.getChildCount());
+
+        for (int cinx = 0; cinx < chatContent.getChildCount(); cinx++)
+        {
+            View child = chatContent.getChildAt(cinx);
+            if (! (child instanceof ChatFragment)) continue;
+
+            ChatFragment cf = (ChatFragment) child;
+
+            Log.d(LOGTAG, "dispatchStatus: child uuid=" + cf.getMessageUUID());
+
+            if (! uuid.equals(cf.getMessageUUID())) continue;
+
+            cf.setStatusIcon(status);
+        }
     }
 
     private void scrollDown()

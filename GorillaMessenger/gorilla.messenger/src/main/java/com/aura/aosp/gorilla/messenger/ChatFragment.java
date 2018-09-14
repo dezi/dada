@@ -1,11 +1,13 @@
 package com.aura.aosp.gorilla.messenger;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 
 import com.aura.aosp.aura.gui.base.GUIDefs;
 import com.aura.aosp.aura.gui.views.GUIFrameLayout;
+import com.aura.aosp.aura.gui.views.GUIIconView;
 import com.aura.aosp.aura.gui.views.GUILinearLayout;
 import com.aura.aosp.aura.gui.views.GUIRelativeLayout;
 import com.aura.aosp.aura.gui.views.GUITextView;
@@ -17,7 +19,7 @@ import java.util.Map;
 
 public class ChatFragment extends GUILinearLayout
 {
-    private final static String ENDINDENT = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
+    private final static String ENDINDENT = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
 
     private final static int[] userColors =
             {
@@ -38,9 +40,10 @@ public class ChatFragment extends GUILinearLayout
 
     private final static Map<String, Integer> users2Colors = new HashMap<>();
 
-    private String uuid;
+    private String messageUUID;
     private GUIFrameLayout bubbleBox;
     private GUITextView messageBox;
+    private GUIIconView statusIcon;
 
     public ChatFragment(Context context)
     {
@@ -49,6 +52,17 @@ public class ChatFragment extends GUILinearLayout
         setOrientation(HORIZONTAL);
         setLayoutParams(new LayoutParams(Simple.MP, Simple.WC));
         setPaddingDip(GUIDefs.PADDING_SMALL);
+    }
+
+    @Nullable
+    public String getMessageUUID()
+    {
+        return messageUUID;
+    }
+
+    public void setStatusIcon(String status)
+    {
+        if (status.equals("send")) statusIcon.setImageResource(R.drawable.ms_server_recv);
     }
 
     public void setContent(boolean send, String messageUUID, String datestring, String username, String attachment, String message)
@@ -65,6 +79,8 @@ public class ChatFragment extends GUILinearLayout
 
     private void setContentMessage(boolean send, String messageUUID, String datestring, String username, String attachment, String message)
     {
+        this.messageUUID = messageUUID;
+
         if (message != null) message += ENDINDENT;
 
         GUILinearLayout recvPart = new GUILinearLayout(getContext());
@@ -163,20 +179,37 @@ public class ChatFragment extends GUILinearLayout
             messageBox.setTextSizeDip(12);
         }
 
+        GUILinearLayout timeFrame = new GUILinearLayout(getContext());
+        timeFrame.setOrientation(HORIZONTAL);
+        timeFrame.setSizeDip(Simple.WC, Simple.WC);
+
+        FrameLayout.LayoutParams lptimetag = new FrameLayout.LayoutParams(Simple.WC, Simple.WC);
+        lptimetag.gravity = Gravity.BOTTOM + Gravity.END;
+
+        bubbleBox.addView(timeFrame, lptimetag);
+
+        GUITextView timeBox = new GUITextView(getContext());
+        timeBox.setSingleLine(true);
+        timeBox.setTextSizeDip(12);
+        timeBox.setMarginRightDip(1);
+
+        timeFrame.addView(timeBox);
+
         if ((datestring != null) && (datestring.length() >= 12))
         {
             String timeTag = datestring.substring(8, 10) + ":" + datestring.substring(10, 12);
 
-            GUITextView timeBox = new GUITextView(getContext());
-            timeBox.setSingleLine(true);
-            timeBox.setTextSizeDip(12);
-
-            FrameLayout.LayoutParams lptimetag = new FrameLayout.LayoutParams(Simple.WC, Simple.WC);
-            lptimetag.gravity = Gravity.BOTTOM + Gravity.END;
-
-            bubbleBox.addView(timeBox, lptimetag);
-
             timeBox.setText(timeTag);
+        }
+
+        statusIcon = new GUIIconView(getContext());
+        statusIcon.setSizeDip(16,16);
+        statusIcon.setPaddingDip(GUIDefs.PADDING_ZERO);
+        statusIcon.setImageResource(R.drawable.ms_server_wait);
+
+        if (send)
+        {
+            timeFrame.addView(statusIcon);
         }
     }
 

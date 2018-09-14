@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.gomess;
 
+import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.sockets.Connect;
@@ -83,7 +84,7 @@ public class GomessHandler
             return result;
         }
 
-        String uuid = UUID.randomUUID().toString();
+        String uuid = UID.randomUUIDBase64();
         long time = System.currentTimeMillis();
         Log.d("uuid=" + uuid + " time=" + time);
 
