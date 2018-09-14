@@ -22,6 +22,8 @@ public class GoprotoTicket
 
     private byte[] AppUUID;
 
+    private GoprotoMetadata Metadata;
+
     private byte[] Payload;
 
     public int getIdsmask()
@@ -104,6 +106,17 @@ public class GoprotoTicket
         this.AppUUID = appUUID;
     }
 
+    public GoprotoMetadata getMetadata()
+    {
+        return Metadata;
+    }
+
+    public void setMetadata(GoprotoMetadata metadata)
+    {
+        this.Idsmask |= GoprotoDefs.HasMetadata;
+        this.Metadata = metadata;
+    }
+
     public byte[] getPayload()
     {
         return Payload;
@@ -156,6 +169,12 @@ public class GoprotoTicket
             size += usiz;
         }
 
+        if ((Idsmask & GoprotoDefs.HasMetadata) != 0)
+        {
+            Log.d("HasMetadata");
+            size += usiz;
+        }
+
         return size;
     }
 
@@ -175,7 +194,7 @@ public class GoprotoTicket
         return size;
     }
 
-    public Err unMarshallCrypted(AES.AESBlock aesblock, byte[] bytes)
+    public Err unMarshalCrypted(AES.AESBlock aesblock, byte[] bytes)
     {
         if (bytes == null) return Err.errp();
 
@@ -194,7 +213,7 @@ public class GoprotoTicket
         byte[] plain = AES.decryptAESBlock(aesblock, crypt);
         if (plain == null) return Err.getLastErr();
 
-        Err err = unmarshallRouting(plain);
+        Err err = unMarshallRouting(plain);
         if (err != null) return err;
 
         setPayload(Simple.sliceBytes(bytes, csize));
@@ -202,7 +221,7 @@ public class GoprotoTicket
         return null;
     }
 
-    public byte[] marshallRouting(AES.AESBlock aesblock)
+    public byte[] marshalRouting(AES.AESBlock aesblock)
     {
         int usiz = GoprotoDefs.GorillaUUIDSize;
 
@@ -243,6 +262,12 @@ public class GoprotoTicket
         if ((Idsmask & GoprotoDefs.HasAppUUID) != 0)
         {
             System.arraycopy(AppUUID,0, bytes, offset, usiz);
+            offset += usiz;
+        }
+
+        if ((Idsmask & GoprotoDefs.HasMetadata) != 0)
+        {
+            System.arraycopy(Metadata.marshal(),0, bytes, offset, usiz);
             //offset += usiz;
         }
 
@@ -251,7 +276,7 @@ public class GoprotoTicket
 
     @NonNull
     @SuppressWarnings("PointlessBitwiseExpression")
-    public byte[] marshall()
+    public byte[] marshal()
     {
         int usiz = GoprotoDefs.GorillaUUIDSize;
 
@@ -298,13 +323,19 @@ public class GoprotoTicket
             offset += usiz;
         }
 
+        if ((Idsmask & GoprotoDefs.HasMetadata) != 0)
+        {
+            System.arraycopy(Metadata.marshal(),0, bytes, offset, usiz);
+            offset += usiz;
+        }
+
         System.arraycopy(Payload,0, bytes, offset, Payload.length);
 
         return bytes;
     }
 
     @SuppressWarnings("PointlessBitwiseExpression")
-    public Err unmarshall(byte[] bytes)
+    public Err unMarshal(byte[] bytes)
     {
         int usiz = GoprotoDefs.GorillaUUIDSize;
 
@@ -361,12 +392,20 @@ public class GoprotoTicket
             offset += usiz;
         }
 
+        if ((Idsmask & GoprotoDefs.HasMetadata) != 0)
+        {
+            Metadata = new GoprotoMetadata();
+            Metadata.unMarshal(Simple.sliceBytes(bytes, offset, offset+usiz));
+
+            offset += usiz;
+        }
+
         Payload = Simple.sliceBytes(bytes, offset);
 
         return null;
     }
 
-    public Err unmarshallRouting(byte[] bytes)
+    public Err unMarshallRouting(byte[] bytes)
     {
         int usiz = GoprotoDefs.GorillaUUIDSize;
 
@@ -430,6 +469,11 @@ public class GoprotoTicket
         Log.d("ReceiverUserUUID=%s", Simple.getHexBytesToString(ReceiverUserUUID));
         Log.d("ReceiverDeviceUUID=%s", Simple.getHexBytesToString(ReceiverDeviceUUID));
         Log.d("AppUUID=%s", Simple.getHexBytesToString(AppUUID));
+
+        if (Metadata != null)
+        {
+            Log.d("TimeStamp=%s", Metadata.getTimeStamp());
+        }
 
         Log.d("Payload=%s", Simple.getHexBytesToString(Payload));
     }

@@ -213,7 +213,7 @@ public class GomessClient
     {
         ticket.dumpTicket();
 
-        byte[] routingCrypt = ticket.marshallRouting(session.getAESBlock());
+        byte[] routingCrypt = ticket.marshalRouting(session.getAESBlock());
         if (routingCrypt == null) return Err.getLastErr();
 
         //
@@ -351,7 +351,7 @@ public class GomessClient
         GoprotoTicket ticket = new GoprotoTicket();
         ticket.setIdsmask(message.Idsmask);
 
-        err = ticket.unMarshallCrypted(session.AESBlock, message.Base);
+        err = ticket.unMarshalCrypted(session.AESBlock, message.Base);
         if (err != null) return err;
 
         ticket.dumpTicket();
