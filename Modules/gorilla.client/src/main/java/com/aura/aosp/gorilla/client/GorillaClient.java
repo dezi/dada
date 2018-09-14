@@ -245,7 +245,7 @@ public class GorillaClient
         });
     }
 
-    private void receiveOwnerUUID(String ownerUUID)
+    void receiveOwnerUUID(String ownerUUID)
     {
         this.ownerUUID = ownerUUID;
 

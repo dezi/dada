@@ -105,7 +105,8 @@ public class MainActivity extends AppCompatActivity
 
                     Owner.setOwnerUUIDBase64(identity.getUserUUIDBase64());
                     GomessHandler.getInstance().killSession();
-                    GorillaService.SelfStopMainService();
+                    GomessHandler.getInstance().changeOwner();
+                    //GorillaService.SelfStopMainService();
                 }
             });
 

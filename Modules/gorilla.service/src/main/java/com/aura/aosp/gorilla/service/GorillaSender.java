@@ -8,13 +8,56 @@ import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class GorillaSender
 {
     private final static String sysApkName = "com.aura.aosp.gorilla.sysapp";
 
-    public static Err sendBroadCastStatus(boolean uplink)
+    public static void sendBroadCastOnlineStatus(boolean uplink)
     {
-        return null;
+        List<String> apknames = GorillaIntercon.getAllApknames();
+
+        for (String apkname : apknames)
+        {
+            IGorillaClientService remote = GorillaIntercon.getClientService(apkname);
+            if (remote == null) continue;
+
+            String checksum = GorillaIntercon.createSHASignatureBase64(apkname, sysApkName, uplink);
+
+            try
+            {
+                boolean valid = remote.receiveOnlineStatus(sysApkName, uplink, checksum);
+                if (! valid) Err.errp("invalid service apkname=%s", apkname);
+            }
+            catch (Exception ex)
+            {
+                Err.errp(ex);
+            }
+        }
+    }
+
+    public static void sendBroadCastOwnerUUID(String ownerUUID)
+    {
+        List<String> apknames = GorillaIntercon.getAllApknames();
+
+        for (String apkname : apknames)
+        {
+            IGorillaClientService remote = GorillaIntercon.getClientService(apkname);
+            if (remote == null) continue;
+
+            String checksum = GorillaIntercon.createSHASignatureBase64(apkname, sysApkName, ownerUUID);
+
+            try
+            {
+                boolean valid = remote.receiveOwnerUUID(sysApkName, ownerUUID, checksum);
+                if (! valid) Err.errp("invalid service apkname=%s", apkname);
+            }
+            catch (Exception ex)
+            {
+                Err.errp(ex);
+            }
+        }
     }
 
     public static Err sendPayloadResult(GoprotoTicket ticket, JSONObject result)

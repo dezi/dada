@@ -64,4 +64,41 @@ public class GorillaClientService extends IGorillaClientService.Stub
 
         return valid;
     }
+
+    @Override
+    public boolean receiveOnlineStatus(String apkname, boolean uplink, String checksum)
+    {
+        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, uplink);
+
+        boolean valid = ((checksum != null) && checksum.equals(solution));
+
+        Log.d(LOGTAG, "receiveOnlineStatus: uplink=" + uplink + " valid=" + valid);
+
+        if (valid)
+        {
+            if (GorillaIntercon.setUplinkStatus(apkname, uplink))
+            {
+                GorillaClient.getInstance().receiveStatus();
+            }
+        }
+
+        return valid;
+    }
+
+    @Override
+    public boolean receiveOwnerUUID(String apkname, String ownerUUID, String checksum)
+    {
+        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, ownerUUID);
+
+        boolean valid = ((checksum != null) && checksum.equals(solution));
+
+        Log.d(LOGTAG, "receiveOwnerUUID: ownerUUID=" + ownerUUID + " valid=" + valid);
+
+        if (valid)
+        {
+            GorillaClient.getInstance().receiveOwnerUUID(ownerUUID);
+        }
+
+        return valid;
+    }
 }

@@ -119,6 +119,11 @@ public class GomessHandler
         }
     }
 
+    public void changeOwner()
+    {
+        GorillaSender.sendBroadCastOwnerUUID(Owner.getOwnerUUIDBase64());
+    }
+
     public boolean isSessionConnected()
     {
         GomessClient myclient = client;

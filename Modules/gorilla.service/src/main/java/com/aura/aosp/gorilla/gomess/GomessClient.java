@@ -96,7 +96,7 @@ public class GomessClient
 
         session.close();
 
-        GorillaSender.sendBroadCastStatus(false);
+        GorillaSender.sendBroadCastOnlineStatus(false);
 
         return err;
     }
@@ -310,7 +310,7 @@ public class GomessClient
 
         if (! session.isBoot())
         {
-            GorillaSender.sendBroadCastStatus(true);
+            GorillaSender.sendBroadCastOnlineStatus(true);
         }
 
         return null;
