@@ -116,15 +116,20 @@ public class ChatActivity extends AppCompatActivity
             public void onClick(View view)
             {
                 String message = editText.getText().toString();
+
+                JSONObject result = GorillaClient.getInstance().sendPayload(chatProfile.remoteUserUUID, chatProfile.remoteDeviceUUID, message);
+                if (result == null) return;
+
+                String uuid = Json.getString(result,"uuid");
+                long time = Json.getLong(result,"time");
+
                 editText.setText("");
 
                 ChatFragment cf = new ChatFragment(view.getContext());
-                cf.setContent(true, "20181812123456", MainActivity.ownerIdent.getNick(), null, message);
+                cf.setContent(true, uuid,null, MainActivity.ownerIdent.getNick(), null, message);
                 chatContent.addView(cf);
 
                 scrollDown();
-
-                GorillaClient.getInstance().sendPayload(chatProfile.remoteUserUUID, chatProfile.remoteDeviceUUID, message);
             }
         });
 
@@ -151,10 +156,11 @@ public class ChatActivity extends AppCompatActivity
     {
         Log.d(LOGTAG, "dispatchMessage: message=" + message);
 
+        String uuid = Json.getString(message, "uuid");
         String text = Json.getString(message, "payload");
 
         ChatFragment cf = new ChatFragment(this);
-        cf.setContent(false, "20181812123456", chatProfile.remoteNick, null, text);
+        cf.setContent(false, uuid, null, chatProfile.remoteNick, null, text);
         chatContent.addView(cf);
 
         scrollDown();

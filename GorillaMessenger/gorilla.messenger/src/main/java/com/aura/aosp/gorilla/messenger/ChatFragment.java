@@ -50,7 +50,7 @@ public class ChatFragment extends GUILinearLayout
         setPaddingDip(GUIDefs.PADDING_SMALL);
     }
 
-    public void setContent(boolean send, String datestring, String username, String attachment, String message)
+    public void setContent(boolean send, String messageUUID, String datestring, String username, String attachment, String message)
     {
         if (username == null)
         {
@@ -58,16 +58,13 @@ public class ChatFragment extends GUILinearLayout
         }
         else
         {
-            setContentMessage(send, datestring, username, attachment, message);
+            setContentMessage(send, messageUUID, datestring, username, attachment, message);
         }
     }
 
-    private void setContentMessage(boolean send, String datestring, String username, String attachment, String message)
+    private void setContentMessage(boolean send, String messageUUID, String datestring, String username, String attachment, String message)
     {
         if (message != null) message += ENDINDENT;
-
-        String timeTag = ((datestring == null) || (datestring.length() < 12)) ? null
-                : datestring.substring(8, 10) + ":" + datestring.substring(10, 12);
 
         GUILinearLayout recvPart = new GUILinearLayout(getContext());
         recvPart.setOrientation(VERTICAL);
@@ -165,8 +162,10 @@ public class ChatFragment extends GUILinearLayout
             messageBox.setTextSizeDip(12);
         }
 
-        if (timeTag != null)
+        if ((datestring != null) && (datestring.length() >= 12))
         {
+            String timeTag = datestring.substring(8, 10) + ":" + datestring.substring(10, 12);
+
             GUITextView timeBox = new GUITextView(getContext());
             timeBox.setSingleLine(true);
             timeBox.setTextSizeDip(12);

@@ -334,10 +334,11 @@ public class GorillaClient
         });
     }
 
-    public void sendPayload(String userUUID, String deviceUUID, String payload)
+    @Nullable
+    public JSONObject sendPayload(String userUUID, String deviceUUID, String payload)
     {
         IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
-        if (gr == null) return;
+        if (gr == null) return null;
 
         try
         {
@@ -347,19 +348,20 @@ public class GorillaClient
 
             Log.d(LOGTAG, "sendPayload: resultStr=" + resultStr);
 
-            JSONObject result = fromStringJSONOBject(resultStr);
+            final JSONObject result = fromStringJSONOBject(resultStr);
 
             if (result == null)
             {
                 Log.e(LOGTAG, "sendPayload: result failed!");
-                return;
+                return null;
             }
 
-            receivePayloadResult(result);
+            return result;
         }
         catch (Exception ex)
         {
             ex.printStackTrace();
+            return null;
         }
     }
 

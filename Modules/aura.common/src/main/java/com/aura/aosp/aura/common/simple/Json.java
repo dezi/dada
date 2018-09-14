@@ -179,6 +179,11 @@ public class Json
         json.put(val);
     }
 
+    public static boolean has(JSONObject json, String key)
+    {
+        return (json != null) && json.has(key);
+    }
+
     @Nullable
     public static Object get(JSONObject json, String key)
     {
@@ -188,9 +193,8 @@ public class Json
         }
         catch (Exception ignore)
         {
+            return null;
         }
-
-        return null;
     }
 
     @Nullable
@@ -202,17 +206,12 @@ public class Json
         }
         catch (Exception ignore)
         {
+            return null;
         }
-
-        return null;
     }
 
-    public static boolean has(JSONObject json, String key)
-    {
-        return (json != null) && json.has(key);
-    }
-
-    public static float getFloat(JSONObject json, String key)
+    @Nullable
+    public static Float getFloat(JSONObject json, String key)
     {
         try
         {
@@ -220,12 +219,12 @@ public class Json
         }
         catch (Exception ignore)
         {
+            return null;
         }
-
-        return 0.0f;
     }
 
-    public static double getDouble(JSONObject json, String key)
+    @Nullable
+    public static Double getDouble(JSONObject json, String key)
     {
         try
         {
@@ -233,12 +232,12 @@ public class Json
         }
         catch (Exception ignore)
         {
+            return null;
         }
-
-        return 0.0;
     }
 
-    public static boolean getBoolean(JSONObject json, String key)
+    @Nullable
+    public static Boolean getBoolean(JSONObject json, String key)
     {
         try
         {
@@ -246,12 +245,12 @@ public class Json
         }
         catch (Exception ignore)
         {
+            return null;
         }
-
-        return false;
     }
 
-    public static int getInt(JSONObject json, String key)
+    @Nullable
+    public static Integer getInt(JSONObject json, String key)
     {
         try
         {
@@ -259,12 +258,12 @@ public class Json
         }
         catch (Exception ignore)
         {
+            return null;
         }
-
-        return 0;
     }
 
-    public static long getLong(JSONObject json, String key)
+    @Nullable
+    public static Long getLong(JSONObject json, String key)
     {
         try
         {
@@ -272,9 +271,8 @@ public class Json
         }
         catch (Exception ignore)
         {
+            return null;
         }
-
-        return 0;
     }
 
     @Nullable
@@ -299,15 +297,17 @@ public class Json
 
                 return result;
             }
+
+            return "";
         }
         catch (Exception ignore)
         {
+            return null;
         }
-
-        return null;
     }
 
-    public static int getInt(JSONArray json, int index)
+    @Nullable
+    public static Integer getInt(JSONArray json, int index)
     {
         try
         {
@@ -315,9 +315,8 @@ public class Json
         }
         catch (Exception ignore)
         {
+            return null;
         }
-
-        return 0;
     }
 
     @Nullable
