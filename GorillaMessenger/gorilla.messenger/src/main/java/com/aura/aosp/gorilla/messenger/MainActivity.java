@@ -189,7 +189,13 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view)
                 {
-                    if (ownerIdent != null)
+                    if (ownerIdent == null)
+                    {
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp");
+
+                        startActivity(launchIntent);
+                    }
+                    else
                     {
                         Identity identity = (Identity) view.getTag();
 
