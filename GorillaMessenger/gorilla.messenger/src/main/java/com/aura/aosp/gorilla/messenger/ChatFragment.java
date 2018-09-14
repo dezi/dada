@@ -38,6 +38,7 @@ public class ChatFragment extends GUILinearLayout
 
     private final static Map<String, Integer> users2Colors = new HashMap<>();
 
+    private String uuid;
     private GUIFrameLayout bubbleBox;
     private GUITextView messageBox;
 
