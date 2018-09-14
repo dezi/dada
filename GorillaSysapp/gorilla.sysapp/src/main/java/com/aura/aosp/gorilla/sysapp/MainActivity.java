@@ -22,7 +22,6 @@ import com.aura.aosp.aura.gui.views.GUIScrollView;
 import com.aura.aosp.aura.gui.views.GUITextView;
 
 import com.aura.aosp.gorilla.gomess.GomessHandler;
-import com.aura.aosp.gorilla.service.GorillaService;
 
 import java.util.List;
 
@@ -106,7 +105,6 @@ public class MainActivity extends AppCompatActivity
                     Owner.setOwnerUUIDBase64(identity.getUserUUIDBase64());
                     GomessHandler.getInstance().killSession();
                     GomessHandler.getInstance().changeOwner();
-                    //GorillaService.SelfStopMainService();
                 }
             });
 
@@ -117,12 +115,21 @@ public class MainActivity extends AppCompatActivity
             entry.infoView.setText(info);
         }
 
+        GUILinearLayout buttonFrame = new GUILinearLayout(this);
+        buttonFrame.setOrientation(LinearLayout.HORIZONTAL);
+        buttonFrame.setSizeDip(Simple.MP, Simple.WC);
+        buttonFrame.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        centerFrame.addView(buttonFrame);
+
         GUIButtonView doneButton = new GUIButtonView(this);
 
         doneButton.setRoundedCorners(GUIDefs.ROUNDED_NORMAL, GUIDefs.COLOR_LIGHT_GRAY);
         doneButton.setText(R.string.done_button);
         doneButton.setSizeDip(Simple.WC, Simple.WC);
+        doneButton.setMarginLeftDip(GUIDefs.PADDING_NORMAL);
         doneButton.setMarginTopDip(GUIDefs.PADDING_NORMAL);
+        doneButton.setMarginRightDip(GUIDefs.PADDING_NORMAL);
         doneButton.setMarginBottomDip(GUIDefs.PADDING_NORMAL);
 
         doneButton.setPaddingDip(
@@ -138,6 +145,36 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        centerFrame.addView(doneButton);
+        buttonFrame.addView(doneButton);
+
+        GUIButtonView clearButton = new GUIButtonView(this);
+
+        clearButton.setRoundedCorners(GUIDefs.ROUNDED_NORMAL, GUIDefs.COLOR_LIGHT_GRAY);
+        clearButton.setText(R.string.clear_button);
+        clearButton.setSizeDip(Simple.WC, Simple.WC);
+        clearButton.setMarginLeftDip(GUIDefs.PADDING_NORMAL);
+        clearButton.setMarginTopDip(GUIDefs.PADDING_NORMAL);
+        clearButton.setMarginRightDip(GUIDefs.PADDING_NORMAL);
+        clearButton.setMarginBottomDip(GUIDefs.PADDING_NORMAL);
+
+        clearButton.setPaddingDip(
+                GUIDefs.PADDING_XLARGE, GUIDefs.PADDING_SMALL,
+                GUIDefs.PADDING_XLARGE, GUIDefs.PADDING_SMALL);
+
+        clearButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                identview.setText(R.string.select_identity);
+
+                Owner.clearOwner();
+
+                GomessHandler.getInstance().killSession();
+                GomessHandler.getInstance().changeOwner();
+            }
+        });
+
+        buttonFrame.addView(clearButton);
     }
 }

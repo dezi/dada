@@ -21,6 +21,13 @@ public class Owner
         return Simple.getPrefs().getString(prefkey, null);
     }
 
+    @SuppressLint("ApplySharedPref")
+    public static void clearOwner()
+    {
+        String prefkey = "aura.pref.ownerUUID";
+        Simple.getPrefs().edit().remove(prefkey).commit();
+    }
+
     @Nullable
     public static Identity getOwnerIdentity()
     {

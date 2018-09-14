@@ -2,4 +2,5 @@
     <string name="app_name">Gorilla.Sysapp</string>
     <string name="select_identity">Select Your Universal-ID</string>
     <string name="done_button">Done</string>
+    <string name="clear_button">Clear</string>
 </resources>
