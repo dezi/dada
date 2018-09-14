@@ -96,9 +96,6 @@ public class MainActivity extends AppCompatActivity
                 String ownerUUID = Json.getString(owner, "ownerUUID");
 
                 ownerIdent = Contacts.getContact(ownerUUID);
-                if (ownerIdent == null) return;
-
-                Log.d(LOGTAG, "ownerIdent=" + ownerIdent.toString());
 
                 updateTitle();
 
