@@ -17,8 +17,6 @@ import java.util.Map;
 
 public class ChatFragment extends GUILinearLayout
 {
-    private final static String LOGTAG = ChatFragment.class.getSimpleName();
-
     private final static String ENDINDENT = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
 
     private final static int[] userColors =
@@ -74,14 +72,13 @@ public class ChatFragment extends GUILinearLayout
         GUILinearLayout recvPart = new GUILinearLayout(getContext());
         recvPart.setOrientation(VERTICAL);
         recvPart.setGravity(Gravity.START);
-        recvPart.setSizeDip(Simple.MP, Simple.WC);
-        recvPart.setSizeDip(Simple.MP, Simple.WC);
+        recvPart.setSizeDip(Simple.MP, send ? Simple.MP: Simple.WC);
         recvPart.setBackgroundColor(0x88008800);
 
         GUILinearLayout sendPart = new GUILinearLayout(getContext());
         sendPart.setOrientation(VERTICAL);
         sendPart.setGravity(Gravity.END);
-        sendPart.setSizeDip(Simple.MP, Simple.WC);
+        sendPart.setSizeDip(Simple.MP, send ? Simple.WC: Simple.MP);
         sendPart.setBackgroundColor(0x88000088);
 
         ((LayoutParams) recvPart.getLayoutParams()).weight = send ? 0.75f : 0.25f;
@@ -150,7 +147,7 @@ public class ChatFragment extends GUILinearLayout
         }
 
         messageBox = new GUITextView(getContext());
-        messageBox.setGravity(send ? Gravity.END : Gravity.START);
+        messageBox.setGravity(Gravity.START);
         messageBox.setSizeDip(Simple.WC, Simple.WC);
         messageBox.setTextSizeDip(22);
         messageBox.setPaddingDip(GUIDefs.PADDING_ZERO, GUIDefs.PADDING_ZERO, GUIDefs.PADDING_ZERO, GUIDefs.PADDING_TINY);
