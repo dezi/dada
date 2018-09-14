@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.gui.base.GUIDefs;
@@ -120,13 +121,13 @@ public class ChatActivity extends AppCompatActivity
                 JSONObject result = GorillaClient.getInstance().sendPayload(chatProfile.remoteUserUUID, chatProfile.remoteDeviceUUID, message);
                 if (result == null) return;
 
+                Long time = Json.getLong(result,"time");
                 String uuid = Json.getString(result,"uuid");
-                long time = Json.getLong(result,"time");
 
                 editText.setText("");
 
                 ChatFragment cf = new ChatFragment(view.getContext());
-                cf.setContent(true, uuid,null, MainActivity.ownerIdent.getNick(), null, message);
+                cf.setContent(true, uuid, Dates.getLocalDateAndTime(time), MainActivity.ownerIdent.getNick(), null, message);
                 chatContent.addView(cf);
 
                 scrollDown();
@@ -156,11 +157,12 @@ public class ChatActivity extends AppCompatActivity
     {
         Log.d(LOGTAG, "dispatchMessage: message=" + message);
 
+        Long time = Json.getLong(message, "time");
         String uuid = Json.getString(message, "uuid");
         String text = Json.getString(message, "payload");
 
         ChatFragment cf = new ChatFragment(this);
-        cf.setContent(false, uuid, null, chatProfile.remoteNick, null, text);
+        cf.setContent(false, uuid, Dates.getLocalDateAndTime(time), chatProfile.remoteNick, null, text);
         chatContent.addView(cf);
 
         scrollDown();
