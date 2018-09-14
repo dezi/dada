@@ -30,6 +30,12 @@ public class ChatActivity extends AppCompatActivity
     private GUIIconView sendButton;
 
     private ChatProfile chatProfile;
+    private String remoteNick;
+    private String remoteUserUUID;
+    private String remoteDeviceUUID;
+
+    private boolean svlink;
+    private boolean uplink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,17 +52,13 @@ public class ChatActivity extends AppCompatActivity
         Bundle params = intent.getExtras();
         if (params == null) return;
 
-        String remoteNick = params.getString("nick");
-        String remoteUserUUID = params.getString("userUUID");
-        String remoteDeviceUUID = params.getString("deviceUUID");
+        remoteNick = params.getString("nick");
+        remoteUserUUID = params.getString("userUUID");
+        remoteDeviceUUID = params.getString("deviceUUID");
 
         chatProfile = new ChatProfile(this, remoteNick, remoteUserUUID, remoteDeviceUUID);
 
         MainActivity.addChatProfile(chatProfile);
-
-        setTitle(remoteNick);
-
-        //dummyMessages();
     }
 
     @Override
@@ -127,6 +129,22 @@ public class ChatActivity extends AppCompatActivity
         });
 
         bottomBox.addView(sendButton);
+    }
+
+    public void setStatus(boolean svlink, boolean uplink)
+    {
+        this.uplink = uplink;
+        this.svlink = svlink;
+    }
+
+    public void updateTitle()
+    {
+        String newtitle = remoteNick;
+
+        if (svlink) newtitle += " (system)";
+        if (uplink) newtitle += " (online)";
+
+        setTitle(newtitle);
     }
 
     public void dispatchMessage(JSONObject message)

@@ -33,9 +33,14 @@ public class MainActivity extends AppCompatActivity
     public static Identity ownerIdent;
 
     public static List<ChatProfile> chatProfiles = new ArrayList<>();
+    private static boolean svlink;
+    private static boolean uplink;
 
     public static void addChatProfile(ChatProfile chatProfile)
     {
+        chatProfile.activity.setStatus(svlink, uplink);
+        chatProfile.activity.updateTitle();
+
         chatProfiles.add(chatProfile);
     }
 
@@ -45,8 +50,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private String title;
-    private boolean svlink;
-    private boolean uplink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -74,6 +77,12 @@ public class MainActivity extends AppCompatActivity
                 uplink = Json.getBoolean(status, "uplink");
 
                 updateTitle();
+
+                for (ChatProfile chatProfile : chatProfiles)
+                {
+                    chatProfile.activity.setStatus(svlink, uplink);
+                    chatProfile.activity.updateTitle();
+                }
             }
         });
 
@@ -92,6 +101,11 @@ public class MainActivity extends AppCompatActivity
                 Log.d(LOGTAG, "ownerIdent=" + ownerIdent.toString());
 
                 updateTitle();
+
+                for (ChatProfile chatProfile : chatProfiles)
+                {
+                    chatProfile.activity.finish();
+                }
             }
         });
 
@@ -178,17 +192,20 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view)
                 {
-                    Identity identity = (Identity) view.getTag();
+                    if (ownerIdent != null)
+                    {
+                        Identity identity = (Identity) view.getTag();
 
-                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                        Intent intent = new Intent(MainActivity.this, ChatActivity.class);
 
-                    Bundle params = new Bundle();
-                    params.putString("nick", identity.getNick());
-                    params.putString("userUUID", identity.getUserUUIDBase64());
-                    params.putString("deviceUUID", identity.getDeviceUUIDBase64());
-                    intent.putExtras(params);
+                        Bundle params = new Bundle();
+                        params.putString("nick", identity.getNick());
+                        params.putString("userUUID", identity.getUserUUIDBase64());
+                        params.putString("deviceUUID", identity.getDeviceUUIDBase64());
+                        intent.putExtras(params);
 
-                    startActivity(intent);
+                        startActivity(intent);
+                    }
                 }
             });
 
