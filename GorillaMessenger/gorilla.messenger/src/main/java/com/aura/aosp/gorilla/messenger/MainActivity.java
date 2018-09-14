@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.messenger;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -216,6 +217,7 @@ public class MainActivity extends AppCompatActivity
 
             entry.iconView.setImageResource(R.drawable.human_260);
             entry.headerViev.setText(nick);
+            entry.headerViev.setTextColor(Color.BLUE);
             entry.infoView.setText(info);
             entry.actionIcon.setImageResource(R.drawable.arrow_right);
         }
