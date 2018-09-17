@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 
+import com.aura.aosp.aura.common.simple.Dates;
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.gui.base.GUIDefs;
 import com.aura.aosp.aura.gui.views.GUIFrameLayout;
 import com.aura.aosp.aura.gui.views.GUIIconView;
@@ -45,6 +47,12 @@ public class ChatFragment extends GUILinearLayout
     private GUITextView messageBox;
     private GUIIconView statusIcon;
 
+    boolean send;
+    Long timeQueued;
+    Long timeSend;
+    Long timeReceived;
+    Long timeRead;
+
     public ChatFragment(Context context)
     {
         super(context);
@@ -60,12 +68,41 @@ public class ChatFragment extends GUILinearLayout
         return messageUUID;
     }
 
-    public void setStatusIcon(String status)
+    public Boolean isSendFragment()
     {
-        if (status.equals("send")) statusIcon.setImageResource(R.drawable.ms_server_recv);
+        return send;
     }
 
-    public void setContent(boolean send, String messageUUID, String datestring, String username, String attachment, String message)
+    public void setStatusIcon(String status, Long timeStamp)
+    {
+        Log.d("###### status=%s time=%d", status, timeStamp);
+
+        if (status.equals("queued"))
+        {
+            statusIcon.setImageResource(R.drawable.ms_server_wait);
+            timeQueued = timeStamp;
+        }
+
+        if (status.equals("send"))
+        {
+            statusIcon.setImageResource(R.drawable.ms_server_recv);
+            timeSend = timeStamp;
+        }
+
+        if (status.equals("received"))
+        {
+            statusIcon.setImageResource(R.drawable.ms_client_recv);
+            timeReceived = timeStamp;
+        }
+
+        if (status.equals("read"))
+        {
+            statusIcon.setImageResource(R.drawable.ms_client_read);
+            timeRead = timeStamp;
+        }
+    }
+
+    public void setContent(boolean send, String messageUUID, Long timeStamp, String username, String attachment, String message)
     {
         if (username == null)
         {
@@ -73,12 +110,13 @@ public class ChatFragment extends GUILinearLayout
         }
         else
         {
-            setContentMessage(send, messageUUID, datestring, username, attachment, message);
+            setContentMessage(send, messageUUID, timeStamp, username, attachment, message);
         }
     }
 
-    private void setContentMessage(boolean send, String messageUUID, String datestring, String username, String attachment, String message)
+    private void setContentMessage(boolean send, String messageUUID, Long timeStamp, String username, String attachment, String message)
     {
+        this.send = send;
         this.messageUUID = messageUUID;
 
         if (message != null) message += ENDINDENT;
@@ -195,8 +233,9 @@ public class ChatFragment extends GUILinearLayout
 
         timeFrame.addView(timeBox);
 
-        if ((datestring != null) && (datestring.length() >= 12))
+        if (timeStamp != null)
         {
+            String datestring = Dates.getLocalDateAndTime(timeStamp);
             String timeTag = datestring.substring(8, 10) + ":" + datestring.substring(10, 12);
 
             timeBox.setText(timeTag);
@@ -205,7 +244,6 @@ public class ChatFragment extends GUILinearLayout
         statusIcon = new GUIIconView(getContext());
         statusIcon.setSizeDip(16,16);
         statusIcon.setPaddingDip(GUIDefs.PADDING_ZERO);
-        statusIcon.setImageResource(R.drawable.ms_server_wait);
 
         if (send)
         {

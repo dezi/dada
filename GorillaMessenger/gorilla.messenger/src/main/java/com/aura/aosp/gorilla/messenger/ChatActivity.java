@@ -128,10 +128,12 @@ public class ChatActivity extends AppCompatActivity
                 editText.setText("");
 
                 ChatFragment cf = new ChatFragment(view.getContext());
-                cf.setContent(true, uuid, Dates.getLocalDateAndTime(time), MainActivity.ownerIdent.getNick(), null, message);
+                cf.setContent(true, uuid, time, MainActivity.ownerIdent.getNick(), null, message);
                 chatContent.addView(cf);
 
                 scrollDown();
+
+                dispatchResult(result);
             }
         });
 
@@ -163,20 +165,21 @@ public class ChatActivity extends AppCompatActivity
         String text = Json.getString(message, "payload");
 
         ChatFragment cf = new ChatFragment(this);
-        cf.setContent(false, uuid, Dates.getLocalDateAndTime(time), chatProfile.remoteNick, null, text);
+        cf.setContent(false, uuid, time, chatProfile.remoteNick, null, text);
         chatContent.addView(cf);
 
         scrollDown();
     }
 
-    public void dispatchStatus(JSONObject result)
+    public void dispatchResult(JSONObject result)
     {
+        Long time = Json.getLong(result, "time");
         String uuid = Json.getString(result, "uuid");
         String status = Json.getString(result, "status");
 
         if ((uuid == null) || (status == null)) return;
 
-        Log.d(LOGTAG, "dispatchStatus: uuid=" + uuid + " status=" + status + " childCount=" + chatContent.getChildCount());
+        Log.d(LOGTAG, "dispatchResult: uuid=" + uuid + " status=" + status + " childCount=" + chatContent.getChildCount());
 
         for (int cinx = 0; cinx < chatContent.getChildCount(); cinx++)
         {
@@ -185,11 +188,12 @@ public class ChatActivity extends AppCompatActivity
 
             ChatFragment cf = (ChatFragment) child;
 
-            Log.d(LOGTAG, "dispatchStatus: child uuid=" + cf.getMessageUUID());
-
+            if (! cf.isSendFragment()) continue;
             if (! uuid.equals(cf.getMessageUUID())) continue;
 
-            cf.setStatusIcon(status);
+            Log.d(LOGTAG, "dispatchResult: ###### child uuid=" + cf.getMessageUUID() + " status=" + status);
+
+            cf.setStatusIcon(status, time);
         }
     }
 

@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity
 
                 for (ChatProfile chatProfile : chatProfiles)
                 {
-                    chatProfile.activity.dispatchStatus(result);
+                    chatProfile.activity.dispatchResult(result);
                 }
             }
         });

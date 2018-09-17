@@ -21,6 +21,7 @@ import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 import com.aura.aosp.gorilla.service.GorillaSender;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -357,21 +358,49 @@ public class GomessClient
 
         ticket.dumpTicket();
 
+        int status = ticket.getMetadata().getStatus();
+
+        if (status != 0)
+        {
+            //
+            // Ticket is a status reply.
+            //
+            // Generate a result an send to client.
+            //
+
+            JSONObject result = new JSONObject();
+
+            Json.put(result, "uuid", ticket.getMessageUUIDBase64());
+            Json.put(result, "time", ticket.getMetadata().getTimeStamp());
+            Json.put(result, "status", "unknown");
+
+            if ((status & GoprotoDefs.MsgStatusReceived) != 0)
+            {
+                Json.put(result, "status", "received");
+
+                Log.d("##############status received send.");
+            }
+
+            err = GorillaSender.sendPayloadResult(ticket, result);
+            return err;
+        }
+
+        //
+        // Ticket is an original message.
+        //
+
         Log.d("payload=%s", new String(ticket.getPayload()));
 
         err = GorillaSender.sendPayload(ticket);
         if (err != null) return err;
 
-        if (ticket.getMetadata().getStatus() == 0)
-        {
-            ticket.prepareStatus(GoprotoDefs.MsgStatusReceived);
+        ticket.prepareStatus(GoprotoDefs.MsgStatusReceived);
 
-            ticket.dumpTicket();
+        ticket.dumpTicket();
 
-            err = sendMessageUpload(ticket);
+        err = sendMessageUpload(ticket);
 
-            Log.d("##############status read send.");
-        }
+        Log.d("##############status received send.");
 
         return err;
     }

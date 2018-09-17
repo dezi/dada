@@ -50,7 +50,7 @@ public class Marshal
         // formatter: off
 
         return (short) (((bytes[ 0 ] & 0xff) << 8)
-                + ((bytes[ 1 ] & 0xff) << 0));
+                      + ((bytes[ 1 ] & 0xff) << 0));
 
         // formatter: on
     }

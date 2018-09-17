@@ -19,7 +19,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class GomessHandler
@@ -133,9 +132,8 @@ public class GomessHandler
     public boolean isSessionConnected()
     {
         GomessClient myclient = client;
-        if (myclient == null) return false;
 
-        return myclient.isConnected();
+        return (myclient != null) && myclient.isConnected();
     }
 
     private void addTicketToQueue(GoprotoTicket ticket)
@@ -240,6 +238,7 @@ public class GomessHandler
 
                 JSONObject result = new JSONObject();
                 Json.put(result, "uuid", ticket.getMessageUUIDBase64());
+                Json.put(result, "time", ticket.getMetadata().getTimeStamp());
                 Json.put(result, "status", "send");
 
                 if (err != null)

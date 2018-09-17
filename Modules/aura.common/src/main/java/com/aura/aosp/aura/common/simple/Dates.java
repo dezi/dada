@@ -1,6 +1,6 @@
 package com.aura.aosp.aura.common.simple;
 
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class Dates
 {
-    @Nullable
+    @NonNull
     public static String getLocalDateAndTime(Long timeStamp)
     {
         try
@@ -19,8 +19,7 @@ public class Dates
         }
         catch(Exception ex)
         {
-            return null;
+            return "19700101000000";
         }
     }
-
 }
