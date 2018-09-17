@@ -76,4 +76,20 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
 
         return result.toString();
     }
+
+    @Override
+    public boolean sendPayloadRead(String apkname, String userUUID, String deviceUUID, String messageUUID, String checksum)
+    {
+        Log.d("...");
+
+        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, userUUID, deviceUUID, messageUUID);
+
+        if ((checksum == null) || ! checksum.equals(solution))
+        {
+            Log.e("checksum failed!");
+            return false;
+        }
+
+        return GomessHandler.getInstance().sendPayloadRead(apkname, userUUID, deviceUUID, messageUUID);
+    }
 }

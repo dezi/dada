@@ -365,6 +365,28 @@ public class GorillaClient
         }
     }
 
+    public boolean sendPayloadRead(String userUUID, String deviceUUID, String messageUUID)
+    {
+        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        if (gr == null) return false;
+
+        try
+        {
+            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, deviceUUID, messageUUID);
+
+            boolean result = gr.sendPayloadRead(apkname, userUUID, deviceUUID, messageUUID, checksum);
+
+            Log.d(LOGTAG, "sendPayloadRead: result=" + result);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
     public void setOnStatusReceivedListener(OnStatusReceivedListener onStatusReceivedListener)
     {
         this.onStatusReceivedListener = onStatusReceivedListener;

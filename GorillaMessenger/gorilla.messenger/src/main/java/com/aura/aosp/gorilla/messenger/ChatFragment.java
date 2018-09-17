@@ -16,6 +16,7 @@ import com.aura.aosp.aura.gui.views.GUIRelativeLayout;
 import com.aura.aosp.aura.gui.views.GUITextView;
 
 import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.gorilla.client.GorillaClient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -281,6 +282,10 @@ public class ChatFragment extends GUILinearLayout
         if (send)
         {
             timeFrame.addView(statusIcon);
+        }
+        else
+        {
+            //GorillaClient.getInstance().sendPayload()
         }
     }
 

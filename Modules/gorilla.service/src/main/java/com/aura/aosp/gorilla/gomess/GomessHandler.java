@@ -6,6 +6,7 @@ import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.sockets.Connect;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.common.univid.Owner;
+import com.aura.aosp.gorilla.goproto.GoprotoDefs;
 import com.aura.aosp.gorilla.goproto.GoprotoMetadata;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
@@ -110,6 +111,49 @@ public class GomessHandler
         Json.put(result, "status", "queued");
 
         return result;
+    }
+
+    public boolean sendPayloadRead(String apkname, String userUUID, String deviceUUID, String messageUUID)
+    {
+        Log.d("user=" + userUUID + " dev=" + deviceUUID);
+        Log.d("apkname=" + apkname + " messageUUID=" + messageUUID);
+
+        JSONObject result = new JSONObject();
+
+        if ((apkname == null) || (userUUID == null) || (deviceUUID == null) || (messageUUID == null))
+        {
+            return false;
+        }
+
+        Identity owner = Owner.getOwnerIdentity();
+
+        if (owner == null)
+        {
+            Json.put(result, "error", "Device owner not set");
+            Json.put(result, "status", "error");
+
+            return false;
+        }
+
+        GoprotoMetadata metadata = new GoprotoMetadata();
+        metadata.setTimeStamp(System.currentTimeMillis());
+        metadata.setStatus(GoprotoDefs.MsgStatusRead);
+
+        GoprotoTicket ticket = new GoprotoTicket();
+
+        ticket.setMetadata(metadata);
+
+        ticket.setMessageUUID(Simple.decodeBase64(messageUUID));
+        ticket.setReceiverUserUUID(Simple.decodeBase64(userUUID));
+        ticket.setReceiverDeviceUUID(Simple.decodeBase64(deviceUUID));
+
+        ticket.setAppUUID(Simple.decodeBase64(GorillaMapper.mapAPK2UUID(apkname)));
+
+        ticket.setPayload(new byte[0]);
+
+        addTicketToQueue(ticket);
+
+        return true;
     }
 
     public void killSession()
@@ -231,6 +275,22 @@ public class GomessHandler
                 //
 
                 Err err = myclient.sendMessageUpload(ticket);
+
+                GoprotoMetadata metadata = ticket.getMetadata();
+                int status = metadata.getStatus();
+
+                if (status != 0)
+                {
+                    //
+                    // Message is a status message.
+                    //
+                    // No status is generated for status messages.
+                    //
+
+                    Log.d("message status=%04x", status);
+
+                    continue;
+                }
 
                 //
                 // Prepare result json.

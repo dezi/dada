@@ -381,6 +381,13 @@ public class GomessClient
                 Log.d("##############status received send.");
             }
 
+            if ((status & GoprotoDefs.MsgStatusRead) != 0)
+            {
+                Json.put(result, "status", "read");
+
+                Log.d("##############status read send.");
+            }
+
             err = GorillaSender.sendPayloadResult(ticket, result);
             return err;
         }

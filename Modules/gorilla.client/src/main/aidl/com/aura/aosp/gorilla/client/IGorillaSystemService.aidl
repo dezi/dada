@@ -9,4 +9,6 @@ interface IGorillaSystemService
     String getOwnerUUID(String apkname, String checksum);
 
     String sendPayload(String apkname, String userUUID, String deviceUUID, String payload, String checksum);
+
+    boolean sendPayloadRead(String apkname, String userUUID, String deviceUUID, String messageUUID, String checksum);
 }

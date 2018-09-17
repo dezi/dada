@@ -160,15 +160,25 @@ public class ChatActivity extends AppCompatActivity
     {
         Log.d(LOGTAG, "dispatchMessage: message=" + message);
 
-        Long time = Json.getLong(message, "time");
-        String uuid = Json.getString(message, "uuid");
-        String text = Json.getString(message, "payload");
+        final Long time = Json.getLong(message, "time");
+        final String uuid = Json.getString(message, "uuid");
+        final String text = Json.getString(message, "payload");
 
         ChatFragment cf = new ChatFragment(this);
         cf.setContent(false, uuid, time, chatProfile.remoteNick, null, text);
         chatContent.addView(cf);
 
         scrollDown();
+
+        chatContent.getHandler().postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                GorillaClient.getInstance().sendPayloadRead(remoteUserUUID, remoteDeviceUUID, uuid);
+            }
+
+        }, 1000);
     }
 
     public void dispatchResult(JSONObject result)
@@ -189,7 +199,7 @@ public class ChatActivity extends AppCompatActivity
             ChatFragment cf = (ChatFragment) child;
 
             if (! cf.isSendFragment()) continue;
-            if (! uuid.equals(cf.getMessageUUID())) continue;
+            if (!uuid.equals(cf.getMessageUUID())) continue;
 
             Log.d(LOGTAG, "dispatchResult: ###### child uuid=" + cf.getMessageUUID() + " status=" + status);
 

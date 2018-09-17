@@ -488,6 +488,7 @@ public class GoprotoTicket
 
     public void dumpTicket()
     {
+        Log.d("----------");
         Log.d("Idsmask=%04x", Idsmask);
 
         Log.d("MessageUUID=%s", Simple.getHexBytesToString(MessageUUID));
@@ -500,8 +501,10 @@ public class GoprotoTicket
         if (Metadata != null)
         {
             Log.d("TimeStamp=%s", Metadata.getTimeStamp());
+            Log.d("Status=%04x", Metadata.getStatus());
         }
 
         Log.d("Payload=%s", Simple.getHexBytesToString(Payload));
+        Log.d("----------");
     }
 }
