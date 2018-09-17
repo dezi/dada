@@ -7,6 +7,8 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -508,5 +510,81 @@ public class Json
         Collections.sort(jsonValues, new comparedat());
 
         return new JSONArray(jsonValues);
+    }
+
+    public interface JsonMarshaller
+    {
+        JSONObject toJson();
+
+        void fromJson(JSONObject json);
+    }
+
+    public static JSONObject toJson(Object object)
+    {
+        JSONObject json = new JSONObject();
+
+        com.aura.aosp.aura.common.simple.Log.d("#############toJson: object=" + object.toString());
+
+        for (Field field : object.getClass().getDeclaredFields())
+        {
+            try
+            {
+                field.setAccessible(true);
+
+                String name = field.getName();
+                int modifiers = field.getModifiers();
+
+                if ((modifiers & Modifier.FINAL) == Modifier.FINAL) continue;
+                if ((modifiers & Modifier.STATIC) == Modifier.STATIC) continue;
+
+                com.aura.aosp.aura.common.simple.Log.d("##############toJson: name=" + name + " modifiers=" + modifiers);
+
+                Object ival = field.get(object);
+                if (ival == null) continue;
+
+
+                if ((ival instanceof JSONObject)
+                        || (ival instanceof JSONArray)
+                        || (ival instanceof ArrayList)
+                        || (ival instanceof Integer)
+                        || (ival instanceof Boolean)
+                        || (ival instanceof String)
+                        || (ival instanceof Double)
+                        || (ival instanceof Float)
+                        || (ival instanceof Long)
+                        || (ival instanceof Byte))
+                {
+                    Json.put(json, name, ival);
+                    com.aura.aosp.aura.common.simple.Log.d("##############toJson: name=" + name + " put");
+                    continue;
+                }
+
+                if (ival instanceof Json.JsonMarshaller)
+                {
+                    Json.put(json, name, ((Json.JsonMarshaller) ival).toJson());
+                    com.aura.aosp.aura.common.simple.Log.d("##############toJson: name=" + name + " iface");
+                    continue;
+                }
+
+                if (ival instanceof byte[])
+                {
+                    Json.put(json, name, Simple.encodeBase64((byte[]) ival));
+                    com.aura.aosp.aura.common.simple.Log.d("##############toJson: name=" + name + " bytes");
+                    continue;
+                }
+
+                com.aura.aosp.aura.common.simple.Log.d("##############toJson: name=" + name + " nixgut=" + ival);
+            }
+            catch (Exception ignore)
+            {
+                com.aura.aosp.aura.common.simple.Log.d("##############toJson: ex=" + ignore.getMessage());
+            }
+        }
+
+        return json;
+    }
+
+    public static void fromJson(Object object, JSONObject json)
+    {
     }
 }

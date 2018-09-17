@@ -7,6 +7,7 @@ import android.view.View;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
@@ -22,6 +23,10 @@ import com.aura.aosp.aura.gui.views.GUIScrollView;
 import com.aura.aosp.aura.gui.views.GUITextView;
 
 import com.aura.aosp.gorilla.gomess.GomessHandler;
+import com.aura.aosp.gorilla.goproto.GoprotoMetadata;
+import com.aura.aosp.gorilla.goproto.GoprotoTicket;
+
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -39,6 +44,13 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         createLayout();
+
+        GoprotoMetadata md = new GoprotoMetadata();
+        GoprotoTicket ticket = new GoprotoTicket();
+        ticket.setMetadata(md);
+        ticket.setMessageUUID(new byte[10]);
+        JSONObject json = ticket.toJson();
+        Log.d(LOGTAG, "##############xxxxx=" + Json.toPretty(json));
     }
 
     private void createLayout()

@@ -4,11 +4,19 @@ import android.support.annotation.NonNull;
 
 import com.aura.aosp.aura.common.crypter.AES;
 import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+
 @SuppressWarnings("WeakerAccess")
-public class GoprotoTicket
+public class GoprotoTicket implements Json.JsonMarshaller
 {
     private int Idsmask;
 
@@ -506,5 +514,17 @@ public class GoprotoTicket
 
         Log.d("Payload=%s", Simple.getHexBytesToString(Payload));
         Log.d("----------");
+    }
+
+    @Override
+    public JSONObject toJson()
+    {
+        return Json.toJson(this);
+    }
+
+    @Override
+    public void fromJson(JSONObject json)
+    {
+        Json.fromJson(this, json);
     }
 }

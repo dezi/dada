@@ -1,9 +1,18 @@
 package com.aura.aosp.gorilla.goproto;
 
+import com.aura.aosp.aura.common.simple.Json;
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Marshal;
 import com.aura.aosp.aura.common.simple.Simple;
 
-public class GoprotoMetadata
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+
+public class GoprotoMetadata implements Json.JsonMarshaller
 {
     private long timeStamp;
     private int status;
@@ -48,5 +57,17 @@ public class GoprotoMetadata
         status = Marshal.unMarshalShort(Simple.sliceBytes(bytes, 8, 10));
         reserved1 = Marshal.unMarshalShort(Simple.sliceBytes(bytes, 10, 12));
         reserved2 = Marshal.unMarshalInt(Simple.sliceBytes(bytes, 12, 16));
+    }
+
+    @Override
+    public JSONObject toJson()
+    {
+        return Json.toJson(this);
+    }
+
+    @Override
+    public void fromJson(JSONObject json)
+    {
+        Json.fromJson(this, json);
     }
 }
