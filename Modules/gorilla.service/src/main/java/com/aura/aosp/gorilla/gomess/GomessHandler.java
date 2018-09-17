@@ -52,10 +52,10 @@ public class GomessHandler
 
     private GomessHandler()
     {
-        readerThread = new Thread(readerRunner);
+        readerThread = new Thread(readerThreadRunner);
         readerThread.start();
 
-        writerThread = new Thread(writerRunner);
+        writerThread = new Thread(writerThreadRunner);
         writerThread.start();
     }
 
@@ -188,7 +188,7 @@ public class GomessHandler
         }
     }
 
-    private final Runnable readerRunner = new Runnable()
+    private final Runnable readerThreadRunner = new Runnable()
     {
         @Override
         @SuppressWarnings("InfiniteLoopStatement")
@@ -220,7 +220,7 @@ public class GomessHandler
         }
     };
 
-    private final Runnable writerRunner = new Runnable()
+    private final Runnable writerThreadRunner = new Runnable()
     {
         @Override
         @SuppressWarnings("InfiniteLoopStatement")
