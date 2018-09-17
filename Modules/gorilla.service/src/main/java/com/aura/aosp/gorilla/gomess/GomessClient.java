@@ -13,6 +13,7 @@ import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 
+import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.gorilla.goproto.GoprotoDefs;
 import com.aura.aosp.gorilla.goproto.GoprotoMessage;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
@@ -339,7 +340,7 @@ public class GomessClient
 
     private Err chMessageDownload(GoprotoMessage message)
     {
-        Log.d("....");
+        Log.d("...");
 
         Err err = SHA.verifySHASignature(session.AESKey, message.Sign, message.Head, message.Base);
         if (err != null) return err;
@@ -358,7 +359,21 @@ public class GomessClient
 
         Log.d("payload=%s", new String(ticket.getPayload()));
 
-        return GorillaSender.sendPayload(ticket);
+        err = GorillaSender.sendPayload(ticket);
+        if (err != null) return err;
+
+        if (ticket.getMetadata().getStatus() == 0)
+        {
+            ticket.prepareStatus(GoprotoDefs.MsgStatusReceived);
+
+            ticket.dumpTicket();
+
+            err = sendMessageUpload(ticket);
+
+            Log.d("##############status read send.");
+        }
+
+        return err;
     }
 
     private Err chGotGotelloAmt(GoprotoMessage message)

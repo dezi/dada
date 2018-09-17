@@ -127,6 +127,25 @@ public class GoprotoTicket
         this.Payload = payload;
     }
 
+    public void prepareStatus(int status)
+    {
+        Idsmask &= ~ GoprotoDefs.HasSenderUserUUID;
+        Idsmask &= ~ GoprotoDefs.HasSenderDeviceUUID;
+        Idsmask |= GoprotoDefs.HasReceiverUserUUID;
+        Idsmask |= GoprotoDefs.HasReceiverDeviceUUID;
+
+        ReceiverUserUUID = SenderUserUUID;
+        SenderUserUUID = null;
+
+        ReceiverDeviceUUID = SenderDeviceUUID;
+        SenderDeviceUUID = null;
+
+        Metadata.setStatus(status);
+        Metadata.setTimeStamp(System.currentTimeMillis());
+
+        Payload = new byte[0];
+    }
+
     public int getRoutingSize()
     {
         int usiz = GoprotoDefs.GorillaUUIDSize;
