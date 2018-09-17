@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Log;
@@ -81,18 +82,21 @@ public class ChatFragment extends GUILinearLayout
         {
             statusIcon.setImageResource(R.drawable.ms_server_wait);
             timeQueued = timeStamp;
+            makeTimeStatus();
         }
 
         if (status.equals("send"))
         {
             statusIcon.setImageResource(R.drawable.ms_server_recv);
             timeSend = timeStamp;
+            makeTimeStatus();
         }
 
         if (status.equals("received"))
         {
             statusIcon.setImageResource(R.drawable.ms_client_recv);
             timeReceived = timeStamp;
+            makeTimeStatus();
         }
 
         if (status.equals("read"))
@@ -101,6 +105,35 @@ public class ChatFragment extends GUILinearLayout
             timeRead = timeStamp;
         }
     }
+
+    private void makeTimeStatus()
+    {
+        getHandler().removeCallbacks(displayTimeStatus);
+        getHandler().postDelayed(displayTimeStatus, 1000);
+    }
+
+    private final Runnable displayTimeStatus = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            if (timeQueued == null) return;
+
+            String timing = "";
+
+            if (timeSend != null)
+            {
+                timing += "S:" + (timeSend - timeQueued) + " ms ";
+            }
+
+            if (timeReceived != null)
+            {
+                timing += "R:" + (timeReceived - timeQueued) + " ms ";
+            }
+
+            Toast.makeText(getContext(), timing, Toast.LENGTH_SHORT).show();
+        }
+    };
 
     public void setContent(boolean send, String messageUUID, Long timeStamp, String username, String attachment, String message)
     {

@@ -196,7 +196,7 @@ public class GomessHandler
 
                 if ((myclient == null) || ! myclient.isConnected())
                 {
-                    Simple.sleep(100);
+                    Simple.sleep(10);
 
                     continue;
                 }
@@ -221,7 +221,7 @@ public class GomessHandler
 
                 if (ticket == null)
                 {
-                    Simple.sleep(100);
+                    Simple.sleep(10);
 
                     continue;
                 }
@@ -238,7 +238,7 @@ public class GomessHandler
 
                 JSONObject result = new JSONObject();
                 Json.put(result, "uuid", ticket.getMessageUUIDBase64());
-                Json.put(result, "time", ticket.getMetadata().getTimeStamp());
+                Json.put(result, "time", System.currentTimeMillis());
                 Json.put(result, "status", "send");
 
                 if (err != null)
