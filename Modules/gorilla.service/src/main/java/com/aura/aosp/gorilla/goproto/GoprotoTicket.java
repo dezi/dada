@@ -556,28 +556,23 @@ public class GoprotoTicket implements Json.JsonMarshaller
         Json.put(result, "uuid", getMessageUUIDBase64());
         Json.put(result, "time", getTimeStamp());
 
-        if ((status & GoprotoDefs.MsgStatusQueued) != 0)
+        switch (status)
         {
-            Json.put(result, "status", "queued");
-            return result;
-        }
+            case GoprotoDefs.MsgStatusQueued:
+                Json.put(result, "status", "queued");
+                return result;
 
-        if ((status & GoprotoDefs.MsgStatusSend) != 0)
-        {
-            Json.put(result, "status", "send");
-            return result;
-        }
+            case GoprotoDefs.MsgStatusSend:
+                Json.put(result, "status", "send");
+                return result;
 
-        if ((status & GoprotoDefs.MsgStatusReceived) != 0)
-        {
-            Json.put(result, "status", "received");
-            return result;
-        }
+            case GoprotoDefs.MsgStatusReceived:
+                Json.put(result, "status", "received");
+                return result;
 
-        if ((status & GoprotoDefs.MsgStatusRead) != 0)
-        {
-            Json.put(result, "status", "read");
-            return result;
+            case GoprotoDefs.MsgStatusRead:
+                Json.put(result, "status", "read");
+                return result;
         }
 
         Err.errp("unknown status=%04x", status);

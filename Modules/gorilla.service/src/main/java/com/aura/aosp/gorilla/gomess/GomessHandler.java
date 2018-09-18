@@ -1,5 +1,7 @@
 package com.aura.aosp.gorilla.gomess;
 
+import android.os.Handler;
+
 import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Simple;
@@ -94,7 +96,7 @@ public class GomessHandler
         GoprotoMetadata metadata = new GoprotoMetadata();
         metadata.setTimeStamp(time);
 
-        GoprotoTicket ticket = new GoprotoTicket();
+        final GoprotoTicket ticket = new GoprotoTicket();
 
         ticket.setMessageUUID(Simple.decodeBase64(uuid));
         ticket.setMetadata(metadata);
