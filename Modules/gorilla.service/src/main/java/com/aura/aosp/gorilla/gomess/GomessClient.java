@@ -358,9 +358,9 @@ public class GomessClient
 
         ticket.dumpTicket();
 
-        int status = ticket.getMetadata().getStatus();
+        Integer status = ticket.getStatus();
 
-        if (status != 0)
+        if ((status != null) && (status != 0))
         {
             //
             // Ticket is a status reply.
@@ -371,7 +371,7 @@ public class GomessClient
             JSONObject result = new JSONObject();
 
             Json.put(result, "uuid", ticket.getMessageUUIDBase64());
-            Json.put(result, "time", ticket.getMetadata().getTimeStamp());
+            Json.put(result, "time", ticket.getTimeStamp());
             Json.put(result, "status", "unknown");
 
             if ((status & GoprotoDefs.MsgStatusReceived) != 0)

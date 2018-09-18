@@ -129,6 +129,18 @@ public class GoprotoTicket implements Json.JsonMarshaller
     }
 
     @Nullable
+    public void setTimeStamp(long timeStamp)
+    {
+        if (Metadata == null)
+        {
+            this.Idsmask |= GoprotoDefs.HasMetadata;
+            Metadata = new GoprotoMetadata();
+        }
+
+        Metadata.setTimeStamp(timeStamp);
+    }
+
+    @Nullable
     public Integer getStatus()
     {
         if (Metadata == null)
@@ -138,6 +150,18 @@ public class GoprotoTicket implements Json.JsonMarshaller
         }
 
         return Metadata.getStatus();
+    }
+
+    @Nullable
+    public void setStatus(int status)
+    {
+        if (Metadata == null)
+        {
+            this.Idsmask |= GoprotoDefs.HasMetadata;
+            Metadata = new GoprotoMetadata();
+        }
+
+        Metadata.setStatus(status);
     }
 
     public void setMetadata(GoprotoMetadata metadata)

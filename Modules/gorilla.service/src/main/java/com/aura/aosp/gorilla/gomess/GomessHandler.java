@@ -276,10 +276,9 @@ public class GomessHandler
 
                 Err err = myclient.sendMessageUpload(ticket);
 
-                GoprotoMetadata metadata = ticket.getMetadata();
-                int status = metadata.getStatus();
+                Integer status = ticket.getStatus();
 
-                if (status != 0)
+                if ((status != null) && (status != 0))
                 {
                     //
                     // Message is a status message.
