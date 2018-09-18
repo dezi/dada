@@ -8,6 +8,7 @@ import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.gorilla.service.GorillaSender;
 
 import org.json.JSONObject;
 
@@ -536,6 +537,50 @@ public class GoprotoTicket implements Json.JsonMarshaller
 
         Payload = Simple.sliceBytes(bytes, offset);
 
+        return null;
+    }
+
+    @Nullable
+    public JSONObject getTicketResult()
+    {
+        Integer status = getStatus();
+
+        if ((status == null) || (status == 0))
+        {
+            Err.errp("ticket has no status");
+            return null;
+        }
+
+        JSONObject result = new JSONObject();
+
+        Json.put(result, "uuid", getMessageUUIDBase64());
+        Json.put(result, "time", getTimeStamp());
+
+        if ((status & GoprotoDefs.MsgStatusQueued) != 0)
+        {
+            Json.put(result, "status", "queued");
+            return result;
+        }
+
+        if ((status & GoprotoDefs.MsgStatusSend) != 0)
+        {
+            Json.put(result, "status", "send");
+            return result;
+        }
+
+        if ((status & GoprotoDefs.MsgStatusReceived) != 0)
+        {
+            Json.put(result, "status", "received");
+            return result;
+        }
+
+        if ((status & GoprotoDefs.MsgStatusRead) != 0)
+        {
+            Json.put(result, "status", "read");
+            return result;
+        }
+
+        Err.errp("unknown status=%04x", status);
         return null;
     }
 

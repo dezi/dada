@@ -368,29 +368,10 @@ public class GomessClient
             // Generate a result an send to client.
             //
 
-            JSONObject result = new JSONObject();
+            JSONObject result = ticket.getTicketResult();
+            if (result == null) return Err.getLastErr();
 
-            Json.put(result, "uuid", ticket.getMessageUUIDBase64());
-            Json.put(result, "time", ticket.getTimeStamp());
-            Json.put(result, "status", "unknown");
-
-            if ((status & GoprotoDefs.MsgStatusReceived) != 0)
-            {
-                Log.d("##############status received send.");
-
-                Json.put(result, "status", "received");
-                return GorillaSender.sendPayloadResult(ticket, result);
-            }
-
-            if ((status & GoprotoDefs.MsgStatusRead) != 0)
-            {
-                Log.d("##############status read send.");
-
-                Json.put(result, "status", "read");
-                return GorillaSender.sendPayloadResult(ticket, result);
-            }
-
-            return Err.err("invalid status=%d", status);
+            return GorillaSender.sendPayloadResult(ticket, result);
         }
 
         //

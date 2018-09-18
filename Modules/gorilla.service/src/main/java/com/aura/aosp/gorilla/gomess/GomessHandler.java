@@ -276,6 +276,24 @@ public class GomessHandler
 
                 Err err = myclient.sendMessageUpload(ticket);
 
+                if (err != null)
+                {
+                    Log.e("err=%s", err);
+
+                    //
+                    // Push back ticket to queue for next change.
+                    //
+
+                    synchronized (tickets)
+                    {
+                        tickets.add(0, ticket);
+                    }
+
+                    Simple.sleep(100);
+
+                    continue;
+                }
+
                 Integer status = ticket.getStatus();
 
                 if ((status != null) && (status != 0))
@@ -295,42 +313,23 @@ public class GomessHandler
                 // Prepare result json.
                 //
 
-                JSONObject result = new JSONObject();
-                Json.put(result, "uuid", ticket.getMessageUUIDBase64());
-                Json.put(result, "time", System.currentTimeMillis());
-                Json.put(result, "status", "send");
+                ticket.setStatus(GoprotoDefs.MsgStatusSend);
+                ticket.setTimeStamp(System.currentTimeMillis());
+
+                JSONObject result = ticket.getTicketResult();
+
+                if (result == null)
+                {
+                    Log.e("ticket result err=%s", Err.getLastErr());
+
+                    continue;
+                }
+
+                err = GorillaSender.sendPayloadResult(ticket, result);
 
                 if (err != null)
                 {
-                    Json.put(result, "error", err.err);
-                    Json.put(result, "status", "error");
-                }
-
-                //
-                // Push result via broadcast back to client apk.
-                //
-
-                Err err1 = GorillaSender.sendPayloadResult(ticket, result);
-
-                if (err1 != null)
-                {
-                    Log.e("err=%s", err1);
-                }
-
-                if (err != null)
-                {
-                    Log.e("err=%s", err);
-
-                    //
-                    // Push back ticket to queue for next change.
-                    //
-
-                    synchronized (tickets)
-                    {
-                        tickets.add(0, ticket);
-                    }
-
-                    Simple.sleep(100);
+                    Log.e("ticket result send err=%s", err);
                 }
             }
         }
