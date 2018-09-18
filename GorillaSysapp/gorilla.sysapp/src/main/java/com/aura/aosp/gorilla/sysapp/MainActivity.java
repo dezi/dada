@@ -47,13 +47,15 @@ public class MainActivity extends AppCompatActivity
 
         GoprotoMetadata md = new GoprotoMetadata();
         GoprotoTicket ticket = new GoprotoTicket();
-        ticket.setMetadata(md);
         ticket.setMessageUUID(new byte[10]);
         JSONObject json = ticket.toJson();
         Log.d(LOGTAG, "##############xxxxx=" + Json.toPretty(json));
 
+        ticket.setMetadata(md);
         ticket = new GoprotoTicket();
         ticket.fromJson(json);
+
+        Log.d(LOGTAG, "##############xxxxx=" + ticket.getMetadata());
     }
 
     private void createLayout()

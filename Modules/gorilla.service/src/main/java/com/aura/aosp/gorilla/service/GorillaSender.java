@@ -63,48 +63,6 @@ public class GorillaSender
         }
     }
 
-    @Nullable
-    public static Err sendPayloadResult(GoprotoTicket ticket, JSONObject result)
-    {
-        String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
-        if (apkname == null) return Err.getLastErr();
-
-        IGorillaClientService remote = GorillaIntercon.getClientService(apkname);
-
-        if (remote == null)
-        {
-            Log.d("unknown/unconnected apkname=%s", apkname);
-
-            //
-            // Todo: persist ticket here.
-            //
-
-            GorillaService.startClientService(apkname);
-
-            return null;
-        }
-
-        String resultStr = result.toString();
-
-        String checksum = GorillaIntercon.createSHASignatureBase64(apkname, sysApkName, resultStr);
-
-        try
-        {
-            boolean valid = remote.receivePayloadResult(sysApkName, resultStr, checksum);
-
-            if (! valid)
-            {
-                return Err.err("invalid service apkname=%s", apkname);
-            }
-        }
-        catch (Exception ex)
-        {
-            return Err.err(ex);
-        }
-
-        return null;
-    }
-
     public static Err sendPayload(GoprotoTicket ticket)
     {
         String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
@@ -137,6 +95,48 @@ public class GorillaSender
         try
         {
             boolean valid = remote.receivePayload(sysApkName, time, uuid, senderUUID, deviceUUID, payload, checksum);
+
+            if (! valid)
+            {
+                return Err.err("invalid service apkname=%s", apkname);
+            }
+        }
+        catch (Exception ex)
+        {
+            return Err.err(ex);
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static Err sendPayloadResult(GoprotoTicket ticket, JSONObject result)
+    {
+        String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
+        if (apkname == null) return Err.getLastErr();
+
+        IGorillaClientService remote = GorillaIntercon.getClientService(apkname);
+
+        if (remote == null)
+        {
+            Log.d("unknown/unconnected apkname=%s", apkname);
+
+            //
+            // Todo: persist ticket here.
+            //
+
+            GorillaService.startClientService(apkname);
+
+            return null;
+        }
+
+        String resultStr = result.toString();
+
+        String checksum = GorillaIntercon.createSHASignatureBase64(apkname, sysApkName, resultStr);
+
+        try
+        {
+            boolean valid = remote.receivePayloadResult(sysApkName, resultStr, checksum);
 
             if (! valid)
             {

@@ -677,10 +677,10 @@ public class Json
                 String name = field.getName();
                 String type = field.getType().getCanonicalName();
 
+                Object jval = null;
+
                 if (Json.has(json, name))
                 {
-                    Object jval = null;
-
                     switch (type)
                     {
                         case "short":
@@ -742,20 +742,20 @@ public class Json
 
                         continue;
                     }
+                }
 
-                    try
-                    {
-                        field.set(object, jval);
-                    }
-                    catch (Exception ex)
-                    {
-                        //
-                        // Someone changed the data type in between
-                        // or supplied wrong data type.
-                        //
+                try
+                {
+                    field.set(object, jval);
+                }
+                catch (Exception ex)
+                {
+                    //
+                    // Someone changed the data type in between
+                    // or supplied wrong data type.
+                    //
 
-                        return Err.errp(ex);
-                    }
+                    return Err.errp(ex);
                 }
             }
             catch (Exception ex)
