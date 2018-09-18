@@ -2,8 +2,6 @@ package com.aura.aosp.aura.common.simple;
 
 import android.support.annotation.Nullable;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -21,8 +19,6 @@ import java.io.File;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Json
 {
-    private static final String LOGTAG = Json.class.getSimpleName();
-
     public static JSONObject getFileContent(File jsonfile)
     {
         return fromString(Simple.getFileContent(jsonfile));
@@ -43,7 +39,7 @@ public class Json
             }
             catch (Exception ex)
             {
-                Log.d(LOGTAG, ex.toString());
+                Log.d(ex.toString());
             }
         }
 
@@ -65,7 +61,7 @@ public class Json
             }
             catch (Exception ex)
             {
-                Log.d(LOGTAG, ex.toString());
+                Log.d(ex.toString());
             }
         }
 
@@ -80,7 +76,7 @@ public class Json
         }
         catch (Exception ex)
         {
-            Log.d(LOGTAG, ex.toString());
+            Log.d(ex.toString());
         }
 
         return new JSONObject();
@@ -94,7 +90,7 @@ public class Json
         }
         catch (Exception ex)
         {
-            Log.d(LOGTAG, ex.toString());
+            Log.d(ex.toString());
         }
 
         return new JSONArray();
@@ -172,7 +168,7 @@ public class Json
         }
         catch (Exception ex)
         {
-            Log.d(LOGTAG, ex.toString());
+            Log.d(ex.toString());
         }
     }
 
@@ -244,6 +240,32 @@ public class Json
         try
         {
             return json.getBoolean(key);
+        }
+        catch (Exception ignore)
+        {
+            return null;
+        }
+    }
+
+    @Nullable
+    public static Byte getByte(JSONObject json, String key)
+    {
+        try
+        {
+            return (byte) (json.getInt(key) & 0xff);
+        }
+        catch (Exception ignore)
+        {
+            return null;
+        }
+    }
+
+    @Nullable
+    public static Short getShort(JSONObject json, String key)
+    {
+        try
+        {
+            return (short) (json.getInt(key) & 0xffff);
         }
         catch (Exception ignore)
         {
@@ -453,7 +475,7 @@ public class Json
         // I hate slash escaping.
         //
 
-        return (json == null) ? "{}" : json.replace("\\/","/");
+        return (json == null) ? "{}" : json.replace("\\/", "/");
     }
 
     public static JSONArray sort(JSONArray array, String field, boolean descending)
@@ -516,14 +538,13 @@ public class Json
     {
         JSONObject toJson();
 
-        void fromJson(JSONObject json);
+        Err fromJson(JSONObject json);
     }
 
+    @Nullable
     public static JSONObject toJson(Object object)
     {
         JSONObject json = new JSONObject();
-
-        com.aura.aosp.aura.common.simple.Log.d("#############toJson: object=" + object.toString());
 
         for (Field field : object.getClass().getDeclaredFields())
         {
@@ -531,17 +552,68 @@ public class Json
             {
                 field.setAccessible(true);
 
-                String name = field.getName();
                 int modifiers = field.getModifiers();
 
                 if ((modifiers & Modifier.FINAL) == Modifier.FINAL) continue;
                 if ((modifiers & Modifier.STATIC) == Modifier.STATIC) continue;
 
-                com.aura.aosp.aura.common.simple.Log.d("##############toJson: name=" + name + " modifiers=" + modifiers);
+                String name = field.getName();
+                String type = field.getType().getCanonicalName();
 
                 Object ival = field.get(object);
                 if (ival == null) continue;
 
+                if (ival instanceof Json.JsonMarshaller)
+                {
+                    Json.put(json, name, ((Json.JsonMarshaller) ival).toJson());
+                    continue;
+                }
+
+                switch (type)
+                {
+                    case "short":
+                    case "java.lang.Short":
+                        Json.put(json, name, ival);
+                        break;
+
+                    case "long":
+                    case "java.lang.Long":
+                        Json.put(json, name, ival);
+                        break;
+
+                    case "float":
+                    case "java.lang.Float":
+                        Json.put(json, name, ival);
+                        break;
+
+                    case "double":
+                    case "java.lang.Double":
+                        Json.put(json, name, ival);
+                        break;
+
+                    case "byte":
+                    case "java.lang.Byte":
+                    case "int":
+                    case "java.lang.Integer":
+                    case "boolean":
+                    case "java.lang.Boolean":
+                        Json.put(json, name, ival);
+                        break;
+
+                    case "java.lang.String":
+                    case "org.json.JSONObject":
+                    case "org.json.JSONArray":
+                        Json.put(json, name, ival);
+                        break;
+
+                    case "byte[]":
+                        Json.put(json, name, Simple.encodeBase64((byte[]) ival));
+                        break;
+
+                    case "java.lang.Byte[]":
+                        Json.put(json, name, Simple.encodeBase64((Byte[]) ival));
+                        break;
+                }
 
                 if ((ival instanceof JSONObject)
                         || (ival instanceof JSONArray)
@@ -551,40 +623,147 @@ public class Json
                         || (ival instanceof String)
                         || (ival instanceof Double)
                         || (ival instanceof Float)
+                        || (ival instanceof Short)
                         || (ival instanceof Long)
                         || (ival instanceof Byte))
                 {
                     Json.put(json, name, ival);
-                    com.aura.aosp.aura.common.simple.Log.d("##############toJson: name=" + name + " put");
                     continue;
                 }
 
-                if (ival instanceof Json.JsonMarshaller)
+                if ((ival) instanceof Byte[])
                 {
-                    Json.put(json, name, ((Json.JsonMarshaller) ival).toJson());
-                    com.aura.aosp.aura.common.simple.Log.d("##############toJson: name=" + name + " iface");
+                    Json.put(json, name, Simple.encodeBase64((Byte[]) ival));
                     continue;
                 }
 
                 if (ival instanceof byte[])
                 {
                     Json.put(json, name, Simple.encodeBase64((byte[]) ival));
-                    com.aura.aosp.aura.common.simple.Log.d("##############toJson: name=" + name + " bytes");
                     continue;
                 }
 
-                com.aura.aosp.aura.common.simple.Log.d("##############toJson: name=" + name + " nixgut=" + ival);
+                Err.errp("unsupported field name=%s type=%s", name, type);
+                return null;
             }
-            catch (Exception ignore)
+            catch (Exception ex)
             {
-                com.aura.aosp.aura.common.simple.Log.d("##############toJson: ex=" + ignore.getMessage());
+                Err.errp(ex);
+                return null;
             }
         }
 
         return json;
     }
 
-    public static void fromJson(Object object, JSONObject json)
+    @Nullable
+    public static Err fromJson(Object object, JSONObject json)
     {
+        if (json == null) return Err.errp();
+
+        boolean ok = false;
+
+        for (Field field : object.getClass().getDeclaredFields())
+        {
+            try
+            {
+                field.setAccessible(true);
+
+                int modifiers = field.getModifiers();
+
+                if ((modifiers & Modifier.FINAL) == Modifier.FINAL) continue;
+                if ((modifiers & Modifier.STATIC) == Modifier.STATIC) continue;
+
+                String name = field.getName();
+                String type = field.getType().getCanonicalName();
+
+                if (Json.has(json, name))
+                {
+                    Object jval = null;
+
+                    switch (type)
+                    {
+                        case "short":
+                        case "java.lang.Short":
+                            jval = Json.getShort(json, name);
+                            break;
+
+                        case "long":
+                        case "java.lang.Long":
+                            jval = Json.getLong(json, name);
+                            break;
+
+                        case "float":
+                        case "java.lang.Float":
+                            jval = Json.getFloat(json, name);
+                            break;
+
+                        case "double":
+                        case "java.lang.Double":
+                            jval = Json.getDouble(json, name);
+                            break;
+
+                        case "byte":
+                        case "java.lang.Byte":
+                        case "int":
+                        case "java.lang.Integer":
+                        case "boolean":
+                        case "java.lang.Boolean":
+                            jval = Json.get(json, name);
+                            break;
+
+                        case "java.lang.String":
+                        case "org.json.JSONObject":
+                        case "org.json.JSONArray":
+                            jval = Json.get(json, name);
+                            break;
+
+                        case "byte[]":
+                        case "java.lang.Byte[]":
+                            String base64 = Json.getString(json, name);
+                            jval = Simple.decodeBase64(base64);
+                            break;
+                    }
+
+                    if (jval == null)
+                    {
+                        Object ival = field.get(object);
+                        if (ival == null) continue;
+
+                        if (ival instanceof Json.JsonMarshaller)
+                        {
+                            JSONObject jobj = Json.getObject(json, name);
+
+                            Err err = ((Json.JsonMarshaller) ival).fromJson(jobj);
+                            if (err != null) return err;
+
+                            continue;
+                        }
+
+                        continue;
+                    }
+
+                    try
+                    {
+                        field.set(object, jval);
+                    }
+                    catch (Exception ex)
+                    {
+                        //
+                        // Someone changed the data type in between
+                        // or supplied wrong data type.
+                        //
+
+                        return Err.errp(ex);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Err.errp(ex);
+            }
+        }
+
+        return null;
     }
 }

@@ -51,6 +51,9 @@ public class MainActivity extends AppCompatActivity
         ticket.setMessageUUID(new byte[10]);
         JSONObject json = ticket.toJson();
         Log.d(LOGTAG, "##############xxxxx=" + Json.toPretty(json));
+
+        ticket = new GoprotoTicket();
+        ticket.fromJson(json);
     }
 
     private void createLayout()

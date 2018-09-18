@@ -8,12 +8,7 @@ import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 
 @SuppressWarnings("WeakerAccess")
 public class GoprotoTicket implements Json.JsonMarshaller
@@ -523,8 +518,10 @@ public class GoprotoTicket implements Json.JsonMarshaller
     }
 
     @Override
-    public void fromJson(JSONObject json)
+    public Err fromJson(JSONObject json)
     {
-        Json.fromJson(this, json);
+        Metadata = new GoprotoMetadata();
+
+        return Json.fromJson(this, json);
     }
 }

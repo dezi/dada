@@ -251,9 +251,22 @@ public class Simple
         return Json.fromStringObject(jstr);
     }
 
-    public static String encodeBase64(byte bytes[])
+    public static String encodeBase64(byte[] bytes)
     {
         return Base64.encodeToString(bytes, android.util.Base64.NO_WRAP);
+    }
+
+    public static String encodeBase64(Byte[] bytes)
+    {
+        int length = bytes.length;
+        byte[] copy = new byte[ length ];
+
+        for (int inx = 0; inx < length; inx++)
+        {
+            copy[ inx ] = bytes[ inx];
+        }
+
+        return Base64.encodeToString(copy, android.util.Base64.NO_WRAP);
     }
 
     public static byte[] decodeBase64(String base64)
