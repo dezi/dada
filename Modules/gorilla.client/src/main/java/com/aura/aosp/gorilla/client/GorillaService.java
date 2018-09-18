@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.client;
 
+import android.content.Context;
 import android.content.Intent;
 import android.app.Service;
 import android.os.IBinder;
@@ -27,6 +28,13 @@ public class GorillaService extends Service
     public IBinder onBind(Intent intent)
     {
         Log.d(LOGTAG,"onBind: intent=" + intent.toString());
+
+        //
+        // Make sure, Gorilla system connection will be started.
+        //
+
+        GorillaClient gc = GorillaClient.getInstance();
+        gc.bindGorillaService(this);
 
         return new GorillaClientService();
     }

@@ -85,6 +85,15 @@ public class GorillaClient
     {
         Log.d(LOGTAG, "bindGorillaService: ...");
 
+        if (this.context != null)
+        {
+            //
+            // Service already bound.
+            //
+
+            return;
+        }
+
         this.context = context;
         this.handler = new Handler();
         this.apkname = context.getPackageName();
@@ -170,6 +179,12 @@ public class GorillaClient
             {
                 receiveStatus();
             }
+
+            checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+
+            String ownerUUID = gr.getOwnerUUID(apkname, checksum);
+
+            receiveOwnerUUID(ownerUUID);
         }
         catch (Exception ex)
         {

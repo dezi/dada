@@ -1,6 +1,9 @@
 package com.aura.aosp.gorilla.service;
 
+import android.support.annotation.Nullable;
+
 import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.gorilla.client.GorillaIntercon;
 import com.aura.aosp.gorilla.client.IGorillaClientService;
@@ -60,6 +63,7 @@ public class GorillaSender
         }
     }
 
+    @Nullable
     public static Err sendPayloadResult(GoprotoTicket ticket, JSONObject result)
     {
         String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
@@ -69,7 +73,15 @@ public class GorillaSender
 
         if (remote == null)
         {
-            return Err.err("unknown/unconnected apkname=%s", apkname);
+            Log.d("unknown/unconnected apkname=%s", apkname);
+
+            //
+            // Todo: persist ticket here.
+            //
+
+            GorillaService.startClientService(apkname);
+
+            return null;
         }
 
         String resultStr = result.toString();
@@ -102,7 +114,15 @@ public class GorillaSender
 
         if (remote == null)
         {
-            return Err.err("unknown/unconnected apkname=%s", apkname);
+            Log.d("unknown/unconnected apkname=%s", apkname);
+
+            //
+            // Todo: persist ticket here.
+            //
+
+            GorillaService.startClientService(apkname);
+
+            return null;
         }
 
         long time = System.currentTimeMillis();
