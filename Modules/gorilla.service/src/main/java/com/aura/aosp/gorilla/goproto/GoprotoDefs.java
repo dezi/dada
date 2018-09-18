@@ -62,8 +62,8 @@ public class GoprotoDefs
     //
     public final static int MsgStatusQueued   = 0x0001;
     public final static int MsgStatusSend     = 0x0002;
-    public final static int MsgStatusReceived = 0x0004;
-    public final static int MsgStatusRead     = 0x0008;
+    public final static int MsgStatusReceived = 0x0003;
+    public final static int MsgStatusRead     = 0x0004;
 
     // formatter: on
 }
