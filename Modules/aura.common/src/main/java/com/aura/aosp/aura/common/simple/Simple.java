@@ -96,14 +96,18 @@ public class Simple
         return null;
     }
 
-    public static boolean putFileContent(File file, String content)
+    @Nullable
+    public static Err putFileContent(File file, String content)
     {
-        return (content != null) && putFileBytes(file, content.getBytes());
+        if ((file == null) || (content == null)) return Err.errp();
+
+        return putFileBytes(file, content.getBytes());
     }
 
-    public static boolean putFileBytes(File file, byte[] bytes)
+    @Nullable
+    public static Err putFileBytes(File file, byte[] bytes)
     {
-        if (bytes == null) return false;
+        if (bytes == null) return Err.errp();
 
         try
         {
@@ -111,14 +115,12 @@ public class Simple
             out.write(bytes);
             out.close();
 
-            return true;
+            return null;
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            return Err.errp(ex);
         }
-
-        return false;
     }
 
     @Nullable

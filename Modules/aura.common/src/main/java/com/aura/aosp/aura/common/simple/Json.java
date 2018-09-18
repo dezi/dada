@@ -19,36 +19,46 @@ import java.io.File;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Json
 {
-    public static JSONObject getFileContent(File jsonfile)
+    public static JSONObject getFileContent(File jsonFile)
     {
-        return fromString(Simple.getFileContent(jsonfile));
-    }
-
-    public static void putFileContent(File jsonfile, JSONObject content)
-    {
-        Simple.putFileContent(jsonfile, Json.defuck(Json.toPretty(content)));
-    }
-
-    public static JSONObject fromString(String jsonstr)
-    {
-        if (jsonstr != null)
+        if (jsonFile == null)
         {
-            try
-            {
-                return new JSONObject(jsonstr);
-            }
-            catch (Exception ex)
-            {
-                Log.d(ex.toString());
-            }
+            Err.errp();
+            return null;
         }
 
-        return new JSONObject();
+        String jsonStr = Simple.getFileContent(jsonFile);
+
+        if (jsonStr == null) return null;
+
+        return fromStringObject(jsonStr);
     }
 
-    public static JSONObject fromStringObject(String jsonstr)
+    public static Err putFileContent(File jsonFile, JSONObject content)
     {
-        return fromString(jsonstr);
+        if ((jsonFile == null) || (content == null)) return Err.errp();
+
+        return Simple.putFileContent(jsonFile, Json.defuck(Json.toPretty(content)));
+    }
+
+    @Nullable
+    public static JSONObject fromStringObject(String jsonStr)
+    {
+        if (jsonStr == null)
+        {
+            Err.errp();
+            return null;
+        }
+
+        try
+        {
+            return new JSONObject(jsonStr);
+        }
+        catch (Exception ex)
+        {
+            Err.errp();
+            return null;
+        }
     }
 
     public static JSONArray fromStringArray(String jsonstr)
@@ -536,13 +546,13 @@ public class Json
 
     public interface JsonMarshaller
     {
-        JSONObject toJson();
+        JSONObject marshalJSON();
 
-        Err fromJson(JSONObject json);
+        Err unmarshalJSON(JSONObject json);
     }
 
     @Nullable
-    public static JSONObject toJson(Object object)
+    public static JSONObject marshalJSON(Object object)
     {
         JSONObject json = new JSONObject();
 
@@ -565,7 +575,7 @@ public class Json
 
                 if (ival instanceof Json.JsonMarshaller)
                 {
-                    Json.put(json, name, ((Json.JsonMarshaller) ival).toJson());
+                    Json.put(json, name, ((Json.JsonMarshaller) ival).marshalJSON());
                     continue;
                 }
 
@@ -657,7 +667,7 @@ public class Json
     }
 
     @Nullable
-    public static Err fromJson(Object object, JSONObject json)
+    public static Err unmarshalJSON(Object object, JSONObject json)
     {
         if (json == null) return Err.errp();
 
@@ -734,7 +744,7 @@ public class Json
                         {
                             JSONObject jobj = Json.getObject(json, name);
 
-                            Err err = ((Json.JsonMarshaller) ival).fromJson(jobj);
+                            Err err = ((Json.JsonMarshaller) ival).unmarshalJSON(jobj);
                             if (err != null) return err;
 
                             continue;

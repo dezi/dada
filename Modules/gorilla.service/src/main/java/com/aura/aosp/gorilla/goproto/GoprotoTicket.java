@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.goproto;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.common.crypter.AES;
 import com.aura.aosp.aura.common.simple.Err;
@@ -109,9 +110,34 @@ public class GoprotoTicket implements Json.JsonMarshaller
         this.AppUUID = appUUID;
     }
 
+    @Nullable
     public GoprotoMetadata getMetadata()
     {
         return Metadata;
+    }
+
+    @Nullable
+    public Long getTimeStamp()
+    {
+        if (Metadata == null)
+        {
+            Err.errp();
+            return null;
+        }
+
+        return Metadata.getTimeStamp();
+    }
+
+    @Nullable
+    public Integer getStatus()
+    {
+        if (Metadata == null)
+        {
+            Err.errp();
+            return null;
+        }
+
+        return Metadata.getStatus();
     }
 
     public void setMetadata(GoprotoMetadata metadata)
@@ -512,16 +538,18 @@ public class GoprotoTicket implements Json.JsonMarshaller
     }
 
     @Override
-    public JSONObject toJson()
+    @Nullable
+    public JSONObject marshalJSON()
     {
-        return Json.toJson(this);
+        return Json.marshalJSON(this);
     }
 
     @Override
-    public Err fromJson(JSONObject json)
+    @Nullable
+    public Err unmarshalJSON(JSONObject json)
     {
         Metadata = new GoprotoMetadata();
 
-        return Json.fromJson(this, json);
+        return Json.unmarshalJSON(this, json);
     }
 }

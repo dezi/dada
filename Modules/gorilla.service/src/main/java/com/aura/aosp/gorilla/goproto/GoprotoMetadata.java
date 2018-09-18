@@ -1,5 +1,7 @@
 package com.aura.aosp.gorilla.goproto;
 
+import android.support.annotation.Nullable;
+
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Marshal;
@@ -56,14 +58,16 @@ public class GoprotoMetadata implements Json.JsonMarshaller
     }
 
     @Override
-    public JSONObject toJson()
+    @Nullable
+    public JSONObject marshalJSON()
     {
-        return Json.toJson(this);
+        return Json.marshalJSON(this);
     }
 
     @Override
-    public Err fromJson(JSONObject json)
+    @Nullable
+    public Err unmarshalJSON(JSONObject json)
     {
-        return Json.fromJson(this, json);
+        return Json.unmarshalJSON(this, json);
     }
 }

@@ -2,6 +2,7 @@ package com.aura.aosp.gorilla.service;
 
 import android.support.annotation.Nullable;
 
+import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
@@ -63,6 +64,20 @@ public class GorillaSender
         }
     }
 
+    @Nullable
+    private static Err persistTicket(GoprotoTicket ticket)
+    {
+        JSONObject json = ticket.marshalJSON();
+        if (json == null) return Err.getLastErr();
+
+        Long timeStamp = ticket.getTimeStamp();
+        byte[] keyUUID = ticket.getMessageUUID();
+        byte[] nonceUUId = UID.randomUUID();
+
+        return GorillaPersist.persistFile("ticket", timeStamp, keyUUID, nonceUUId, json);
+    }
+
+    @Nullable
     public static Err sendPayload(GoprotoTicket ticket)
     {
         String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
@@ -74,11 +89,10 @@ public class GorillaSender
         {
             Log.d("unknown/unconnected apkname=%s", apkname);
 
-            //
-            // Todo: persist ticket here.
-            //
-
             GorillaService.startClientService(apkname);
+
+            Err err = persistTicket(ticket);
+            if (err != null) return err;
 
             return null;
         }
@@ -121,11 +135,10 @@ public class GorillaSender
         {
             Log.d("unknown/unconnected apkname=%s", apkname);
 
-            //
-            // Todo: persist ticket here.
-            //
-
             GorillaService.startClientService(apkname);
+
+            Err err = persistTicket(ticket);
+            if (err != null) return err;
 
             return null;
         }
