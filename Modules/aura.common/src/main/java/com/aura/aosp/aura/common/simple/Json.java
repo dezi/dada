@@ -584,22 +584,22 @@ public class Json
                     case "short":
                     case "java.lang.Short":
                         Json.put(json, name, ival);
-                        break;
+                        continue;
 
                     case "long":
                     case "java.lang.Long":
                         Json.put(json, name, ival);
-                        break;
+                        continue;
 
                     case "float":
                     case "java.lang.Float":
                         Json.put(json, name, ival);
-                        break;
+                        continue;
 
                     case "double":
                     case "java.lang.Double":
                         Json.put(json, name, ival);
-                        break;
+                        continue;
 
                     case "byte":
                     case "java.lang.Byte":
@@ -608,52 +608,25 @@ public class Json
                     case "boolean":
                     case "java.lang.Boolean":
                         Json.put(json, name, ival);
-                        break;
+                        continue;
 
                     case "java.lang.String":
                     case "org.json.JSONObject":
                     case "org.json.JSONArray":
                         Json.put(json, name, ival);
-                        break;
+                        continue;
 
                     case "byte[]":
                         Json.put(json, name, Simple.encodeBase64((byte[]) ival));
-                        break;
+                        continue;
 
                     case "java.lang.Byte[]":
                         Json.put(json, name, Simple.encodeBase64((Byte[]) ival));
-                        break;
-                }
-
-                if ((ival instanceof JSONObject)
-                        || (ival instanceof JSONArray)
-                        || (ival instanceof ArrayList)
-                        || (ival instanceof Integer)
-                        || (ival instanceof Boolean)
-                        || (ival instanceof String)
-                        || (ival instanceof Double)
-                        || (ival instanceof Float)
-                        || (ival instanceof Short)
-                        || (ival instanceof Long)
-                        || (ival instanceof Byte))
-                {
-                    Json.put(json, name, ival);
-                    continue;
-                }
-
-                if ((ival) instanceof Byte[])
-                {
-                    Json.put(json, name, Simple.encodeBase64((Byte[]) ival));
-                    continue;
-                }
-
-                if (ival instanceof byte[])
-                {
-                    Json.put(json, name, Simple.encodeBase64((byte[]) ival));
-                    continue;
+                        continue;
                 }
 
                 Err.errp("unsupported field name=%s type=%s", name, type);
+
                 return null;
             }
             catch (Exception ex)

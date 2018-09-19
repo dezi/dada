@@ -30,7 +30,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public boolean getOnlineStatus(String apkname, String checksum)
+    public boolean getUplinkStatus(String apkname, String checksum)
     {
         String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname);
 
@@ -59,6 +59,26 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
         }
 
         return Owner.getOwnerUUIDBase64();
+    }
+
+    @Override
+    public boolean requestPersisted(String apkname, String checksum)
+    {
+        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname);
+
+        if ((checksum == null) || ! checksum.equals(solution))
+        {
+            Log.e("checksum failed!");
+            return false;
+        }
+
+        Log.d("sending all persisted tickets.");
+
+        //
+        // Todo: send all persisted tickets here.
+        //
+
+        return true;
     }
 
     @Override

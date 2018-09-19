@@ -173,7 +173,7 @@ public class GorillaClient
 
             checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
 
-            boolean uplink = gr.getOnlineStatus(apkname, checksum);
+            boolean uplink = gr.getUplinkStatus(apkname, checksum);
 
             if (GorillaIntercon.setUplinkStatus(sysApkName, uplink))
             {
@@ -192,7 +192,7 @@ public class GorillaClient
         }
     }
 
-    void getOnlineStatus()
+    void getUplinkStatus()
     {
         IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
         if (gr == null) return;
@@ -201,7 +201,7 @@ public class GorillaClient
         {
             String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
 
-            boolean uplink = gr.getOnlineStatus(apkname, checksum);
+            boolean uplink = gr.getUplinkStatus(apkname, checksum);
 
             if (GorillaIntercon.setUplinkStatus(sysApkName, uplink))
             {

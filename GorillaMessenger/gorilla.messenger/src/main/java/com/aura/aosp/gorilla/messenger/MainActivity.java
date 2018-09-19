@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity
                     {
                         Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp");
 
-                        startActivity(launchIntent);
+                        Simple.startActivity(MainActivity.this, launchIntent);
                     }
                     else
                     {
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity
                         params.putString("deviceUUID", identity.getDeviceUUIDBase64());
                         intent.putExtras(params);
 
-                        startActivity(intent);
+                        Simple.startActivity(MainActivity.this, intent);
                     }
                 }
             });

@@ -1,5 +1,6 @@
 package com.aura.aosp.aura.common.simple;
 
+import android.accounts.NetworkErrorException;
 import android.support.annotation.Nullable;
 import android.annotation.SuppressLint;
 
@@ -61,6 +62,35 @@ public class Simple
         if ((str1 != null) && (str2 != null)) return str1.compareTo(str2);
 
         return 0;
+    }
+
+    @Nullable
+    public static Err mkdirs(File... dirs)
+    {
+        for (File dir : dirs)
+        {
+            if (!(dir.exists() || dir.mkdirs()))
+            {
+                return Err.errp("cannot create directory=%s", dir.toString());
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static Err startActivity(Context context, Intent launchIntent)
+    {
+        try
+        {
+            context.startActivity(launchIntent);
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            return Err.errp(ex);
+        }
     }
 
     @Nullable

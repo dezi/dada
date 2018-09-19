@@ -12,42 +12,74 @@ import com.aura.aosp.aura.common.simple.Simple;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class GorillaPersist
 {
     private final static Object mutex = new Object();
-    private final static List<File> persisteds = new ArrayList<>();
 
     @Nullable
-    static Err persistFile(String subdirname, Long timeStamp, byte[] keyUUID, byte[] nonceUUID, JSONObject json)
+    static Err persistTicketForLocalClientApp(String apkname, Long timeStamp, byte[] keyUUID, byte[] nonceUUID, JSONObject json)
     {
-        if ((subdirname == null) || (timeStamp == null) || (nonceUUID == null) || (keyUUID == null) || (json == null))
+        if ((apkname == null) || (timeStamp == null) || (nonceUUID == null) || (keyUUID == null) || (json == null))
         {
             return Err.errp();
         }
 
-        File filesdir = GorillaBase.getAppContext().getFilesDir();
-        File gorilladir = new File(filesdir, "gorilla");
-        File subdir = new File(gorilladir, subdirname);
-
-        Err err = mkdirs(gorilladir, subdir);
-        if (err != null) return err;
+        File apkdir = getLocalClientAppDir(apkname, true);
+        if (apkdir == null) return Err.getLastErr();
 
         String saveFilename = Dates.getUniversalDateAndTimeMillis(timeStamp)
                 + "." + UID.getUUIDString(keyUUID)
                 + "." + UID.getUUIDString(nonceUUID)
                 + ".json";
 
-        File saveFile = new File(subdir, saveFilename);
+        File saveFile = new File(apkdir, saveFilename);
 
         Log.d("saveFile=%s", saveFile, json.toString());
         Log.d("saveData=%s", json.toString());
 
         return Json.putFileContent(saveFile, json);
+    }
+
+    @Nullable
+    static JSONObject unpersistNextTicketForLocalClientApp(String apkname)
+    {
+        File apkdir = getLocalClientAppDir(apkname, false);
+        if (apkdir == null) return null;
+
+        synchronized (mutex)
+        {
+            File[] files = apkdir.listFiles();
+
+            for (File file : files)
+            {
+                JSONObject json = unpersistFile(file);
+                if (json != null) return json;
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    private static File getLocalClientAppDir(String apkname, boolean create)
+    {
+        File appfilesdir = GorillaBase.getAppContext().getFilesDir();
+        File gorilladir = new File(appfilesdir, "gorilla");
+        File ticketdir = new File(gorilladir, "ticket");
+        File localdir = new File(ticketdir, "local");
+        File apkdir = new File(localdir, apkname);
+
+        if (create)
+        {
+            synchronized (mutex)
+            {
+                Err err = Simple.mkdirs(gorilladir, ticketdir, localdir, apkdir);
+                if (err != null) return null;
+            }
+        }
+
+        return apkdir;
     }
 
     @Nullable
@@ -63,65 +95,5 @@ public class GorillaPersist
         }
 
         return json;
-    }
-
-    @Nullable
-    static JSONObject unpersistNext(String subdirname)
-    {
-        while (true)
-        {
-            synchronized (mutex)
-            {
-                if (persisteds.size() > 0)
-                {
-                    File persisted = persisteds.remove(0);
-                    JSONObject json = unpersistFile(persisted);
-                    if (json == null) continue;
-
-                    return json;
-                }
-            }
-
-            getPersistedFiles("gorilla");
-            if (persisteds.size() == 0) return null;
-        }
-    }
-
-    private static void getPersistedFiles(String subdirname)
-    {
-        File filesdir = GorillaBase.getAppContext().getFilesDir();
-        File gorilladir = new File(filesdir, "gorilla");
-        File subdir = new File(gorilladir, subdirname);
-
-        File[] files = subdir.listFiles(new FilenameFilter()
-        {
-            @Override
-            public boolean accept(File dir, String name)
-            {
-                return name.endsWith(".json");
-            }
-        });
-
-        synchronized (mutex)
-        {
-            persisteds.addAll(Arrays.asList(files));
-        }
-    }
-
-    @Nullable
-    private static Err mkdirs(File... dirs)
-    {
-        synchronized (mutex)
-        {
-            for (File dir : dirs)
-            {
-                if (! (dir.exists() || dir.mkdirs()))
-                {
-                    return Err.errp("cannot create directory=%s", dir.toString());
-                }
-            }
-        }
-
-        return null;
     }
 }

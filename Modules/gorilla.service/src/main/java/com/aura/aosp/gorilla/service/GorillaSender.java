@@ -65,8 +65,11 @@ public class GorillaSender
     }
 
     @Nullable
-    private static Err persistTicket(GoprotoTicket ticket)
+    private static Err persistTicketForClientApp(GoprotoTicket ticket)
     {
+        String apkname = GorillaMapper.mapUUID2APK(Simple.encodeBase64(ticket.getAppUUID()));
+        if (apkname == null) return Err.getLastErr();
+
         JSONObject json = ticket.marshalJSON();
         if (json == null) return Err.getLastErr();
 
@@ -74,7 +77,7 @@ public class GorillaSender
         byte[] keyUUID = ticket.getMessageUUID();
         byte[] nonceUUId = UID.randomUUID();
 
-        return GorillaPersist.persistFile("ticket", timeStamp, keyUUID, nonceUUId, json);
+        return GorillaPersist.persistTicketForLocalClientApp(apkname, timeStamp, keyUUID, nonceUUId, json);
     }
 
     @Nullable
@@ -91,7 +94,7 @@ public class GorillaSender
 
             GorillaService.startClientService(apkname);
 
-            Err err = persistTicket(ticket);
+            Err err = persistTicketForClientApp(ticket);
             if (err != null) return err;
 
             return null;
@@ -137,8 +140,10 @@ public class GorillaSender
 
             GorillaService.startClientService(apkname);
 
-            Err err = persistTicket(ticket);
-            if (err != null) return err;
+            // Todo: persists result ticket.
+
+            //Err err = persistTicketForClientApp(ticket);
+            //if (err != null) return err;
 
             return null;
         }
