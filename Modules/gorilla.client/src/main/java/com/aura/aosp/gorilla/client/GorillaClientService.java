@@ -26,6 +26,7 @@ public class GorillaClientService extends IGorillaClientService.Stub
         {
             GorillaClient.getInstance().getUplinkStatus();
             GorillaClient.getInstance().getOwnerUUID();
+            GorillaClient.getInstance().requestPersisted();
         }
 
         return svlink;

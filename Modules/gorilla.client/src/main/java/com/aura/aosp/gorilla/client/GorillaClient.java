@@ -185,6 +185,11 @@ public class GorillaClient
             String ownerUUID = gr.getOwnerUUID(apkname, checksum);
 
             receiveOwnerUUID(ownerUUID);
+
+            checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+
+            boolean valid = gr.requestPersisted(apkname, checksum);
+            Log.d(LOGTAG, "requestPersisted valid=" + valid);
         }
         catch (Exception ex)
         {
@@ -226,6 +231,24 @@ public class GorillaClient
             String ownerUUID = gr.getOwnerUUID(apkname, checksum);
 
             receiveOwnerUUID(ownerUUID);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    void requestPersisted()
+    {
+        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        if (gr == null) return;
+
+        try
+        {
+            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+
+            boolean valid = gr.requestPersisted(apkname, checksum);
+            Log.d(LOGTAG, "requestPersisted valid=" + valid);
         }
         catch (Exception ex)
         {

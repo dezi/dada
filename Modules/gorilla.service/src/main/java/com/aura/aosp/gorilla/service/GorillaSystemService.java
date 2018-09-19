@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.service;
 
+import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Log;
 
@@ -7,6 +8,7 @@ import com.aura.aosp.gorilla.client.GorillaIntercon;
 import com.aura.aosp.gorilla.client.IGorillaSystemService;
 
 import com.aura.aosp.gorilla.gomess.GomessHandler;
+import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
 import org.json.JSONObject;
 
@@ -77,6 +79,21 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
         //
         // Todo: send all persisted tickets here.
         //
+
+        while (true)
+        {
+            JSONObject json = GorillaPersist.unpersistNextTicketForLocalClientApp(apkname);
+            if (json == null) break;
+
+            Log.d("ticket=%s", json.toString());
+
+            GoprotoTicket ticket = new GoprotoTicket();
+            Err err = ticket.unmarshalJSON(json);
+            if (err != null) break;
+
+            err = GorillaSender.sendPayload(ticket);
+            if (err != null) break;
+        }
 
         return true;
     }
