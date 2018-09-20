@@ -224,54 +224,6 @@ public class GorillaClient
         }
     }
 
-    private void initClientSecret()
-    {
-        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
-        if (gr == null) return;
-
-        try
-        {
-            String serverSecret = GorillaIntercon.getServerSecretBase64(sysApkName);
-            String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
-
-            String checksum;
-
-            if (! GorillaIntercon.getServiceStatus(sysApkName))
-            {
-                checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, clientSecret);
-
-                boolean svlink = gr.initClientSecret(apkname, clientSecret, checksum);
-
-                Log.d(LOGTAG, "initClientSecret: call"
-                        + " apkname=" + apkname
-                        + " serverSecret=" + GorillaIntercon.getServerSecretBase64(sysApkName)
-                        + " clientSecret=" + GorillaIntercon.getClientSecretBase64(sysApkName)
-                        + " svlink=" + svlink);
-
-                if (!svlink) return;
-
-                GorillaIntercon.setServiceStatus(sysApkName, true);
-            }
-
-            checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
-
-            boolean uplink = gr.getUplinkStatus(apkname, checksum);
-            GorillaIntercon.setUplinkStatus(sysApkName, uplink);
-
-            checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
-
-            String ownerUUID = gr.getOwnerUUID(apkname, checksum);
-
-            receiveStatus();
-            receiveOwnerUUID(ownerUUID);
-            startMainActivity();
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-
     void getUplinkStatus()
     {
         IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
@@ -547,6 +499,8 @@ public class GorillaClient
     public void setOnMessageReceivedListener(OnMessageReceivedListener onMessageReceivedListener)
     {
         this.onMessageReceivedListener = onMessageReceivedListener;
+
+        requestPersisted();
     }
 
     //endregion Instance implemention.

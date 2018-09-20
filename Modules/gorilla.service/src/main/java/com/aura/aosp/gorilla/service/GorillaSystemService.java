@@ -48,31 +48,6 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public boolean initClientSecret(String apkname, String clientSecret, String checksum)
-    {
-        GorillaService.startClientService(apkname);
-
-        GorillaIntercon.setClientSecret(apkname, clientSecret);
-        String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
-
-        String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, clientSecret);
-
-        boolean svlink = ((checksum != null) && checksum.equals(solution));
-
-        Log.d("impl apkname=%s serverSecret=%s clientSecret=%s svlink=%b",
-                apkname,
-                GorillaIntercon.getServerSecretBase64(apkname),
-                clientSecret,
-                svlink);
-
-        if (!svlink) return false;
-
-        GorillaIntercon.setServiceStatus(apkname, true);
-
-        return true;
-    }
-
-    @Override
     public boolean getUplinkStatus(String apkname, String checksum)
     {
         String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);

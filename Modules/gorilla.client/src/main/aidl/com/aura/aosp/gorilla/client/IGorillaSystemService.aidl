@@ -6,8 +6,6 @@ interface IGorillaSystemService
 
     boolean validateConnect(String apkname, String checksum);
 
-    boolean initClientSecret(String apkname, String clientSecret, String checksum);
-
     boolean getUplinkStatus(String apkname, String checksum);
 
     String getOwnerUUID(String apkname, String checksum);

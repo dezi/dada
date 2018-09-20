@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity
         title = getTitle().toString();
 
         GorillaClient gc = GorillaClient.getInstance();
+        gc.bindGorillaService(this);
 
         gc.setOnStatusReceivedListener(new GorillaClient.OnStatusReceivedListener()
         {
@@ -148,8 +149,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-
-        gc.bindGorillaService(this);
     }
 
     @Override

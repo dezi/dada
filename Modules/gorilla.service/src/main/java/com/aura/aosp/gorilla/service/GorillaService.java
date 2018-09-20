@@ -114,36 +114,6 @@ public class GorillaService extends Service
         }
     }
 
-    private static void initServerSecret(String apkname)
-    {
-        IGorillaClientService gr = GorillaIntercon.getClientService(apkname);
-        if (gr == null) return;
-
-        try
-        {
-            String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
-            String clientSecret = GorillaIntercon.getClientSecretBase64(apkname);
-
-            String checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, sysApkName, serverSecret);
-
-            boolean svlink = gr.initServerSecret(sysApkName, serverSecret, checksum);
-
-            Log.d("call apkname=%s serverSecret=%s clientSecret=%s svlink=%b",
-                    sysApkName,
-                    GorillaIntercon.getServerSecretBase64(apkname),
-                    GorillaIntercon.getClientSecretBase64(apkname),
-                    svlink);
-
-            if (!svlink) return;
-
-            GorillaIntercon.setServiceStatus(apkname, true);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-
     //endregion Static stuff.
 
     //region Instance stuff.
