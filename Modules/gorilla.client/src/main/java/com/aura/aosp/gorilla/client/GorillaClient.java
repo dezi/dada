@@ -132,6 +132,23 @@ public class GorillaClient
         handler.post(serviceConnector);
     }
 
+    public void unbindGorillaService()
+    {
+        if (context != null)
+        {
+            context.unbindService(serviceConnection);
+
+            context = null;
+            apkname = null;
+            serviceConnection = null;
+
+            onStatusReceivedListener = null;
+            onOwnerReceivedListener = null;
+            onResultReceivedListener = null;
+            onMessageReceivedListener = null;
+        }
+    }
+
     void startMainActivity()
     {
         Log.d(LOGTAG, "startMainActivity: ...");

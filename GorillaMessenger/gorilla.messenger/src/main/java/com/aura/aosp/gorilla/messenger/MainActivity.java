@@ -186,6 +186,9 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
 
         Log.d(LOGTAG, "onDestroy: ...");
+
+        GorillaClient gc = GorillaClient.getInstance();
+        gc.unbindGorillaService();
     }
 
     private void updateTitle()
