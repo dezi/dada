@@ -10,37 +10,45 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public boolean initServerSecret(String apkname, String serverSecret, String checksum)
     {
-        GorillaIntercon.setServerSecret(apkname, serverSecret);
-
-        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, serverSecret);
-
-        boolean svlink = ((checksum != null) && checksum.equals(solution));
-
-        if (GorillaIntercon.setServiceStatus(apkname, svlink))
+        if (! GorillaIntercon.getServiceStatus(apkname))
         {
-            GorillaClient.getInstance().receiveStatus();
+            String clientSecret = GorillaIntercon.getClientSecretBase64(apkname);
+
+            String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, serverSecret);
+
+            boolean svlink = ((checksum != null) && checksum.equals(solution));
+
+            if (svlink)
+            {
+                GorillaIntercon.setServerSecret(apkname, serverSecret);
+                GorillaIntercon.setServiceStatus(apkname, true);
+                GorillaClient.getInstance().receiveStatus();
+            }
+
+            Log.d(LOGTAG, "initServerSecret: impl"
+                    + " apkname=" + apkname
+                    + " serverSecret=" + GorillaIntercon.getServerSecretBase64(apkname)
+                    + " clientSecret=" + GorillaIntercon.getClientSecretBase64(apkname)
+                    + " svlink=" + svlink);
         }
 
-        Log.d(LOGTAG, "initServerSecret: impl"
-                + " apkname=" + apkname
-                + " serverSecret=" + GorillaIntercon.getServerSecretBase64(apkname)
-                + " clientSecret=" + GorillaIntercon.getClientSecretBase64(apkname)
-                + " svlink=" + svlink);
-
-        if (svlink)
+        if (GorillaIntercon.getServiceStatus(apkname))
         {
             GorillaClient.getInstance().getUplinkStatus();
             GorillaClient.getInstance().getOwnerUUID();
             GorillaClient.getInstance().startMainActivity();
         }
 
-        return svlink;
+        return  GorillaIntercon.getServiceStatus(apkname);
     }
 
     @Override
     public boolean receivePayload(String apkname, long time, String uuid, String senderUUID, String deviceUUID, String payload, String checksum)
     {
-        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, time, uuid, senderUUID, deviceUUID, payload);
+        String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
+        String clientSecret = GorillaIntercon.getClientSecretBase64(apkname);
+
+        String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, time, uuid, senderUUID, deviceUUID, payload);
 
         boolean valid = ((checksum != null) && checksum.equals(solution));
 
@@ -57,7 +65,10 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public boolean receivePayloadResult(String apkname, String result, String checksum)
     {
-        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, result);
+        String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
+        String clientSecret = GorillaIntercon.getClientSecretBase64(apkname);
+
+        String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, result);
 
         boolean valid = ((checksum != null) && checksum.equals(solution));
 
@@ -74,7 +85,10 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public boolean receiveOnlineStatus(String apkname, boolean uplink, String checksum)
     {
-        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, uplink);
+        String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
+        String clientSecret = GorillaIntercon.getClientSecretBase64(apkname);
+
+        String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, uplink);
 
         boolean valid = ((checksum != null) && checksum.equals(solution));
 
@@ -94,7 +108,10 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public boolean receiveOwnerUUID(String apkname, String ownerUUID, String checksum)
     {
-        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, ownerUUID);
+        String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
+        String clientSecret = GorillaIntercon.getClientSecretBase64(apkname);
+
+        String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, ownerUUID);
 
         boolean valid = ((checksum != null) && checksum.equals(solution));
 

@@ -155,20 +155,20 @@ public class GorillaIntercon
         return getAppData(apkname).uplink;
     }
 
-    public static String createSHASignatureBase64(String apkname, Object... params)
+    public static String createSHASignatureBase64neu(String serverSecret, String clientSecret, Object... params)
     {
-        return Base64.encodeToString(createSHASignature(apkname, params), Base64.NO_WRAP);
+        return Base64.encodeToString(createSHASignatureneu(serverSecret, clientSecret), Base64.NO_WRAP);
     }
 
     @Nullable
-    public static byte[] createSHASignature(String apkname, Object... params)
+    public static byte[] createSHASignatureneu(String serverSecret, String clientSecret, Object... params)
     {
         try
         {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
 
-            md.update(getServerSecret(apkname));
-            md.update(getClientSecret(apkname));
+            md.update(Base64.decode(serverSecret, Base64.DEFAULT));
+            md.update(Base64.decode(clientSecret, Base64.DEFAULT));
 
             for (Object param : params)
             {

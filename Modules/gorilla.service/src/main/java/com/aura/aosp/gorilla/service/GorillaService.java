@@ -85,8 +85,9 @@ public class GorillaService extends Service
         try
         {
             String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
+            String clientSecret = GorillaIntercon.getClientSecretBase64(apkname);
 
-            String checksum = GorillaIntercon.createSHASignatureBase64(apkname, sysApkName, serverSecret);
+            String checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, sysApkName, serverSecret);
 
             boolean svlink = gr.initServerSecret(sysApkName, serverSecret, checksum);
             GorillaIntercon.setServiceStatus(apkname, svlink);

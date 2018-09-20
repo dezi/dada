@@ -29,7 +29,7 @@ public class GoprotoTicket implements Json.JsonMarshaller
 
     private GoprotoMetadata Metadata;
 
-    private byte[] Payload;
+    private byte[] Payload = new byte[0];
 
     public int getIdsmask()
     {
@@ -181,23 +181,26 @@ public class GoprotoTicket implements Json.JsonMarshaller
         this.Payload = payload;
     }
 
-    public void prepareStatus(int status)
+    public GoprotoTicket prepareStatus(int status)
     {
-        Idsmask &= ~ GoprotoDefs.HasSenderUserUUID;
-        Idsmask &= ~ GoprotoDefs.HasSenderDeviceUUID;
-        Idsmask |= GoprotoDefs.HasReceiverUserUUID;
-        Idsmask |= GoprotoDefs.HasReceiverDeviceUUID;
+        GoprotoTicket statusTicket = new GoprotoTicket();
 
-        ReceiverUserUUID = SenderUserUUID;
-        SenderUserUUID = null;
+        statusTicket.Idsmask = this.Idsmask;
 
-        ReceiverDeviceUUID = SenderDeviceUUID;
-        SenderDeviceUUID = null;
+        statusTicket.Idsmask &= ~ GoprotoDefs.HasSenderUserUUID;
+        statusTicket.Idsmask &= ~ GoprotoDefs.HasSenderDeviceUUID;
+        statusTicket.Idsmask |= GoprotoDefs.HasReceiverUserUUID;
+        statusTicket.Idsmask |= GoprotoDefs.HasReceiverDeviceUUID;
 
-        Metadata.setStatus(status);
-        Metadata.setTimeStamp(System.currentTimeMillis());
+        statusTicket.AppUUID = this.AppUUID;
+        statusTicket.MessageUUID = this.MessageUUID;
+        statusTicket.ReceiverUserUUID = this.SenderUserUUID;
+        statusTicket.ReceiverDeviceUUID = this.SenderDeviceUUID;
 
-        Payload = new byte[0];
+        statusTicket.setStatus(status);
+        statusTicket.setTimeStamp(System.currentTimeMillis());
+
+        return statusTicket;
     }
 
     public int getRoutingSize()

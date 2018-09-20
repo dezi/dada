@@ -183,9 +183,10 @@ public class GorillaClient
         {
             if (! GorillaIntercon.getServiceStatus(sysApkName))
             {
+                String serverSecret = GorillaIntercon.getServerSecretBase64(sysApkName);
                 String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
 
-                String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, clientSecret);
+                String checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, clientSecret);
 
                 boolean svlink = gr.initClientSecret(apkname, clientSecret, checksum);
 
@@ -203,7 +204,10 @@ public class GorillaClient
                 if (!svlink) return;
             }
 
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+            String serverSecret = GorillaIntercon.getServerSecretBase64(sysApkName);
+            String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
+
+            String checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
 
             boolean uplink = gr.getUplinkStatus(apkname, checksum);
 
@@ -212,7 +216,7 @@ public class GorillaClient
                 receiveStatus();
             }
 
-            checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+            checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
 
             String ownerUUID = gr.getOwnerUUID(apkname, checksum);
 
@@ -233,7 +237,10 @@ public class GorillaClient
 
         try
         {
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+            String serverSecret = GorillaIntercon.getServerSecretBase64(sysApkName);
+            String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
+
+            String checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
 
             boolean uplink = gr.getUplinkStatus(apkname, checksum);
 
@@ -255,7 +262,10 @@ public class GorillaClient
 
         try
         {
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+            String serverSecret = GorillaIntercon.getServerSecretBase64(sysApkName);
+            String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
+
+            String checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
 
             String ownerUUID = gr.getOwnerUUID(apkname, checksum);
 
@@ -274,7 +284,10 @@ public class GorillaClient
 
         try
         {
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+            String serverSecret = GorillaIntercon.getServerSecretBase64(sysApkName);
+            String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
+
+            String checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
 
             boolean valid = gr.requestPersisted(apkname, checksum);
             Log.d(LOGTAG, "requestPersisted valid=" + valid);
@@ -419,7 +432,10 @@ public class GorillaClient
 
         try
         {
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, deviceUUID, payload);
+            String serverSecret = GorillaIntercon.getServerSecretBase64(sysApkName);
+            String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
+
+            String checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, userUUID, deviceUUID, payload);
 
             String resultStr = gr.sendPayload(apkname, userUUID, deviceUUID, payload, checksum);
 
@@ -449,7 +465,10 @@ public class GorillaClient
 
         try
         {
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, deviceUUID, messageUUID);
+            String serverSecret = GorillaIntercon.getServerSecretBase64(sysApkName);
+            String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
+
+            String checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, userUUID, deviceUUID, messageUUID);
 
             boolean result = gr.sendPayloadRead(apkname, userUUID, deviceUUID, messageUUID, checksum);
 

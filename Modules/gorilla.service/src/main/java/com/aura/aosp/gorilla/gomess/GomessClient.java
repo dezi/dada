@@ -383,11 +383,11 @@ public class GomessClient
         err = GorillaSender.sendPayload(ticket);
         if (err != null) return err;
 
-        ticket.prepareStatus(GoprotoDefs.MsgStatusReceived);
+        GoprotoTicket statusTicket = ticket.prepareStatus(GoprotoDefs.MsgStatusReceived);
 
-        ticket.dumpTicket();
+        statusTicket.dumpTicket();
 
-        err = sendMessageUpload(ticket);
+        err = sendMessageUpload(statusTicket);
 
         Log.d("##############status received send.");
 
