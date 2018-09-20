@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity
 
     public static Identity ownerIdent;
     public static List<ChatProfile> chatProfiles = new ArrayList<>();
-    public static MainActivity mainActivity;
 
     private GUIListView identitiesView;
     private static Boolean svlink;
@@ -60,9 +59,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
-        mainActivity = this;
-
-        Log.d(LOGTAG, "onCreate: started......");
+        Log.d(LOGTAG, "onCreate: ...");
 
         Simple.initialize(this.getApplication());
 
@@ -152,11 +149,43 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStart()
+    {
+        super.onStart();
+
+        Log.d(LOGTAG, "onStart: ...");
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+
+        Log.d(LOGTAG, "onPause: ...");
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        Log.d(LOGTAG, "onResume: ...");
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+
+        Log.d(LOGTAG, "onStop: ...");
+    }
+
+    @Override
     protected void onDestroy()
     {
         super.onDestroy();
 
-        mainActivity = null;
+        Log.d(LOGTAG, "onDestroy: ...");
     }
 
     private void updateTitle()

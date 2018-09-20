@@ -112,7 +112,6 @@ public class GorillaClient
                 GorillaIntercon.setSystemService(sysApkName, gorillaRemote);
 
                 validateConnect();
-                //initClientSecret();
             }
 
             public void onServiceDisconnected(ComponentName className)
@@ -271,7 +270,7 @@ public class GorillaClient
         }
     }
 
-    void requestPersisted()
+    private void requestPersisted()
     {
         IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
         if (gr == null) return;
@@ -319,7 +318,7 @@ public class GorillaClient
         });
     }
 
-    void receiveOwnerUUID()
+    private void receiveOwnerUUID()
     {
         Log.d(LOGTAG, "receiveOwner: ownerUUID=" + ownerUUID);
 

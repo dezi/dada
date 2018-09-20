@@ -56,8 +56,6 @@ public class GorillaService extends Service
                 GorillaIntercon.setClientService(apkname, gorillaRemote);
 
                 validateConnect(apkname);
-
-                //initServerSecret(apkname);
             }
 
             public void onServiceDisconnected(ComponentName className)
