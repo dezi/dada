@@ -17,18 +17,25 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public boolean initClientSecret(String apkname, String clientSecret, String checksum)
     {
-        GorillaIntercon.setClientSecret(apkname, clientSecret);
+        if (! GorillaIntercon.getServiceStatus(apkname))
+        {
+            GorillaIntercon.setClientSecret(apkname, clientSecret);
 
-        GorillaService.startClientService(apkname);
+            GorillaService.startClientService(apkname);
 
-        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, clientSecret);
+            String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, clientSecret);
 
-        boolean svlink = ((checksum != null) && checksum.equals(solution));
-        GorillaIntercon.setServiceStatus(apkname, svlink);
+            boolean svlink = ((checksum != null) && checksum.equals(solution));
+            GorillaIntercon.setServiceStatus(apkname, svlink);
 
-        Log.d("impl apkname=%s clientSecret=%s svlink=%b", apkname, clientSecret, svlink);
+            Log.d("impl apkname=%s serverSecret=%s clientSecret=%s svlink=%b",
+                    apkname,
+                    GorillaIntercon.getServerSecretBase64(apkname),
+                    GorillaIntercon.getClientSecretBase64(apkname),
+                    svlink);
+        }
 
-        return svlink;
+        return GorillaIntercon.getServiceStatus(apkname);
     }
 
     @Override
@@ -85,14 +92,27 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
             JSONObject json = GorillaPersist.unpersistNextTicketForLocalClientApp(apkname);
             if (json == null) break;
 
-            Log.d("ticket=%s", json.toString());
+            Log.d("########ticket=%s", json.toString());
+
 
             GoprotoTicket ticket = new GoprotoTicket();
             Err err = ticket.unmarshalJSON(json);
             if (err != null) break;
 
+            Log.d("##################STATTTTTTTTTTTUS=%d", ticket.getStatus());
+            Log.d("##########################");
+            ticket.dumpTicket();
+            Log.d("##########################");
+
             err = GorillaSender.sendPayload(ticket);
-            if (err != null) break;
+
+            if (err != null)
+            {
+                Log.e("huhu err=%s", err.err);
+                break;
+            }
+
+            Log.e("send no err");
         }
 
         return true;

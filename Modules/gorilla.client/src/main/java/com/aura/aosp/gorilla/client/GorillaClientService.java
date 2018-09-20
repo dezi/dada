@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.client;
 
+import android.content.Intent;
 import android.util.Log;
 
 public class GorillaClientService extends IGorillaClientService.Stub
@@ -20,13 +21,17 @@ public class GorillaClientService extends IGorillaClientService.Stub
             GorillaClient.getInstance().receiveStatus();
         }
 
-        Log.d(LOGTAG, "initServerSecret: impl apkname=" + apkname + " serverSecret=" + serverSecret + " svlink=" + svlink);
+        Log.d(LOGTAG, "initServerSecret: impl"
+                + " apkname=" + apkname
+                + " serverSecret=" + GorillaIntercon.getServerSecretBase64(apkname)
+                + " clientSecret=" + GorillaIntercon.getClientSecretBase64(apkname)
+                + " svlink=" + svlink);
 
         if (svlink)
         {
             GorillaClient.getInstance().getUplinkStatus();
             GorillaClient.getInstance().getOwnerUUID();
-            GorillaClient.getInstance().requestPersisted();
+            GorillaClient.getInstance().startMainActivity();
         }
 
         return svlink;

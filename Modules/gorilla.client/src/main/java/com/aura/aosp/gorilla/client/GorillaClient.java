@@ -81,6 +81,11 @@ public class GorillaClient
     private OnResultReceivedListener onResultReceivedListener;
     private OnMessageReceivedListener onMessageReceivedListener;
 
+    public GorillaClient()
+    {
+        this.handler = new Handler();
+    }
+
     public void bindGorillaService(Context context)
     {
         Log.d(LOGTAG, "bindGorillaService: ...");
@@ -95,7 +100,6 @@ public class GorillaClient
         }
 
         this.context = context;
-        this.handler = new Handler();
         this.apkname = context.getPackageName();
 
         serviceConnection = new ServiceConnection()
@@ -128,6 +132,27 @@ public class GorillaClient
         handler.post(serviceConnector);
     }
 
+    void startMainActivity()
+    {
+        Log.d(LOGTAG, "startMainActivity: ...");
+
+        Intent startIntent = new Intent();
+
+        startIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startIntent.setAction(Intent.ACTION_MAIN);
+        startIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        startIntent.setPackage(context.getPackageName());
+
+        try
+        {
+            context.startActivity(startIntent);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
     private final Runnable serviceConnector = new Runnable()
     {
         @Override
@@ -156,22 +181,29 @@ public class GorillaClient
 
         try
         {
-            String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
-
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName,  apkname, clientSecret);
-
-            boolean svlink = gr.initClientSecret(apkname, clientSecret, checksum);
-
-            if (GorillaIntercon.setServiceStatus(sysApkName, svlink))
+            if (! GorillaIntercon.getServiceStatus(sysApkName))
             {
-                receiveStatus();
+                String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
+
+                String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, clientSecret);
+
+                boolean svlink = gr.initClientSecret(apkname, clientSecret, checksum);
+
+                Log.d(LOGTAG, "initClientSecret: call"
+                        + " apkname=" + apkname
+                        + " serverSecret=" + GorillaIntercon.getServerSecretBase64(sysApkName)
+                        + " clientSecret=" + GorillaIntercon.getClientSecretBase64(sysApkName)
+                        + " svlink=" + svlink);
+
+                if (GorillaIntercon.setServiceStatus(sysApkName, svlink))
+                {
+                    receiveStatus();
+                }
+
+                if (!svlink) return;
             }
 
-            Log.d(LOGTAG, "initClientSecret: call apkname=" + apkname + " clientSecret=" + clientSecret + " svlink=" + svlink);
-
-            if (! svlink) return;
-
-            checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
 
             boolean uplink = gr.getUplinkStatus(apkname, checksum);
 
@@ -186,10 +218,7 @@ public class GorillaClient
 
             receiveOwnerUUID(ownerUUID);
 
-            checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
-
-            boolean valid = gr.requestPersisted(apkname, checksum);
-            Log.d(LOGTAG, "requestPersisted valid=" + valid);
+            startMainActivity();
         }
         catch (Exception ex)
         {
@@ -281,6 +310,16 @@ public class GorillaClient
                 listener.onStatusReceived(status);
             }
         });
+    }
+
+    void receiveOwnerUUID()
+    {
+        Log.d(LOGTAG, "receiveOwner: ownerUUID=" + ownerUUID);
+
+        final JSONObject owner = new JSONObject();
+        putJSON(owner, "ownerUUID", ownerUUID);
+
+        receiveOwnerUUID(owner);
     }
 
     void receiveOwnerUUID(String ownerUUID)
@@ -428,11 +467,15 @@ public class GorillaClient
     public void setOnStatusReceivedListener(OnStatusReceivedListener onStatusReceivedListener)
     {
         this.onStatusReceivedListener = onStatusReceivedListener;
+
+        receiveStatus();
     }
 
     public void setOnOwnerReceivedListener(OnOwnerReceivedListener onOwnerReceivedListener)
     {
         this.onOwnerReceivedListener = onOwnerReceivedListener;
+
+        receiveOwnerUUID();
     }
 
     public void setOnResultReceivedListener(OnResultReceivedListener onResultReceivedListener)

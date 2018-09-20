@@ -91,7 +91,11 @@ public class GorillaService extends Service
             boolean svlink = gr.initServerSecret(sysApkName, serverSecret, checksum);
             GorillaIntercon.setServiceStatus(apkname, svlink);
 
-            Log.d("call apkname=" + sysApkName + " serverSecret=" + serverSecret + " svlink=" + svlink);
+            Log.d("call apkname=%s serverSecret=%s clientSecret=%s svlink=%b",
+                    sysApkName,
+                    GorillaIntercon.getServerSecretBase64(apkname),
+                    GorillaIntercon.getClientSecretBase64(apkname),
+                    svlink);
         }
         catch (Exception ex)
         {

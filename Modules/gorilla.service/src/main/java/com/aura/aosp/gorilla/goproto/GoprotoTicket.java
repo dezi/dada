@@ -584,12 +584,12 @@ public class GoprotoTicket implements Json.JsonMarshaller
         Log.d("----------");
         Log.d("Idsmask=%04x", Idsmask);
 
-        Log.d("MessageUUID=%s", Simple.getHexBytesToString(MessageUUID));
-        Log.d("SenderUserUUID=%s", Simple.getHexBytesToString(SenderUserUUID));
-        Log.d("SenderDeviceUUID=%s", Simple.getHexBytesToString(SenderDeviceUUID));
-        Log.d("ReceiverUserUUID=%s", Simple.getHexBytesToString(ReceiverUserUUID));
-        Log.d("ReceiverDeviceUUID=%s", Simple.getHexBytesToString(ReceiverDeviceUUID));
-        Log.d("AppUUID=%s", Simple.getHexBytesToString(AppUUID));
+        Log.d("MessageUUID=%s", Simple.encodeBase64(MessageUUID));
+        Log.d("SenderUserUUID=%s", Simple.encodeBase64(SenderUserUUID));
+        Log.d("SenderDeviceUUID=%s", Simple.encodeBase64(SenderDeviceUUID));
+        Log.d("ReceiverUserUUID=%s", Simple.encodeBase64(ReceiverUserUUID));
+        Log.d("ReceiverDeviceUUID=%s", Simple.encodeBase64(ReceiverDeviceUUID));
+        Log.d("AppUUID=%s", Simple.encodeBase64(AppUUID));
 
         if (Metadata != null)
         {
@@ -597,7 +597,7 @@ public class GoprotoTicket implements Json.JsonMarshaller
             Log.d("Status=%04x", Metadata.getStatus());
         }
 
-        Log.d("Payload=%s", Simple.getHexBytesToString(Payload));
+        Log.d("Payload=%s", Simple.encodeBase64(Payload));
         Log.d("----------");
     }
 

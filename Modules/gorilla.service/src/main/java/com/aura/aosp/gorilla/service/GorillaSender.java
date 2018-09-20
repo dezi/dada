@@ -117,6 +117,8 @@ public class GorillaSender
             {
                 return Err.err("invalid service apkname=%s", apkname);
             }
+
+            Log.d("paaaayyyyyyyyload=%s", payload);
         }
         catch (Exception ex)
         {

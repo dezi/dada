@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
@@ -32,8 +33,10 @@ public class MainActivity extends AppCompatActivity
     private static final String LOGTAG = MainActivity.class.getSimpleName();
 
     public static Identity ownerIdent;
-
     public static List<ChatProfile> chatProfiles = new ArrayList<>();
+    public static MainActivity mainActivity;
+
+    private GUIListView identitiesView;
     private static Boolean svlink;
     private static Boolean uplink;
 
@@ -57,6 +60,8 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
+        mainActivity = this;
+
         Log.d(LOGTAG, "onCreate: started......");
 
         Simple.initialize(this.getApplication());
@@ -66,7 +71,6 @@ public class MainActivity extends AppCompatActivity
         title = getTitle().toString();
 
         GorillaClient gc = GorillaClient.getInstance();
-        gc.bindGorillaService(this);
 
         gc.setOnStatusReceivedListener(new GorillaClient.OnStatusReceivedListener()
         {
@@ -115,6 +119,8 @@ public class MainActivity extends AppCompatActivity
             {
                 Log.d(LOGTAG, "onMessageReceived: message=" + message.toString());
 
+                displayMessageInList(message);
+
                 String remoteUserUUID = Json.getString(message, "sender");
                 String remoteDeviceUUID = Json.getString(message, "device");
 
@@ -142,6 +148,16 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+
+        gc.bindGorillaService(this);
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+
+        mainActivity = null;
     }
 
     private void updateTitle()
@@ -174,7 +190,7 @@ public class MainActivity extends AppCompatActivity
 
         centerFrame.addView(identitiesScroll);
 
-        GUIListView identitiesView = new GUIListView(this);
+        identitiesView = new GUIListView(this);
         identitiesView.setSizeDip(Simple.MP, Simple.MP, 1.0f);
         identitiesView.setBackgroundColor(0x88888888);
 
@@ -185,7 +201,8 @@ public class MainActivity extends AppCompatActivity
         for (Identity identity : contacts)
         {
             String nick = identity.getNick();
-            String info = identity.getUserUUIDBase64();
+            String info = "...";
+            String date = "...";
 
             GUIListEntry entry = identitiesView.findGUIListEntryOrCreate(identity.getUserUUIDBase64());
 
@@ -223,7 +240,31 @@ public class MainActivity extends AppCompatActivity
             entry.headerViev.setText(nick);
             entry.headerViev.setTextColor(Color.BLUE);
             entry.infoView.setText(info);
+            entry.dateView.setText(date);
             entry.actionIcon.setImageResource(R.drawable.arrow_right);
+        }
+    }
+
+    private void displayMessageInList(JSONObject message)
+    {
+        String remoteUserUUID = Json.getString(message, "sender");
+        String remoteDeviceUUID = Json.getString(message, "device");
+        String messageText = Json.getString(message, "payload");
+
+        Long timeStamp = Json.getLong(message, "time");
+        String dateStr = Dates.getLocalDateAndTime(timeStamp);
+
+        for (int cinx = 0; cinx < identitiesView.getChildCount(); cinx++)
+        {
+            View child = identitiesView.getChildAt(cinx);
+            if (! (child instanceof GUIListEntry)) continue;
+
+            Identity identity = (Identity )child.getTag();
+            if (! identity.getUserUUIDBase64().equals(remoteUserUUID)) continue;
+            if (! identity.getDeviceUUIDBase64().equals(remoteDeviceUUID)) continue;
+
+            ((GUIListEntry) child).infoView.setText(messageText);
+            ((GUIListEntry) child).dateView.setText(dateStr);
         }
     }
 }
