@@ -17,10 +17,10 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public boolean initClientSecret(String apkname, String clientSecret, String checksum)
     {
-        if (! GorillaIntercon.getServiceStatus(apkname))
-        {
-            GorillaIntercon.setClientSecret(apkname, clientSecret);
+        GorillaIntercon.setClientSecret(apkname, clientSecret);
 
+        if (!GorillaIntercon.getServiceStatus(apkname))
+        {
             GorillaService.startClientService(apkname);
 
             String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
@@ -28,16 +28,19 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
             String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, clientSecret);
 
             boolean svlink = ((checksum != null) && checksum.equals(solution));
-            GorillaIntercon.setServiceStatus(apkname, svlink);
 
             Log.d("impl apkname=%s serverSecret=%s clientSecret=%s svlink=%b",
                     apkname,
                     GorillaIntercon.getServerSecretBase64(apkname),
-                    GorillaIntercon.getClientSecretBase64(apkname),
+                    clientSecret,
                     svlink);
+
+            if (!svlink) return false;
+
+            GorillaIntercon.setServiceStatus(apkname, true);
         }
 
-        return GorillaIntercon.getServiceStatus(apkname);
+        return true;
     }
 
     @Override
@@ -48,7 +51,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
 
         String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
 
-        if ((checksum == null) || ! checksum.equals(solution))
+        if ((checksum == null) || !checksum.equals(solution))
         {
             Log.e("checksum failed!");
             return false;
@@ -69,7 +72,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
 
         String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
 
-        if ((checksum == null) || ! checksum.equals(solution))
+        if ((checksum == null) || !checksum.equals(solution))
         {
             Log.e("checksum failed!");
             return null;
@@ -86,7 +89,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
 
         String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
 
-        if ((checksum == null) || ! checksum.equals(solution))
+        if ((checksum == null) || !checksum.equals(solution))
         {
             Log.e("checksum failed!");
             return false;
@@ -137,7 +140,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
 
         String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, userUUID, deviceUUID, payload);
 
-        if ((checksum == null) || ! checksum.equals(solution))
+        if ((checksum == null) || !checksum.equals(solution))
         {
             Log.e("checksum failed!");
             return null;
@@ -159,7 +162,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
 
         String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, userUUID, deviceUUID, messageUUID);
 
-        if ((checksum == null) || ! checksum.equals(solution))
+        if ((checksum == null) || !checksum.equals(solution))
         {
             Log.e("checksum failed!");
             return false;

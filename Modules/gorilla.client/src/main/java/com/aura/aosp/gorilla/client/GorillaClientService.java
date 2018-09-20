@@ -10,7 +10,9 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public boolean initServerSecret(String apkname, String serverSecret, String checksum)
     {
-        if (! GorillaIntercon.getServiceStatus(apkname))
+        GorillaIntercon.setServerSecret(apkname, serverSecret);
+
+        if (!GorillaIntercon.getServiceStatus(apkname))
         {
             String clientSecret = GorillaIntercon.getClientSecretBase64(apkname);
 
@@ -18,28 +20,24 @@ public class GorillaClientService extends IGorillaClientService.Stub
 
             boolean svlink = ((checksum != null) && checksum.equals(solution));
 
-            if (svlink)
-            {
-                GorillaIntercon.setServerSecret(apkname, serverSecret);
-                GorillaIntercon.setServiceStatus(apkname, true);
-                GorillaClient.getInstance().receiveStatus();
-            }
-
             Log.d(LOGTAG, "initServerSecret: impl"
                     + " apkname=" + apkname
-                    + " serverSecret=" + GorillaIntercon.getServerSecretBase64(apkname)
+                    + " serverSecret=" + serverSecret
                     + " clientSecret=" + GorillaIntercon.getClientSecretBase64(apkname)
                     + " svlink=" + svlink);
+
+            if (!svlink) return false;
+
+            GorillaIntercon.setServiceStatus(apkname, true);
         }
 
-        if (GorillaIntercon.getServiceStatus(apkname))
-        {
-            GorillaClient.getInstance().getUplinkStatus();
-            GorillaClient.getInstance().getOwnerUUID();
-            GorillaClient.getInstance().startMainActivity();
-        }
+        GorillaClient.getInstance().receiveStatus();
 
-        return  GorillaIntercon.getServiceStatus(apkname);
+        GorillaClient.getInstance().getUplinkStatus();
+        GorillaClient.getInstance().getOwnerUUID();
+        GorillaClient.getInstance().startMainActivity();
+
+        return true;
     }
 
     @Override

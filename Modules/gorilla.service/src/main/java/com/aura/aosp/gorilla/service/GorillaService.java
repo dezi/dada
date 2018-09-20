@@ -90,13 +90,16 @@ public class GorillaService extends Service
             String checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, sysApkName, serverSecret);
 
             boolean svlink = gr.initServerSecret(sysApkName, serverSecret, checksum);
-            GorillaIntercon.setServiceStatus(apkname, svlink);
 
             Log.d("call apkname=%s serverSecret=%s clientSecret=%s svlink=%b",
                     sysApkName,
                     GorillaIntercon.getServerSecretBase64(apkname),
                     GorillaIntercon.getClientSecretBase64(apkname),
                     svlink);
+
+            if (!svlink) return;
+
+            GorillaIntercon.setServiceStatus(apkname, true);
         }
         catch (Exception ex)
         {

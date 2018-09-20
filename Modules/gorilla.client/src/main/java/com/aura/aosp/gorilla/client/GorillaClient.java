@@ -181,12 +181,14 @@ public class GorillaClient
 
         try
         {
+            String serverSecret = GorillaIntercon.getServerSecretBase64(sysApkName);
+            String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
+
+            String checksum;
+
             if (! GorillaIntercon.getServiceStatus(sysApkName))
             {
-                String serverSecret = GorillaIntercon.getServerSecretBase64(sysApkName);
-                String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
-
-                String checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, clientSecret);
+                checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, clientSecret);
 
                 boolean svlink = gr.initClientSecret(apkname, clientSecret, checksum);
 
@@ -196,32 +198,22 @@ public class GorillaClient
                         + " clientSecret=" + GorillaIntercon.getClientSecretBase64(sysApkName)
                         + " svlink=" + svlink);
 
-                if (GorillaIntercon.setServiceStatus(sysApkName, svlink))
-                {
-                    receiveStatus();
-                }
-
                 if (!svlink) return;
+
+                GorillaIntercon.setServiceStatus(sysApkName, true);
             }
 
-            String serverSecret = GorillaIntercon.getServerSecretBase64(sysApkName);
-            String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
-
-            String checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
+            checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
 
             boolean uplink = gr.getUplinkStatus(apkname, checksum);
-
-            if (GorillaIntercon.setUplinkStatus(sysApkName, uplink))
-            {
-                receiveStatus();
-            }
+            GorillaIntercon.setUplinkStatus(sysApkName, uplink);
 
             checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
 
             String ownerUUID = gr.getOwnerUUID(apkname, checksum);
 
+            receiveStatus();
             receiveOwnerUUID(ownerUUID);
-
             startMainActivity();
         }
         catch (Exception ex)
