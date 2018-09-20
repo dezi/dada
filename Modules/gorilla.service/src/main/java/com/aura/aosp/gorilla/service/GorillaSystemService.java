@@ -15,30 +15,59 @@ import org.json.JSONObject;
 public class GorillaSystemService extends IGorillaSystemService.Stub
 {
     @Override
+    public String returnYourSecret(String apkname)
+    {
+        GorillaService.startClientService(apkname);
+
+        Log.d("impl serverSecret=%s", GorillaIntercon.getServerSecretBase64(apkname));
+
+        return GorillaIntercon.getServerSecretBase64(apkname);
+    }
+
+    @Override
+    public boolean validateConnect(String apkname, String checksum)
+    {
+        String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
+        String clientSecret = GorillaIntercon.getClientSecretBase64(apkname);
+
+        String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
+
+        boolean svlink = ((checksum != null) && checksum.equals(solution));
+
+        Log.d("impl apkname=%s serverSecret=%s clientSecret=%s svlink=%b",
+                apkname,
+                GorillaIntercon.getServerSecretBase64(apkname),
+                clientSecret,
+                svlink);
+
+        if (!svlink) return false;
+
+        GorillaIntercon.setServiceStatus(apkname, true);
+
+        return true;
+    }
+
+    @Override
     public boolean initClientSecret(String apkname, String clientSecret, String checksum)
     {
+        GorillaService.startClientService(apkname);
+
         GorillaIntercon.setClientSecret(apkname, clientSecret);
+        String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
 
-        if (!GorillaIntercon.getServiceStatus(apkname))
-        {
-            GorillaService.startClientService(apkname);
+        String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, clientSecret);
 
-            String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
+        boolean svlink = ((checksum != null) && checksum.equals(solution));
 
-            String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, clientSecret);
+        Log.d("impl apkname=%s serverSecret=%s clientSecret=%s svlink=%b",
+                apkname,
+                GorillaIntercon.getServerSecretBase64(apkname),
+                clientSecret,
+                svlink);
 
-            boolean svlink = ((checksum != null) && checksum.equals(solution));
+        if (!svlink) return false;
 
-            Log.d("impl apkname=%s serverSecret=%s clientSecret=%s svlink=%b",
-                    apkname,
-                    GorillaIntercon.getServerSecretBase64(apkname),
-                    clientSecret,
-                    svlink);
-
-            if (!svlink) return false;
-
-            GorillaIntercon.setServiceStatus(apkname, true);
-        }
+        GorillaIntercon.setServiceStatus(apkname, true);
 
         return true;
     }

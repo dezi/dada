@@ -1,6 +1,5 @@
 package com.aura.aosp.gorilla.client;
 
-import android.content.Intent;
 import android.util.Log;
 
 public class GorillaClientService extends IGorillaClientService.Stub
@@ -8,28 +7,60 @@ public class GorillaClientService extends IGorillaClientService.Stub
     private final static String LOGTAG = GorillaClientService.class.getSimpleName();
 
     @Override
+    public String returnYourSecret(String apkname)
+    {
+        Log.d(LOGTAG,"returnYourSecret: impl clientSecret=" + GorillaIntercon.getClientSecretBase64(apkname));
+
+        return GorillaIntercon.getClientSecretBase64(apkname);
+    }
+
+    @Override
+    public boolean validateConnect(String apkname, String checksum)
+    {
+        String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
+        String clientSecret = GorillaIntercon.getClientSecretBase64(apkname);
+
+        String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
+
+        boolean svlink = ((checksum != null) && checksum.equals(solution));
+
+        Log.d(LOGTAG, "validateConnect: impl"
+                + " apkname=" + apkname
+                + " serverSecret=" + serverSecret
+                + " clientSecret=" + GorillaIntercon.getClientSecretBase64(apkname)
+                + " svlink=" + svlink);
+
+        if (!svlink) return false;
+
+        GorillaIntercon.setServiceStatus(apkname, true);
+
+        GorillaClient.getInstance().receiveStatus();
+        GorillaClient.getInstance().getUplinkStatus();
+        GorillaClient.getInstance().getOwnerUUID();
+        GorillaClient.getInstance().startMainActivity();
+
+        return true;
+    }
+
+    @Override
     public boolean initServerSecret(String apkname, String serverSecret, String checksum)
     {
         GorillaIntercon.setServerSecret(apkname, serverSecret);
+        String clientSecret = GorillaIntercon.getClientSecretBase64(apkname);
 
-        if (!GorillaIntercon.getServiceStatus(apkname))
-        {
-            String clientSecret = GorillaIntercon.getClientSecretBase64(apkname);
+        String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, serverSecret);
 
-            String solution = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname, serverSecret);
+        boolean svlink = ((checksum != null) && checksum.equals(solution));
 
-            boolean svlink = ((checksum != null) && checksum.equals(solution));
+        Log.d(LOGTAG, "initServerSecret: impl"
+                + " apkname=" + apkname
+                + " serverSecret=" + serverSecret
+                + " clientSecret=" + GorillaIntercon.getClientSecretBase64(apkname)
+                + " svlink=" + svlink);
 
-            Log.d(LOGTAG, "initServerSecret: impl"
-                    + " apkname=" + apkname
-                    + " serverSecret=" + serverSecret
-                    + " clientSecret=" + GorillaIntercon.getClientSecretBase64(apkname)
-                    + " svlink=" + svlink);
+        if (!svlink) return false;
 
-            if (!svlink) return false;
-
-            GorillaIntercon.setServiceStatus(apkname, true);
-        }
+        GorillaIntercon.setServiceStatus(apkname, true);
 
         GorillaClient.getInstance().receiveStatus();
 

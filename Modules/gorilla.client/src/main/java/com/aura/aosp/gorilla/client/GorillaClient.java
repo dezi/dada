@@ -111,7 +111,8 @@ public class GorillaClient
                 IGorillaSystemService gorillaRemote = IGorillaSystemService.Stub.asInterface(service);
                 GorillaIntercon.setSystemService(sysApkName, gorillaRemote);
 
-                initClientSecret();
+                validateConnect();
+                //initClientSecret();
             }
 
             public void onServiceDisconnected(ComponentName className)
@@ -173,6 +174,55 @@ public class GorillaClient
             }
         }
     };
+
+    private void validateConnect()
+    {
+        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        if (gr == null) return;
+
+        try
+        {
+            String serverSecret = gr.returnYourSecret(apkname);
+            GorillaIntercon.setServerSecret(sysApkName, serverSecret);
+
+            Log.d(LOGTAG, "validateConnect: call"
+                            + " apkname=" + apkname
+                            + " serverSecret=" + GorillaIntercon.getServerSecretBase64(sysApkName));
+
+            String clientSecret = GorillaIntercon.getClientSecretBase64(sysApkName);
+
+            String checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
+
+            boolean svlink = gr.validateConnect(apkname, checksum);
+
+            Log.d(LOGTAG, "validateConnect: call"
+                    + " apkname=" + apkname
+                    + " serverSecret=" + GorillaIntercon.getServerSecretBase64(sysApkName)
+                    + " clientSecret=" + GorillaIntercon.getClientSecretBase64(sysApkName)
+                    + " svlink=" + svlink);
+
+            if (!svlink) return;
+
+            GorillaIntercon.setServiceStatus(sysApkName, true);
+
+            checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
+
+            boolean uplink = gr.getUplinkStatus(apkname, checksum);
+            GorillaIntercon.setUplinkStatus(sysApkName, uplink);
+
+            checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, apkname);
+
+            String ownerUUID = gr.getOwnerUUID(apkname, checksum);
+
+            receiveStatus();
+            receiveOwnerUUID(ownerUUID);
+            startMainActivity();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
 
     private void initClientSecret()
     {

@@ -2,6 +2,10 @@ package com.aura.aosp.gorilla.client;
 
 interface IGorillaSystemService
 {
+    String returnYourSecret(String apkname);
+
+    boolean validateConnect(String apkname, String checksum);
+
     boolean initClientSecret(String apkname, String clientSecret, String checksum);
 
     boolean getUplinkStatus(String apkname, String checksum);

@@ -9,6 +9,7 @@ import android.os.IBinder;
 
 import com.aura.aosp.gorilla.client.GorillaIntercon;
 import com.aura.aosp.gorilla.client.IGorillaClientService;
+import com.aura.aosp.gorilla.client.IGorillaSystemService;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 import com.aura.aosp.aura.common.simple.Log;
@@ -54,7 +55,9 @@ public class GorillaService extends Service
                 IGorillaClientService gorillaRemote = IGorillaClientService.Stub.asInterface(service);
                 GorillaIntercon.setClientService(apkname, gorillaRemote);
 
-                initServerSecret(apkname);
+                validateConnect(apkname);
+
+                //initServerSecret(apkname);
             }
 
             public void onServiceDisconnected(ComponentName className)
@@ -75,6 +78,40 @@ public class GorillaService extends Service
         serviceIntent.setComponent(componentName);
 
         GorillaBase.getAppContext().bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private static void validateConnect(String apkname)
+    {
+        IGorillaClientService gr = GorillaIntercon.getClientService(apkname);
+        if (gr == null) return;
+
+        try
+        {
+            String clientSecret = gr.returnYourSecret(sysApkName);
+            GorillaIntercon.setClientSecret(apkname, clientSecret);
+
+            Log.d("call apkname=%s clientSecret=%s", apkname, clientSecret);
+
+            String serverSecret = GorillaIntercon.getServerSecretBase64(apkname);
+
+            String checksum = GorillaIntercon.createSHASignatureBase64neu(serverSecret, clientSecret, sysApkName);
+
+            boolean svlink = gr.validateConnect(sysApkName, checksum);
+
+            Log.d("call apkname=%s serverSecret=%s clientSecret=%s svlink=%b",
+                    sysApkName,
+                    GorillaIntercon.getServerSecretBase64(apkname),
+                    GorillaIntercon.getClientSecretBase64(apkname),
+                    svlink);
+
+            if (!svlink) return;
+
+            GorillaIntercon.setServiceStatus(apkname, true);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     private static void initServerSecret(String apkname)
