@@ -36,7 +36,7 @@ public class EventManager extends GorillaListener
     {
         Log.d(LOGTAG, "onMessageReceived: message=" + message.toString());
 
-        startMainActivity();
+        //startMainActivity();
     }
 
     @Override

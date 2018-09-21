@@ -155,7 +155,7 @@ public class GorillaIntercon
         return getAppData(apkname).uplink;
     }
 
-    public static String createSHASignatureBase64(String apkname, String clientSecret, Object... params)
+    public static String createSHASignatureBase64(String apkname, Object... params)
     {
         return Base64.encodeToString(createSHASignature(apkname, params), Base64.NO_WRAP);
     }
