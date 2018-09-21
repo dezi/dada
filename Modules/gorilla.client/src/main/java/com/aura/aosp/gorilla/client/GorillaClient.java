@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.client;
 
 import android.annotation.SuppressLint;
+import android.support.annotation.Nullable;
 
 import android.content.ServiceConnection;
 import android.content.ComponentName;
@@ -8,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -34,42 +34,6 @@ public class GorillaClient
 
     //endregion Static implemention.
 
-    //region Listener templates.
-
-    public static class OnStatusReceivedListener
-    {
-        public void onStatusReceived(JSONObject result)
-        {
-            Log.d(LOGTAG, "onStatusReceived: STUB!");
-        }
-    }
-
-    public static class OnResultReceivedListener
-    {
-        public void onResultReceived(JSONObject result)
-        {
-            Log.d(LOGTAG, "onResultReceived: STUB!");
-        }
-    }
-
-    public static class OnOwnerReceivedListener
-    {
-        public void onOwnerReceived(JSONObject owner)
-        {
-            Log.d(LOGTAG, "onOwnerReceived: STUB!");
-        }
-    }
-
-    public static class OnMessageReceivedListener
-    {
-        public void onMessageReceived(JSONObject message)
-        {
-            Log.d(LOGTAG, "onMessageReceived: STUB!");
-        }
-    }
-
-    //endregion Listener templates.
-
     //region Instance implemention.
 
     private final List<GorillaListener> gorillaListeners = new ArrayList<>();
@@ -83,7 +47,7 @@ public class GorillaClient
 
     public void bindService(Context context)
     {
-        Log.d(LOGTAG, "bindGorillaService: ...");
+        Log.d(LOGTAG, "bindService: ...");
 
         if (this.context != null)
         {
@@ -129,6 +93,8 @@ public class GorillaClient
 
     public void unbindService()
     {
+        Log.d(LOGTAG, "unbindService: ...");
+
         if (context != null)
         {
             context.unbindService(serviceConnection);
