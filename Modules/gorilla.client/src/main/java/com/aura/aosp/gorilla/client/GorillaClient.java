@@ -45,7 +45,7 @@ public class GorillaClient
     private String ownerUUID;
     private String apkname;
 
-    public void bindService(Context context)
+    public GorillaClient bindService(Context context)
     {
         Log.d(LOGTAG, "bindService: ...");
 
@@ -55,7 +55,7 @@ public class GorillaClient
             // Service already bound.
             //
 
-            return;
+            return this;
         }
 
         this.context = context;
@@ -89,9 +89,11 @@ public class GorillaClient
         };
 
         handler.post(serviceConnector);
+
+        return this;
     }
 
-    public void unbindService()
+    public GorillaClient unbindService()
     {
         Log.d(LOGTAG, "unbindService: ...");
 
@@ -103,6 +105,8 @@ public class GorillaClient
             apkname = null;
             serviceConnection = null;
         }
+
+        return this;
     }
 
     void startMainActivity()
