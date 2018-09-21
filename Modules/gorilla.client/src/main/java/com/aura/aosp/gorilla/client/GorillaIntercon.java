@@ -184,34 +184,4 @@ public class GorillaIntercon
             return null;
         }
     }
-
-    public static String createSHASignatureBase64neu(String serverSecret, String clientSecret, Object... params)
-    {
-        return Base64.encodeToString(createSHASignatureneu(serverSecret, clientSecret, params), Base64.NO_WRAP);
-    }
-
-    @Nullable
-    public static byte[] createSHASignatureneu(String serverSecret, String clientSecret, Object... params)
-    {
-        try
-        {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-
-            md.update(Base64.decode(serverSecret, Base64.DEFAULT));
-            md.update(Base64.decode(clientSecret, Base64.DEFAULT));
-
-            for (Object param : params)
-            {
-                if (param != null) md.update(param.toString().getBytes());
-            }
-
-            return md.digest();
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-
-            return null;
-        }
-    }
 }

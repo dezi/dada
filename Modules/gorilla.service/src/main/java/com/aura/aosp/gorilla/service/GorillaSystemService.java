@@ -79,7 +79,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public boolean requestPersisted(String apkname, String checksum)
     {
-        String solution = GorillaIntercon.createSHASignatureBase64neu(apkname, apkname);
+        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname);
 
         if ((checksum == null) || !checksum.equals(solution))
         {
