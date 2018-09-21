@@ -10,12 +10,17 @@
         android:theme="@style/AppTheme"
         android:name=".ApplicationBase">
 
-        <activity android:name=".MainActivity" android:enabled="true">
+        <activity
+            android:name=".MainActivity"
+            android:enabled="true"
+            android:launchMode="singleTask">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
         <activity android:name=".ChatActivity" />
