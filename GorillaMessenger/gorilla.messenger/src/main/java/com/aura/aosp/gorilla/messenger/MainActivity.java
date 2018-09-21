@@ -1,13 +1,12 @@
 package com.aura.aosp.gorilla.messenger;
 
+import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.os.Bundle;
+import android.util.Log;
 
 import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Json;
@@ -22,6 +21,7 @@ import com.aura.aosp.aura.gui.views.GUIListView;
 import com.aura.aosp.aura.gui.views.GUIScrollView;
 
 import com.aura.aosp.gorilla.client.GorillaClient;
+import com.aura.aosp.gorilla.client.GorillaListener;
 
 import org.json.JSONObject;
 
@@ -67,85 +67,7 @@ public class MainActivity extends AppCompatActivity
 
         title = getTitle().toString();
 
-        GorillaClient gc = GorillaClient.getInstance();
-        gc.bindGorillaService(this);
-
-        gc.setOnStatusReceivedListener(new GorillaClient.OnStatusReceivedListener()
-        {
-            @Override
-            public void onStatusReceived(JSONObject status)
-            {
-                Log.d(LOGTAG, "onStatusReceived: status=" + status.toString());
-
-                svlink = Json.getBoolean(status, "svlink");
-                uplink = Json.getBoolean(status, "uplink");
-
-                updateTitle();
-
-                for (ChatProfile chatProfile : chatProfiles)
-                {
-                    chatProfile.activity.setStatus(svlink, uplink);
-                    chatProfile.activity.updateTitle();
-                }
-            }
-        });
-
-        gc.setOnOwnerReceivedListener(new GorillaClient.OnOwnerReceivedListener()
-        {
-            @Override
-            public void onOwnerReceived(JSONObject owner)
-            {
-                Log.d(LOGTAG, "onOwnerReceived: owner=" + owner.toString());
-
-                String ownerUUID = Json.getString(owner, "ownerUUID");
-
-                ownerIdent = Contacts.getContact(ownerUUID);
-
-                updateTitle();
-
-                for (ChatProfile chatProfile : chatProfiles)
-                {
-                    chatProfile.activity.finish();
-                }
-            }
-        });
-
-        gc.setOnMessageReceivedListener(new GorillaClient.OnMessageReceivedListener()
-        {
-            @Override
-            public void onMessageReceived(JSONObject message)
-            {
-                Log.d(LOGTAG, "onMessageReceived: message=" + message.toString());
-
-                displayMessageInList(message);
-
-                String remoteUserUUID = Json.getString(message, "sender");
-                String remoteDeviceUUID = Json.getString(message, "device");
-
-                for (ChatProfile chatProfile : chatProfiles)
-                {
-                    if (! chatProfile.remoteUserUUID.equals(remoteUserUUID)) continue;
-                    if (! chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
-
-                    chatProfile.activity.dispatchMessage(message);
-                    break;
-                }
-            }
-        });
-
-        gc.setOnResultReceivedListener(new GorillaClient.OnResultReceivedListener()
-        {
-            @Override
-            public void onResultReceived(JSONObject result)
-            {
-                Log.d(LOGTAG, "onResultReceived: result=" + result.toString());
-
-                for (ChatProfile chatProfile : chatProfiles)
-                {
-                    chatProfile.activity.dispatchResult(result);
-                }
-            }
-        });
+        GorillaClient.getInstance().subscribeGorillaListener(listener);
     }
 
     @Override
@@ -187,8 +109,8 @@ public class MainActivity extends AppCompatActivity
 
         Log.d(LOGTAG, "onDestroy: ...");
 
-        GorillaClient gc = GorillaClient.getInstance();
-        gc.unbindGorillaService();
+        GorillaClient.getInstance().unsubscribeGorillaListener(listener);
+
     }
 
     private void updateTitle()
@@ -211,7 +133,7 @@ public class MainActivity extends AppCompatActivity
 
         GUILinearLayout centerFrame = new GUILinearLayout(this);
         centerFrame.setSizeDip(Simple.MP, Simple.MP);
-        centerFrame.setOrientation(LinearLayout.VERTICAL);
+        centerFrame.setOrientation(GUILinearLayout.VERTICAL);
         centerFrame.setGravity(Gravity.START);
 
         topFrame.addView(centerFrame);
@@ -298,4 +220,72 @@ public class MainActivity extends AppCompatActivity
             ((GUIListEntry) child).dateView.setText(dateStr);
         }
     }
+
+    private final GorillaListener listener = new GorillaListener()
+    {
+        @Override
+        public void onStatusReceived(JSONObject status)
+        {
+            Log.d(LOGTAG, "onStatusReceived: status=" + status.toString());
+
+            svlink = Json.getBoolean(status, "svlink");
+            uplink = Json.getBoolean(status, "uplink");
+
+            updateTitle();
+
+            for (ChatProfile chatProfile : chatProfiles)
+            {
+                chatProfile.activity.setStatus(svlink, uplink);
+                chatProfile.activity.updateTitle();
+            }
+        }
+
+        @Override
+        public void onOwnerReceived(JSONObject owner)
+        {
+            Log.d(LOGTAG, "onOwnerReceived: owner=" + owner.toString());
+
+            String ownerUUID = Json.getString(owner, "ownerUUID");
+
+            ownerIdent = Contacts.getContact(ownerUUID);
+
+            updateTitle();
+
+            for (ChatProfile chatProfile : chatProfiles)
+            {
+                chatProfile.activity.finish();
+            }
+        }
+
+        @Override
+        public void onMessageReceived(JSONObject message)
+        {
+            Log.d(LOGTAG, "onMessageReceived: message=" + message.toString());
+
+            displayMessageInList(message);
+
+            String remoteUserUUID = Json.getString(message, "sender");
+            String remoteDeviceUUID = Json.getString(message, "device");
+
+            for (ChatProfile chatProfile : chatProfiles)
+            {
+                if (! chatProfile.remoteUserUUID.equals(remoteUserUUID)) continue;
+                if (! chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
+
+                chatProfile.activity.dispatchMessage(message);
+                break;
+            }
+        }
+
+        @Override
+        public void onResultReceived(JSONObject result)
+        {
+            Log.d(LOGTAG, "onResultReceived: result=" + result.toString());
+
+            for (ChatProfile chatProfile : chatProfiles)
+            {
+                chatProfile.activity.dispatchResult(result);
+            }
+        }
+    };
 }

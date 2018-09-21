@@ -13,6 +13,9 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @SuppressLint("StaticFieldLeak")
 public class GorillaClient
 {
@@ -69,24 +72,16 @@ public class GorillaClient
 
     //region Instance implemention.
 
+    private final List<GorillaListener> gorillaListeners = new ArrayList<>();
+    private final Handler handler = new Handler();
+
     private Context context;
-    private Handler handler;
 
     private ServiceConnection serviceConnection;
     private String ownerUUID;
     private String apkname;
 
-    private OnStatusReceivedListener onStatusReceivedListener;
-    private OnOwnerReceivedListener onOwnerReceivedListener;
-    private OnResultReceivedListener onResultReceivedListener;
-    private OnMessageReceivedListener onMessageReceivedListener;
-
-    public GorillaClient()
-    {
-        this.handler = new Handler();
-    }
-
-    public void bindGorillaService(Context context)
+    public void bindService(Context context)
     {
         Log.d(LOGTAG, "bindGorillaService: ...");
 
@@ -132,7 +127,7 @@ public class GorillaClient
         handler.post(serviceConnector);
     }
 
-    public void unbindGorillaService()
+    public void unbindService()
     {
         if (context != null)
         {
@@ -141,11 +136,6 @@ public class GorillaClient
             context = null;
             apkname = null;
             serviceConnection = null;
-
-            onStatusReceivedListener = null;
-            onOwnerReceivedListener = null;
-            onResultReceivedListener = null;
-            onMessageReceivedListener = null;
         }
     }
 
@@ -322,18 +312,21 @@ public class GorillaClient
     {
         Log.d(LOGTAG, "receiveStatus: status=" + status.toString());
 
-        final OnStatusReceivedListener listener = onStatusReceivedListener;
-        if (listener == null) return;
-
         handler.post(new Runnable()
         {
             @Override
             public void run()
             {
-                listener.onStatusReceived(status);
+                synchronized (gorillaListeners)
+                {
+                    for (GorillaListener gl : gorillaListeners)
+                    {
+                        gl.onStatusReceived(status);
+                    }
+                }
             }
         });
-    }
+   }
 
     private void receiveOwnerUUID()
     {
@@ -361,15 +354,18 @@ public class GorillaClient
     {
         Log.d(LOGTAG, "receiveOwnerUUID: owner=" + owner.toString());
 
-        final OnOwnerReceivedListener listener = onOwnerReceivedListener;
-        if (listener == null) return;
-
         handler.post(new Runnable()
         {
             @Override
             public void run()
             {
-                listener.onOwnerReceived(owner);
+                synchronized (gorillaListeners)
+                {
+                    for (GorillaListener gl : gorillaListeners)
+                    {
+                        gl.onOwnerReceived(owner);
+                    }
+                }
             }
         });
     }
@@ -391,15 +387,18 @@ public class GorillaClient
     {
         Log.d(LOGTAG, "receivePayload: message=" + message.toString());
 
-        final OnMessageReceivedListener listener = onMessageReceivedListener;
-        if (listener == null) return;
-
         handler.post(new Runnable()
         {
             @Override
             public void run()
             {
-                listener.onMessageReceived(message);
+                synchronized (gorillaListeners)
+                {
+                    for (GorillaListener gl : gorillaListeners)
+                    {
+                        gl.onMessageReceived(message);
+                    }
+                }
             }
         });
     }
@@ -421,15 +420,18 @@ public class GorillaClient
     {
         Log.d(LOGTAG, "receivePayloadResult: result=" + result.toString());
 
-        final OnResultReceivedListener listener = onResultReceivedListener;
-        if (listener == null) return;
-
         handler.post(new Runnable()
         {
             @Override
             public void run()
             {
-                listener.onResultReceived(result);
+                synchronized (gorillaListeners)
+                {
+                    for (GorillaListener gl : gorillaListeners)
+                    {
+                        gl.onResultReceived(result);
+                    }
+                }
             }
         });
     }
@@ -493,30 +495,26 @@ public class GorillaClient
         }
     }
 
-    public void setOnStatusReceivedListener(OnStatusReceivedListener onStatusReceivedListener)
+    public void subscribeGorillaListener(GorillaListener gorillaListener)
     {
-        this.onStatusReceivedListener = onStatusReceivedListener;
-
-        receiveStatus();
+        synchronized (gorillaListeners)
+        {
+            if (! gorillaListeners.contains(gorillaListener))
+            {
+                gorillaListeners.add(gorillaListener);
+            }
+        }
     }
 
-    public void setOnOwnerReceivedListener(OnOwnerReceivedListener onOwnerReceivedListener)
+    public void unsubscribeGorillaListener(GorillaListener gorillaListener)
     {
-        this.onOwnerReceivedListener = onOwnerReceivedListener;
-
-        receiveOwnerUUID();
-    }
-
-    public void setOnResultReceivedListener(OnResultReceivedListener onResultReceivedListener)
-    {
-        this.onResultReceivedListener = onResultReceivedListener;
-    }
-
-    public void setOnMessageReceivedListener(OnMessageReceivedListener onMessageReceivedListener)
-    {
-        this.onMessageReceivedListener = onMessageReceivedListener;
-
-        requestPersisted();
+        synchronized (gorillaListeners)
+        {
+            if (gorillaListeners.contains(gorillaListener))
+            {
+                gorillaListeners.remove(gorillaListener);
+            }
+        }
     }
 
     //endregion Instance implemention.
