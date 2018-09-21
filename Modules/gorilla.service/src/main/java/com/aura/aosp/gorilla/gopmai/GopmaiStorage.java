@@ -4,18 +4,10 @@ import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.common.simple.Err;
 
-import org.json.JSONArray;
-
 public class GopmaiStorage
 {
     @Nullable
-    public static Err pmaiRegisterActionEvent(String actionDomain, String subAction)
-    {
-        return null;
-    }
-
-    @Nullable
-    public static JSONArray pmaiSuggestActions()
+    public static Err registerActionEvent(String actionDomain, String subAction)
     {
         return null;
     }

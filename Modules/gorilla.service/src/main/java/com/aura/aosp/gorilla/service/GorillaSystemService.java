@@ -11,6 +11,7 @@ import com.aura.aosp.gorilla.client.IGorillaSystemService;
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 import com.aura.aosp.gorilla.gopmai.GopmaiStorage;
+import com.aura.aosp.gorilla.gopmai.GopmaiSuggest;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
 import org.json.JSONArray;
@@ -187,14 +188,14 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public boolean pmaiRegisterActionEvent(String apkname, String actionDomain, String subAction)
     {
-        Err err = GopmaiStorage.pmaiRegisterActionEvent(actionDomain, subAction);
+        Err err = GopmaiStorage.registerActionEvent(actionDomain, subAction);
         return (err == null);
     }
 
     @Override
     public String pmaiSuggestActions(String apkname)
     {
-        JSONArray results = GopmaiStorage.pmaiSuggestActions();
+        JSONArray results = GopmaiSuggest.suggestActions();
         if (results == null) return null;
 
         return results.toString();
