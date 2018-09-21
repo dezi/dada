@@ -1,15 +1,19 @@
 package com.aura.aosp.gorilla.service;
 
 import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Log;
 
 import com.aura.aosp.gorilla.client.GorillaIntercon;
 import com.aura.aosp.gorilla.client.IGorillaSystemService;
 
+import com.aura.aosp.gorilla.goatom.GoatomStorage;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
+import com.aura.aosp.gorilla.gopmai.GopmaiStorage;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class GorillaSystemService extends IGorillaSystemService.Stub
@@ -155,30 +159,44 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public boolean putAtom(String apkname, String userUUID, String atomJSON, String checksum)
     {
-        return false;
+        JSONObject atom = Json.fromStringObject(atomJSON);
+        if (atom == null) return false;
+
+        Err err = GoatomStorage.putAtom(userUUID, atom);
+        return (err == null);
     }
 
     @Override
     public String getAtom(String apkname, String userUUID, String atomUUID, String checksum)
     {
-        return null;
+        JSONObject atom = GoatomStorage.getAtom(userUUID, atomUUID);
+        if (atom == null) return null;
+
+        return atom.toString();
     }
 
     @Override
     public String queryAtoms(String apkname, String userUUID, String atomType, long timeFrom, long timeTo)
     {
-        return null;
+        JSONArray results = GoatomStorage.queryAtoms(userUUID, atomType, timeFrom, timeTo);
+        if (results == null) return null;
+
+        return results.toString();
     }
 
     @Override
     public boolean pmaiRegisterActionEvent(String apkname, String actionDomain, String subAction)
     {
-        return false;
+        Err err = GopmaiStorage.pmaiRegisterActionEvent(actionDomain, subAction);
+        return (err == null);
     }
 
     @Override
     public String pmaiSuggestActions(String apkname)
     {
-        return null;
+        JSONArray results = GopmaiStorage.pmaiSuggestActions();
+        if (results == null) return null;
+
+        return results.toString();
     }
 }
