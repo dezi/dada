@@ -15,4 +15,14 @@ interface IGorillaSystemService
     String sendPayload(String apkname, String userUUID, String deviceUUID, String payload, String checksum);
 
     boolean sendPayloadRead(String apkname, String userUUID, String deviceUUID, String messageUUID, String checksum);
+
+    boolean putAtom(String apkname, String userUUID, String atomJSON, String checksum);
+
+    String getAtom(String apkname, String userUUID, String atomUUID, String checksum);
+
+    String queryAtoms(String apkname, String userUUID, String atomType, long timeFrom, long timeTo);
+
+    boolean pmaiRegisterActionEvent(String apkname, String actionDomain, String subAction);
+
+    String pmaiSuggestActions(String apkname);
 }

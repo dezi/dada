@@ -151,4 +151,34 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
 
         return GomessHandler.getInstance().sendPayloadRead(apkname, userUUID, deviceUUID, messageUUID);
     }
+
+    @Override
+    public boolean putAtom(String apkname, String userUUID, String atomJSON, String checksum)
+    {
+        return false;
+    }
+
+    @Override
+    public String getAtom(String apkname, String userUUID, String atomUUID, String checksum)
+    {
+        return null;
+    }
+
+    @Override
+    public String queryAtoms(String apkname, String userUUID, String atomType, long timeFrom, long timeTo)
+    {
+        return null;
+    }
+
+    @Override
+    public boolean pmaiRegisterActionEvent(String apkname, String actionDomain, String subAction)
+    {
+        return false;
+    }
+
+    @Override
+    public String pmaiSuggestActions(String apkname)
+    {
+        return null;
+    }
 }
