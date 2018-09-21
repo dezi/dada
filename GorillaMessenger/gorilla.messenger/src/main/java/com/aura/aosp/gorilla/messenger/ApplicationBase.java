@@ -16,7 +16,7 @@ public class ApplicationBase extends Application
 
         Log.d(LOGTAG, "onCreate: ...");
 
-        EventManager eventManager = new EventManager();
+        EventManager eventManager = new EventManager(this);
 
         GorillaClient.getInstance().bindService(this);
         GorillaClient.getInstance().subscribeGorillaListener(eventManager);

@@ -109,27 +109,6 @@ public class GorillaClient
         return this;
     }
 
-    void startMainActivity()
-    {
-        Log.d(LOGTAG, "startMainActivity: ...");
-
-        Intent startIntent = new Intent();
-
-        startIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startIntent.setAction(Intent.ACTION_MAIN);
-        startIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        startIntent.setPackage(context.getPackageName());
-
-        try
-        {
-            context.startActivity(startIntent);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-
     private final Runnable serviceConnector = new Runnable()
     {
         @Override
@@ -192,7 +171,6 @@ public class GorillaClient
 
             receiveStatus();
             receiveOwnerUUID(ownerUUID);
-            startMainActivity();
         }
         catch (Exception ex)
         {

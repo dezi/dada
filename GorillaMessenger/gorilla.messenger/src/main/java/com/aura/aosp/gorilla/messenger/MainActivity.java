@@ -71,6 +71,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+
+        Log.d(LOGTAG, "onDestroy: ...");
+
+        GorillaClient.getInstance().unsubscribeGorillaListener(listener);
+    }
+
+    @Override
     protected void onStart()
     {
         super.onStart();
@@ -100,17 +110,6 @@ public class MainActivity extends AppCompatActivity
         super.onStop();
 
         Log.d(LOGTAG, "onStop: ...");
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-
-        Log.d(LOGTAG, "onDestroy: ...");
-
-        GorillaClient.getInstance().unsubscribeGorillaListener(listener);
-
     }
 
     private void updateTitle()

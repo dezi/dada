@@ -1,7 +1,10 @@
 package com.aura.aosp.gorilla.messenger;
 
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
+import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.gorilla.client.GorillaListener;
 
 import org.json.JSONObject;
@@ -9,6 +12,13 @@ import org.json.JSONObject;
 public class EventManager extends GorillaListener
 {
     private static final String LOGTAG = EventManager.class.getSimpleName();
+
+    private final Context context;
+
+    public EventManager(Context context)
+    {
+        this.context = context;
+    }
 
     @Override
     public void onStatusReceived(JSONObject status)
@@ -26,6 +36,8 @@ public class EventManager extends GorillaListener
     public void onMessageReceived(JSONObject message)
     {
         Log.d(LOGTAG, "onMessageReceived: message=" + message.toString());
+
+        startMainActivity();
     }
 
     @Override
@@ -33,4 +45,21 @@ public class EventManager extends GorillaListener
     {
         Log.d(LOGTAG, "onResultReceived: result=" + result.toString());
     }
+
+    private void startMainActivity()
+    {
+        Log.d(LOGTAG, "startMainActivity: ...");
+
+        Intent startIntent = new Intent(context, MainActivity.class);
+
+        try
+        {
+            context.startActivity(startIntent);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
 }
