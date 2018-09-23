@@ -12,8 +12,8 @@ import org.json.JSONObject;
 public class GomessNode
 {
     public String addr;
-    public int port;
-    public int cons;
+    public Integer port;
+    public Integer cons;
     public String city;
     public Double lat;
     public Double lon;
@@ -56,7 +56,7 @@ public class GomessNode
         lat = Json.getDouble(jGomessNode, "lat");
         lon = Json.getDouble(jGomessNode, "lon");
 
-        if ((addr == null) || (port == 0))
+        if ((addr == null) || (port == null))
         {
             return Err.err("invalid json object=%s", jGomessNode.toString());
         }

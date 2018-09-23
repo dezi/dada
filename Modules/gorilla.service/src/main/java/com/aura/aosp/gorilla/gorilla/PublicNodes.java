@@ -2,15 +2,16 @@ package com.aura.aosp.gorilla.gorilla;
 
 import android.support.annotation.Nullable;
 
-import com.aura.aosp.aura.common.simple.Err;
-import com.aura.aosp.aura.common.simple.Json;
-import com.aura.aosp.aura.common.simple.Log;
-import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.utility.Regions;
+import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.aura.common.simple.Json;
+import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Log;
+
 import com.aura.aosp.gorilla.service.BuildConfig;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.HashMap;

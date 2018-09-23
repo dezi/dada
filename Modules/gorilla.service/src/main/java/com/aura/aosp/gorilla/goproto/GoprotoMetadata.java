@@ -2,10 +2,10 @@ package com.aura.aosp.gorilla.goproto;
 
 import android.support.annotation.Nullable;
 
-import com.aura.aosp.aura.common.simple.Err;
-import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Marshal;
 import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.aura.common.simple.Json;
+import com.aura.aosp.aura.common.simple.Err;
 
 import org.json.JSONObject;
 
@@ -15,7 +15,6 @@ public class GoprotoMetadata implements Json.JsonMarshaller
     private int status;
     private int reserved1;
     private int reserved2;
-
 
     public long getTimeStamp()
     {

@@ -2,11 +2,11 @@ package com.aura.aosp.gorilla.goproto;
 
 import android.support.annotation.Nullable;
 
-import com.aura.aosp.aura.common.crypter.AES;
-import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.sockets.Connect;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.common.univid.Owner;
+import com.aura.aosp.aura.common.crypter.AES;
+import com.aura.aosp.aura.common.simple.Err;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;

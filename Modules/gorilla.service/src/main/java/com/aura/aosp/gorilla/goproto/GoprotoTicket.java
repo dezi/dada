@@ -112,12 +112,6 @@ public class GoprotoTicket implements Json.JsonMarshaller
     }
 
     @Nullable
-    public GoprotoMetadata getMetadata()
-    {
-        return Metadata;
-    }
-
-    @Nullable
     public Long getTimeStamp()
     {
         if (Metadata == null)
@@ -153,7 +147,6 @@ public class GoprotoTicket implements Json.JsonMarshaller
         return Metadata.getStatus();
     }
 
-    @Nullable
     public void setStatus(int status)
     {
         if (Metadata == null)
@@ -163,6 +156,12 @@ public class GoprotoTicket implements Json.JsonMarshaller
         }
 
         Metadata.setStatus(status);
+    }
+
+    @Nullable
+    public GoprotoMetadata getMetadata()
+    {
+        return Metadata;
     }
 
     public void setMetadata(GoprotoMetadata metadata)
