@@ -125,10 +125,23 @@ public class ChatActivity extends AppCompatActivity
                 Long time = Json.getLong(result,"time");
                 String uuid = Json.getString(result,"uuid");
 
+                JSONObject atomLoad = new JSONObject();
+                Json.put(atomLoad, "message", message);
+                Json.put(atomLoad, "queued", time);
+
+                JSONObject atom = new JSONObject();
+
+                Json.put(atom, "uuid", uuid);
+                Json.put(atom, "time", time);
+                Json.put(atom, "type", "chat.message");
+                Json.put(atom, "load", atomLoad);
+
+                GorillaClient.getInstance().putAtom(chatProfile.remoteUserUUID, atom);
+
                 editText.setText("");
 
                 ChatFragment cf = new ChatFragment(view.getContext());
-                cf.setContent(true, uuid, time, MainActivity.ownerIdent.getNick(), null, message);
+                cf.setContent(true, MainActivity.ownerIdent.getNick(), atom);
                 chatContent.addView(cf);
 
                 scrollDown();
@@ -164,8 +177,19 @@ public class ChatActivity extends AppCompatActivity
         final String uuid = Json.getString(message, "uuid");
         final String text = Json.getString(message, "payload");
 
+        JSONObject atomLoad = new JSONObject();
+        Json.put(atomLoad, "message", text);
+        Json.put(atomLoad, "queued", time);
+
+        JSONObject atom = new JSONObject();
+
+        Json.put(atom, "uuid", uuid);
+        Json.put(atom, "time", time);
+        Json.put(atom, "type", "aura.chat.message");
+        Json.put(atom, "load", atomLoad);
+
         ChatFragment cf = new ChatFragment(this);
-        cf.setContent(false, uuid, time, chatProfile.remoteNick, null, text);
+        cf.setContent(false, chatProfile.remoteNick, atom);
         chatContent.addView(cf);
 
         scrollDown();
@@ -204,6 +228,10 @@ public class ChatActivity extends AppCompatActivity
             Log.d(LOGTAG, "dispatchResult: ###### child uuid=" + cf.getMessageUUID() + " status=" + status);
 
             cf.setStatusIcon(status, time);
+            JSONObject atom = cf.getAtom();
+            if (atom == null) continue;
+
+            GorillaClient.getInstance().putAtom(remoteUserUUID, atom);
         }
     }
 

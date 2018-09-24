@@ -1,5 +1,6 @@
 package com.aura.aosp.aura.common.crypter;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import android.util.Base64;
@@ -60,6 +61,25 @@ public class UID
         long secondLong = bb.getLong();
 
         return new UUID(firstLong, secondLong).toString();
+    }
+
+    @Nullable
+    public static String getUUIDString(@NonNull String uuidbase64)
+    {
+        byte[] uuidbytes = getUUIDBytes(uuidbase64);
+        if (uuidbytes == null)
+        {
+            Err.errp();
+            return null;
+        }
+
+        if (uuidbytes.length != 16)
+        {
+            Err.errp("uuid wrong size=%d!", uuidbytes.length);
+            return null;
+        }
+
+        return getUUIDString(uuidbytes);
     }
 
     @Nullable

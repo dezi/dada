@@ -18,6 +18,8 @@ import com.aura.aosp.aura.gui.views.GUITextView;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.gorilla.client.GorillaClient;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +50,7 @@ public class ChatFragment extends GUILinearLayout
     private GUIFrameLayout bubbleBox;
     private GUITextView messageBox;
     private GUIIconView statusIcon;
+    private JSONObject atom;
 
     boolean send;
     Long timeQueued;
@@ -65,6 +68,12 @@ public class ChatFragment extends GUILinearLayout
     }
 
     @Nullable
+    public JSONObject getAtom()
+    {
+        return atom;
+    }
+
+    @Nullable
     public String getMessageUUID()
     {
         return messageUUID;
@@ -77,31 +86,44 @@ public class ChatFragment extends GUILinearLayout
 
     public void setStatusIcon(String status, Long timeStamp)
     {
-        if (status.equals("queued"))
+        try
         {
-            statusIcon.setImageResource(R.drawable.ms_server_wait);
-            timeQueued = timeStamp;
-            makeTimeStatus();
-        }
+            JSONObject load = atom.getJSONObject("load");
 
-        if (status.equals("send"))
-        {
-            statusIcon.setImageResource(R.drawable.ms_server_recv);
-            timeSend = timeStamp;
-            makeTimeStatus();
-        }
+            if (status.equals("queued"))
+            {
+                statusIcon.setImageResource(R.drawable.ms_server_wait);
+                timeQueued = timeStamp;
+                load.put(status, timeStamp);
+                makeTimeStatus();
+            }
 
-        if (status.equals("received"))
-        {
-            statusIcon.setImageResource(R.drawable.ms_client_recv);
-            timeReceived = timeStamp;
-            makeTimeStatus();
-        }
+            if (status.equals("send"))
+            {
+                statusIcon.setImageResource(R.drawable.ms_server_recv);
+                timeSend = timeStamp;
+                load.put(status, timeStamp);
+                makeTimeStatus();
+            }
 
-        if (status.equals("read"))
+            if (status.equals("received"))
+            {
+                statusIcon.setImageResource(R.drawable.ms_client_recv);
+                timeReceived = timeStamp;
+                load.put(status, timeStamp);
+                makeTimeStatus();
+            }
+
+            if (status.equals("read"))
+            {
+                statusIcon.setImageResource(R.drawable.ms_client_read);
+                load.put(status, timeStamp);
+                timeRead = timeStamp;
+            }
+        }
+        catch (Exception ex)
         {
-            statusIcon.setImageResource(R.drawable.ms_client_read);
-            timeRead = timeStamp;
+            ex.printStackTrace();
         }
     }
 
@@ -134,7 +156,27 @@ public class ChatFragment extends GUILinearLayout
         }
     };
 
-    public void setContent(boolean send, String messageUUID, Long timeStamp, String username, String attachment, String message)
+    public void setContent(boolean send, String username, JSONObject atom)
+    {
+        this.atom = atom;
+
+        try
+        {
+            String uuid = atom.getString("uuid");
+            Long time = atom.getLong("time");
+
+            JSONObject load = atom.getJSONObject("load");
+            String message = load.getString("message");
+
+            setContent(send, username, uuid, time, null, message);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    public void setContent(boolean send, String username, String messageUUID, Long timeStamp, String attachment, String message)
     {
         if (username == null)
         {
@@ -142,11 +184,11 @@ public class ChatFragment extends GUILinearLayout
         }
         else
         {
-            setContentMessage(send, messageUUID, timeStamp, username, attachment, message);
+            setContentMessage(send, username, messageUUID, timeStamp, attachment, message);
         }
     }
 
-    private void setContentMessage(boolean send, String messageUUID, Long timeStamp, String username, String attachment, String message)
+    private void setContentMessage(boolean send, String username, String messageUUID, Long timeStamp, String attachment, String message)
     {
         this.send = send;
         this.messageUUID = messageUUID;

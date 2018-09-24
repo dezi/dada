@@ -41,7 +41,7 @@ public class Dates
     }
 
     @NonNull
-    public static String getUniversalDateAndTimeMillis(Long timeStamp)
+    public static String getUniversalDateAndTimeMillis(@NonNull Long timeStamp)
     {
         try
         {

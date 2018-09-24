@@ -426,6 +426,30 @@ public class GorillaClient
         }
     }
 
+    public boolean putAtom(String userUUID, JSONObject atom)
+    {
+        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        if (gr == null) return false;
+
+        try
+        {
+            String atomStr = atom.toString(2);
+
+            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, atomStr);
+
+            boolean result = gr.putAtom(apkname, userUUID, atomStr, checksum);
+
+            Log.d(LOGTAG, "putAtom: result=" + result);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
     public void subscribeGorillaListener(GorillaListener gorillaListener)
     {
         synchronized (gorillaListeners)
