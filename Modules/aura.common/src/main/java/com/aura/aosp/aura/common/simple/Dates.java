@@ -1,16 +1,17 @@
 package com.aura.aosp.aura.common.simple;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 import java.util.Locale;
 import java.util.Date;
-import java.util.TimeZone;
 
 public class Dates
 {
-    @NonNull
-    public static String getLocalDateAndTime(Long timeStamp)
+    @Nullable
+    public static String getLocalDateAndTime(@NonNull Long timeStamp)
     {
         try
         {
@@ -20,12 +21,12 @@ public class Dates
         }
         catch(Exception ex)
         {
-            return "19700101000000";
+            return null;
         }
     }
 
-    @NonNull
-    public static String getUniversalDate(Long timeStamp)
+    @Nullable
+    public static String getUniversalDate(@NonNull Long timeStamp)
     {
         try
         {
@@ -36,12 +37,12 @@ public class Dates
         }
         catch(Exception ex)
         {
-            return "19700101000000";
+            return null;
         }
     }
 
-    @NonNull
-    public static String getUniversalDateAndTime(Long timeStamp)
+    @Nullable
+    public static String getUniversalDateAndTime(@NonNull Long timeStamp)
     {
         try
         {
@@ -52,11 +53,11 @@ public class Dates
         }
         catch(Exception ex)
         {
-            return "19700101000000";
+            return null;
         }
     }
 
-    @NonNull
+    @Nullable
     public static String getUniversalDateAndTimeMillis(@NonNull Long timeStamp)
     {
         try
@@ -68,7 +69,7 @@ public class Dates
         }
         catch(Exception ex)
         {
-            return "19700101000000000";
+            return null;
         }
     }
 }
