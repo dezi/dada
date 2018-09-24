@@ -1,5 +1,6 @@
 package com.aura.aosp.aura.common.simple;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.json.JSONArray;
@@ -542,6 +543,52 @@ public class Json
         Collections.sort(jsonValues, new comparedat());
 
         return new JSONArray(jsonValues);
+    }
+
+    public static void cleanJsonTempKeys(@NonNull JSONObject json)
+    {
+        Iterator<String> keys = json.keys();
+
+        while (keys.hasNext())
+        {
+            String key = keys.next();
+
+            if (key.endsWith("_"))
+            {
+                Json.remove(json, key);
+                continue;
+            }
+
+            Object obj = Json.get(json, key);
+
+            if (obj instanceof JSONObject)
+            {
+                cleanJsonTempKeys((JSONObject) obj);
+            }
+
+            if (obj instanceof JSONArray)
+            {
+                cleanJsonTempKeys((JSONArray) obj);
+            }
+        }
+    }
+
+    public static void cleanJsonTempKeys(@NonNull JSONArray json)
+    {
+        for (int inx = 0; inx < json.length(); inx++)
+        {
+            Object obj = Json.get(json, inx);
+
+            if (obj instanceof JSONObject)
+            {
+                cleanJsonTempKeys((JSONObject) obj);
+            }
+
+            if (obj instanceof JSONArray)
+            {
+                cleanJsonTempKeys((JSONArray) obj);
+            }
+        }
     }
 
     public interface JsonMarshaller

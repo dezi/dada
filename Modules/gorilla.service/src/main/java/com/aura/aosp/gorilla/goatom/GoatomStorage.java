@@ -145,55 +145,9 @@ public class GoatomStorage
 
     private final static Object mutex = new Object();
 
-    private static void cleanJson(@NonNull JSONObject json)
-    {
-        Iterator<String> keys = json.keys();
-
-        while (keys.hasNext())
-        {
-            String key = keys.next();
-
-            if (key.endsWith("_"))
-            {
-                Json.remove(json, key);
-                continue;
-            }
-
-            Object obj = Json.get(json, key);
-
-            if (obj instanceof JSONObject)
-            {
-                cleanJson((JSONObject) obj);
-            }
-
-            if (obj instanceof JSONArray)
-            {
-                cleanJson((JSONArray) obj);
-            }
-        }
-    }
-
-    private static void cleanJson(@NonNull JSONArray json)
-    {
-        for (int inx = 0; inx < json.length(); inx++)
-        {
-            Object obj = Json.get(json, inx);
-
-            if (obj instanceof JSONObject)
-            {
-                cleanJson((JSONObject) obj);
-            }
-
-            if (obj instanceof JSONArray)
-            {
-                cleanJson((JSONArray) obj);
-            }
-        }
-    }
-
     private static void prepareAtom(@NonNull JSONObject atom)
     {
-        cleanJson(atom);
+        Json.cleanJsonTempKeys(atom);
 
         if (!Json.has(atom, "uuid"))
         {
