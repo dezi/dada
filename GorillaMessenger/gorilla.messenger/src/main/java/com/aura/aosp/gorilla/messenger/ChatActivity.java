@@ -22,6 +22,11 @@ import com.aura.aosp.gorilla.client.GorillaClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 public class ChatActivity extends AppCompatActivity
 {
     private static final String LOGTAG = ChatActivity.class.getSimpleName();
@@ -75,7 +80,17 @@ public class ChatActivity extends AppCompatActivity
             for (int inx = 0; inx < recv.length(); inx++)
             {
                 JSONObject atom = Json.getObject(recv, inx);
-                Json.put(atom, "mode", "recv");
+                if (atom == null) continue;
+                JSONObject load = Json.getObject(atom, "load");
+                if (load == null) continue;
+
+                Long sort = Json.getLong(load, "received");
+                if (sort == null) sort = Json.getLong(load, "queued");
+                if (sort == null) sort = Json.getLong(atom, "time");
+
+                Json.put(atom, "sort_", sort);
+                Json.put(atom, "mode_", "recv");
+
                 Json.put(combined, atom);
             }
         }
@@ -85,20 +100,33 @@ public class ChatActivity extends AppCompatActivity
             for (int inx = 0; inx < send.length(); inx++)
             {
                 JSONObject atom = Json.getObject(send, inx);
-                Json.put(atom, "mode", "send");
+                if (atom == null) continue;
+                JSONObject load = Json.getObject(atom, "load");
+                if (load == null) continue;
+
+                Long sort = Json.getLong(load, "queued");
+                if (sort == null) sort = Json.getLong(atom, "time");
+
+                Json.put(atom, "sort_", sort);
+                Json.put(atom, "mode_", "send");
+
                 Json.put(combined, atom);
             }
         }
 
-        combined = Json.sortNumber(combined, "time", false);
+        combined = Json.sortNumber(combined, "sort_", false);
 
         for (int inx = 0; inx < combined.length(); inx++)
         {
             JSONObject atom = Json.getObject(combined, inx);
             if (atom == null) continue;
+
+            Json.remove(atom, "mode_");
+            Json.remove(atom, "sort_");
+
             Log.d(LOGTAG, "####### atom=" + atom.toString());
 
-            String mode = Json.getString(atom, "mode");
+            String mode = Json.getString(atom, "mode_");
             if (mode == null) continue;
 
             ChatFragment cf = new ChatFragment(this);
@@ -227,6 +255,7 @@ public class ChatActivity extends AppCompatActivity
         JSONObject atomLoad = new JSONObject();
         Json.put(atomLoad, "message", text);
         Json.put(atomLoad, "queued", time);
+        Json.put(atomLoad, "received", System.currentTimeMillis());
 
         JSONObject atom = new JSONObject();
 

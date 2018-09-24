@@ -64,6 +64,13 @@ public class Simple
         return 0;
     }
 
+    public static int compareTo(Long long1, Long long2)
+    {
+        if ((long1 != null) && (long2 != null)) return long1.compareTo(long2);
+
+        return 0;
+    }
+
     @Nullable
     public static Err mkdirs(File... dirs)
     {

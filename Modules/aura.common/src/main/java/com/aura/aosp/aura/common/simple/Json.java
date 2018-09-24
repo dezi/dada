@@ -525,10 +525,10 @@ public class Json
         {
             public int compare(JSONObject a, JSONObject b)
             {
-                long aval = desc ? getLong(b, sort) : getLong(a, sort);
-                long bval = desc ? getLong(a, sort) : getLong(b, sort);
+                Long aval = desc ? getLong(b, sort) : getLong(a, sort);
+                Long bval = desc ? getLong(a, sort) : getLong(b, sort);
 
-                return Long.compare(aval, bval);
+                return Simple.compareTo(aval, bval);
             }
         }
 
