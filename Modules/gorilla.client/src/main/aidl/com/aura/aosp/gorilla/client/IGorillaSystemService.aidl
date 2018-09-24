@@ -16,11 +16,17 @@ interface IGorillaSystemService
 
     boolean sendPayloadRead(String apkname, String userUUID, String deviceUUID, String messageUUID, String checksum);
 
-    boolean putAtom(String apkname, String userUUID, String atomJSON, String checksum);
+    boolean putAtom(String apkname, String atomJSON, String checksum);
+    boolean putAtomSharedBy(String apkname, String userUUID, String atomJSON, String checksum);
+    boolean putAtomSharedWith(String apkname, String userUUID, String atomJSON, String checksum);
 
-    String getAtom(String apkname, String userUUID, String atomUUID, String checksum);
+    String getAtom(String apkname, String atomUUID, String checksum);
+    String getAtomSharedBy(String apkname, String userUUID, String atomUUID, String checksum);
+    String getAtomSharedWith(String apkname, String userUUID, String atomUUID, String checksum);
 
-    String queryAtoms(String apkname, String userUUID, String atomType, long timeFrom, long timeTo);
+    String queryAtoms(String apkname, String atomType, long timeFrom, long timeTo);
+    String queryAtomsSharedBy(String apkname, String userUUID, String atomType, long timeFrom, long timeTo);
+    String queryAtomsSharedWith(String apkname, String userUUID, String atomType, long timeFrom, long timeTo);
 
     boolean pmaiRegisterActionEvent(String apkname, String actionDomain, String subAction);
 

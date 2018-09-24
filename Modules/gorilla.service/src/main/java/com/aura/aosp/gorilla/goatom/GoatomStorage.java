@@ -20,13 +20,46 @@ import java.io.File;
 public class GoatomStorage
 {
     @Nullable
-    public static Err putAtom(@NonNull String userUUID, @NonNull JSONObject atom)
+    public static Err putAtom(@NonNull JSONObject atom)
     {
         prepareAtom(atom);
 
-        File atomfile = getStorageFile(userUUID, atom);
+        String ownerUUID = Owner.getOwnerUUIDBase64();
+        if (ownerUUID == null) return Err.getLastErr();
 
-        Log.d("userUUID=%s atomfile=%s atom=%s", userUUID, atomfile, atom);
+        File atomfile = getStorageFile(ownerUUID, ownerUUID, atom);
+
+        Log.d("ownerUUID=%s userUUID=%s atomfile=%s atom=%s", ownerUUID, ownerUUID, atomfile, atom);
+
+        return Json.putFileContent(atomfile, atom);
+    }
+
+    @Nullable
+    public static Err putAtomSharedBy(@NonNull String userUUID, @NonNull JSONObject atom)
+    {
+        prepareAtom(atom);
+
+        String ownerUUID = Owner.getOwnerUUIDBase64();
+        if (ownerUUID == null) return Err.getLastErr();
+
+        File atomfile = getStorageFile(userUUID, ownerUUID, atom);
+
+        Log.d("ownerUUID=%s userUUID=%s atomfile=%s atom=%s", userUUID, ownerUUID, atomfile, atom);
+
+        return Json.putFileContent(atomfile, atom);
+    }
+
+    @Nullable
+    public static Err putAtomSharedWith(@NonNull String userUUID, @NonNull JSONObject atom)
+    {
+        prepareAtom(atom);
+
+        String ownerUUID = Owner.getOwnerUUIDBase64();
+        if (ownerUUID == null) return Err.getLastErr();
+
+        File atomfile = getStorageFile(ownerUUID, userUUID, atom);
+
+        Log.d("ownerUUID=%s userUUID=%s atomfile=%s atom=%s", ownerUUID, userUUID, atomfile, atom);
 
         return Json.putFileContent(atomfile, atom);
     }
@@ -38,7 +71,19 @@ public class GoatomStorage
     }
 
     @Nullable
-    public static JSONArray queryAtoms(@NonNull String userUUID, @NonNull String atomType, long timeFrom, long timeTo)
+    public static JSONArray queryAtoms(@NonNull String atomType, long timeFrom, long timeTo)
+    {
+        return null;
+    }
+
+    @Nullable
+    public static JSONArray queryAtomsSharedBy(@NonNull String userUUID, @NonNull String atomType, long timeFrom, long timeTo)
+    {
+        return null;
+    }
+
+    @Nullable
+    public static JSONArray queryAtomsSharedWith(@NonNull String userUUID, @NonNull String atomType, long timeFrom, long timeTo)
     {
         return null;
     }
@@ -64,7 +109,7 @@ public class GoatomStorage
     }
 
     @Nullable
-    private static File getStorageDir(@NonNull String userUUID, @NonNull String dateStr, @NonNull String atomType)
+    private static File getStorageDir(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull String dateStr, @NonNull String atomType)
     {
         if (dateStr.length() < 8)
         {
@@ -73,9 +118,6 @@ public class GoatomStorage
         }
 
         String datedayStr = dateStr.substring(0,8);
-
-        String ownerUUID = Owner.getOwnerUUIDBase64();
-        if (ownerUUID == null) return null;
 
         String ownerUUIDStr = UID.getUUIDString(ownerUUID);
         if (ownerUUIDStr == null) return null;
@@ -100,7 +142,7 @@ public class GoatomStorage
     }
 
     @Nullable
-    private static File getStorageFile(@NonNull String userUUID, @NonNull JSONObject atom)
+    private static File getStorageFile(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull JSONObject atom)
     {
         Long time = Json.getLong(atom, "time");
         if (time == null)
@@ -118,7 +160,7 @@ public class GoatomStorage
             return null;
         }
 
-        File storageDir = getStorageDir(userUUID, dateStr, atomType);
+        File storageDir = getStorageDir(ownerUUID, userUUID, dateStr, atomType);
         if (storageDir == null) return null;
 
         String atomUUID = Json.getString(atom, "uuid");

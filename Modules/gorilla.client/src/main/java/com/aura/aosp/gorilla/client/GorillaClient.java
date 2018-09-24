@@ -426,7 +426,31 @@ public class GorillaClient
         }
     }
 
-    public boolean putAtom(String userUUID, JSONObject atom)
+    public boolean putAtom(JSONObject atom)
+    {
+        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        if (gr == null) return false;
+
+        try
+        {
+            String atomStr = atom.toString(2);
+
+            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, atomStr);
+
+            boolean result = gr.putAtom(apkname, atomStr, checksum);
+
+            Log.d(LOGTAG, "putAtom: result=" + result);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean putAtomSharedBy(String userUUID, JSONObject atom)
     {
         IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
         if (gr == null) return false;
@@ -437,9 +461,33 @@ public class GorillaClient
 
             String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, atomStr);
 
-            boolean result = gr.putAtom(apkname, userUUID, atomStr, checksum);
+            boolean result = gr.putAtomSharedBy(apkname, userUUID, atomStr, checksum);
 
-            Log.d(LOGTAG, "putAtom: result=" + result);
+            Log.d(LOGTAG, "putAtomSharedBy: result=" + result);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean putAtomSharedWith(String userUUID, JSONObject atom)
+    {
+        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        if (gr == null) return false;
+
+        try
+        {
+            String atomStr = atom.toString(2);
+
+            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, atomStr);
+
+            boolean result = gr.putAtomSharedWith(apkname, userUUID, atomStr,checksum);
+
+            Log.d(LOGTAG, "putAtomSharedWith: result=" + result);
 
             return result;
         }

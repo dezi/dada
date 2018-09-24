@@ -158,17 +158,48 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public boolean putAtom(String apkname, String userUUID, String atomJSON, String checksum)
+    public boolean putAtom(String apkname, String atomJSON, String checksum)
     {
         JSONObject atom = Json.fromStringObject(atomJSON);
         if (atom == null) return false;
 
-        Err err = GoatomStorage.putAtom(userUUID, atom);
+        Err err = GoatomStorage.putAtom(atom);
         return (err == null);
     }
 
     @Override
-    public String getAtom(String apkname, String userUUID, String atomUUID, String checksum)
+    public boolean putAtomSharedBy(String apkname, String userUUID, String atomJSON, String checksum)
+    {
+        JSONObject atom = Json.fromStringObject(atomJSON);
+        if (atom == null) return false;
+
+        Err err = GoatomStorage.putAtomSharedBy(userUUID, atom);
+        return (err == null);
+    }
+
+    @Override
+    public boolean putAtomSharedWith(String apkname, String userUUID, String atomJSON, String checksum)
+    {
+        JSONObject atom = Json.fromStringObject(atomJSON);
+        if (atom == null) return false;
+
+        Err err = GoatomStorage.putAtomSharedWith(userUUID, atom);
+        return (err == null);
+    }
+
+    @Override
+    public String getAtom(String apkname, String atomUUID, String checksum)
+    {
+        //JSONObject atom = GoatomStorage.getAtom(userUUID, atomUUID);
+        //if (atom == null) return null;
+
+        //return atom.toString();
+
+        return null;
+    }
+
+    @Override
+    public String getAtomSharedBy(String apkname, String userUUID, String atomUUID, String checksum)
     {
         JSONObject atom = GoatomStorage.getAtom(userUUID, atomUUID);
         if (atom == null) return null;
@@ -177,9 +208,36 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public String queryAtoms(String apkname, String userUUID, String atomType, long timeFrom, long timeTo)
+    public String getAtomSharedWith(String apkname, String userUUID, String atomUUID, String checksum)
     {
-        JSONArray results = GoatomStorage.queryAtoms(userUUID, atomType, timeFrom, timeTo);
+        JSONObject atom = GoatomStorage.getAtom(userUUID, atomUUID);
+        if (atom == null) return null;
+
+        return atom.toString();
+    }
+
+    @Override
+    public String queryAtoms(String apkname, String atomType, long timeFrom, long timeTo)
+    {
+        JSONArray results = GoatomStorage.queryAtoms(atomType, timeFrom, timeTo);
+        if (results == null) return null;
+
+        return results.toString();
+    }
+
+    @Override
+    public String queryAtomsSharedBy(String apkname, String userUUID, String atomType, long timeFrom, long timeTo)
+    {
+        JSONArray results = GoatomStorage.queryAtomsSharedBy(userUUID, atomType, timeFrom, timeTo);
+        if (results == null) return null;
+
+        return results.toString();
+    }
+
+    @Override
+    public String queryAtomsSharedWith(String apkname, String userUUID, String atomType, long timeFrom, long timeTo)
+    {
+        JSONArray results = GoatomStorage.queryAtomsSharedWith(userUUID, atomType, timeFrom, timeTo);
         if (results == null) return null;
 
         return results.toString();

@@ -133,10 +133,10 @@ public class ChatActivity extends AppCompatActivity
 
                 Json.put(atom, "uuid", uuid);
                 Json.put(atom, "time", time);
-                Json.put(atom, "type", "chat.message");
+                Json.put(atom, "type", "aura.chat.message");
                 Json.put(atom, "load", atomLoad);
 
-                GorillaClient.getInstance().putAtom(chatProfile.remoteUserUUID, atom);
+                GorillaClient.getInstance().putAtomSharedWith(chatProfile.remoteUserUUID, atom);
 
                 editText.setText("");
 
@@ -188,6 +188,8 @@ public class ChatActivity extends AppCompatActivity
         Json.put(atom, "type", "aura.chat.message");
         Json.put(atom, "load", atomLoad);
 
+        GorillaClient.getInstance().putAtomSharedBy(chatProfile.remoteUserUUID, atom);
+
         ChatFragment cf = new ChatFragment(this);
         cf.setContent(false, chatProfile.remoteNick, atom);
         chatContent.addView(cf);
@@ -231,7 +233,7 @@ public class ChatActivity extends AppCompatActivity
             JSONObject atom = cf.getAtom();
             if (atom == null) continue;
 
-            GorillaClient.getInstance().putAtom(remoteUserUUID, atom);
+            GorillaClient.getInstance().putAtomSharedWith(remoteUserUUID, atom);
         }
     }
 
