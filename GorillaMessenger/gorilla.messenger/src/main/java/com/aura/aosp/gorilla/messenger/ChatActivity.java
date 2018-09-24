@@ -121,13 +121,13 @@ public class ChatActivity extends AppCompatActivity
             JSONObject atom = Json.getObject(combined, inx);
             if (atom == null) continue;
 
+            String mode = Json.getString(atom, "mode_");
+            if (mode == null) continue;
+
             Json.remove(atom, "mode_");
             Json.remove(atom, "sort_");
 
             Log.d(LOGTAG, "####### atom=" + atom.toString());
-
-            String mode = Json.getString(atom, "mode_");
-            if (mode == null) continue;
 
             ChatFragment cf = new ChatFragment(this);
             cf.setContent(mode.equals("send"), chatProfile.remoteNick, atom);
@@ -315,14 +315,14 @@ public class ChatActivity extends AppCompatActivity
 
     private void scrollDown()
     {
-        contentScroll.post(new Runnable()
+        contentScroll.postDelayed(new Runnable()
         {
             @Override
             public void run()
             {
                 contentScroll.fullScroll(ScrollView.FOCUS_DOWN);
             }
-        });
+        }, 500);
     }
 }
 

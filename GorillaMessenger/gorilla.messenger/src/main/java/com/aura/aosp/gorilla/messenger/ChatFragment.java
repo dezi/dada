@@ -7,6 +7,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.aura.aosp.aura.common.simple.Dates;
+import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.gui.base.GUIDefs;
 import com.aura.aosp.aura.gui.views.GUIFrameLayout;
@@ -53,6 +54,7 @@ public class ChatFragment extends GUILinearLayout
     private JSONObject atom;
 
     boolean send;
+
     Long timeQueued;
     Long timeSend;
     Long timeReceived;
@@ -158,41 +160,17 @@ public class ChatFragment extends GUILinearLayout
 
     public void setContent(boolean send, String username, JSONObject atom)
     {
+        this.send = send;
         this.atom = atom;
 
-        try
-        {
-            String uuid = atom.getString("uuid");
-            Long time = atom.getLong("time");
+        this.messageUUID = Json.getString(atom, "uuid");
+        if (this.messageUUID == null) return;
 
-            JSONObject load = atom.getJSONObject("load");
-            String message = load.getString("message");
+        Long timeStamp = Json.getLong(atom,"time");
+        if (timeStamp == null) return;
 
-            setContent(send, username, uuid, time, null, message);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-
-    public void setContent(boolean send, String username, String messageUUID, Long timeStamp, String attachment, String message)
-    {
-        if (username == null)
-        {
-            setContentInfo(message);
-        }
-        else
-        {
-            setContentMessage(send, username, messageUUID, timeStamp, attachment, message);
-        }
-    }
-
-    private void setContentMessage(boolean send, String username, String messageUUID, Long timeStamp, String attachment, String message)
-    {
-        this.send = send;
-        this.messageUUID = messageUUID;
-
+        JSONObject load = Json.getObject(atom, "load");
+        String message = Json.getString(load, "message");
         if (message != null) message += ENDINDENT;
 
         GUILinearLayout recvPart = new GUILinearLayout(getContext());
@@ -258,6 +236,7 @@ public class ChatFragment extends GUILinearLayout
             contentBox.addView(userBox);
         }
 
+        /*
         if (attachment != null)
         {
             GUITextView attachmentBox = new GUITextView(getContext());
@@ -269,6 +248,7 @@ public class ChatFragment extends GUILinearLayout
 
             contentBox.addView(attachmentBox);
         }
+        */
 
         messageBox = new GUITextView(getContext());
         messageBox.setGravity(Gravity.START);
@@ -305,13 +285,11 @@ public class ChatFragment extends GUILinearLayout
 
         timeFrame.addView(timeBox);
 
-        if (timeStamp != null)
-        {
-            String datestring = Dates.getLocalDateAndTime(timeStamp);
-            String timeTag = datestring.substring(8, 10) + ":" + datestring.substring(10, 12);
+        String datestring = Dates.getLocalDateAndTime(timeStamp);
+        if (datestring == null) return;
 
-            timeBox.setText(timeTag);
-        }
+        String timeTag = datestring.substring(8, 10) + ":" + datestring.substring(10, 12);
+        timeBox.setText(timeTag);
 
         statusIcon = new GUIIconView(getContext());
         statusIcon.setSizeDip(16,16);
@@ -320,10 +298,34 @@ public class ChatFragment extends GUILinearLayout
         if (send)
         {
             timeFrame.addView(statusIcon);
-        }
-        else
-        {
-            //GorillaClient.getInstance().sendPayload()
+
+            timeRead = Json.getLong(load, "read");
+            if (timeRead != null)
+            {
+                statusIcon.setImageResource(R.drawable.ms_client_read);
+                return;
+            }
+
+            timeReceived = Json.getLong(load, "received");
+            if (timeReceived != null)
+            {
+                statusIcon.setImageResource(R.drawable.ms_client_recv);
+                return;
+            }
+
+            timeSend = Json.getLong(load, "send");
+            if (timeSend != null)
+            {
+                statusIcon.setImageResource(R.drawable.ms_server_recv);
+                return;
+            }
+
+            timeQueued = Json.getLong(load, "queued");
+            if (timeQueued != null)
+            {
+                statusIcon.setImageResource(R.drawable.ms_server_wait);
+                return;
+            }
         }
     }
 
