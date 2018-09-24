@@ -3,6 +3,30 @@ package com.aura.aosp.aura.common.simple;
 @SuppressWarnings("PointlessBitwiseExpression")
 public class Marshal
 {
+    public static byte[] marshalShort(short val)
+    {
+        byte[] bytes = new byte[ 2 ];
+
+        // formatter: off
+
+        bytes[ 0 ] = (byte) ((val >>  8) & 0xff);
+        bytes[ 1 ] = (byte) ((val >>  0) & 0xff);
+
+        // formatter: on
+
+        return bytes;
+    }
+
+    public static short unMarshalShort(byte[] bytes)
+    {
+        // formatter: off
+
+        return (short) (((bytes[ 0 ] & 0xff) << 8)
+                + ((bytes[ 1 ] & 0xff) << 0));
+
+        // formatter: on
+    }
+
     public static byte[] marshalInt(int val)
     {
         byte[] bytes = new byte[ 4 ];
@@ -27,30 +51,6 @@ public class Marshal
              + ((bytes[ 1 ] & 0xff) << 16)
              + ((bytes[ 2 ] & 0xff) <<  8)
              + ((bytes[ 3 ] & 0xff) <<  0);
-
-        // formatter: on
-    }
-
-    public static byte[] marshalShort(short val)
-    {
-        byte[] bytes = new byte[ 2 ];
-
-        // formatter: off
-
-        bytes[ 0 ] = (byte) ((val >>  8) & 0xff);
-        bytes[ 1 ] = (byte) ((val >>  0) & 0xff);
-
-        // formatter: on
-
-        return bytes;
-    }
-
-    public static short unMarshalShort(byte[] bytes)
-    {
-        // formatter: off
-
-        return (short) (((bytes[ 0 ] & 0xff) << 8)
-                      + ((bytes[ 1 ] & 0xff) << 0));
 
         // formatter: on
     }
