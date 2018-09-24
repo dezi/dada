@@ -60,6 +60,9 @@ public class ChatActivity extends AppCompatActivity
         chatProfile = new ChatProfile(this, remoteNick, remoteUserUUID, remoteDeviceUUID);
 
         MainActivity.addChatProfile(chatProfile);
+
+        GorillaClient.getInstance().queryAtomsSharedBy(remoteUserUUID, "aura.chat.message", 0, 0);
+        GorillaClient.getInstance().queryAtomsSharedWith(remoteUserUUID, "aura.chat.message", 0, 0);
     }
 
     @Override

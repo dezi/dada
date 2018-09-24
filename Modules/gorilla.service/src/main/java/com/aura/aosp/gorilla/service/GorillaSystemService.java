@@ -217,7 +217,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public String queryAtoms(String apkname, String atomType, long timeFrom, long timeTo)
+    public String queryAtoms(String apkname, String atomType, long timeFrom, long timeTo, String checksum)
     {
         JSONArray results = GoatomStorage.queryAtoms(atomType, timeFrom, timeTo);
         if (results == null) return null;
@@ -226,7 +226,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public String queryAtomsSharedBy(String apkname, String userUUID, String atomType, long timeFrom, long timeTo)
+    public String queryAtomsSharedBy(String apkname, String userUUID, String atomType, long timeFrom, long timeTo, String checksum)
     {
         JSONArray results = GoatomStorage.queryAtomsSharedBy(userUUID, atomType, timeFrom, timeTo);
         if (results == null) return null;
@@ -235,7 +235,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public String queryAtomsSharedWith(String apkname, String userUUID, String atomType, long timeFrom, long timeTo)
+    public String queryAtomsSharedWith(String apkname, String userUUID, String atomType, long timeFrom, long timeTo, String checksum)
     {
         JSONArray results = GoatomStorage.queryAtomsSharedWith(userUUID, atomType, timeFrom, timeTo);
         if (results == null) return null;

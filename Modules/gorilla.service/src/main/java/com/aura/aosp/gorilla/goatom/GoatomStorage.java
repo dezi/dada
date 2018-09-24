@@ -73,19 +73,73 @@ public class GoatomStorage
     @Nullable
     public static JSONArray queryAtoms(@NonNull String atomType, long timeFrom, long timeTo)
     {
-        return null;
+        String ownerUUID = Owner.getOwnerUUIDBase64();
+        if (ownerUUID == null) return null;
+
+        return queryAtoms(ownerUUID, ownerUUID, atomType, timeFrom, timeTo);
     }
 
     @Nullable
     public static JSONArray queryAtomsSharedBy(@NonNull String userUUID, @NonNull String atomType, long timeFrom, long timeTo)
     {
-        return null;
+        String ownerUUID = Owner.getOwnerUUIDBase64();
+        if (ownerUUID == null) return null;
+
+        return queryAtoms(userUUID, ownerUUID, atomType, timeFrom, timeTo);
     }
 
     @Nullable
     public static JSONArray queryAtomsSharedWith(@NonNull String userUUID, @NonNull String atomType, long timeFrom, long timeTo)
     {
-        return null;
+        String ownerUUID = Owner.getOwnerUUIDBase64();
+        if (ownerUUID == null) return null;
+
+        return queryAtoms(ownerUUID, userUUID, atomType, timeFrom, timeTo);
+    }
+
+    @Nullable
+    private static JSONArray queryAtoms(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull String atomType, long timeFrom, long timeTo)
+    {
+        File typeDir = getStorageDir(ownerUUID, userUUID, atomType);
+        if (typeDir == null) return null;
+
+        JSONArray results = new JSONArray();
+
+        File[] dateDirs = typeDir.listFiles();
+
+        String dateFromStr = (timeFrom != 0) ? Dates.getUniversalDate(timeFrom) : null;
+        String dateToStr = (timeFrom != 0) ? Dates.getUniversalDate(timeTo) : null;
+
+        for (File dateDir : dateDirs)
+        {
+            String dateDirName = dateDir.getName();
+
+            if ((dateFromStr != null) && (dateFromStr.compareTo(dateDirName) < 0))
+            {
+                continue;
+            }
+
+            if ((dateToStr != null) && (dateToStr.compareTo(dateDirName) > 0))
+            {
+                continue;
+            }
+
+            Log.d("scan dir=%s", dateDir.toString());
+
+            File[] jsonFiles = dateDir.listFiles();
+
+            for (File jsonFile : jsonFiles)
+            {
+                Log.d("read file=%s", jsonFile.toString());
+
+                JSONObject json = Json.getFileContent(jsonFile);
+                if (json == null) continue;
+
+                Json.put(results, json);
+            }
+        }
+
+        return results;
     }
 
     private final static Object mutex = new Object();
@@ -109,16 +163,8 @@ public class GoatomStorage
     }
 
     @Nullable
-    private static File getStorageDir(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull String dateStr, @NonNull String atomType)
+    private static File getStorageDir(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull String atomType)
     {
-        if (dateStr.length() < 8)
-        {
-            Err.err("wrong format date=%s", dateStr);
-            return null;
-        }
-
-        String datedayStr = dateStr.substring(0,8);
-
         String ownerUUIDStr = UID.getUUIDString(ownerUUID);
         if (ownerUUIDStr == null) return null;
 
@@ -129,8 +175,7 @@ public class GoatomStorage
         File goatomdir = new File(appfilesdir, "goatom");
         File ownerdir = new File(goatomdir, ownerUUIDStr);
         File userdir = new File(ownerdir, userUUIDStr);
-        File datedir = new File(userdir, datedayStr);
-        File typedir = new File(datedir, atomType);
+        File typedir = new File(userdir, atomType);
 
         synchronized (mutex)
         {
@@ -139,6 +184,30 @@ public class GoatomStorage
         }
 
         return typedir;
+    }
+
+    @Nullable
+    private static File getStorageDir(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull String atomType, @NonNull String dateStr)
+    {
+        File typedir = getStorageDir(ownerUUID, userUUID, atomType);
+        if (typedir == null) return null;
+
+        if (dateStr.length() < 8)
+        {
+            Err.err("wrong format date=%s", dateStr);
+            return null;
+        }
+
+        String datedayStr = dateStr.substring(0,8);
+        File datedir = new File(typedir, datedayStr);
+
+        synchronized (mutex)
+        {
+            Err err = Simple.mkdirs(datedir);
+            if (err != null) return null;
+        }
+
+        return datedir;
     }
 
     @Nullable
@@ -160,7 +229,7 @@ public class GoatomStorage
             return null;
         }
 
-        File storageDir = getStorageDir(ownerUUID, userUUID, dateStr, atomType);
+        File storageDir = getStorageDir(ownerUUID, userUUID, atomType, dateStr);
         if (storageDir == null) return null;
 
         String atomUUID = Json.getString(atom, "uuid");

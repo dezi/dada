@@ -25,6 +25,22 @@ public class Dates
     }
 
     @NonNull
+    public static String getUniversalDate(Long timeStamp)
+    {
+        try
+        {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date netDate = new Date(timeStamp);
+            return sdf.format(netDate);
+        }
+        catch(Exception ex)
+        {
+            return "19700101000000";
+        }
+    }
+
+    @NonNull
     public static String getUniversalDateAndTime(Long timeStamp)
     {
         try

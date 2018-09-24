@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -141,8 +142,8 @@ public class GorillaClient
             GorillaIntercon.setServerSecret(sysApkName, serverSecret);
 
             Log.d(LOGTAG, "validateConnect: call"
-                            + " apkname=" + apkname
-                            + " serverSecret=" + GorillaIntercon.getServerSecretBase64(sysApkName));
+                    + " apkname=" + apkname
+                    + " serverSecret=" + GorillaIntercon.getServerSecretBase64(sysApkName));
 
             String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
 
@@ -263,7 +264,7 @@ public class GorillaClient
                 }
             }
         });
-   }
+    }
 
     private void receiveOwnerUUID()
     {
@@ -485,7 +486,7 @@ public class GorillaClient
 
             String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, atomStr);
 
-            boolean result = gr.putAtomSharedWith(apkname, userUUID, atomStr,checksum);
+            boolean result = gr.putAtomSharedWith(apkname, userUUID, atomStr, checksum);
 
             Log.d(LOGTAG, "putAtomSharedWith: result=" + result);
 
@@ -498,11 +499,56 @@ public class GorillaClient
         }
     }
 
+    @Nullable
+    public JSONArray queryAtomsSharedBy(String userUUID, String atomType, long timeFrom, long timeTo)
+    {
+        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        if (gr == null) return null;
+
+        try
+        {
+            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, atomType, timeFrom, timeTo);
+
+            String resultsStr = gr.queryAtomsSharedBy(apkname, userUUID, atomType, timeFrom, timeTo, checksum);
+
+            Log.d(LOGTAG, "queryAtomsSharedBy: resultsStr=" + resultsStr);
+
+            return (resultsStr == null) ? null : new JSONArray(resultsStr);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    @Nullable
+    public JSONArray queryAtomsSharedWith(String userUUID, String atomType, long timeFrom, long timeTo)
+    {
+        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        if (gr == null) return null;
+
+        try
+        {
+            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, atomType, timeFrom, timeTo);
+
+            String resultsStr = gr.queryAtomsSharedWith(apkname, userUUID, atomType, timeFrom, timeTo, checksum);
+            Log.d(LOGTAG, "queryAtomsSharedWith: resultsStr=" + resultsStr);
+
+            return (resultsStr == null) ? null : new JSONArray(resultsStr);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
     public void subscribeGorillaListener(GorillaListener gorillaListener)
     {
         synchronized (gorillaListeners)
         {
-            if (! gorillaListeners.contains(gorillaListener))
+            if (!gorillaListeners.contains(gorillaListener))
             {
                 gorillaListeners.add(gorillaListener);
             }
