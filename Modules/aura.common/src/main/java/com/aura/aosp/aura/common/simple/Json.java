@@ -516,7 +516,7 @@ public class Json
         return new JSONArray(jsonValues);
     }
 
-    public static JSONArray sortInteger(JSONArray array, String field, boolean descending)
+    public static JSONArray sortNumber(JSONArray array, String field, boolean descending)
     {
         final String sort = field;
         final boolean desc = descending;
@@ -525,10 +525,10 @@ public class Json
         {
             public int compare(JSONObject a, JSONObject b)
             {
-                int aval = desc ? getInt(b, sort) : getInt(a, sort);
-                int bval = desc ? getInt(a, sort) : getInt(b, sort);
+                long aval = desc ? getLong(b, sort) : getLong(a, sort);
+                long bval = desc ? getLong(a, sort) : getLong(b, sort);
 
-                return aval - bval;
+                return Long.compare(aval, bval);
             }
         }
 

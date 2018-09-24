@@ -19,6 +19,7 @@ import com.aura.aosp.aura.gui.views.GUILinearLayout;
 import com.aura.aosp.aura.gui.views.GUIScrollView;
 import com.aura.aosp.gorilla.client.GorillaClient;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ChatActivity extends AppCompatActivity
@@ -61,8 +62,51 @@ public class ChatActivity extends AppCompatActivity
 
         MainActivity.addChatProfile(chatProfile);
 
-        GorillaClient.getInstance().queryAtomsSharedBy(remoteUserUUID, "aura.chat.message", 0, 0);
-        GorillaClient.getInstance().queryAtomsSharedWith(remoteUserUUID, "aura.chat.message", 0, 0);
+        JSONArray recv = GorillaClient.getInstance().queryAtomsSharedBy(remoteUserUUID, "aura.chat.message", 0, 0);
+        JSONArray send = GorillaClient.getInstance().queryAtomsSharedWith(remoteUserUUID, "aura.chat.message", 0, 0);
+
+        Log.d(LOGTAG,"############ recv=" + Json.toPretty(recv));
+        Log.d(LOGTAG,"############ send=" + Json.toPretty(send));
+
+        JSONArray combined = new JSONArray();
+
+        if (recv != null)
+        {
+            for (int inx = 0; inx < recv.length(); inx++)
+            {
+                JSONObject atom = Json.getObject(recv, inx);
+                Json.put(atom, "mode", "recv");
+                Json.put(combined, atom);
+            }
+        }
+
+        if (send != null)
+        {
+            for (int inx = 0; inx < send.length(); inx++)
+            {
+                JSONObject atom = Json.getObject(send, inx);
+                Json.put(atom, "mode", "send");
+                Json.put(combined, atom);
+            }
+        }
+
+        combined = Json.sortNumber(combined, "time", false);
+
+        for (int inx = 0; inx < combined.length(); inx++)
+        {
+            JSONObject atom = Json.getObject(combined, inx);
+            if (atom == null) continue;
+            Log.d(LOGTAG, "####### atom=" + atom.toString());
+
+            String mode = Json.getString(atom, "mode");
+            if (mode == null) continue;
+
+            ChatFragment cf = new ChatFragment(this);
+            cf.setContent(mode.equals("send"), chatProfile.remoteNick, atom);
+            chatContent.addView(cf);
+        }
+
+        scrollDown();
     }
 
     @Override
