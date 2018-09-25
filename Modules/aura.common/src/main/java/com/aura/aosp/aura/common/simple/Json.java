@@ -315,25 +315,7 @@ public class Json
     {
         try
         {
-            Object obj = json.get(key);
-
-            if (obj instanceof String) return (String) obj;
-
-            if (obj instanceof JSONArray)
-            {
-                JSONArray strings = json.getJSONArray(key);
-
-                String result = "";
-
-                for (int inx = 0; inx < strings.length(); inx++)
-                {
-                    result += getString(strings, inx);
-                }
-
-                return result;
-            }
-
-            return "";
+            return json.getString(key);
         }
         catch (Exception ignore)
         {
@@ -363,9 +345,8 @@ public class Json
         }
         catch (Exception ignore)
         {
+            return null;
         }
-
-        return null;
     }
 
     @Nullable
@@ -377,11 +358,9 @@ public class Json
         }
         catch (Exception ignore)
         {
+            return null;
         }
-
-        return null;
     }
-
 
     @Nullable
     public static JSONArray getArray(JSONObject json, String key)
@@ -392,9 +371,8 @@ public class Json
         }
         catch (Exception ignore)
         {
+            return null;
         }
-
-        return null;
     }
 
     @Nullable
@@ -406,9 +384,8 @@ public class Json
         }
         catch (Exception ignore)
         {
+            return null;
         }
-
-        return null;
     }
 
     @Nullable
@@ -420,9 +397,8 @@ public class Json
         }
         catch (Exception ignore)
         {
+            return null;
         }
-
-        return null;
     }
 
     @Nullable
