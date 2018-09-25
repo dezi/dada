@@ -35,7 +35,7 @@ public class GorillaBase extends Application
         Simple.initialize(this);
 
         GorillaService.selfStartMainService();
-        GorillaGeopos.startService(this);
+        GorillaLocation.startService(this);
 
         GorillaNetwork.logNetworkState();
 

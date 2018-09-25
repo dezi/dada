@@ -15,11 +15,11 @@ import com.aura.aosp.aura.common.rights.Perms;
 import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Log;
 
-public class GorillaGeopos implements LocationListener
+public class GorillaLocation implements LocationListener
 {
     private final static int MAXAGEINMILLIS = 60 * 1000;
 
-    private static GorillaGeopos instance;
+    private static GorillaLocation instance;
 
     private boolean isGpsEnabled;
     private boolean isNetworkEnabled;
@@ -37,7 +37,7 @@ public class GorillaGeopos implements LocationListener
     {
         if (instance == null)
         {
-            instance = new GorillaGeopos();
+            instance = new GorillaLocation();
             instance.start(appcontext);
         }
     }
@@ -124,14 +124,14 @@ public class GorillaGeopos implements LocationListener
     {
         if (location == null) return;
 
-        time = location.getTime();
-
         lat = location.getLatitude();
         lon = location.getLongitude();
         alt = location.getAltitude();
 
         accuracy = location.getAccuracy();
         provider = location.getProvider();
+
+        time = location.getTime();
 
         Log.d("lat+lon=%f %f alt=%f acc=%f pro=%s age=%d",
                 location.getLatitude(),
