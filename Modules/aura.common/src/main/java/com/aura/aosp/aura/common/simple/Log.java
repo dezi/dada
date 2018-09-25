@@ -14,29 +14,36 @@ public class Log
     @SuppressWarnings("SameParameterValue")
     private static void d(int index, String format, Object... args)
     {
-        //
-        // Sleep because of da fucked log format in Android Studio 3.1
-        //
-
-        Simple.sleep(5);
-
-        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
-
-        String logtag = "????????";
-
-        if (elements.length > index)
+        try
         {
-            StackTraceElement ste = elements[index];
+            //
+            // Sleep because of da fucked log format in Android Studio 3.1
+            //
 
-            String[] classpath = ste.getClassName().split("\\.");
+            Simple.sleep(5);
 
-            logtag = classpath[classpath.length - 1];
-            format = ste.getMethodName() + ": " + format;
+            StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+
+            String logtag = "????????";
+
+            if (elements.length > index)
+            {
+                StackTraceElement ste = elements[index];
+
+                String[] classpath = ste.getClassName().split("\\.");
+
+                logtag = classpath[classpath.length - 1];
+                format = ste.getMethodName() + ": " + format;
+            }
+
+            if (debug || checkLog(logtag))
+            {
+                android.util.Log.d(logtag, String.format(format, args));
+            }
         }
-
-        if (debug || checkLog(logtag))
+        catch (Exception ex)
         {
-            android.util.Log.d(logtag, String.format(format, args));
+            ex.printStackTrace();
         }
     }
 
@@ -52,27 +59,34 @@ public class Log
 
     private static void e(int index, String format, Object... args)
     {
-        //
-        // Sleep because of da fucked log format in Android Studio 3.1
-        //
-
-        Simple.sleep(5);
-
-        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
-
-        String logtag = "????????";
-
-        if (elements.length > index)
+        try
         {
-            StackTraceElement ste = elements[index];
+            //
+            // Sleep because of da fucked log format in Android Studio 3.1
+            //
 
-            String[] classpath = ste.getClassName().split("\\.");
+            Simple.sleep(5);
 
-            logtag = classpath[classpath.length - 1];
-            format = ste.getMethodName() + ": " + format;
+            StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+
+            String logtag = "????????";
+
+            if (elements.length > index)
+            {
+                StackTraceElement ste = elements[index];
+
+                String[] classpath = ste.getClassName().split("\\.");
+
+                logtag = classpath[classpath.length - 1];
+                format = ste.getMethodName() + ": " + format;
+            }
+
+            android.util.Log.e(logtag, String.format(format, args));
         }
-
-        android.util.Log.e(logtag, String.format(format, args));
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     @SuppressWarnings("SameParameterValue")

@@ -12,10 +12,10 @@ public class GorillaBase extends Application
 {
     //region Static stuff.
 
-    private static Context appContext;
+    private static Application appContext;
 
     @NonNull
-    public static Context getAppContext()
+    public static Application getAppContext()
     {
         return appContext;
     }
@@ -36,6 +36,8 @@ public class GorillaBase extends Application
         Simple.initialize(this);
 
         GorillaService.SelfStartMainService();
+
+        GorillaNetwork.logNetworkState();
     }
 
     //endregion Instance stuff.

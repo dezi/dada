@@ -2,21 +2,29 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.aura.aosp.gorilla.service">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-    <application android:name="com.aura.aosp.gorilla.service.GorillaBase">
+    <application android:name=".GorillaBase">
 
-        <receiver android:name="com.aura.aosp.gorilla.service.GorillaBoot">
+        <receiver android:name=".GorillaBoot">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".GorillaNetwork" >
+            <intent-filter>
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
         <service
-            android:name="com.aura.aosp.gorilla.service.GorillaService"
+            android:name=".GorillaService"
             android:enabled="true"
             android:exported="true">
         </service>
