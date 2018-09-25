@@ -1,11 +1,14 @@
 package com.aura.aosp.gorilla.service;
 
+import android.support.annotation.Nullable;
+
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.Location;
 import android.content.Context;
 import android.os.Bundle;
 
+import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.rights.Perms;
 import com.aura.aosp.aura.common.simple.Dates;
@@ -13,7 +16,7 @@ import com.aura.aosp.aura.common.simple.Log;
 
 public class GorillaGeopos implements LocationListener
 {
-    private static final String LOGTAG = GorillaGeopos.class.getSimpleName();
+    private final static int MAXAGEINMILLIS = 60 * 1000;
 
     private static GorillaGeopos instance;
 
@@ -88,7 +91,7 @@ public class GorillaGeopos implements LocationListener
 
             if (last == null)
             {
-                Log.e(LOGTAG, "no last location.");
+                Log.e("no last location.");
             }
             else
             {
@@ -97,7 +100,7 @@ public class GorillaGeopos implements LocationListener
         }
         else
         {
-            Log.e(LOGTAG, "no permission!");
+            Log.e("no permission!");
         }
     }
 
@@ -155,5 +158,38 @@ public class GorillaGeopos implements LocationListener
     public void onStatusChanged(String provider, int status, Bundle extras)
     {
         Log.d("provider=%s status=%s extras=%s", provider, status, extras);
+    }
+
+    @Nullable
+    public Double getLat()
+    {
+        return (checkError() == null) ? lat : null;
+    }
+
+    @Nullable
+    public Double getLon()
+    {
+        return (checkError() == null) ? lon : null;
+    }
+
+    @Nullable
+    public Double getAlt()
+    {
+        return (checkError() == null) ? alt : null;
+    }
+
+    private Err checkError()
+    {
+        if (time == null)
+        {
+            return Err.err("no known location.");
+        }
+
+        if (Dates.getAgeInSeconds(time) > MAXAGEINMILLIS)
+        {
+            return Err.err("location expired age=%d", Dates.getAgeInSeconds(time));
+        }
+
+        return null;
     }
 }
