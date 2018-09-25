@@ -19,7 +19,7 @@ public class GorillaLocation implements LocationListener
 {
     private final static int MAXAGEINMILLIS = 60 * 1000;
 
-    private static GorillaLocation instance;
+    private final static GorillaLocation instance = new GorillaLocation();
 
     private boolean isGpsEnabled;
     private boolean isNetworkEnabled;
@@ -33,22 +33,19 @@ public class GorillaLocation implements LocationListener
     private Float accuracy;
     private String provider;
 
+    public static GorillaLocation getInstance()
+    {
+        return instance;
+    }
+
     public static void startService(Context appcontext)
     {
-        if (instance == null)
-        {
-            instance = new GorillaLocation();
-            instance.start(appcontext);
-        }
+        instance.start(appcontext);
     }
 
     public static void stopService()
     {
-        if (instance != null)
-        {
-            instance.stop();
-            instance = null;
-        }
+        instance.stop();
     }
 
     private void start(Context appcontext)
