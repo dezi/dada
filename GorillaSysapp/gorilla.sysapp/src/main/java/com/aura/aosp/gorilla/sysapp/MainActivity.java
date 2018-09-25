@@ -7,6 +7,7 @@ import android.view.View;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.aura.aosp.aura.common.rights.Perms;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
@@ -45,17 +46,10 @@ public class MainActivity extends AppCompatActivity
 
         createLayout();
 
-        GoprotoMetadata md = new GoprotoMetadata();
-        GoprotoTicket ticket = new GoprotoTicket();
-        ticket.setMessageUUID(new byte[10]);
-        JSONObject json = ticket.marshalJSON();
-        Log.d(LOGTAG, "##############xxxxx=" + Json.toPretty(json));
-
-        ticket.setMetadata(md);
-        ticket = new GoprotoTicket();
-        ticket.unmarshalJSON(json);
-
-        Log.d(LOGTAG, "##############xxxxx=" + ticket.getMetadata());
+        if (!Perms.checkLocationPermission(this))
+        {
+            Perms.requestPermissionForNeed(this, "loc", 4711);
+        }
     }
 
     private void createLayout()

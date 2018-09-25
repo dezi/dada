@@ -1,5 +1,7 @@
 package com.aura.aosp.aura.common.simple;
 
+import java.util.Locale;
+
 public class Log
 {
     private final static boolean debug = true;
@@ -38,7 +40,7 @@ public class Log
 
             if (debug || checkLog(logtag))
             {
-                android.util.Log.d(logtag, String.format(format, args));
+                android.util.Log.d(logtag, String.format(Locale.ROOT, format, args));
             }
         }
         catch (Exception ex)
@@ -81,7 +83,7 @@ public class Log
                 format = ste.getMethodName() + ": " + format;
             }
 
-            android.util.Log.e(logtag, String.format(format, args));
+            android.util.Log.e(logtag, String.format(Locale.ROOT, format, args));
         }
         catch (Exception ex)
         {

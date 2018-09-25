@@ -4,7 +4,7 @@ import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.common.simple.Err;
 
-public class GopmaiStorage
+public class GopmaiRegister
 {
     @Nullable
     public static Err registerActionEvent(String actionDomain, String subAction)

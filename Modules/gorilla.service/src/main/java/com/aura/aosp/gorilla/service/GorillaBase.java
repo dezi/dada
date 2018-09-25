@@ -3,7 +3,6 @@ package com.aura.aosp.gorilla.service;
 import android.support.annotation.NonNull;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
@@ -35,9 +34,11 @@ public class GorillaBase extends Application
 
         Simple.initialize(this);
 
-        GorillaService.SelfStartMainService();
+        GorillaService.selfStartMainService();
+        GorillaGeopos.startService(this);
 
         GorillaNetwork.logNetworkState();
+
     }
 
     //endregion Instance stuff.

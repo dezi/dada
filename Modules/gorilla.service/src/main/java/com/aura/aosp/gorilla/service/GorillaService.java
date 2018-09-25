@@ -23,7 +23,7 @@ public class GorillaService extends Service
     //
     // Public static self start Gorilla Service via intent.
     //
-    public static void SelfStartMainService()
+    public static void selfStartMainService()
     {
         Context context = GorillaBase.getAppContext();
         Intent serviceIntent = new Intent(context, GorillaService.class);
@@ -32,7 +32,7 @@ public class GorillaService extends Service
         Log.d("service started...");
     }
 
-    public static void SelfStopMainService()
+    public static void selfStopMainService()
     {
         Context context = GorillaBase.getAppContext();
         Intent serviceIntent = new Intent(context, GorillaService.class);

@@ -72,4 +72,9 @@ public class Dates
             return null;
         }
     }
+
+    public static long getAgeInSeconds(long timestamp)
+    {
+        return (System.currentTimeMillis() - timestamp) / 1000;
+    }
 }
