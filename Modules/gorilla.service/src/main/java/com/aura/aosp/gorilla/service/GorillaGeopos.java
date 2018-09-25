@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.service;
 
+import android.location.LocationProvider;
 import android.support.annotation.Nullable;
 
 import android.location.LocationListener;
@@ -157,7 +158,22 @@ public class GorillaGeopos implements LocationListener
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras)
     {
-        Log.d("provider=%s status=%s extras=%s", provider, status, extras);
+        String statusStr = "unknown";
+
+        switch (status)
+        {
+            case LocationProvider.AVAILABLE:
+                statusStr = "available";
+                break;
+            case LocationProvider.OUT_OF_SERVICE:
+                statusStr = "out of service";
+                break;
+            case LocationProvider.TEMPORARILY_UNAVAILABLE:
+                statusStr = "temporary unavailable";
+                break;
+        }
+
+        Log.d("provider=%s status=%d=%s extras=%s", provider, status, statusStr, extras);
     }
 
     @Nullable
