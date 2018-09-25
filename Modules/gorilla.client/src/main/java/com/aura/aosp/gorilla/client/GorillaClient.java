@@ -544,6 +544,28 @@ public class GorillaClient
         }
     }
 
+    public boolean registerActionEvent(String actionDomain, String subAction)
+    {
+        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        if (gr == null) return false;
+
+        try
+        {
+            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, actionDomain, subAction);
+
+            boolean result = gr.pmaiRegisterActionEvent(apkname, actionDomain, subAction, checksum);
+
+            Log.d(LOGTAG, "putAtomSharedWith: result=" + result);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
     public void subscribeGorillaListener(GorillaListener gorillaListener)
     {
         synchronized (gorillaListeners)

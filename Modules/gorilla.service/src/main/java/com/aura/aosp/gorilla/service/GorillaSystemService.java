@@ -244,14 +244,14 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public boolean pmaiRegisterActionEvent(String apkname, String actionDomain, String subAction)
+    public boolean pmaiRegisterActionEvent(String apkname, String actionDomain, String subAction, String checksum)
     {
         Err err = GopmaiRegister.registerActionEvent(actionDomain, subAction);
         return (err == null);
     }
 
     @Override
-    public String pmaiSuggestActions(String apkname)
+    public String pmaiSuggestActions(String apkname, String checksum)
     {
         JSONArray results = GopmaiSuggest.suggestActions();
         if (results == null) return null;
