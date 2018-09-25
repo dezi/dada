@@ -555,7 +555,7 @@ public class GorillaClient
 
             boolean result = gr.pmaiRegisterActionEvent(apkname, actionDomain, subAction, checksum);
 
-            Log.d(LOGTAG, "putAtomSharedWith: result=" + result);
+            Log.d(LOGTAG, "registerActionEvent: result=" + result);
 
             return result;
         }

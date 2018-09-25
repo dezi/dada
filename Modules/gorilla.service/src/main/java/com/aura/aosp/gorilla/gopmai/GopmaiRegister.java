@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
 
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
 import com.aura.aosp.gorilla.service.GorillaState;
 
@@ -25,6 +26,8 @@ public class GopmaiRegister
 
         Json.put(atom, "type", "aura.event.action");
         Json.put(atom, "load", load);
+
+        Log.d("atom=%s", atom.toString());
 
         return GoatomStorage.putAtom(atom);
     }

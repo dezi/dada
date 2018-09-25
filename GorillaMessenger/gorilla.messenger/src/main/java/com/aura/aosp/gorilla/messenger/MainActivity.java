@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.messenger;
 
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -68,6 +69,15 @@ public class MainActivity extends AppCompatActivity
         title = getTitle().toString();
 
         GorillaClient.getInstance().subscribeGorillaListener(listener);
+
+        new Handler().postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                GorillaClient.getInstance().registerActionEvent(getPackageName(), null);
+            }
+        }, 2000);
     }
 
     @Override
