@@ -29,6 +29,17 @@ public class Perms
         return coarse && fine;
     }
 
+    public static boolean checkExternalPermission(Context context)
+    {
+        boolean external = ActivityCompat.checkSelfPermission(context,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+
+        Log.d("checkExternalPermission: external=" + external);
+
+        return external;
+    }
+
     public static void requestPermissionForNeed(Activity activity, String need, int requestCode)
     {
         String which = null;

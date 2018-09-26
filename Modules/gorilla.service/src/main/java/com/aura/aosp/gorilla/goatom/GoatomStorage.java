@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.goatom;
 
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -101,7 +102,7 @@ public class GoatomStorage
     @Nullable
     private static JSONArray queryAtoms(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull String atomType, long timeFrom, long timeTo)
     {
-        File typeDir = getStorageDir(ownerUUID, userUUID, atomType);
+        File typeDir = getStorageDir(ownerUUID, userUUID, atomType, false);
         if (typeDir == null) return null;
 
         JSONArray results = new JSONArray();
@@ -166,7 +167,7 @@ public class GoatomStorage
     }
 
     @Nullable
-    private static File getStorageDir(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull String atomType)
+    private static File getStorageDir(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull String atomType, boolean create)
     {
         String ownerUUIDStr = UID.getUUIDString(ownerUUID);
         if (ownerUUIDStr == null) return null;
@@ -174,25 +175,28 @@ public class GoatomStorage
         String userUUIDStr = UID.getUUIDString(userUUID);
         if (userUUIDStr == null) return null;
 
-        File appfilesdir = GorillaBase.getAppContext().getFilesDir();
+        File appfilesdir = Environment.getExternalStorageDirectory();
         File goatomdir = new File(appfilesdir, "goatom");
         File ownerdir = new File(goatomdir, ownerUUIDStr);
         File userdir = new File(ownerdir, userUUIDStr);
         File typedir = new File(userdir, atomType);
 
-        synchronized (mutex)
+        if (create)
         {
-            Err err = Simple.mkdirs(appfilesdir, goatomdir, ownerdir, userdir, typedir);
-            if (err != null) return null;
+            synchronized (mutex)
+            {
+                Err err = Simple.mkdirs(appfilesdir, goatomdir, ownerdir, userdir, typedir);
+                if (err != null) return null;
+            }
         }
 
         return typedir;
     }
 
     @Nullable
-    private static File getStorageDir(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull String atomType, @NonNull String dateStr)
+    private static File getStorageDir(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull String atomType, @NonNull String dateStr, boolean create)
     {
-        File typedir = getStorageDir(ownerUUID, userUUID, atomType);
+        File typedir = getStorageDir(ownerUUID, userUUID, atomType, create);
         if (typedir == null) return null;
 
         if (dateStr.length() < 8)
@@ -204,10 +208,13 @@ public class GoatomStorage
         String datedayStr = dateStr.substring(0,8);
         File datedir = new File(typedir, datedayStr);
 
-        synchronized (mutex)
+        if (create)
         {
-            Err err = Simple.mkdirs(datedir);
-            if (err != null) return null;
+            synchronized (mutex)
+            {
+                Err err = Simple.mkdirs(datedir);
+                if (err != null) return null;
+            }
         }
 
         return datedir;
@@ -224,6 +231,7 @@ public class GoatomStorage
         }
 
         String dateStr = Dates.getUniversalDateAndTimeMillis(time);
+        if (dateStr == null) return null;
 
         String atomType = Json.getString(atom, "type");
         if (atomType == null)
@@ -232,7 +240,7 @@ public class GoatomStorage
             return null;
         }
 
-        File storageDir = getStorageDir(ownerUUID, userUUID, atomType, dateStr);
+        File storageDir = getStorageDir(ownerUUID, userUUID, atomType, dateStr, true);
         if (storageDir == null) return null;
 
         String atomUUID = Json.getString(atom, "uuid");

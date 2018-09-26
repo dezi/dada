@@ -50,6 +50,11 @@ public class MainActivity extends AppCompatActivity
         {
             Perms.requestPermissionForNeed(this, "loc", 4711);
         }
+
+        if (!Perms.checkExternalPermission(this))
+        {
+            Perms.requestPermissionForNeed(this, "ext", 4711);
+        }
     }
 
     private void createLayout()

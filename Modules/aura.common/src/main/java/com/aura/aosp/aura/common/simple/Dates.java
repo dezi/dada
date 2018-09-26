@@ -65,10 +65,12 @@ public class Dates
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.getDefault());
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date netDate = new Date(timeStamp);
+
             return sdf.format(netDate);
         }
         catch(Exception ex)
         {
+            Err.errp(ex);
             return null;
         }
     }
