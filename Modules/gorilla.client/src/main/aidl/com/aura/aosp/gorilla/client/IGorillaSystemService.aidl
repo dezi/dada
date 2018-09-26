@@ -28,7 +28,9 @@ interface IGorillaSystemService
     String queryAtomsSharedBy(String apkname, String userUUID, String atomType, long timeFrom, long timeTo, String checksum);
     String queryAtomsSharedWith(String apkname, String userUUID, String atomType, long timeFrom, long timeTo, String checksum);
 
-    boolean pmaiRegisterActionEvent(String apkname, String actionDomain, String subAction, String checksum);
+    boolean registerActionEvent(String apkname, String actionDomain, String subAction, String checksum);
+    String suggestActions(String apkname, String checksum);
 
-    String pmaiSuggestActions(String apkname, String checksum);
+    boolean registerContextEvent(String apkname, String actionDomain, String subContext, String subAction, String checksum);
+    String suggestContextActions(String apkname, String actionDomain, String subContext, String checksum);
 }

@@ -31,4 +31,24 @@ public class GopmaiRegister
 
         return GoatomStorage.putAtom(atom);
     }
+
+    @Nullable
+    public static Err registerContextEvent(String actionDomain, String subContext, String subAction)
+    {
+        JSONObject load = new JSONObject();
+
+        Json.put(load, "domain", actionDomain);
+        Json.put(load, "context", subContext);
+        Json.put(load, "action", subAction);
+        Json.put(load, "state", GorillaState.getState());
+
+        JSONObject atom = new JSONObject();
+
+        Json.put(atom, "type", "aura.event.context");
+        Json.put(atom, "load", load);
+
+        Log.d("atom=%s", atom.toString());
+
+        return GoatomStorage.putAtom(atom);
+    }
 }

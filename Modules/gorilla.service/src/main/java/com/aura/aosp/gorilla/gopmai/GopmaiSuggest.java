@@ -11,4 +11,10 @@ public class GopmaiSuggest
     {
         return null;
     }
+
+    @Nullable
+    public static JSONArray suggestContextActions(String actionDomain, String subContext)
+    {
+        return null;
+    }
 }

@@ -553,7 +553,7 @@ public class GorillaClient
         {
             String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, actionDomain, subAction);
 
-            boolean result = gr.pmaiRegisterActionEvent(apkname, actionDomain, subAction, checksum);
+            boolean result = gr.registerActionEvent(apkname, actionDomain, subAction, checksum);
 
             Log.d(LOGTAG, "registerActionEvent: result=" + result);
 

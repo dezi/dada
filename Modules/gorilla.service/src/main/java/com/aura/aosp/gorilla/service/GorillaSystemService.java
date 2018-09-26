@@ -244,16 +244,32 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public boolean pmaiRegisterActionEvent(String apkname, String actionDomain, String subAction, String checksum)
+    public boolean registerActionEvent(String apkname, String actionDomain, String subAction, String checksum)
     {
         Err err = GopmaiRegister.registerActionEvent(actionDomain, subAction);
         return (err == null);
     }
 
     @Override
-    public String pmaiSuggestActions(String apkname, String checksum)
+    public String suggestActions(String apkname, String checksum)
     {
         JSONArray results = GopmaiSuggest.suggestActions();
+        if (results == null) return null;
+
+        return results.toString();
+    }
+
+    @Override
+    public boolean registerContextEvent(String apkname, String actionDomain, String subContext, String subAction, String checksum)
+    {
+        Err err = GopmaiRegister.registerContextEvent(actionDomain, subContext, subAction);
+        return (err == null);
+    }
+
+    @Override
+    public String suggestContextActions(String apkname, String actionDomain, String subContext, String checksum)
+    {
+        JSONArray results = GopmaiSuggest.suggestContextActions(actionDomain, subContext);
         if (results == null) return null;
 
         return results.toString();
