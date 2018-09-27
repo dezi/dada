@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.gui.base.GUIDefs;
@@ -23,11 +22,7 @@ import com.aura.aosp.gorilla.client.GorillaClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 
 public class ChatActivity extends AppCompatActivity
 {
@@ -90,7 +85,7 @@ public class ChatActivity extends AppCompatActivity
 
                 Log.d(LOGTAG, "recv=" + Json.toPretty(atom));
 
-                Long sort = getFirstKey(load, "received");
+                Long sort = getLoadTime(load, "received");
                 if (sort == null) continue;
 
                 Json.put(atom, "sort_", sort);
@@ -111,7 +106,7 @@ public class ChatActivity extends AppCompatActivity
 
                 Log.d(LOGTAG, "send=" + Json.toPretty(atom));
 
-                Long sort = getFirstKey(load, "queued");
+                Long sort = getLoadTime(load, "queued");
                 if (sort == null) continue;
 
                 Json.put(atom, "sort_", sort);
@@ -145,7 +140,7 @@ public class ChatActivity extends AppCompatActivity
     }
 
     @Nullable
-    private Long getFirstKey(JSONObject load, String status)
+    public static Long getLoadTime(JSONObject load, String status)
     {
         JSONObject statusse = Json.getObject(load, status);
         if (statusse == null) return null;
@@ -159,14 +154,6 @@ public class ChatActivity extends AppCompatActivity
         }
 
         return null;
-    }
-
-    @Nullable
-    private Long getLoadTime(JSONObject load)
-    {
-        Long sort = getFirstKey(load, "received");
-        if (sort == null) getFirstKey(load, "queued");
-        return sort;
     }
 
     @Override
@@ -279,29 +266,11 @@ public class ChatActivity extends AppCompatActivity
         setTitle(newtitle);
     }
 
-    public void dispatchMessage(JSONObject message)
+    public void dispatchMessage(JSONObject atom)
     {
-        Log.d(LOGTAG, "dispatchMessage: message=" + message);
+        Log.d(LOGTAG, "dispatchMessage: atom=" + atom);
 
-        final Long time = Json.getLong(message, "time");
-        final String uuid = Json.getString(message, "uuid");
-        final String text = Json.getString(message, "payload");
-
-        JSONObject atomLoad = new JSONObject();
-        Json.put(atomLoad, "message", text);
-
-        JSONObject received = new JSONObject();
-        Json.put(received, MainActivity.getOwnerDeviceBase64(), System.currentTimeMillis());
-        Json.put(atomLoad, "received", received);
-
-        JSONObject atom = new JSONObject();
-
-        Json.put(atom, "uuid", uuid);
-        Json.put(atom, "time", time);
-        Json.put(atom, "type", "aura.chat.message");
-        Json.put(atom, "load", atomLoad);
-
-        GorillaClient.getInstance().putAtomSharedBy(chatProfile.remoteUserUUID, atom);
+        final String uuid = Json.getString(atom, "uuid");
 
         ChatFragment cf = new ChatFragment(this);
         cf.setContent(false, chatProfile.remoteNick, atom);

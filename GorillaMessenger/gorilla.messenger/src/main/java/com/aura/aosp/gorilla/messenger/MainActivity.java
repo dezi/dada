@@ -287,6 +287,8 @@ public class MainActivity extends AppCompatActivity
 
             displayMessageInList(message);
 
+            JSONObject atom = convertMessageToAtomAndPersists(message);
+
             String remoteUserUUID = Json.getString(message, "sender");
             String remoteDeviceUUID = Json.getString(message, "device");
 
@@ -295,10 +297,36 @@ public class MainActivity extends AppCompatActivity
                 if (! chatProfile.remoteUserUUID.equals(remoteUserUUID)) continue;
                 if (! chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
 
-                chatProfile.activity.dispatchMessage(message);
+                chatProfile.activity.dispatchMessage(atom);
 
                 break;
             }
+        }
+
+        private JSONObject convertMessageToAtomAndPersists(JSONObject message)
+        {
+            Long time = Json.getLong(message, "time");
+            String uuid = Json.getString(message, "uuid");
+            String text = Json.getString(message, "payload");
+            String remoteUserUUID = Json.getString(message, "sender");
+
+            JSONObject atomLoad = new JSONObject();
+            Json.put(atomLoad, "message", text);
+
+            JSONObject received = new JSONObject();
+            Json.put(received, MainActivity.getOwnerDeviceBase64(), System.currentTimeMillis());
+            Json.put(atomLoad, "received", received);
+
+            JSONObject atom = new JSONObject();
+
+            Json.put(atom, "uuid", uuid);
+            Json.put(atom, "time", time);
+            Json.put(atom, "type", "aura.chat.message");
+            Json.put(atom, "load", atomLoad);
+
+            GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, atom);
+
+            return atom;
         }
 
         @Override

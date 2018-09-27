@@ -328,28 +328,28 @@ public class ChatFragment extends GUILinearLayout
         {
             timeFrame.addView(statusIcon);
 
-            timeRead = Json.getLong(load, "read");
+            timeRead = ChatActivity.getLoadTime(load, "read");
             if (timeRead != null)
             {
                 statusIcon.setImageResource(R.drawable.ms_client_read);
                 return;
             }
 
-            timeReceived = Json.getLong(load, "received");
+            timeReceived = ChatActivity.getLoadTime(load, "received");
             if (timeReceived != null)
             {
                 statusIcon.setImageResource(R.drawable.ms_client_recv);
                 return;
             }
 
-            timeSend = Json.getLong(load, "send");
+            timeSend = ChatActivity.getLoadTime(load, "send");
             if (timeSend != null)
             {
                 statusIcon.setImageResource(R.drawable.ms_server_recv);
                 return;
             }
 
-            timeQueued = Json.getLong(load, "queued");
+            timeQueued = ChatActivity.getLoadTime(load, "queued");
             if (timeQueued != null)
             {
                 statusIcon.setImageResource(R.drawable.ms_server_wait);
