@@ -205,6 +205,7 @@ public class ChatActivity extends AppCompatActivity
                 JSONObject atomLoad = new JSONObject();
                 Json.put(atomLoad, "message", message);
                 JSONObject substatus = new JSONObject();
+
                 Json.put(substatus, MainActivity.getOwnerDeviceBase64(), time);
                 Json.put(atomLoad, "queued", substatus);
 
@@ -258,10 +259,6 @@ public class ChatActivity extends AppCompatActivity
 
         JSONObject atomLoad = new JSONObject();
         Json.put(atomLoad, "message", text);
-
-        JSONObject queued = new JSONObject();
-        Json.put(queued, MainActivity.getOwnerDeviceBase64(), time);
-        Json.put(atomLoad, "queued", queued);
 
         JSONObject received = new JSONObject();
         Json.put(received, MainActivity.getOwnerDeviceBase64(), System.currentTimeMillis());

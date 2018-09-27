@@ -296,6 +296,7 @@ public class MainActivity extends AppCompatActivity
                 if (! chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
 
                 chatProfile.activity.dispatchMessage(message);
+
                 break;
             }
         }

@@ -100,7 +100,11 @@ public class GorillaSender
             return null;
         }
 
-        long time = System.currentTimeMillis();
+        Long time = ticket.getTimeStamp();
+        if (time == null)
+        {
+            return Err.err("missing time stamp.");
+        }
 
         String uuid = Simple.encodeBase64(ticket.getMessageUUID());
         String senderUUID = Simple.encodeBase64(ticket.getSenderUserUUID());
