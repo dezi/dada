@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.messenger;
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +26,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 public class ChatActivity extends AppCompatActivity
@@ -86,9 +88,10 @@ public class ChatActivity extends AppCompatActivity
                 JSONObject load = Json.getObject(atom, "load");
                 if (load == null) continue;
 
-                Long sort = Json.getLong(load, "received");
-                if (sort == null) sort = Json.getLong(load, "queued");
-                if (sort == null) sort = Json.getLong(atom, "time");
+                Log.d(LOGTAG, "recv=" + Json.toPretty(atom));
+
+                Long sort = getFirstKey(load, "received");
+                if (sort == null) continue;
 
                 Json.put(atom, "sort_", sort);
                 Json.put(atom, "mode_", "recv");
@@ -106,8 +109,10 @@ public class ChatActivity extends AppCompatActivity
                 JSONObject load = Json.getObject(atom, "load");
                 if (load == null) continue;
 
-                Long sort = Json.getLong(load, "queued");
-                if (sort == null) sort = Json.getLong(atom, "time");
+                Log.d(LOGTAG, "send=" + Json.toPretty(atom));
+
+                Long sort = getFirstKey(load, "queued");
+                if (sort == null) continue;
 
                 Json.put(atom, "sort_", sort);
                 Json.put(atom, "mode_", "send");
@@ -137,6 +142,31 @@ public class ChatActivity extends AppCompatActivity
         }
 
         scrollDown();
+    }
+
+    @Nullable
+    private Long getFirstKey(JSONObject load, String status)
+    {
+        JSONObject statusse = Json.getObject(load, status);
+        if (statusse == null) return null;
+
+        Iterator<String> keysIterator = statusse.keys();
+
+        if (keysIterator.hasNext())
+        {
+            String key = keysIterator.next();
+            return Json.getLong(statusse, key);
+        }
+
+        return null;
+    }
+
+    @Nullable
+    private Long getLoadTime(JSONObject load)
+    {
+        Long sort = getFirstKey(load, "received");
+        if (sort == null) getFirstKey(load, "queued");
+        return sort;
     }
 
     @Override
