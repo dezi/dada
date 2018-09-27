@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import android.os.Environment;
 
+import com.aura.aosp.aura.common.crypter.GZP;
 import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Err;
@@ -23,46 +24,73 @@ public class GoatomStorage
     @Nullable
     public static Err putAtom(@NonNull JSONObject atom)
     {
-        prepareAtom(atom);
-
         String ownerUUID = Owner.getOwnerUUIDBase64();
         if (ownerUUID == null) return Err.getLastErr();
 
-        File atomfile = getStorageFile(ownerUUID, ownerUUID, atom);
-
-        Log.d("userOwnr=%s uuidShar=%s atomfile=%s atom=%s", ownerUUID, ownerUUID, atomfile, atom);
-
-        return Json.putFileContent(atomfile, atom);
+        return putAtom(ownerUUID, ownerUUID, atom);
     }
 
     @Nullable
     public static Err putAtomSharedBy(@NonNull String userUUID, @NonNull JSONObject atom)
     {
-        prepareAtom(atom);
-
         String ownerUUID = Owner.getOwnerUUIDBase64();
         if (ownerUUID == null) return Err.getLastErr();
 
-        File atomfile = getStorageFile(userUUID, ownerUUID, atom);
-
-        Log.d("userOwnr=%s uuidShar=%s atomfile=%s atom=%s", userUUID, ownerUUID, atomfile, atom);
-
-        return Json.putFileContent(atomfile, atom);
+        return putAtom(userUUID, ownerUUID, atom);
     }
 
     @Nullable
     public static Err putAtomSharedWith(@NonNull String userUUID, @NonNull JSONObject atom)
     {
-        prepareAtom(atom);
-
         String ownerUUID = Owner.getOwnerUUIDBase64();
         if (ownerUUID == null) return Err.getLastErr();
 
-        File atomfile = getStorageFile(ownerUUID, userUUID, atom);
+        return putAtom(ownerUUID, userUUID, atom);
+    }
 
-        Log.d("userOwnr=%s uuidShar=%s atomfile=%s atom=%s", ownerUUID, userUUID, atomfile, atom);
+    @Nullable
+    private static Err putAtom(@NonNull String ownerUUID, @NonNull String sharedUUID, @NonNull JSONObject atom)
+    {
+        prepareAtom(atom);
 
-        return Json.putFileContent(atomfile, atom);
+        File atomfile = getStorageFile(ownerUUID, sharedUUID, atom);
+
+        Log.d("ownerUUID=%s sharedUUID=%s atomfile=%s atom=%s", ownerUUID, sharedUUID, atomfile, atom);
+
+        Err errAtom = Json.putFileContent(atomfile, atom);
+        Err errSync = putSync(ownerUUID, sharedUUID, atom);
+
+        return (errAtom != null) ? errAtom : errSync;
+    }
+
+    private static Err putSync(@NonNull String ownerUUID, @NonNull String sharedUUID, @NonNull JSONObject atom)
+    {
+        File appfilesdir = Environment.getExternalStorageDirectory();
+        File gosyncdir = new File(appfilesdir, "gosync");
+
+        synchronized (mutex)
+        {
+            Err err = Simple.mkdirs(appfilesdir, gosyncdir);
+            if (err != null) return err;
+        }
+
+        String syncUUID = UID.randomUUIDString();
+        String dateStr = Dates.getUniversalDateAndTimeMillis(System.currentTimeMillis());
+        if (dateStr == null) return Err.getLastErr();
+
+        JSONObject sync = new JSONObject();
+
+        Json.put(sync, "ownerUUID", ownerUUID);
+        Json.put(sync, "sharedUUID", sharedUUID);
+        Json.put(sync, "syncAtom", atom);
+
+        String syncStr = Json.toPretty(sync);
+        if (syncStr == null) return Err.getLastErr();
+
+        byte[] syncBytes = GZP.enGzip(syncStr.getBytes());
+        File syncFile = new File(gosyncdir, dateStr + "." + syncUUID + ".json.gz");
+
+        return Simple.putFileBytes(syncFile, syncBytes);
     }
 
     @Nullable
