@@ -10,8 +10,8 @@ import com.aura.aosp.gorilla.client.IGorillaSystemService;
 
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
-import com.aura.aosp.gorilla.gopmai.GopmaiRegister;
-import com.aura.aosp.gorilla.gopmai.GopmaiSuggest;
+import com.aura.aosp.gorilla.gopoor.GopmaiRegister;
+import com.aura.aosp.gorilla.gopoor.GopmaiSuggest;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
 import org.json.JSONArray;
