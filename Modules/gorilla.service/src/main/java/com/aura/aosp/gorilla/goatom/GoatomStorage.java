@@ -1,8 +1,9 @@
 package com.aura.aosp.gorilla.goatom;
 
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import android.os.Environment;
 
 import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.simple.Dates;
@@ -11,13 +12,11 @@ import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Owner;
-import com.aura.aosp.gorilla.service.GorillaBase;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.Iterator;
 
 public class GoatomStorage
 {
@@ -31,7 +30,7 @@ public class GoatomStorage
 
         File atomfile = getStorageFile(ownerUUID, ownerUUID, atom);
 
-        Log.d("ownerUUID=%s userUUID=%s atomfile=%s atom=%s", ownerUUID, ownerUUID, atomfile, atom);
+        Log.d("userOwnr=%s uuidShar=%s atomfile=%s atom=%s", ownerUUID, ownerUUID, atomfile, atom);
 
         return Json.putFileContent(atomfile, atom);
     }
@@ -46,7 +45,7 @@ public class GoatomStorage
 
         File atomfile = getStorageFile(userUUID, ownerUUID, atom);
 
-        Log.d("ownerUUID=%s userUUID=%s atomfile=%s atom=%s", userUUID, ownerUUID, atomfile, atom);
+        Log.d("userOwnr=%s uuidShar=%s atomfile=%s atom=%s", userUUID, ownerUUID, atomfile, atom);
 
         return Json.putFileContent(atomfile, atom);
     }
@@ -61,7 +60,7 @@ public class GoatomStorage
 
         File atomfile = getStorageFile(ownerUUID, userUUID, atom);
 
-        Log.d("ownerUUID=%s userUUID=%s atomfile=%s atom=%s", ownerUUID, userUUID, atomfile, atom);
+        Log.d("userOwnr=%s uuidShar=%s atomfile=%s atom=%s", ownerUUID, userUUID, atomfile, atom);
 
         return Json.putFileContent(atomfile, atom);
     }
@@ -164,6 +163,8 @@ public class GoatomStorage
         {
             Json.put(atom, "type", "aura.unknown");
         }
+
+        Json.sortJsonKeys(atom);
     }
 
     @Nullable

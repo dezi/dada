@@ -17,6 +17,8 @@ import com.aura.aosp.aura.common.simple.Log;
 
 public class GorillaLocation implements LocationListener
 {
+    private final static int MINTIME = 10 * 1000;
+    private final static int MINDIST = 10;
     private final static int MAXAGEINMILLIS = 60 * 1000;
 
     private final static GorillaLocation instance = new GorillaLocation();
@@ -63,11 +65,7 @@ public class GorillaLocation implements LocationListener
             {
                 Log.d("NETWORK_PROVIDER installed.");
 
-                locationManager.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER,
-                        0, 0f,
-                        instance);
-
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MINTIME, MINDIST, instance);
                 Location netLoc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
                 if (netLoc != null) last = netLoc;
@@ -77,11 +75,7 @@ public class GorillaLocation implements LocationListener
             {
                 Log.d("GPS_PROVIDER installed.");
 
-                locationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER,
-                        0, 0f,
-                        instance);
-
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINTIME, MINDIST, instance);
                 Location gpsLoc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
                 if (gpsLoc != null) last = gpsLoc;

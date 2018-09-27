@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.messenger;
 
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -39,6 +40,19 @@ public class MainActivity extends AppCompatActivity
     private GUIListView identitiesView;
     private static Boolean svlink;
     private static Boolean uplink;
+
+    @Nullable
+    public static Identity getOwnerIdent()
+    {
+        return ownerIdent;
+    }
+
+    @Nullable
+    public static String getOwnerDeviceBase64()
+    {
+        if (ownerIdent == null) return null;
+        return ownerIdent.getDeviceUUIDBase64();
+    }
 
     public static void addChatProfile(ChatProfile chatProfile)
     {

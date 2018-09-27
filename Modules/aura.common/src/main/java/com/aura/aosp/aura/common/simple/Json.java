@@ -521,6 +521,74 @@ public class Json
         return new JSONArray(jsonValues);
     }
 
+    public static void sortJsonKeys(@NonNull JSONObject json)
+    {
+        //
+        // Obtain array list with keys in object.
+        //
+
+        Iterator<String> keys = json.keys();
+        List<String> sortedkeys = new ArrayList<>();
+
+        while (keys.hasNext())
+        {
+            sortedkeys.add(keys.next());
+        }
+
+        //
+        // Sort keys lexicographically.
+        //
+
+        class comparedat implements Comparator<String>
+        {
+            public int compare(String a, String b)
+            {
+                return a.compareTo(b);
+            }
+        }
+
+        Collections.sort(sortedkeys, new comparedat());
+
+        //
+        // Reput keys in sorted order.
+        //
+
+        for (String key : sortedkeys)
+        {
+            Object obj = Json.get(json, key);
+            Json.remove(json, key);
+            Json.put(json, key, obj);
+
+            if (obj instanceof JSONObject)
+            {
+                sortJsonKeys((JSONObject) obj);
+            }
+
+            if (obj instanceof JSONArray)
+            {
+                sortJsonKeys((JSONArray) obj);
+            }
+        }
+    }
+
+    public static void sortJsonKeys(@NonNull JSONArray json)
+    {
+        for (int inx = 0; inx < json.length(); inx++)
+        {
+            Object obj = Json.get(json, inx);
+
+            if (obj instanceof JSONObject)
+            {
+                sortJsonKeys((JSONObject) obj);
+            }
+
+            if (obj instanceof JSONArray)
+            {
+                sortJsonKeys((JSONArray) obj);
+            }
+        }
+    }
+
     public static void cleanJsonTempKeys(@NonNull JSONObject json)
     {
         Iterator<String> keys = json.keys();

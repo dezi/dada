@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
+import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.gui.base.GUIDefs;
 import com.aura.aosp.aura.gui.views.GUIFrameLayout;
 import com.aura.aosp.aura.gui.views.GUIIconView;
@@ -90,13 +91,12 @@ public class ChatFragment extends GUILinearLayout
     {
         try
         {
-            JSONObject load = atom.getJSONObject("load");
+            putStatus(status, timeStamp);
 
             if (status.equals("queued"))
             {
                 statusIcon.setImageResource(R.drawable.ms_server_wait);
                 timeQueued = timeStamp;
-                load.put(status, timeStamp);
                 makeTimeStatus();
             }
 
@@ -104,7 +104,6 @@ public class ChatFragment extends GUILinearLayout
             {
                 statusIcon.setImageResource(R.drawable.ms_server_recv);
                 timeSend = timeStamp;
-                load.put(status, timeStamp);
                 makeTimeStatus();
             }
 
@@ -112,16 +111,46 @@ public class ChatFragment extends GUILinearLayout
             {
                 statusIcon.setImageResource(R.drawable.ms_client_recv);
                 timeReceived = timeStamp;
-                load.put(status, timeStamp);
                 makeTimeStatus();
             }
 
             if (status.equals("read"))
             {
                 statusIcon.setImageResource(R.drawable.ms_client_read);
-                load.put(status, timeStamp);
                 timeRead = timeStamp;
             }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    private void putStatus(String status, long timeStamp)
+    {
+        try
+        {
+            Identity ownerIdent = MainActivity.getOwnerIdent();
+            if (ownerIdent == null) return;
+
+            String deviceUUID = ownerIdent.getDeviceUUIDBase64();
+            if (deviceUUID == null) return;
+
+            JSONObject load = atom.getJSONObject("load");
+
+            JSONObject substatus;
+
+            if (load.has(status))
+            {
+                substatus = load.getJSONObject(status);
+            }
+            else
+            {
+                substatus = new JSONObject();
+                load.put(status, substatus);
+            }
+
+            substatus.put(deviceUUID, timeStamp);
         }
         catch (Exception ex)
         {
