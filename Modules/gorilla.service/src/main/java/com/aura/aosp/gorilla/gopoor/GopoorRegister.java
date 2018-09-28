@@ -29,7 +29,10 @@ public class GopoorRegister
 
         Log.d("atom=%s", atom.toString());
 
-        return GoatomStorage.putAtom(atom);
+        Err err = GoatomStorage.putAtom(atom);
+        if (err != null) return err;
+
+        return GopoorSuggest.precomputeSuggestionsByEvent(atom);
     }
 
     @Nullable
@@ -49,6 +52,9 @@ public class GopoorRegister
 
         Log.d("atom=%s", atom.toString());
 
-        return GoatomStorage.putAtom(atom);
+        Err err = GoatomStorage.putAtom(atom);
+        if (err != null) return err;
+
+        return GopoorSuggest.precomputeSuggestionsByEvent(atom);
     }
 }

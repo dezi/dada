@@ -132,6 +132,8 @@ public class GoatomStorage
         File typeDir = getStorageDir(ownerUUID, userUUID, atomType, false);
         if (typeDir == null) return null;
 
+        Log.d("###### typeDir=%s", typeDir.toString());
+
         JSONArray results = new JSONArray();
 
         File[] dateDirs = typeDir.listFiles();
@@ -143,12 +145,12 @@ public class GoatomStorage
         {
             String dateDirName = dateDir.getName();
 
-            if ((dateFromStr != null) && (dateFromStr.compareTo(dateDirName) < 0))
+            if ((dateFromStr != null) && (dateFromStr.compareTo(dateDirName) > 0))
             {
                 continue;
             }
 
-            if ((dateToStr != null) && (dateToStr.compareTo(dateDirName) > 0))
+            if ((dateToStr != null) && (dateToStr.compareTo(dateDirName) < 0))
             {
                 continue;
             }

@@ -8,10 +8,9 @@ import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
+import com.aura.aosp.gorilla.gopoor.GopoorSuggest;
 
 import org.json.JSONObject;
-
-import java.util.DuplicateFormatFlagsException;
 
 public class GorillaState
 {
@@ -71,16 +70,20 @@ public class GorillaState
 
         if (Simple.nequals(lastState, thisState))
         {
-            Log.d("state=%s", getState().toString());
+            JSONObject realState = getState();
 
-            lastState = thisState;
+            Log.d("state=%s", realState.toString());
 
             JSONObject atom = new JSONObject();
 
             Json.put(atom,"type", "aura.event.state");
-            Json.put(atom,"load", getState());
+            Json.put(atom,"load", realState);
 
             GoatomStorage.putAtom(atom);
+
+            lastState = thisState;
+
+            GopoorSuggest.precomputeSuggestionsByState(realState);
         }
     }
 }
