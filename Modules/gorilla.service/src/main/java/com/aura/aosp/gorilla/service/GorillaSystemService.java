@@ -190,11 +190,6 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public String getAtom(String apkname, String atomUUID, String checksum)
     {
-        //JSONObject atom = GoatomStorage.getAtom(userUUID, atomUUID);
-        //if (atom == null) return null;
-
-        //return atom.toString();
-
         return null;
     }
 
