@@ -1,13 +1,10 @@
 package com.aura.aosp.aura.common.simple;
 
-import android.accounts.NetworkErrorException;
 import android.support.annotation.Nullable;
 import android.annotation.SuppressLint;
 
 import android.app.Application;
 import android.app.UiModeManager;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -57,6 +54,60 @@ import java.util.Map;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Simple
 {
+    public static boolean equals(String val1, String val2)
+    {
+        return ((val1 == null) && (val2 == null)) || ((val1 != null) && val1.equals(val2));
+    }
+
+    public static boolean nequals(String val1, String val2)
+    {
+        return ! equals(val1, val2);
+    }
+
+    public static boolean equals(Long val1, Long val2)
+    {
+        return ((val1 == null) && (val2 == null)) || ((val1 != null) && val1.equals(val2));
+    }
+
+    public static boolean nequals(Long val1, Long val2)
+    {
+        return ! equals(val1, val2);
+    }
+
+    public static boolean equals(Float val1, Float val2)
+    {
+        return ((val1 == null) && (val2 == null)) || ((val1 != null) && val1.equals(val2));
+    }
+
+    public static boolean nequals(Float val1, Float val2)
+    {
+        return ! equals(val1, val2);
+    }
+
+    public static boolean equals(Double val1, Double val2)
+    {
+        return ((val1 == null) && (val2 == null)) || ((val1 != null) && val1.equals(val2));
+    }
+
+    public static boolean equals(Double val1, Double val2, int accurary)
+    {
+        if ((val1 == null) && (val2 == null)) return true;
+        if ((val1 == null) || (val2 == null)) return false;
+
+        return Math.round(val1 * accurary) == Math.round(val2 * accurary);
+    }
+
+    public static boolean nequals(Double val1, Double val2, int accurary)
+    {
+        return ! equals(val1, val2, accurary);
+    }
+
+    public static boolean nequals(Double val1, Double val2)
+    {
+        return ! equals(val1, val2);
+    }
+
+
     public static int compareTo(String str1, String str2)
     {
         if ((str1 != null) && (str2 != null)) return str1.compareTo(str2);

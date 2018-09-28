@@ -4,7 +4,7 @@ import android.support.annotation.Nullable;
 
 import org.json.JSONArray;
 
-public class GopmaiSuggest
+public class GopoorSuggest
 {
     @Nullable
     public static JSONArray suggestActions()

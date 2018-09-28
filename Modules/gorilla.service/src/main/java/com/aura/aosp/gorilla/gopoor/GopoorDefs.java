@@ -1,6 +1,6 @@
 package com.aura.aosp.gorilla.gopoor;
 
-public class GopmaiDefs
+public class GopoorDefs
 {
     // formatter: off
 

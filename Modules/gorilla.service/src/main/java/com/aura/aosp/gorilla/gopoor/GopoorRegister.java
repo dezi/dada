@@ -11,7 +11,7 @@ import com.aura.aosp.gorilla.service.GorillaState;
 
 import org.json.JSONObject;
 
-public class GopmaiRegister
+public class GopoorRegister
 {
     @Nullable
     public static Err registerActionEvent(String actionDomain, String subAction)

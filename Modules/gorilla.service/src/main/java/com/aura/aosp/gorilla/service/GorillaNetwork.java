@@ -2,6 +2,7 @@ package com.aura.aosp.gorilla.service;
 
 import android.support.annotation.Nullable;
 
+import android.telephony.TelephonyManager;
 import android.content.BroadcastReceiver;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
@@ -9,10 +10,10 @@ import android.net.wifi.WifiInfo;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.telephony.TelephonyManager;
 
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Log;
+import com.aura.aosp.aura.common.simple.Simple;
 
 public class GorillaNetwork extends BroadcastReceiver
 {
@@ -34,8 +35,9 @@ public class GorillaNetwork extends BroadcastReceiver
     @Override
     public void onReceive(final Context context, final Intent intent)
     {
-        if ((intent == null) || (intent.getAction() == null)  ||
-                ! (intent.getAction().equals("android.net.wifi.WIFI_STATE_CHANGED"))
+        if ((intent == null) || (intent.getAction() == null) ||
+                ! (intent.getAction().equals("android.net.wifi.STATE_CHANGE"))
+               || intent.getAction().equals("android.net.wifi.WIFI_STATE_CHANGED")
                || intent.getAction().equals("android.net.conn.CONNECTIVITY_CHANGE"))
         {
             return;
@@ -47,14 +49,23 @@ public class GorillaNetwork extends BroadcastReceiver
 
     private static void getNetworkState()
     {
+        String lastMobileName = mobileName;
+        boolean lastIsMobileAvailable = isMobileAvailable;
+        boolean lastIsMobileConnected = isMobileConnected;
+
+        String lastWifiName = wifiName;
+        boolean lastIsWifiAvailable = isWifiAvailable;
+        boolean lastIsWifiConnected = isWifiConnected;
+
         Application context = GorillaBase.getAppContext();
 
         ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connMgr == null) return;
 
         android.net.NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
         isMobileAvailable = mobile.isAvailable();
-        isMobileConnected = mobile.isConnected();
+        isMobileConnected = mobile.isConnectedOrConnecting();
 
         if (isMobileAvailable)
         {
@@ -76,7 +87,7 @@ public class GorillaNetwork extends BroadcastReceiver
 
         android.net.NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         isWifiAvailable = wifi.isAvailable();
-        isWifiConnected = wifi.isConnected();
+        isWifiConnected = wifi.isConnectedOrConnecting();
 
         if (isWifiConnected)
         {
@@ -85,14 +96,20 @@ public class GorillaNetwork extends BroadcastReceiver
             if (wifiMgr != null)
             {
                 WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-                wifiName = wifiInfo.getSSID();
+                String tempWifiName = wifiInfo.getSSID();
 
-                if ((wifiName != null)
-                        && wifiName.startsWith("\"")
-                        && wifiName.endsWith("\""))
+                if ((tempWifiName != null)
+                        && tempWifiName.startsWith("\"")
+                        && tempWifiName.endsWith("\""))
                 {
-                    wifiName = wifiName.substring(1, wifiName.length() - 1);
+                    //
+                    // Wifi name is enclosed in quotes.
+                    //
+
+                    tempWifiName = tempWifiName.substring(1, tempWifiName.length() - 1);
                 }
+
+                wifiName = tempWifiName;
             }
             else
             {
@@ -102,8 +119,36 @@ public class GorillaNetwork extends BroadcastReceiver
         else
         {
             wifiName = null;
+
+            Simple.getHandler().removeCallbacks(checkReconnect);
+            Simple.getHandler().postDelayed(checkReconnect, 1000);
+        }
+
+        if ((lastIsMobileAvailable != isMobileAvailable)
+            || (lastIsMobileConnected != isMobileConnected)
+            || (lastIsWifiAvailable != isWifiAvailable)
+            || (lastIsWifiConnected != isWifiConnected)
+            || Simple.nequals(lastMobileName, mobileName)
+            || Simple.nequals(lastWifiName, wifiName))
+        {
+            GorillaState.onStateChanged();
         }
     }
+
+    private static final Runnable checkReconnect = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            getNetworkState();
+
+            if (! isWifiConnected)
+            {
+                Simple.getHandler().removeCallbacks(checkReconnect);
+                Simple.getHandler().postDelayed(checkReconnect, 1000);
+            }
+        }
+    };
 
     public static void logNetworkState()
     {

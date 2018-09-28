@@ -1,18 +1,18 @@
 package com.aura.aosp.gorilla.service;
 
-import android.location.LocationProvider;
 import android.support.annotation.Nullable;
 
+import android.location.LocationProvider;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.Location;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.rights.Perms;
 import com.aura.aosp.aura.common.simple.Dates;
+import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Log;
 
 public class GorillaLocation implements LocationListener
@@ -115,14 +115,17 @@ public class GorillaLocation implements LocationListener
     {
         if (location == null) return;
 
+        Double lastLat = lat;
+        Double lastLon = lon;
+        Double lastAlt = alt;
+
         lat = location.getLatitude();
         lon = location.getLongitude();
         alt = location.getAltitude();
 
+        time = location.getTime();
         accuracy = location.getAccuracy();
         provider = location.getProvider();
-
-        time = location.getTime();
 
         Log.d("lat+lon=%f %f alt=%f acc=%f pro=%s age=%d",
                 location.getLatitude(),
@@ -132,6 +135,13 @@ public class GorillaLocation implements LocationListener
                 location.getProvider(),
                 Dates.getAgeInSeconds(location.getTime())
         );
+
+        if (Simple.nequals(lastLat, lat, 1000)
+            || Simple.nequals(lastLon, lon, 1000)
+            || Simple.nequals(lastAlt, alt, 1000))
+        {
+            GorillaState.onStateChanged();
+        }
     }
 
     @Override

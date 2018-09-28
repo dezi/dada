@@ -2,21 +2,22 @@ package com.aura.aosp.gorilla.service;
 
 import android.support.annotation.NonNull;
 
-import com.aura.aosp.aura.common.simple.Json;
+import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.common.univid.Owner;
-import com.aura.aosp.gorilla.client.GorillaListener;
+import com.aura.aosp.aura.common.simple.Json;
+import com.aura.aosp.aura.common.simple.Log;
 
 import org.json.JSONObject;
 
 public class GorillaState
 {
+    private static String lastState;
+
     @NonNull
-    public static JSONObject getState()
+    private static JSONObject getStateTimeless()
     {
         JSONObject state = new JSONObject();
-
-        Json.put(state, "time", System.currentTimeMillis());
 
         GorillaLocation gl = GorillaLocation.getInstance();
 
@@ -46,5 +47,27 @@ public class GorillaState
         }
 
         return state;
+    }
+
+    @NonNull
+    public static JSONObject getState()
+    {
+        JSONObject state = getStateTimeless();
+
+        Json.put(state, "time", System.currentTimeMillis());
+
+        return state;
+    }
+
+    static void onStateChanged()
+    {
+        String thisState = getStateTimeless().toString();
+
+        if (Simple.nequals(lastState, thisState))
+        {
+            Log.d("state=%s", getState().toString());
+
+            lastState = thisState;
+        }
     }
 }

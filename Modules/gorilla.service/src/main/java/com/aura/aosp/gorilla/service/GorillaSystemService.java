@@ -10,8 +10,8 @@ import com.aura.aosp.gorilla.client.IGorillaSystemService;
 
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
-import com.aura.aosp.gorilla.gopoor.GopmaiRegister;
-import com.aura.aosp.gorilla.gopoor.GopmaiSuggest;
+import com.aura.aosp.gorilla.gopoor.GopoorRegister;
+import com.aura.aosp.gorilla.gopoor.GopoorSuggest;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
 import org.json.JSONArray;
@@ -246,14 +246,14 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public boolean registerActionEvent(String apkname, String actionDomain, String subAction, String checksum)
     {
-        Err err = GopmaiRegister.registerActionEvent(actionDomain, subAction);
+        Err err = GopoorRegister.registerActionEvent(actionDomain, subAction);
         return (err == null);
     }
 
     @Override
     public String suggestActions(String apkname, String checksum)
     {
-        JSONArray results = GopmaiSuggest.suggestActions();
+        JSONArray results = GopoorSuggest.suggestActions();
         if (results == null) return null;
 
         return results.toString();
@@ -262,14 +262,14 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public boolean registerContextEvent(String apkname, String actionDomain, String subContext, String subAction, String checksum)
     {
-        Err err = GopmaiRegister.registerContextEvent(actionDomain, subContext, subAction);
+        Err err = GopoorRegister.registerContextEvent(actionDomain, subContext, subAction);
         return (err == null);
     }
 
     @Override
     public String suggestContextActions(String apkname, String actionDomain, String subContext, String checksum)
     {
-        JSONArray results = GopmaiSuggest.suggestContextActions(actionDomain, subContext);
+        JSONArray results = GopoorSuggest.suggestContextActions(actionDomain, subContext);
         if (results == null) return null;
 
         return results.toString();
