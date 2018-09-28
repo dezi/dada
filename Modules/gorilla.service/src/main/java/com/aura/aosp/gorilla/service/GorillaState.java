@@ -7,6 +7,7 @@ import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
+import com.aura.aosp.gorilla.goatom.GoatomStorage;
 
 import org.json.JSONObject;
 
@@ -68,6 +69,13 @@ public class GorillaState
             Log.d("state=%s", getState().toString());
 
             lastState = thisState;
+
+            JSONObject atom = new JSONObject();
+
+            Json.put(atom,"type", "aura.event.state");
+            Json.put(atom,"load", getState());
+
+            GoatomStorage.putAtom(atom);
         }
     }
 }
