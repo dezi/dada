@@ -11,6 +11,8 @@ import com.aura.aosp.gorilla.goatom.GoatomStorage;
 
 import org.json.JSONObject;
 
+import java.util.DuplicateFormatFlagsException;
+
 public class GorillaState
 {
     private static String lastState;
@@ -27,6 +29,9 @@ public class GorillaState
 
         if ((lat != null) && (lon != null))
         {
+            lat = ((double) Math.round(lat * 1000) / 1000.0);
+            lon = ((double) Math.round(lon * 1000) / 1000.0);
+
             Json.put(state, "gps.lat", lat);
             Json.put(state, "gps.lon", lon);
         }
