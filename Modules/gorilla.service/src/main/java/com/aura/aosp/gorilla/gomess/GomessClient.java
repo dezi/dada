@@ -295,6 +295,20 @@ public class GomessClient
         return session.writeSession(packet);
     }
 
+    private Err sendAuthReplay()
+    {
+        Log.d("...");
+
+        byte[] head = new GoprotoMessage(GoprotoDefs.MsgAuthReplay, GoprotoDefs.HasSHASignature, 0, 0).marshall();
+
+        byte[] sign = SHA.createSHASignature(session.AESKey, head);
+        if (sign == null) return Err.getLastErr();
+
+        byte[] packet = Simple.concatBuffers(head, sign);
+
+        return session.writeSession(packet);
+    }
+
     private Err chAuthAccepted(GoprotoMessage message)
     {
         Log.d("....");
@@ -310,12 +324,27 @@ public class GomessClient
 
         session.setIsConnected(true);
 
-        if (! session.isBoot())
+        if (session.isBoot())
         {
-            GorillaSender.sendBroadCastOnlineStatus(true);
+            //
+            // Session is boot session to
+            // request gorilla nodes only.
+            //
+
+            return null;
         }
 
-        return null;
+        //
+        // Inform all clients that we are online.
+        //
+
+        GorillaSender.sendBroadCastOnlineStatus(true);
+
+        //
+        // Request replay of persisted messages.
+        //
+
+        return sendAuthReplay();
     }
 
     private Err chAuthSndNodes(GoprotoMessage message)

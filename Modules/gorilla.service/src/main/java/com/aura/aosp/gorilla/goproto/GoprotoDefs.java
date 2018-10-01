@@ -29,6 +29,7 @@ public class GoprotoDefs
     public final static int MsgAuthAccepted    = 0x0004;
     public final static int MsgAuthReqNodes    = 0x0005;
     public final static int MsgAuthSndNodes    = 0x0006;
+    public final static int MsgAuthReplay      = 0x0007;
 
     public final static int MsgMessageUpload   = 0x1000;
     public final static int MsgMessageDownload = 0x1001;

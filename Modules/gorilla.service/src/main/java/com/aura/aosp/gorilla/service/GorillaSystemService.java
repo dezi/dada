@@ -101,7 +101,6 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
 
             Log.d("########ticket=%s", json.toString());
 
-
             GoprotoTicket ticket = new GoprotoTicket();
             Err err = ticket.unmarshalJSON(json);
             if (err != null) break;
@@ -246,19 +245,19 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
+    public boolean registerContextEvent(String apkname, String actionDomain, String subContext, String subAction, String checksum)
+    {
+        Err err = GopoorRegister.registerContextEvent(actionDomain, subContext, subAction);
+        return (err == null);
+    }
+
+    @Override
     public String suggestActions(String apkname, String checksum)
     {
         JSONArray results = GopoorSuggest.suggestActions();
         if (results == null) return null;
 
         return results.toString();
-    }
-
-    @Override
-    public boolean registerContextEvent(String apkname, String actionDomain, String subContext, String subAction, String checksum)
-    {
-        Err err = GopoorRegister.registerContextEvent(actionDomain, subContext, subAction);
-        return (err == null);
     }
 
     @Override
