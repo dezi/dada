@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.client;
 
 import android.annotation.SuppressLint;
+import android.app.Service;
 import android.support.annotation.Nullable;
 
 import android.content.ServiceConnection;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressLint("StaticFieldLeak")
-public class GorillaClient
+public class GorillaClient extends Service
 {
     private static final String LOGTAG = GorillaClient.class.getSimpleName();
 
@@ -63,7 +64,7 @@ public class GorillaClient
 
         componentName = new ComponentName(
                 "com.aura.aosp.gorilla.sysapp",
-                "com.aura.aosp.gorilla.service.GorillaService");
+                "com.aura.aosp.gorilla.service.GorillaSystem");
 
         serviceConnection = new ServiceConnection()
         {
@@ -618,4 +619,12 @@ public class GorillaClient
     }
 
     //endregion Private helpers.
+
+    @Override
+    public IBinder onBind(Intent intent)
+    {
+        Log.d(LOGTAG,"onBind: intent=" + intent.toString());
+
+        return new GorillaClientService();
+    }
 }
