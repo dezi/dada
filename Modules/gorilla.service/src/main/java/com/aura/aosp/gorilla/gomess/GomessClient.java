@@ -136,6 +136,14 @@ public class GomessClient
                 err = chAuthSndNodes(message);
                 break;
 
+            case GoprotoDefs.MsgPing:
+                err = chPing(message);
+                break;
+
+            case GoprotoDefs.MsgPong:
+                err = chPong(message);
+                break;
+
             case GoprotoDefs.MsgMessageDownload:
                 err = chMessageDownload(message);
                 break;
@@ -364,6 +372,48 @@ public class GomessClient
         availableNodes = GomessNodes.unMarshall(jClientNodes);
 
         Log.d("nodes=%s", new String(nodesBytes));
+
+        return null;
+    }
+
+    private Err sendPing(byte[] uuid)
+    {
+        Log.d("...");
+
+        if (uuid.length != GoprotoDefs.GorillaUUIDSize)
+        {
+            return Err.errp("wrong size=%d fail!", uuid.length);
+        }
+
+        byte[] head = new GoprotoMessage(GoprotoDefs.MsgPing, 0, 0, GoprotoDefs.GorillaUUIDSize).marshall();
+        byte[] packet = Simple.concatBuffers(head, uuid);
+
+        return session.writeSession(packet);
+    }
+
+    private Err chPing(GoprotoMessage message)
+    {
+        if ((message.Base == null) || (message.Base.length != GoprotoDefs.GorillaUUIDSize))
+        {
+            return Err.errp("wrong size=%d fail!", message.Size);
+        }
+
+        Log.d("uuid=%s", Simple.encodeBase64(message.Base));
+
+        byte[] head = new GoprotoMessage(GoprotoDefs.MsgPong, 0, 0, GoprotoDefs.GorillaUUIDSize).marshall();
+        byte[] packet = Simple.concatBuffers(head, message.Base);
+
+        return session.writeSession(packet);
+    }
+
+    private Err chPong(GoprotoMessage message)
+    {
+        if ((message.Base == null) || (message.Base.length != GoprotoDefs.GorillaUUIDSize))
+        {
+            return Err.errp("wrong size=%d fail!", message.Size);
+        }
+
+        Log.d("uuid=%s", Simple.encodeBase64(message.Base));
 
         return null;
     }

@@ -296,6 +296,7 @@ public class GomessHandler
                     continue;
                 }
 
+                /*
                 Integer status = ticket.getStatus();
 
                 if ((status != null) && (status != 0))
@@ -333,6 +334,7 @@ public class GomessHandler
                 {
                     Log.e("ticket result send err=%s", err);
                 }
+                */
             }
         }
     };

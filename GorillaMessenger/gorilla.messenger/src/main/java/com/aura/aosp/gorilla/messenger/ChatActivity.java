@@ -132,7 +132,16 @@ public class ChatActivity extends AppCompatActivity
             Log.d(LOGTAG, "####### atom=" + atom.toString());
 
             ChatFragment cf = new ChatFragment(this);
-            cf.setContent(mode.equals("send"), chatProfile.remoteNick, atom);
+
+            if (mode.equals("send"))
+            {
+                cf.setContent(true, MainActivity.ownerIdent.getNick(), atom);
+            }
+            else
+            {
+                cf.setContent(false, chatProfile.remoteNick, atom);
+            }
+
             chatContent.addView(cf);
         }
 

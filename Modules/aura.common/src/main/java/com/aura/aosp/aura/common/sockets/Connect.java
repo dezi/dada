@@ -150,9 +150,9 @@ public class Connect
         {
             try
             {
-                Log.d("size=%d", buffer.length);
-
                 output.write(buffer);
+
+                Log.d("size=%d", buffer.length);
 
                 return null;
             }
