@@ -9,7 +9,9 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public String returnYourSecret(String apkname)
     {
-        Log.d(LOGTAG,"returnYourSecret: impl clientSecret=" + GorillaIntercon.getClientSecretBase64(apkname));
+        Log.d(LOGTAG,"returnYourSecret: impl"
+                + " apkname=" + apkname
+                + " clientSecret=" + GorillaIntercon.getClientSecretBase64(apkname));
 
         return GorillaIntercon.getClientSecretBase64(apkname);
     }

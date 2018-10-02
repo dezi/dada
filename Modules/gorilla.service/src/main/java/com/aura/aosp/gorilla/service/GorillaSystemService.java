@@ -24,7 +24,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     {
         GorillaService.startClientService(apkname);
 
-        Log.d("impl serverSecret=%s", GorillaIntercon.getServerSecretBase64(apkname));
+        Log.d("impl apkname=%s serverSecret=%s", apkname, GorillaIntercon.getServerSecretBase64(apkname));
 
         return GorillaIntercon.getServerSecretBase64(apkname);
     }
