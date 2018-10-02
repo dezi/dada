@@ -36,79 +36,44 @@ public class GorillaClient extends Service
 
     //region Instance implemention.
 
-    private final List<GorillaListener> gorillaListeners = new ArrayList<>();
-    private final Handler handler = new Handler();
-
     private Context context;
-
-    private ServiceConnection serviceConnection;
-    private ComponentName componentName;
     private String ownerUUID;
     private String apkname;
 
-    public void bindService(Context context)
+    private final Handler handler = new Handler();
+
+    private final List<GorillaListener> gorillaListeners = new ArrayList<>();
+
+    private final ComponentName componentName = new ComponentName(
+            "com.aura.aosp.gorilla.sysapp",
+            "com.aura.aosp.gorilla.service.GorillaSystem");
+
+    private final ServiceConnection serviceConnection = new ServiceConnection()
     {
-        Log.d(LOGTAG, "bindService: ...");
-
-        if (this.context != null)
+        public void onServiceConnected(ComponentName className, IBinder service)
         {
-            //
-            // Service already bound.
-            //
+            Log.d(LOGTAG, "onServiceConnected: className=" + className.toString());
 
-            return;
+            IGorillaSystemService gorillaRemote = IGorillaSystemService.Stub.asInterface(service);
+            GorillaCredentials.setSystemService(gorillaRemote);
+
+            validateConnect();
         }
 
-        this.context = context;
-        this.apkname = context.getPackageName();
-
-        componentName = new ComponentName(
-                "com.aura.aosp.gorilla.sysapp",
-                "com.aura.aosp.gorilla.service.GorillaSystem");
-
-        serviceConnection = new ServiceConnection()
+        public void onServiceDisconnected(ComponentName className)
         {
-            public void onServiceConnected(ComponentName className, IBinder service)
-            {
-                Log.d(LOGTAG, "onServiceConnected: className=" + className.toString());
+            Log.d(LOGTAG, "onServiceDisconnected: className=" + className.toString());
 
-                IGorillaSystemService gorillaRemote = IGorillaSystemService.Stub.asInterface(service);
-                GorillaCredentials.setSystemService(gorillaRemote);
+            GorillaCredentials.setSystemService(null);
 
-                validateConnect();
-            }
+            boolean c1 = GorillaCredentials.setServiceStatus(false);
+            boolean c2 = GorillaCredentials.setUplinkStatus(false);
 
-            public void onServiceDisconnected(ComponentName className)
-            {
-                Log.d(LOGTAG, "onServiceDisconnected: className=" + className.toString());
+            if (c1 || c2) receiveStatus();
 
-                GorillaCredentials.setSystemService(null);
-
-                boolean c1 = GorillaCredentials.setServiceStatus(false);
-                boolean c2 = GorillaCredentials.setUplinkStatus(false);
-
-                if (c1 || c2) receiveStatus();
-
-                handler.post(serviceConnector);
-            }
-        };
-
-        handler.post(serviceConnector);
-    }
-
-    public void unbindService()
-    {
-        Log.d(LOGTAG, "unbindService: ...");
-
-        if (context != null)
-        {
-            context.unbindService(serviceConnection);
-
-            context = null;
-            apkname = null;
-            serviceConnection = null;
+            handler.post(serviceConnector);
         }
-    }
+    };
 
     private final Runnable serviceConnector = new Runnable()
     {
@@ -128,6 +93,38 @@ public class GorillaClient extends Service
             }
         }
     };
+
+    public void bindService(Context context)
+    {
+        Log.d(LOGTAG, "bindService: ...");
+
+        if (this.context != null)
+        {
+            //
+            // Service already bound.
+            //
+
+            return;
+        }
+
+        this.context = context;
+        this.apkname = context.getPackageName();
+
+        handler.post(serviceConnector);
+    }
+
+    public void unbindService()
+    {
+        Log.d(LOGTAG, "unbindService: ...");
+
+        if (context != null)
+        {
+            context.unbindService(serviceConnection);
+
+            apkname = null;
+            context = null;
+        }
+    }
 
     private void validateConnect()
     {
@@ -623,7 +620,7 @@ public class GorillaClient extends Service
     @Override
     public IBinder onBind(Intent intent)
     {
-        Log.d(LOGTAG,"onBind: intent=" + intent.toString());
+        Log.d(LOGTAG, "onBind: intent=" + intent.toString());
 
         return new GorillaClientService();
     }

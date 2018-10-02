@@ -46,7 +46,6 @@ public class GorillaClientService extends IGorillaClientService.Stub
         String solution = GorillaCredentials.createSHASignatureBase64(apkname, time, uuid, senderUUID, deviceUUID, payload);
 
         boolean valid = ((checksum != null) && checksum.equals(solution));
-
         Log.d(LOGTAG, "receivePayload: payload=" + payload + " valid=" + valid);
 
         if (valid)
