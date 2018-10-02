@@ -8,6 +8,11 @@ public class GorillaListener
 {
     private final static String LOGTAG = GorillaListener.class.getSimpleName();
 
+    public void onConnectedChange(boolean connected)
+    {
+        Log.d(LOGTAG, "onConnectedChange: STUB!");
+    }
+
     public void onStatusReceived(JSONObject result)
     {
         Log.d(LOGTAG, "onStatusReceived: STUB!");

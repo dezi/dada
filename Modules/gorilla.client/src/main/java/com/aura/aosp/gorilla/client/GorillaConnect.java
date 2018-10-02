@@ -8,7 +8,7 @@ import android.util.Base64;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 
-class GorillaCredentials
+class GorillaConnect
 {
     private static IGorillaSystemService systemService;
 

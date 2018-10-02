@@ -18,7 +18,7 @@ public class ApplicationBase extends Application
 
         EventManager eventManager = new EventManager(this);
 
-        GorillaClient.getInstance().bindService(this);
+        GorillaClient.getInstance().connectService(this);
         GorillaClient.getInstance().subscribeGorillaListener(eventManager);
     }
 }

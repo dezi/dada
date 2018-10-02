@@ -11,27 +11,27 @@ public class GorillaClientService extends IGorillaClientService.Stub
     {
         Log.d(LOGTAG,"returnYourSecret: impl"
                 + " apkname=" + apkname
-                + " clientSecret=" + GorillaCredentials.getClientSecretBase64());
+                + " clientSecret=" + GorillaConnect.getClientSecretBase64());
 
-        return GorillaCredentials.getClientSecretBase64();
+        return GorillaConnect.getClientSecretBase64();
     }
 
     @Override
     public boolean validateConnect(String apkname, String checksum)
     {
-        String solution = GorillaCredentials.createSHASignatureBase64(apkname);
+        String solution = GorillaConnect.createSHASignatureBase64(apkname);
 
         boolean svlink = ((checksum != null) && checksum.equals(solution));
 
         Log.d(LOGTAG, "validateConnect: impl"
                 + " apkname=" + apkname
-                + " serverSecret=" + GorillaCredentials.getServerSecretBase64()
-                + " clientSecret=" + GorillaCredentials.getClientSecretBase64()
+                + " serverSecret=" + GorillaConnect.getServerSecretBase64()
+                + " clientSecret=" + GorillaConnect.getClientSecretBase64()
                 + " svlink=" + svlink);
 
         if (!svlink) return false;
 
-        GorillaCredentials.setServiceStatus(true);
+        GorillaConnect.setServiceStatus(true);
 
         GorillaClient.getInstance().receiveStatus();
         GorillaClient.getInstance().getUplinkStatus();
@@ -43,7 +43,7 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public boolean receivePayload(String apkname, long time, String uuid, String senderUUID, String deviceUUID, String payload, String checksum)
     {
-        String solution = GorillaCredentials.createSHASignatureBase64(apkname, time, uuid, senderUUID, deviceUUID, payload);
+        String solution = GorillaConnect.createSHASignatureBase64(apkname, time, uuid, senderUUID, deviceUUID, payload);
 
         boolean valid = ((checksum != null) && checksum.equals(solution));
         Log.d(LOGTAG, "receivePayload: payload=" + payload + " valid=" + valid);
@@ -59,7 +59,7 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public boolean receivePayloadResult(String apkname, String result, String checksum)
     {
-        String solution = GorillaCredentials.createSHASignatureBase64(apkname, result);
+        String solution = GorillaConnect.createSHASignatureBase64(apkname, result);
 
         boolean valid = ((checksum != null) && checksum.equals(solution));
 
@@ -76,7 +76,7 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public boolean receiveOnlineStatus(String apkname, boolean uplink, String checksum)
     {
-        String solution = GorillaCredentials.createSHASignatureBase64(apkname, uplink);
+        String solution = GorillaConnect.createSHASignatureBase64(apkname, uplink);
 
         boolean valid = ((checksum != null) && checksum.equals(solution));
 
@@ -84,7 +84,7 @@ public class GorillaClientService extends IGorillaClientService.Stub
 
         if (valid)
         {
-            if (GorillaCredentials.setUplinkStatus(uplink))
+            if (GorillaConnect.setUplinkStatus(uplink))
             {
                 GorillaClient.getInstance().receiveStatus();
             }
@@ -96,7 +96,7 @@ public class GorillaClientService extends IGorillaClientService.Stub
     @Override
     public boolean receiveOwnerUUID(String apkname, String ownerUUID, String checksum)
     {
-        String solution = GorillaCredentials.createSHASignatureBase64(apkname, ownerUUID);
+        String solution = GorillaConnect.createSHASignatureBase64(apkname, ownerUUID);
 
         boolean valid = ((checksum != null) && checksum.equals(solution));
 
