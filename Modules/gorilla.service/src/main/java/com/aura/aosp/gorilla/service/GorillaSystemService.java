@@ -21,7 +21,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public String returnYourSecret(String apkname)
     {
-        GorillaService.startClientService(apkname);
+        GorillaSystem.startClientService(apkname);
 
         Log.d("impl apkname=%s serverSecret=%s", apkname, GorillaIntercon.getServerSecretBase64(apkname));
 

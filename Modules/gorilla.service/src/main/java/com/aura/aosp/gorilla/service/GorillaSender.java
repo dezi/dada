@@ -91,7 +91,7 @@ public class GorillaSender
         {
             Log.d("unknown/unconnected apkname=%s", apkname);
 
-            GorillaService.startClientService(apkname);
+            GorillaSystem.startClientService(apkname);
 
             Err err = persistTicketForClientApp(ticket);
             if (err != null) return err;
@@ -143,7 +143,7 @@ public class GorillaSender
         {
             Log.d("unknown/unconnected apkname=%s", apkname);
 
-            GorillaService.startClientService(apkname);
+            GorillaSystem.startClientService(apkname);
 
             // Todo: persists result ticket.
 

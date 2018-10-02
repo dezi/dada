@@ -30,7 +30,7 @@
         </receiver>
 
         <service
-            android:name=".GorillaService"
+            android:name=".GorillaSystem"
             android:enabled="true"
             android:exported="true">
         </service>

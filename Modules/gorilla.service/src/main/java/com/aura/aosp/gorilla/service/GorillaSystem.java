@@ -12,7 +12,7 @@ import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 import com.aura.aosp.aura.common.simple.Log;
 
-public class GorillaService extends Service
+public class GorillaSystem extends Service
 {
     private final static String sysApkName = "com.aura.aosp.gorilla.sysapp";
 
@@ -24,19 +24,10 @@ public class GorillaService extends Service
     public static void selfStartMainService()
     {
         Context context = GorillaBase.getAppContext();
-        Intent serviceIntent = new Intent(context, GorillaService.class);
+        Intent serviceIntent = new Intent(context, GorillaSystem.class);
         context.startService(serviceIntent);
 
         Log.d("service started...");
-    }
-
-    public static void selfStopMainService()
-    {
-        Context context = GorillaBase.getAppContext();
-        Intent serviceIntent = new Intent(context, GorillaService.class);
-        context.stopService(serviceIntent);
-
-        Log.d("service stopped...");
     }
 
     static void startClientService(final String apkname)
@@ -68,7 +59,7 @@ public class GorillaService extends Service
 
         Log.d("apkname=%s", apkname);
 
-        ComponentName componentName = new ComponentName(apkname, "com.aura.aosp.gorilla.client.GorillaService");
+        ComponentName componentName = new ComponentName(apkname, "com.aura.aosp.gorilla.client.GorillaSystem");
 
         Intent serviceIntent = new Intent();
         serviceIntent.setComponent(componentName);
