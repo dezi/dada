@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 
 import org.json.JSONObject;

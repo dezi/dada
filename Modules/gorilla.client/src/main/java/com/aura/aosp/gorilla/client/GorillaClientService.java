@@ -2,7 +2,7 @@ package com.aura.aosp.gorilla.client;
 
 import android.util.Log;
 
-public class GorillaClientService extends IGorillaClientService.Stub
+class GorillaClientService extends IGorillaClientService.Stub
 {
     private final static String LOGTAG = GorillaClientService.class.getSimpleName();
 
