@@ -5,7 +5,6 @@ import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Log;
 
-import com.aura.aosp.gorilla.client.GorillaIntercon;
 import com.aura.aosp.gorilla.client.IGorillaSystemService;
 
 import com.aura.aosp.gorilla.goatom.GoatomStorage;

@@ -1,8 +1,12 @@
-package com.aura.aosp.gorilla.client;
+package com.aura.aosp.gorilla.service;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import android.util.Base64;
+
+import com.aura.aosp.gorilla.client.IGorillaClientService;
+import com.aura.aosp.gorilla.client.IGorillaSystemService;
 
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -12,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-class GorillaIntercon
+public class GorillaIntercon
 {
     private final static Map<String, AppData> apkDatas = new HashMap<>();
 

@@ -7,9 +7,7 @@ import android.app.Service;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
-import com.aura.aosp.gorilla.client.GorillaIntercon;
 import com.aura.aosp.gorilla.client.IGorillaClientService;
-import com.aura.aosp.gorilla.client.IGorillaSystemService;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 import com.aura.aosp.aura.common.simple.Log;
