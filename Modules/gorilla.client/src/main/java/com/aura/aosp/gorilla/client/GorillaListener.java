@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 public class GorillaListener
 {
-    private static final String LOGTAG = GorillaListener.class.getSimpleName();
+    private final static String LOGTAG = GorillaListener.class.getSimpleName();
 
     public void onStatusReceived(JSONObject result)
     {
@@ -18,13 +18,13 @@ public class GorillaListener
         Log.d(LOGTAG, "onOwnerReceived: STUB!");
     }
 
-    public void onResultReceived(JSONObject result)
-    {
-        Log.d(LOGTAG, "onResultReceived: STUB!");
-    }
-
     public void onMessageReceived(JSONObject message)
     {
         Log.d(LOGTAG, "onMessageReceived: STUB!");
+    }
+
+    public void onResultReceived(JSONObject result)
+    {
+        Log.d(LOGTAG, "onResultReceived: STUB!");
     }
 }

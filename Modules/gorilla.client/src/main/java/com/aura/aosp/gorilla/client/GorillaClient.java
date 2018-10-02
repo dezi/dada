@@ -22,8 +22,6 @@ public class GorillaClient
 {
     private static final String LOGTAG = GorillaClient.class.getSimpleName();
 
-    private final static String sysApkName = "com.aura.aosp.gorilla.sysapp";
-
     //region Static implemention.
 
     private static GorillaClient instance = new GorillaClient();
@@ -43,10 +41,11 @@ public class GorillaClient
     private Context context;
 
     private ServiceConnection serviceConnection;
+    private ComponentName componentName;
     private String ownerUUID;
     private String apkname;
 
-    public GorillaClient bindService(Context context)
+    public void bindService(Context context)
     {
         Log.d(LOGTAG, "bindService: ...");
 
@@ -56,11 +55,15 @@ public class GorillaClient
             // Service already bound.
             //
 
-            return this;
+            return;
         }
 
         this.context = context;
         this.apkname = context.getPackageName();
+
+        componentName = new ComponentName(
+                "com.aura.aosp.gorilla.sysapp",
+                "com.aura.aosp.gorilla.service.GorillaService");
 
         serviceConnection = new ServiceConnection()
         {
@@ -69,7 +72,7 @@ public class GorillaClient
                 Log.d(LOGTAG, "onServiceConnected: className=" + className.toString());
 
                 IGorillaSystemService gorillaRemote = IGorillaSystemService.Stub.asInterface(service);
-                GorillaIntercon.setSystemService(sysApkName, gorillaRemote);
+                GorillaCredentials.setSystemService(gorillaRemote);
 
                 validateConnect();
             }
@@ -78,10 +81,10 @@ public class GorillaClient
             {
                 Log.d(LOGTAG, "onServiceDisconnected: className=" + className.toString());
 
-                GorillaIntercon.setSystemService(sysApkName, null);
+                GorillaCredentials.setSystemService(null);
 
-                boolean c1 = GorillaIntercon.setServiceStatus(sysApkName, false);
-                boolean c2 = GorillaIntercon.setUplinkStatus(sysApkName, false);
+                boolean c1 = GorillaCredentials.setServiceStatus(false);
+                boolean c2 = GorillaCredentials.setUplinkStatus(false);
 
                 if (c1 || c2) receiveStatus();
 
@@ -90,11 +93,9 @@ public class GorillaClient
         };
 
         handler.post(serviceConnector);
-
-        return this;
     }
 
-    public GorillaClient unbindService()
+    public void unbindService()
     {
         Log.d(LOGTAG, "unbindService: ...");
 
@@ -106,8 +107,6 @@ public class GorillaClient
             apkname = null;
             serviceConnection = null;
         }
-
-        return this;
     }
 
     private final Runnable serviceConnector = new Runnable()
@@ -115,11 +114,9 @@ public class GorillaClient
         @Override
         public void run()
         {
-            if (GorillaIntercon.getSystemService(sysApkName) == null)
+            if (GorillaCredentials.getSystemService() == null)
             {
                 Log.d(LOGTAG, "serviceConnector: ...");
-
-                ComponentName componentName = new ComponentName(sysApkName, "com.aura.aosp.gorilla.service.GorillaService");
 
                 Intent serviceIntent = new Intent();
                 serviceIntent.setComponent(componentName);
@@ -133,38 +130,38 @@ public class GorillaClient
 
     private void validateConnect()
     {
-        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        IGorillaSystemService gr = GorillaCredentials.getSystemService();
         if (gr == null) return;
 
         try
         {
             String serverSecret = gr.returnYourSecret(apkname);
-            GorillaIntercon.setServerSecret(sysApkName, serverSecret);
+            GorillaCredentials.setServerSecretBase64(serverSecret);
 
             Log.d(LOGTAG, "validateConnect: call"
                     + " apkname=" + apkname
-                    + " serverSecret=" + GorillaIntercon.getServerSecretBase64(sysApkName));
+                    + " serverSecret=" + GorillaCredentials.getServerSecretBase64());
 
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+            String checksum = GorillaCredentials.createSHASignatureBase64(apkname);
 
             boolean svlink = gr.validateConnect(apkname, checksum);
 
             Log.d(LOGTAG, "validateConnect: call"
                     + " apkname=" + apkname
-                    + " serverSecret=" + GorillaIntercon.getServerSecretBase64(sysApkName)
-                    + " clientSecret=" + GorillaIntercon.getClientSecretBase64(sysApkName)
+                    + " serverSecret=" + GorillaCredentials.getServerSecretBase64()
+                    + " clientSecret=" + GorillaCredentials.getClientSecretBase64()
                     + " svlink=" + svlink);
 
             if (!svlink) return;
 
-            GorillaIntercon.setServiceStatus(sysApkName, true);
+            GorillaCredentials.setServiceStatus(true);
 
-            checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+            checksum = GorillaCredentials.createSHASignatureBase64(apkname);
 
             boolean uplink = gr.getUplinkStatus(apkname, checksum);
-            GorillaIntercon.setUplinkStatus(sysApkName, uplink);
+            GorillaCredentials.setUplinkStatus(uplink);
 
-            checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+            checksum = GorillaCredentials.createSHASignatureBase64(apkname);
 
             String ownerUUID = gr.getOwnerUUID(apkname, checksum);
 
@@ -179,16 +176,16 @@ public class GorillaClient
 
     void getUplinkStatus()
     {
-        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        IGorillaSystemService gr = GorillaCredentials.getSystemService();
         if (gr == null) return;
 
         try
         {
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+            String checksum = GorillaCredentials.createSHASignatureBase64(apkname);
 
             boolean uplink = gr.getUplinkStatus(apkname, checksum);
 
-            if (GorillaIntercon.setUplinkStatus(sysApkName, uplink))
+            if (GorillaCredentials.setUplinkStatus(uplink))
             {
                 GorillaClient.getInstance().receiveStatus();
             }
@@ -201,12 +198,12 @@ public class GorillaClient
 
     void getOwnerUUID()
     {
-        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        IGorillaSystemService gr = GorillaCredentials.getSystemService();
         if (gr == null) return;
 
         try
         {
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+            String checksum = GorillaCredentials.createSHASignatureBase64(apkname);
 
             String ownerUUID = gr.getOwnerUUID(apkname, checksum);
 
@@ -220,12 +217,12 @@ public class GorillaClient
 
     private void requestPersisted()
     {
-        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        IGorillaSystemService gr = GorillaCredentials.getSystemService();
         if (gr == null) return;
 
         try
         {
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname);
+            String checksum = GorillaCredentials.createSHASignatureBase64(apkname);
 
             boolean valid = gr.requestPersisted(apkname, checksum);
             Log.d(LOGTAG, "requestPersisted valid=" + valid);
@@ -240,8 +237,8 @@ public class GorillaClient
     {
         JSONObject status = new JSONObject();
 
-        putJSON(status, "svlink", GorillaIntercon.getServiceStatus(sysApkName));
-        putJSON(status, "uplink", GorillaIntercon.getUplinkStatus(sysApkName));
+        putJSON(status, "svlink", GorillaCredentials.getServiceStatus());
+        putJSON(status, "uplink", GorillaCredentials.getUplinkStatus());
 
         receiveStatus(status);
     }
@@ -377,12 +374,12 @@ public class GorillaClient
     @Nullable
     public JSONObject sendPayload(String userUUID, String deviceUUID, String payload)
     {
-        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        IGorillaSystemService gr = GorillaCredentials.getSystemService();
         if (gr == null) return null;
 
         try
         {
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, deviceUUID, payload);
+            String checksum = GorillaCredentials.createSHASignatureBase64(apkname, userUUID, deviceUUID, payload);
 
             String resultStr = gr.sendPayload(apkname, userUUID, deviceUUID, payload, checksum);
 
@@ -407,12 +404,12 @@ public class GorillaClient
 
     public boolean sendPayloadRead(String userUUID, String deviceUUID, String messageUUID)
     {
-        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        IGorillaSystemService gr = GorillaCredentials.getSystemService();
         if (gr == null) return false;
 
         try
         {
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, deviceUUID, messageUUID);
+            String checksum = GorillaCredentials.createSHASignatureBase64(apkname, userUUID, deviceUUID, messageUUID);
 
             boolean result = gr.sendPayloadRead(apkname, userUUID, deviceUUID, messageUUID, checksum);
 
@@ -429,14 +426,14 @@ public class GorillaClient
 
     public boolean putAtom(JSONObject atom)
     {
-        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        IGorillaSystemService gr = GorillaCredentials.getSystemService();
         if (gr == null) return false;
 
         try
         {
             String atomStr = atom.toString(2);
 
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, atomStr);
+            String checksum = GorillaCredentials.createSHASignatureBase64(apkname, atomStr);
 
             boolean result = gr.putAtom(apkname, atomStr, checksum);
 
@@ -453,14 +450,14 @@ public class GorillaClient
 
     public boolean putAtomSharedBy(String userUUID, JSONObject atom)
     {
-        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        IGorillaSystemService gr = GorillaCredentials.getSystemService();
         if (gr == null) return false;
 
         try
         {
             String atomStr = atom.toString(2);
 
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, atomStr);
+            String checksum = GorillaCredentials.createSHASignatureBase64(apkname, userUUID, atomStr);
 
             boolean result = gr.putAtomSharedBy(apkname, userUUID, atomStr, checksum);
 
@@ -477,14 +474,14 @@ public class GorillaClient
 
     public boolean putAtomSharedWith(String userUUID, JSONObject atom)
     {
-        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        IGorillaSystemService gr = GorillaCredentials.getSystemService();
         if (gr == null) return false;
 
         try
         {
             String atomStr = atom.toString(2);
 
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, atomStr);
+            String checksum = GorillaCredentials.createSHASignatureBase64(apkname, userUUID, atomStr);
 
             boolean result = gr.putAtomSharedWith(apkname, userUUID, atomStr, checksum);
 
@@ -502,12 +499,12 @@ public class GorillaClient
     @Nullable
     public JSONArray queryAtomsSharedBy(String userUUID, String atomType, long timeFrom, long timeTo)
     {
-        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        IGorillaSystemService gr = GorillaCredentials.getSystemService();
         if (gr == null) return null;
 
         try
         {
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, atomType, timeFrom, timeTo);
+            String checksum = GorillaCredentials.createSHASignatureBase64(apkname, userUUID, atomType, timeFrom, timeTo);
 
             String resultsStr = gr.queryAtomsSharedBy(apkname, userUUID, atomType, timeFrom, timeTo, checksum);
 
@@ -525,12 +522,12 @@ public class GorillaClient
     @Nullable
     public JSONArray queryAtomsSharedWith(String userUUID, String atomType, long timeFrom, long timeTo)
     {
-        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        IGorillaSystemService gr = GorillaCredentials.getSystemService();
         if (gr == null) return null;
 
         try
         {
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, userUUID, atomType, timeFrom, timeTo);
+            String checksum = GorillaCredentials.createSHASignatureBase64(apkname, userUUID, atomType, timeFrom, timeTo);
 
             String resultsStr = gr.queryAtomsSharedWith(apkname, userUUID, atomType, timeFrom, timeTo, checksum);
             Log.d(LOGTAG, "queryAtomsSharedWith: resultsStr=" + resultsStr);
@@ -546,12 +543,12 @@ public class GorillaClient
 
     public boolean registerActionEvent(String actionDomain, String subAction)
     {
-        IGorillaSystemService gr = GorillaIntercon.getSystemService(sysApkName);
+        IGorillaSystemService gr = GorillaCredentials.getSystemService();
         if (gr == null) return false;
 
         try
         {
-            String checksum = GorillaIntercon.createSHASignatureBase64(sysApkName, apkname, actionDomain, subAction);
+            String checksum = GorillaCredentials.createSHASignatureBase64(apkname, actionDomain, subAction);
 
             boolean result = gr.registerActionEvent(apkname, actionDomain, subAction, checksum);
 
