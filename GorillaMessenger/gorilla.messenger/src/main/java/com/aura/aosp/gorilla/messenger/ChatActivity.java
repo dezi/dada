@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.messenger;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ public class ChatActivity extends AppCompatActivity
     private String remoteUserUUID;
     private String remoteDeviceUUID;
 
+    private Handler handler;
     private Boolean svlink;
     private Boolean uplink;
 
@@ -55,6 +57,8 @@ public class ChatActivity extends AppCompatActivity
 
         Bundle params = intent.getExtras();
         if (params == null) return;
+
+        handler = new Handler();
 
         remoteNick = params.getString("nick");
         remoteUserUUID = params.getString("userUUID");
@@ -120,8 +124,11 @@ public class ChatActivity extends AppCompatActivity
 
         for (int inx = 0; inx < combined.length(); inx++)
         {
-            JSONObject atom = Json.getObject(combined, inx);
+            final JSONObject atom = Json.getObject(combined, inx);
             if (atom == null) continue;
+
+            final String uuid = Json.getString(atom, "uuid");
+            if (uuid == null) continue;
 
             String mode = Json.getString(atom, "mode_");
             if (mode == null) continue;
@@ -132,6 +139,7 @@ public class ChatActivity extends AppCompatActivity
             Log.d(LOGTAG, "####### atom=" + atom.toString());
 
             ChatFragment cf = new ChatFragment(this);
+            chatContent.addView(cf);
 
             if (mode.equals("send"))
             {
@@ -140,9 +148,29 @@ public class ChatActivity extends AppCompatActivity
             else
             {
                 cf.setContent(false, chatProfile.remoteNick, atom);
-            }
 
-            chatContent.addView(cf);
+                Long readStatus = cf.getStatus("read");
+
+                if (readStatus == null)
+                {
+                    cf.putStatus("read", System.currentTimeMillis());
+
+                    handler.postDelayed(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            boolean ok = GorillaClient.getInstance().sendPayloadRead(remoteUserUUID, remoteDeviceUUID, uuid);
+
+                            if (ok)
+                            {
+                                GorillaClient.getInstance().putAtomSharedWith(remoteUserUUID, atom);
+                            }
+                        }
+
+                    }, 1000);
+                }
+            }
         }
 
         scrollDown();
@@ -208,7 +236,7 @@ public class ChatActivity extends AppCompatActivity
 
         editText = new GUIEditText(this);
         editText.setSizeDip(Simple.WC, Simple.WC, 1.0f);
-        editText.setText("schniddel more lore ipsum");
+        editText.setText("boring merkel");
 
         bottomBox.addView(editText);
 

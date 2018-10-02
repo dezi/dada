@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Json;
-import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.gui.base.GUIDefs;
 import com.aura.aosp.aura.gui.views.GUIFrameLayout;
@@ -18,7 +17,6 @@ import com.aura.aosp.aura.gui.views.GUIRelativeLayout;
 import com.aura.aosp.aura.gui.views.GUITextView;
 
 import com.aura.aosp.aura.common.simple.Simple;
-import com.aura.aosp.gorilla.client.GorillaClient;
 
 import org.json.JSONObject;
 
@@ -58,6 +56,7 @@ public class ChatFragment extends GUILinearLayout
 
     Long timeQueued;
     Long timeSend;
+    Long timePersisted;
     Long timeReceived;
     Long timeRead;
 
@@ -107,6 +106,13 @@ public class ChatFragment extends GUILinearLayout
                 makeTimeStatus();
             }
 
+            if (status.equals("persisted"))
+            {
+                statusIcon.setImageResource(R.drawable.ms_server_persist);
+                timePersisted = timeStamp;
+                makeTimeStatus();
+            }
+
             if (status.equals("received"))
             {
                 statusIcon.setImageResource(R.drawable.ms_client_recv);
@@ -126,7 +132,7 @@ public class ChatFragment extends GUILinearLayout
         }
     }
 
-    private void putStatus(String status, long timeStamp)
+    public void putStatus(String status, long timeStamp)
     {
         try
         {
@@ -155,6 +161,28 @@ public class ChatFragment extends GUILinearLayout
         catch (Exception ex)
         {
             ex.printStackTrace();
+        }
+    }
+
+    @Nullable
+    public Long getStatus(String status)
+    {
+        try
+        {
+            String deviceUUID = MainActivity.getOwnerDeviceBase64();
+            if (deviceUUID == null) return null;
+
+            JSONObject load = atom.getJSONObject("load");
+            if (load == null) return null;
+
+            JSONObject substatus = load.getJSONObject(status);
+            if (substatus == null) return null;
+
+            return Json.getLong(substatus, deviceUUID);
+        }
+        catch (Exception ignore)
+        {
+            return null;
         }
     }
 
@@ -339,6 +367,13 @@ public class ChatFragment extends GUILinearLayout
             if (timeReceived != null)
             {
                 statusIcon.setImageResource(R.drawable.ms_client_recv);
+                return;
+            }
+
+            timePersisted = ChatActivity.getLoadTime(load, "persisted");
+            if (timePersisted != null)
+            {
+                statusIcon.setImageResource(R.drawable.ms_server_persist);
                 return;
             }
 

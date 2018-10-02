@@ -18,5 +18,7 @@ public class GorillaBoot extends BroadcastReceiver
         {
             Err.errp("invalid intent.");
         }
+
+        GorillaService.selfStartMainService();
     }
 }

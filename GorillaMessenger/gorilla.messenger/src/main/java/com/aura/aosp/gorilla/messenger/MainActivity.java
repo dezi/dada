@@ -37,9 +37,10 @@ public class MainActivity extends AppCompatActivity
     public static Identity ownerIdent;
     public static List<ChatProfile> chatProfiles = new ArrayList<>();
 
-    private GUIListView identitiesView;
     private static Boolean svlink;
     private static Boolean uplink;
+
+    private GUIListView identitiesView;
 
     @Nullable
     public static Identity getOwnerIdent()

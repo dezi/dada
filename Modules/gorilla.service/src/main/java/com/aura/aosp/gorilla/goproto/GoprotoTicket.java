@@ -568,6 +568,10 @@ public class GoprotoTicket implements Json.JsonMarshaller
                 Json.put(result, "status", "send");
                 return result;
 
+            case GoprotoDefs.MsgStatusPersisted:
+                Json.put(result, "status", "persisted");
+                return result;
+
             case GoprotoDefs.MsgStatusReceived:
                 Json.put(result, "status", "received");
                 return result;
@@ -578,6 +582,7 @@ public class GoprotoTicket implements Json.JsonMarshaller
         }
 
         Err.errp("unknown status=%04x", status);
+
         return null;
     }
 
