@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2018 Aura Software Inc.
+ *
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ */
+
 package com.aura.aosp.gorilla.client;
 
 import android.support.annotation.NonNull;
@@ -7,54 +14,83 @@ import org.json.JSONObject;
 
 import java.util.Iterator;
 
+/**
+ * The class {@code GorillaMessage} extends to basic
+ * {@code GorillaAtom} by message values.
+ *
+ * @author Dennis Zierahn
+ */
 public class GorillaMessage extends GorillaAtom
 {
-    private JSONObject load;
-
+    /**
+     * Create empty message atom.
+     */
     public GorillaMessage()
     {
         super();
-
-        load = new JSONObject();
-
-        GorillaUtils.putJSON(super.get(), "load", load);
     }
 
+    /**
+     * Create message atom from JSONObject.
+     *
+     * @param message JSON message atom object.
+     */
     public GorillaMessage(JSONObject message)
     {
         super(message);
-
-        load = GorillaUtils.getJSONObject(message, "load");
     }
 
-    public void setMessage(@NonNull String message)
+    /**
+     * Set message text.
+     *
+     * @param messageText message text
+     */
+    public void setMessageText(@NonNull String messageText)
     {
-        GorillaUtils.putJSON(load, "message", message);
+        GorillaUtils.putJSON(getLoad(), "message", messageText);
     }
 
+    /**
+     * Get message text.
+     *
+     * @return message text or null.
+     */
     @Nullable
-    public String getMessage()
+    public String getMessageText()
     {
-        return GorillaUtils.getJSONString(load, "message");
+        return GorillaUtils.getJSONString(getLoad(), "message");
     }
 
+    /**
+     * Set status time for give device UUID.
+     *
+     * @param status     status tag.
+     * @param deviceUUID device UUID.
+     * @param time       time stamp in milliseconds.
+     */
     public void setStatusTime(@NonNull String status, @NonNull String deviceUUID, @NonNull Long time)
     {
-        JSONObject statusJson = GorillaUtils.getJSONObject(load, status);
+        JSONObject statusJson = GorillaUtils.getJSONObject(getLoad(), status);
 
         if (statusJson == null)
         {
             statusJson = new JSONObject();
-            GorillaUtils.putJSON(load, status, statusJson);
+            GorillaUtils.putJSON(getLoad(), status, statusJson);
         }
 
         GorillaUtils.putJSON(statusJson, deviceUUID, time);
     }
 
+    /**
+     * Get status time for any device.
+     *
+     * @param status status tag.
+     * @return time stamp in milliseconds or null.
+     */
     @Nullable
     public Long getStatusTime(@NonNull String status)
     {
-        JSONObject statusJson = GorillaUtils.getJSONObject(load, status);
+        JSONObject statusJson = GorillaUtils.getJSONObject(getLoad(), status);
         if (statusJson == null) return null;
 
         Iterator<String> keys = statusJson.keys();
@@ -67,10 +103,17 @@ public class GorillaMessage extends GorillaAtom
         return null;
     }
 
+    /**
+     * Get status time for given device UUID.
+     *
+     * @param status     status tag.
+     * @param deviceUUID device UUID.
+     * @return time stamp in milliseconds or null.
+     */
     @Nullable
     public Long getStatusTime(@NonNull String status, @NonNull String deviceUUID)
     {
-        JSONObject statusJson = GorillaUtils.getJSONObject(load, status);
+        JSONObject statusJson = GorillaUtils.getJSONObject(getLoad(), status);
         if (statusJson == null) return null;
 
         return GorillaUtils.getJSONLong(statusJson, deviceUUID);

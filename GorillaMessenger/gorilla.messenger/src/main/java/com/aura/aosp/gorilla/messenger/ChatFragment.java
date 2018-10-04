@@ -209,8 +209,8 @@ public class ChatFragment extends GUILinearLayout
         Long timeStamp = atom.getTime();
         if (timeStamp == null) return;
 
-        String message = atom.getMessage();
-        if (message != null) message += ENDINDENT;
+        String messageText = atom.getMessageText();
+        if (messageText != null) messageText += ENDINDENT;
 
         GUILinearLayout recvPart = new GUILinearLayout(getContext());
         recvPart.setOrientation(VERTICAL);
@@ -300,9 +300,9 @@ public class ChatFragment extends GUILinearLayout
 
         contentBox.addView(messageBox, lptexttag);
 
-        if (message != null)
+        if (messageText != null)
         {
-            messageBox.setText(message);
+            messageBox.setText(messageText);
         } else
         {
             messageBox.setTextSizeDip(12);

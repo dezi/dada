@@ -271,6 +271,7 @@ public class ChatActivity extends AppCompatActivity
                 message.setUUID(uuid);
                 message.setTime(time);
                 message.setType("aura.chat.message");
+                message.setMessageText(messageText);
 
                 GorillaClient.getInstance().putAtomSharedWith(chatProfile.remoteUserUUID, message.get());
 
