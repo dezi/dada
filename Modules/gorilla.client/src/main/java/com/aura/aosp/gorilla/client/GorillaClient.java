@@ -260,7 +260,7 @@ public class GorillaClient
 
     void dispatchOwnerUUID()
     {
-        String ownerUUID = GorillaConnect.getOwnerUUID();
+        String ownerUUID = GorillaConnect.getownerUUIDBase64();
 
         Log.d(LOGTAG, "dispatchOwnerUUID: ownerUUID=" + ownerUUID);
 
