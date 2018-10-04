@@ -24,6 +24,7 @@ import com.aura.aosp.aura.gui.views.GUIScrollView;
 
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
+import com.aura.aosp.gorilla.client.GorillaMessage;
 
 import org.json.JSONObject;
 
@@ -297,16 +298,16 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        public void onMessageReceived(JSONObject message)
+        public void onMessageReceived(JSONObject messageJson)
         {
-            Log.d(LOGTAG, "onMessageReceived: message=" + message.toString());
+            Log.d(LOGTAG, "onMessageReceived: message=" + messageJson.toString());
 
-            displayMessageInList(message);
+            displayMessageInList(messageJson);
 
-            JSONObject atom = convertMessageToAtomAndPersists(message);
+            JSONObject atom = convertMessageToAtomAndPersists(messageJson);
 
-            String remoteUserUUID = Json.getString(message, "sender");
-            String remoteDeviceUUID = Json.getString(message, "device");
+            String remoteUserUUID = Json.getString(messageJson, "sender");
+            String remoteDeviceUUID = Json.getString(messageJson, "device");
 
             for (ChatProfile chatProfile : chatProfiles)
             {

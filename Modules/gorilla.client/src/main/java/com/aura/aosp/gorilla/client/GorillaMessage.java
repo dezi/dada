@@ -20,6 +20,13 @@ public class GorillaMessage extends GorillaAtom
         GorillaUtils.putJSON(super.get(), "load", load);
     }
 
+    public GorillaMessage(JSONObject message)
+    {
+        super(message);
+
+        load = GorillaUtils.getJSONObject(message, "load");
+    }
+
     public void setMessage(@NonNull String message)
     {
         GorillaUtils.putJSON(load, "message", message);
@@ -52,11 +59,20 @@ public class GorillaMessage extends GorillaAtom
 
         Iterator<String> keys = statusJson.keys();
 
-        if(keys.hasNext())
+        if (keys.hasNext())
         {
             return GorillaUtils.getJSONLong(statusJson, keys.next());
         }
 
         return null;
+    }
+
+    @Nullable
+    public Long getStatusTime(@NonNull String status, @NonNull String deviceUUID)
+    {
+        JSONObject statusJson = GorillaUtils.getJSONObject(load, status);
+        if (statusJson == null) return null;
+
+        return GorillaUtils.getJSONLong(statusJson, deviceUUID);
     }
 }

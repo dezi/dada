@@ -17,6 +17,8 @@ import com.aura.aosp.aura.gui.views.GUIRelativeLayout;
 import com.aura.aosp.aura.gui.views.GUITextView;
 
 import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.gorilla.client.GorillaAtom;
+import com.aura.aosp.gorilla.client.GorillaMessage;
 
 import org.json.JSONObject;
 
@@ -51,7 +53,7 @@ public class ChatFragment extends GUILinearLayout
     private GUITextView messageBox;
     private GUIIconView statusIcon;
 
-    private JSONObject atom;
+    private GorillaMessage atom;
 
     boolean send;
 
@@ -71,7 +73,7 @@ public class ChatFragment extends GUILinearLayout
     }
 
     @Nullable
-    public JSONObject getAtom()
+    public GorillaMessage getMessage()
     {
         return atom;
     }
@@ -143,21 +145,7 @@ public class ChatFragment extends GUILinearLayout
             String deviceUUID = ownerIdent.getDeviceUUIDBase64();
             if (deviceUUID == null) return;
 
-            JSONObject load = atom.getJSONObject("load");
-
-            JSONObject substatus;
-
-            if (load.has(status))
-            {
-                substatus = load.getJSONObject(status);
-            }
-            else
-            {
-                substatus = new JSONObject();
-                load.put(status, substatus);
-            }
-
-            substatus.put(deviceUUID, timeStamp);
+            atom.setStatusTime(status, deviceUUID, timeStamp);
         }
         catch (Exception ex)
         {
@@ -173,13 +161,7 @@ public class ChatFragment extends GUILinearLayout
             String deviceUUID = MainActivity.getOwnerDeviceBase64();
             if (deviceUUID == null) return null;
 
-            JSONObject load = atom.getJSONObject("load");
-            if (load == null) return null;
-
-            JSONObject substatus = load.getJSONObject(status);
-            if (substatus == null) return null;
-
-            return Json.getLong(substatus, deviceUUID);
+            return atom.getStatusTime(status, deviceUUID);
         }
         catch (Exception ignore)
         {
@@ -216,19 +198,18 @@ public class ChatFragment extends GUILinearLayout
         }
     };
 
-    public void setContent(boolean send, String username, JSONObject atom)
+    public void setContent(boolean send, String username, GorillaMessage atom)
     {
         this.send = send;
         this.atom = atom;
 
-        this.messageUUID = Json.getString(atom, "uuid");
+        this.messageUUID = atom.getUUIDBase64();
         if (this.messageUUID == null) return;
 
-        Long timeStamp = Json.getLong(atom,"time");
+        Long timeStamp = atom.getTime();
         if (timeStamp == null) return;
 
-        JSONObject load = Json.getObject(atom, "load");
-        String message = Json.getString(load, "message");
+        String message = atom.getMessage();
         if (message != null) message += ENDINDENT;
 
         GUILinearLayout recvPart = new GUILinearLayout(getContext());
@@ -357,35 +338,35 @@ public class ChatFragment extends GUILinearLayout
         {
             timeFrame.addView(statusIcon);
 
-            timeRead = ChatActivity.getLoadTime(load, "read");
+            timeRead = atom.getStatusTime("read");
             if (timeRead != null)
             {
                 statusIcon.setImageResource(R.drawable.ms_client_read);
                 return;
             }
 
-            timeReceived = ChatActivity.getLoadTime(load, "received");
+            timeReceived = atom.getStatusTime("received");
             if (timeReceived != null)
             {
                 statusIcon.setImageResource(R.drawable.ms_client_recv);
                 return;
             }
 
-            timePersisted = ChatActivity.getLoadTime(load, "persisted");
+            timePersisted = atom.getStatusTime("persisted");
             if (timePersisted != null)
             {
                 statusIcon.setImageResource(R.drawable.ms_server_persist);
                 return;
             }
 
-            timeSend = ChatActivity.getLoadTime(load, "send");
+            timeSend = atom.getStatusTime("send");
             if (timeSend != null)
             {
                 statusIcon.setImageResource(R.drawable.ms_server_recv);
                 return;
             }
 
-            timeQueued = ChatActivity.getLoadTime(load, "queued");
+            timeQueued = atom.getStatusTime("queued");
             if (timeQueued != null)
             {
                 statusIcon.setImageResource(R.drawable.ms_server_wait);

@@ -3,6 +3,8 @@ package com.aura.aosp.gorilla.client;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import android.util.Base64;
+
 import org.json.JSONObject;
 
 public abstract class GorillaAtom
@@ -12,6 +14,11 @@ public abstract class GorillaAtom
     public GorillaAtom()
     {
         atom = new JSONObject();
+    }
+
+    public GorillaAtom(JSONObject atom)
+    {
+        this.atom = atom;
     }
 
     @NonNull
@@ -52,10 +59,27 @@ public abstract class GorillaAtom
         GorillaUtils.putJSONByteArray(atom, "uuid", uuid);
     }
 
+    public void setUUID(@NonNull String uuidBase64)
+    {
+        byte[] uuid = Base64.decode(uuidBase64, Base64.DEFAULT);
+        if (uuid == null) return;
+
+        GorillaUtils.putJSONByteArray(atom, "uuid", uuid);
+    }
+
     @Nullable
     public byte[] getUUID()
     {
         return GorillaUtils.getJSONByteArray(atom, "uuid");
+    }
+
+    @Nullable
+    public String getUUIDBase64()
+    {
+        byte[] uuid = getUUID();
+        if (uuid == null) return null;
+
+        return Base64.encodeToString(uuid, Base64.NO_WRAP);
     }
 
     public boolean putAtom()
