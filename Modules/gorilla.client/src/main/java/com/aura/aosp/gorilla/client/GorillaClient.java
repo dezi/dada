@@ -1,7 +1,6 @@
 package com.aura.aosp.gorilla.client;
 
 import android.annotation.SuppressLint;
-import android.app.Service;
 import android.support.annotation.Nullable;
 
 import android.content.ServiceConnection;
@@ -37,7 +36,6 @@ public class GorillaClient
     //region Instance implemention.
 
     private Context context;
-    private String ownerUUID;
     private String apkname;
 
     private final Handler handler = new Handler();
@@ -66,10 +64,15 @@ public class GorillaClient
 
             GorillaConnect.setSystemService(null);
 
-            boolean c1 = GorillaConnect.setServiceStatus(false);
-            boolean c2 = GorillaConnect.setUplinkStatus(false);
+            if (GorillaConnect.setServiceStatus(false))
+            {
+                dispatchServiceStatus();
+            }
 
-            if (c1 || c2) receiveStatus();
+            if (GorillaConnect.setUplinkStatus(false))
+            {
+                dispatchUplinkStatus();
+            }
 
             handler.post(serviceConnector);
         }
@@ -152,19 +155,36 @@ public class GorillaClient
 
             if (!svlink) return;
 
-            GorillaConnect.setServiceStatus(true);
+            if (GorillaConnect.setServiceStatus(true))
+            {
+                dispatchServiceStatus();
+            }
 
-            checksum = GorillaConnect.createSHASignatureBase64(apkname);
+            getUplinkStatus();
 
-            boolean uplink = gr.getUplinkStatus(apkname, checksum);
-            GorillaConnect.setUplinkStatus(uplink);
+            getOwnerUUID();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
 
-            checksum = GorillaConnect.createSHASignatureBase64(apkname);
+    void getOwnerUUID()
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname);
 
             String ownerUUID = gr.getOwnerUUID(apkname, checksum);
 
-            receiveStatus();
-            receiveOwnerUUID(ownerUUID);
+            if (GorillaConnect.setOwnerUUID(ownerUUID))
+            {
+                dispatchOwnerUUID();
+            }
         }
         catch (Exception ex)
         {
@@ -185,7 +205,7 @@ public class GorillaClient
 
             if (GorillaConnect.setUplinkStatus(uplink))
             {
-                GorillaClient.getInstance().receiveStatus();
+                GorillaClient.getInstance().dispatchUplinkStatus();
             }
         }
         catch (Exception ex)
@@ -194,23 +214,73 @@ public class GorillaClient
         }
     }
 
-    void getOwnerUUID()
+    void dispatchServiceStatus()
     {
-        IGorillaSystemService gr = GorillaConnect.getSystemService();
-        if (gr == null) return;
+        final boolean connected = GorillaConnect.getServiceStatus();
 
-        try
+        Log.d(LOGTAG, "dispatchServiceStatus: connected=" + connected);
+
+        handler.post(new Runnable()
         {
-            String checksum = GorillaConnect.createSHASignatureBase64(apkname);
+            @Override
+            public void run()
+            {
+                synchronized (gorillaListeners)
+                {
+                    for (GorillaListener gl : gorillaListeners)
+                    {
+                        gl.onServiceChange(connected);
+                    }
+                }
+            }
+        });
+    }
 
-            String ownerUUID = gr.getOwnerUUID(apkname, checksum);
+    void dispatchUplinkStatus()
+    {
+        final boolean connected = GorillaConnect.getUplinkStatus();
 
-            receiveOwnerUUID(ownerUUID);
-        }
-        catch (Exception ex)
+        Log.d(LOGTAG, "dispatchUplinkStatus: connected=" + connected);
+
+        handler.post(new Runnable()
         {
-            ex.printStackTrace();
-        }
+            @Override
+            public void run()
+            {
+                synchronized (gorillaListeners)
+                {
+                    for (GorillaListener gl : gorillaListeners)
+                    {
+                        gl.onUplinkChange(connected);
+                    }
+                }
+            }
+        });
+    }
+
+    void dispatchOwnerUUID()
+    {
+        String ownerUUID = GorillaConnect.getOwnerUUID();
+
+        Log.d(LOGTAG, "dispatchOwnerUUID: ownerUUID=" + ownerUUID);
+
+        final JSONObject owner = new JSONObject();
+        putJSON(owner, "ownerUUID", ownerUUID);
+
+        handler.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                synchronized (gorillaListeners)
+                {
+                    for (GorillaListener gl : gorillaListeners)
+                    {
+                        gl.onOwnerReceived(owner);
+                    }
+                }
+            }
+        });
     }
 
     private void requestPersisted()
@@ -231,78 +301,6 @@ public class GorillaClient
         }
     }
 
-    void receiveStatus()
-    {
-        JSONObject status = new JSONObject();
-
-        putJSON(status, "svlink", GorillaConnect.getServiceStatus());
-        putJSON(status, "uplink", GorillaConnect.getUplinkStatus());
-
-        receiveStatus(status);
-    }
-
-    private void receiveStatus(final JSONObject status)
-    {
-        Log.d(LOGTAG, "receiveStatus: status=" + status.toString());
-
-        handler.post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                synchronized (gorillaListeners)
-                {
-                    for (GorillaListener gl : gorillaListeners)
-                    {
-                        gl.onStatusReceived(status);
-                    }
-                }
-            }
-        });
-    }
-
-    private void receiveOwnerUUID()
-    {
-        Log.d(LOGTAG, "receiveOwner: ownerUUID=" + ownerUUID);
-
-        final JSONObject owner = new JSONObject();
-        putJSON(owner, "ownerUUID", ownerUUID);
-
-        receiveOwnerUUID(owner);
-    }
-
-    void receiveOwnerUUID(String ownerUUID)
-    {
-        this.ownerUUID = ownerUUID;
-
-        Log.d(LOGTAG, "receiveOwner: ownerUUID=" + ownerUUID);
-
-        final JSONObject owner = new JSONObject();
-        putJSON(owner, "ownerUUID", ownerUUID);
-
-        receiveOwnerUUID(owner);
-    }
-
-    private void receiveOwnerUUID(final JSONObject owner)
-    {
-        Log.d(LOGTAG, "receiveOwnerUUID: owner=" + owner.toString());
-
-        handler.post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                synchronized (gorillaListeners)
-                {
-                    for (GorillaListener gl : gorillaListeners)
-                    {
-                        gl.onOwnerReceived(owner);
-                    }
-                }
-            }
-        });
-    }
-
     void receivePayload(long time, String uuid, String senderUUID, String deviceUUID, String payload)
     {
         final JSONObject message = new JSONObject();
@@ -313,11 +311,6 @@ public class GorillaClient
         putJSON(message, "device", deviceUUID);
         putJSON(message, "payload", payload);
 
-        receivePayload(message);
-    }
-
-    private void receivePayload(final JSONObject message)
-    {
         Log.d(LOGTAG, "receivePayload: message=" + message.toString());
 
         handler.post(new Runnable()
@@ -338,20 +331,15 @@ public class GorillaClient
 
     void receivePayloadResult(String resultStr)
     {
-        JSONObject result = fromStringJSONOBject(resultStr);
+        Log.d(LOGTAG, "receivePayloadResult: resultStr=" + resultStr);
+
+        final JSONObject result = fromStringJSONOBject(resultStr);
 
         if (result == null)
         {
             Log.e(LOGTAG, "receivePayloadResult: result failed!");
             return;
         }
-
-        receivePayloadResult(result);
-    }
-
-    private void receivePayloadResult(final JSONObject result)
-    {
-        Log.d(LOGTAG, "receivePayloadResult: result=" + result.toString());
 
         handler.post(new Runnable()
         {

@@ -143,8 +143,8 @@ public class MainActivity extends AppCompatActivity
 
         if (ownerIdent != null) newtitle += " " + ownerIdent.getNick();
 
-        if (svlink) newtitle += " (system)";
-        if (uplink) newtitle += " (online)";
+        if ((svlink != null) && svlink) newtitle += " (system)";
+        if ((uplink != null) && uplink) newtitle += " (online)";
 
         setTitle(newtitle);
     }
@@ -248,12 +248,27 @@ public class MainActivity extends AppCompatActivity
     private final GorillaListener listener = new GorillaListener()
     {
         @Override
-        public void onStatusReceived(JSONObject status)
+        public void onServiceChange(boolean connected)
         {
-            Log.d(LOGTAG, "onStatusReceived: status=" + status.toString());
+            Log.d(LOGTAG, "onServiceChange: connected=" + connected);
 
-            svlink = Json.getBoolean(status, "svlink");
-            uplink = Json.getBoolean(status, "uplink");
+            svlink = connected;
+
+            updateTitle();
+
+            for (ChatProfile chatProfile : chatProfiles)
+            {
+                chatProfile.activity.setStatus(svlink, uplink);
+                chatProfile.activity.updateTitle();
+            }
+        }
+
+        @Override
+        public void onUplinkChange(boolean connected)
+        {
+            Log.d(LOGTAG, "onUplinkChange: connected=" + connected);
+
+            uplink = connected;
 
             updateTitle();
 

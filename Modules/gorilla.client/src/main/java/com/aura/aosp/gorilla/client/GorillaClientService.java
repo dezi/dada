@@ -31,13 +31,55 @@ class GorillaClientService extends IGorillaClientService.Stub
 
         if (!svlink) return false;
 
-        GorillaConnect.setServiceStatus(true);
+        if (GorillaConnect.setServiceStatus(true))
+        {
+            GorillaClient.getInstance().dispatchServiceStatus();
+        }
 
-        GorillaClient.getInstance().receiveStatus();
         GorillaClient.getInstance().getUplinkStatus();
         GorillaClient.getInstance().getOwnerUUID();
 
         return true;
+    }
+
+    @Override
+    public boolean receiveOwnerUUID(String apkname, String ownerUUID, String checksum)
+    {
+        String solution = GorillaConnect.createSHASignatureBase64(apkname, ownerUUID);
+
+        boolean valid = ((checksum != null) && checksum.equals(solution));
+
+        Log.d(LOGTAG, "receiveOwnerUUID: ownerUUID=" + ownerUUID + " valid=" + valid);
+
+        if (valid)
+        {
+            if (GorillaConnect.setOwnerUUID(ownerUUID))
+            {
+                GorillaClient.getInstance().dispatchOwnerUUID();
+            }
+        }
+
+        return valid;
+    }
+
+    @Override
+    public boolean receiveUplinkStatus(String apkname, boolean uplink, String checksum)
+    {
+        String solution = GorillaConnect.createSHASignatureBase64(apkname, uplink);
+
+        boolean valid = ((checksum != null) && checksum.equals(solution));
+
+        Log.d(LOGTAG, "receiveOnlineStatus: uplink=" + uplink + " valid=" + valid);
+
+        if (valid)
+        {
+            if (GorillaConnect.setUplinkStatus(uplink))
+            {
+                GorillaClient.getInstance().dispatchUplinkStatus();
+            }
+        }
+
+        return valid;
     }
 
     @Override
@@ -68,43 +110,6 @@ class GorillaClientService extends IGorillaClientService.Stub
         if (valid)
         {
             GorillaClient.getInstance().receivePayloadResult(result);
-        }
-
-        return valid;
-    }
-
-    @Override
-    public boolean receiveOnlineStatus(String apkname, boolean uplink, String checksum)
-    {
-        String solution = GorillaConnect.createSHASignatureBase64(apkname, uplink);
-
-        boolean valid = ((checksum != null) && checksum.equals(solution));
-
-        Log.d(LOGTAG, "receiveOnlineStatus: uplink=" + uplink + " valid=" + valid);
-
-        if (valid)
-        {
-            if (GorillaConnect.setUplinkStatus(uplink))
-            {
-                GorillaClient.getInstance().receiveStatus();
-            }
-        }
-
-        return valid;
-    }
-
-    @Override
-    public boolean receiveOwnerUUID(String apkname, String ownerUUID, String checksum)
-    {
-        String solution = GorillaConnect.createSHASignatureBase64(apkname, ownerUUID);
-
-        boolean valid = ((checksum != null) && checksum.equals(solution));
-
-        Log.d(LOGTAG, "receiveOwnerUUID: ownerUUID=" + ownerUUID + " valid=" + valid);
-
-        if (valid)
-        {
-            GorillaClient.getInstance().receiveOwnerUUID(ownerUUID);
         }
 
         return valid;

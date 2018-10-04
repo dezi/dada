@@ -8,14 +8,14 @@ public class GorillaListener
 {
     private final static String LOGTAG = GorillaListener.class.getSimpleName();
 
-    public void onConnectionChange(boolean connected)
+    public void onServiceChange(boolean connected)
     {
-        Log.d(LOGTAG, "onConnectionChange: STUB!");
+        Log.d(LOGTAG, "onServiceChange: STUB!");
     }
 
-    public void onStatusReceived(JSONObject result)
+    public void onUplinkChange(boolean connected)
     {
-        Log.d(LOGTAG, "onStatusReceived: STUB!");
+        Log.d(LOGTAG, "onUplinkChange: STUB!");
     }
 
     public void onOwnerReceived(JSONObject owner)

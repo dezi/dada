@@ -21,9 +21,15 @@ public class EventManager extends GorillaListener
     }
 
     @Override
-    public void onStatusReceived(JSONObject status)
+    public void onServiceChange(boolean connected)
     {
-        Log.d(LOGTAG, "onStatusReceived: status=" + status.toString());
+        Log.d(LOGTAG, "onServiceChange: connected=" + connected);
+    }
+
+    @Override
+    public void onUplinkChange(boolean connected)
+    {
+        Log.d(LOGTAG, "onUplinkChange: connected=" + connected);
     }
 
     @Override

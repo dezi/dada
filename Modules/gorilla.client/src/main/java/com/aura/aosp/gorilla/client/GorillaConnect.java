@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import android.util.Base64;
+import android.util.Log;
 
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -14,6 +15,8 @@ class GorillaConnect
 
     private static byte[] serverSecret = newSecret();
     private static byte[] clientSecret = newSecret();
+
+    private static String ownerUUID;
 
     private static boolean svlink;
     private static boolean uplink;
@@ -78,6 +81,20 @@ class GorillaConnect
     {
         return uplink;
     }
+
+    static boolean setOwnerUUID(@Nullable String ownerUUIDNew)
+    {
+        boolean change = (ownerUUIDNew != null) && ! ownerUUIDNew.equals(ownerUUID);
+        ownerUUID = ownerUUIDNew;
+        return change;
+    }
+
+    @Nullable
+    static String getOwnerUUID()
+    {
+        return ownerUUID;
+    }
+
 
     static String createSHASignatureBase64(Object... params)
     {

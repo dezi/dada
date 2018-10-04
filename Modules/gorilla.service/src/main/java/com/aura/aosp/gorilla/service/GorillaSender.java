@@ -30,7 +30,7 @@ public class GorillaSender
 
             try
             {
-                boolean valid = remote.receiveOnlineStatus(sysApkName, uplink, checksum);
+                boolean valid = remote.receiveUplinkStatus(sysApkName, uplink, checksum);
                 if (! valid) Err.errp("invalid service apkname=%s", apkname);
             }
             catch (Exception ex)
