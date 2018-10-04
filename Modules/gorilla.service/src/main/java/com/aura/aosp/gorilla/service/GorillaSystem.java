@@ -74,7 +74,7 @@ public class GorillaSystem extends Service
 
         try
         {
-            String clientSecret = gr.returnYourSecret(sysApkName);
+            String clientSecret = gr.returnYourSignature(sysApkName);
             GorillaIntercon.setClientSecret(apkname, clientSecret);
 
             Log.d("call apkname=%s clientSecret=%s", apkname, clientSecret);

@@ -346,9 +346,9 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        public void onResultReceived(JSONObject result)
+        public void onMessageResultReceived(JSONObject result)
         {
-            Log.d(LOGTAG, "onResultReceived: result=" + result.toString());
+            Log.d(LOGTAG, "onMessageResultReceived: result=" + result.toString());
 
             for (ChatProfile chatProfile : chatProfiles)
             {

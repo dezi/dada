@@ -2,7 +2,7 @@ package com.aura.aosp.gorilla.client;
 
 interface IGorillaClientService
 {
-    String returnYourSecret(String apkname);
+    String returnYourSignature(String apkname);
 
     boolean validateConnect(String apkname, String checksum);
 
@@ -12,5 +12,5 @@ interface IGorillaClientService
 
     boolean receivePayload(String apkname, long time, String uuid, String senderUUID, String deviceUUID, String payload, String checksum);
 
-    boolean receivePayloadResult(String apkname, String result, String checksum);
+    boolean receivePayloadResult(String apkname, String resultJSON, String checksum);
 }

@@ -43,6 +43,12 @@ public class GopoorSuggest
     }
 
     @Nullable
+    public static JSONArray suggestActions(@NonNull String actionDomain)
+    {
+        return null;
+    }
+
+    @Nullable
     public static JSONArray suggestContextActions(@NonNull String actionDomain, String subContext)
     {
         return null;

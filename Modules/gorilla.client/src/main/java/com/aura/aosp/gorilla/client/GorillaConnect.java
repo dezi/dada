@@ -16,8 +16,8 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 
 /**
- * The package local singleton static class {@code GorillaConnect}
- * includes methods or keeping the state of a {@code Gorilla}
+ * The class {@code GorillaConnect} is a package local static singleton.
+ * It includes methods or keeping the state of a {@code Gorilla}
  * bi-directional service connection.
  *
  * @author Dennis Zierahn
@@ -34,16 +34,16 @@ class GorillaConnect
      * Server and client secrect for signing and validating
      * params of system service calls.
      * <p>
-     * Both secrets are initialized to random values.
+     * Both signatures are initialized to random values.
      * <p>
-     * The serverSecret is overwritten by the servers response.
-     * The clientSecret is send to the server.
+     * The serverSignature is overwritten by the servers response.
+     * The clientSignature is send to the server.
      * <p>
      * A system call can only be autorized, if both client
-     * and server share the same secrets.
+     * and server share the same signature.
      */
-    private static byte[] serverSecret = newSecret();
-    private static byte[] clientSecret = newSecret();
+    private static byte[] serverSignature = newSignature();
+    private static byte[] clientSignature = newSignature();
 
     /**
      * The currently active device owner UUID in base 64 encoding.
@@ -63,49 +63,49 @@ class GorillaConnect
     private static boolean uplink;
 
     /**
-     * Get a new secret from secure random.
+     * Get a new signature from secure random.
      *
-     * @return Secret bytes.
+     * @return Signature bytes.
      */
-    private static byte[] newSecret()
+    private static byte[] newSignature()
     {
-        byte[] secret = new byte[16];
+        byte[] signature = new byte[16];
         SecureRandom random = new SecureRandom();
-        random.nextBytes(secret);
+        random.nextBytes(signature);
 
-        return secret;
+        return signature;
     }
 
     /**
-     * Set server secret bytes as base64 encoded string.
+     * Set server signature bytes as base64 encoded string.
      *
-     * @param secretBase64 server secret bytes as base64 encoded string.
+     * @param signatureBase64 server signature bytes as base64 encoded string.
      */
-    static void setServerSecretBase64(@NonNull String secretBase64)
+    static void setServerSignatureBase64(@NonNull String signatureBase64)
     {
-        serverSecret = Base64.decode(secretBase64, Base64.DEFAULT);
+        serverSignature = Base64.decode(signatureBase64, Base64.DEFAULT);
     }
 
     /**
-     * Get server secret bytes as base64 encoded string.
+     * Get server signature bytes as base64 encoded string.
      *
-     * @return Server secret bytes as base64 encoded string.
-     */
-    @NonNull
-    static String getServerSecretBase64()
-    {
-        return Base64.encodeToString(serverSecret, Base64.NO_WRAP);
-    }
-
-    /**
-     * Get client secret bytes as base64 encoded string.
-     *
-     * @return Client secret bytes as base64 encoded string.
+     * @return Server signature bytes as base64 encoded string.
      */
     @NonNull
-    static String getClientSecretBase64()
+    static String getServerSignatureBase64()
     {
-        return Base64.encodeToString(clientSecret, Base64.NO_WRAP);
+        return Base64.encodeToString(serverSignature, Base64.NO_WRAP);
+    }
+
+    /**
+     * Get client signature bytes as base64 encoded string.
+     *
+     * @return Client signature bytes as base64 encoded string.
+     */
+    @NonNull
+    static String getClientSignatureBase64()
+    {
+        return Base64.encodeToString(clientSignature, Base64.NO_WRAP);
     }
 
     /**
@@ -133,7 +133,6 @@ class GorillaConnect
      * Set service status.
      *
      * @param svlinkNew the new service link status.
-     *
      * @return true if service link status has changed.
      */
     static boolean setServiceStatus(boolean svlinkNew)
@@ -157,7 +156,6 @@ class GorillaConnect
      * Set uplink status.
      *
      * @param uplinkNew the new uplink status.
-     *
      * @return true if uplink status has changed.
      */
     static boolean setUplinkStatus(boolean uplinkNew)
@@ -202,10 +200,9 @@ class GorillaConnect
 
     /**
      * Create a SHA-256 signature prefixed with server and client
-     * secrets over the string representation of all given params
+     * signatures over the string representation of all given params
      *
      * @param params variable object parameter list.
-     *
      * @return Base 64 SHA signature or null on failure.
      */
     @Nullable
@@ -215,12 +212,15 @@ class GorillaConnect
         {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
 
-            md.update(serverSecret);
-            md.update(clientSecret);
+            md.update(serverSignature);
+            md.update(clientSignature);
 
             for (Object param : params)
             {
-                if (param != null) md.update(param.toString().getBytes());
+                if (param != null)
+                {
+                    md.update(param.toString().getBytes());
+                }
             }
 
             return Base64.encodeToString(md.digest(), Base64.NO_WRAP);

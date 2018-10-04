@@ -14,6 +14,27 @@ import org.json.JSONObject;
 public class GopoorRegister
 {
     @Nullable
+    public static Err registerActionEvent(String actionDomain)
+    {
+        JSONObject load = new JSONObject();
+
+        Json.put(load, "domain", actionDomain);
+        Json.put(load, "state", GorillaState.getState());
+
+        JSONObject atom = new JSONObject();
+
+        Json.put(atom, "type", "aura.event.action");
+        Json.put(atom, "load", load);
+
+        Log.d("atom=%s", atom.toString());
+
+        Err err = GoatomStorage.putAtom(atom);
+        if (err != null) return err;
+
+        return GopoorSuggest.precomputeSuggestionsByEvent(atom);
+    }
+
+    @Nullable
     public static Err registerActionEvent(String actionDomain, String subAction)
     {
         JSONObject load = new JSONObject();

@@ -2,7 +2,7 @@ package com.aura.aosp.gorilla.client;
 
 interface IGorillaSystemService
 {
-    String returnYourSecret(String apkname);
+    String returnYourSignature(String apkname);
 
     boolean validateConnect(String apkname, String checksum);
 
@@ -24,13 +24,15 @@ interface IGorillaSystemService
     String getAtomSharedBy(String apkname, String userUUID, String atomUUID, String checksum);
     String getAtomSharedWith(String apkname, String userUUID, String atomUUID, String checksum);
 
-    String queryAtoms(String apkname, String atomType, long timeFrom, long timeTo, String checksum);
-    String queryAtomsSharedBy(String apkname, String userUUID, String atomType, long timeFrom, long timeTo, String checksum);
-    String queryAtomsSharedWith(String apkname, String userUUID, String atomType, long timeFrom, long timeTo, String checksum);
+    String queryAtoms(String apkname, String atomType, long timeFrom, long timeUpto, String checksum);
+    String queryAtomsSharedBy(String apkname, String userUUID, String atomType, long timeFrom, long timeUpto, String checksum);
+    String queryAtomsSharedWith(String apkname, String userUUID, String atomType, long timeFrom, long timeUpto, String checksum);
 
-    boolean registerActionEvent(String apkname, String actionDomain, String subAction, String checksum);
     String suggestActions(String apkname, String checksum);
+    String suggestActionsDomain(String apkname, String actionDomain, String checksum);
+    String suggestActionsDomainContext(String apkname, String actionDomain, String subContext, String checksum);
 
-    boolean registerContextEvent(String apkname, String actionDomain, String subContext, String subAction, String checksum);
-    String suggestContextActions(String apkname, String actionDomain, String subContext, String checksum);
+    boolean registerActionEvent(String apkname, String actionDomain, String checksum);
+    boolean registerActionEventDomain(String apkname, String actionDomain, String subAction, String checksum);
+    boolean registerActionEventDomainContext(String apkname, String actionDomain, String subContext, String subAction, String checksum);
 }

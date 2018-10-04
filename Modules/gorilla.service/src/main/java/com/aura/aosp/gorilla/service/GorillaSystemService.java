@@ -19,7 +19,7 @@ import org.json.JSONObject;
 public class GorillaSystemService extends IGorillaSystemService.Stub
 {
     @Override
-    public String returnYourSecret(String apkname)
+    public String returnYourSignature(String apkname)
     {
         GorillaSystem.startClientService(apkname);
 
@@ -237,14 +237,21 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public boolean registerActionEvent(String apkname, String actionDomain, String subAction, String checksum)
+    public boolean registerActionEvent(String apkname, String actionDomain, String checksum)
+    {
+        Err err = GopoorRegister.registerActionEvent(actionDomain);
+        return (err == null);
+    }
+
+    @Override
+    public boolean registerActionEventDomain(String apkname, String actionDomain, String subAction, String checksum)
     {
         Err err = GopoorRegister.registerActionEvent(actionDomain, subAction);
         return (err == null);
     }
 
     @Override
-    public boolean registerContextEvent(String apkname, String actionDomain, String subContext, String subAction, String checksum)
+    public boolean registerActionEventDomainContext(String apkname, String actionDomain, String subContext, String subAction, String checksum)
     {
         Err err = GopoorRegister.registerContextEvent(actionDomain, subContext, subAction);
         return (err == null);
@@ -260,7 +267,16 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public String suggestContextActions(String apkname, String actionDomain, String subContext, String checksum)
+    public String suggestActionsDomain(String apkname, String actionDomain, String checksum)
+    {
+        JSONArray results = GopoorSuggest.suggestActions(actionDomain);
+        if (results == null) return null;
+
+        return results.toString();
+    }
+
+    @Override
+    public String suggestActionsDomainContext(String apkname, String actionDomain, String subContext, String checksum)
     {
         JSONArray results = GopoorSuggest.suggestContextActions(actionDomain, subContext);
         if (results == null) return null;

@@ -1,7 +1,14 @@
+/*
+ * Copyright (C) 2018 Aura Software Inc.
+ *
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ */
+
 package com.aura.aosp.gorilla.client;
 
-import android.annotation.SuppressLint;
 import android.support.annotation.Nullable;
+import android.annotation.SuppressLint;
 
 import android.content.ServiceConnection;
 import android.content.ComponentName;
@@ -17,43 +24,86 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The class {@code GorillaClient} is the one and only interface
+ * for third party apps into the Gorilla system space.
+ *
+ * @author Dennis Zierahn
+ */
 @SuppressLint("StaticFieldLeak")
 public class GorillaClient
 {
-    private static final String LOGTAG = GorillaClient.class.getSimpleName();
+    /**
+     * All purpose log tag.
+     */
+    private final static String LOGTAG = GorillaClient.class.getSimpleName();
 
-    //region Static implemention.
+    /**
+     * Private singleton {@code GorillaClient} instance with application process lifetime.
+     * <p>
+     * Therefore context bla bla leaks are to be ignored.
+     */
+    private final static GorillaClient instance = new GorillaClient();
 
-    private static GorillaClient instance = new GorillaClient();
-
+    /**
+     * Deliver singleton instance to the public.
+     *
+     * @return sigleton instance of {@code GorillaClient}.
+     */
     public static GorillaClient getInstance()
     {
         return instance;
     }
 
-    //endregion Static implemention.
-
-    //region Instance implemention.
-
+    /**
+     * All purpose context.
+     */
     private Context context;
+
+    /**
+     * Coutesy copy of APK package name.
+     */
     private String apkname;
 
+    /**
+     * All purpose handler for postíng into UI thread.
+     */
     private final Handler handler = new Handler();
 
+    /**
+     * Collection of {@code GorillaListener} instances which are
+     * currently listening to Gorilla events.
+     */
     private final List<GorillaListener> gorillaListeners = new ArrayList<>();
 
+    /**
+     * Coutesy copy of destination Gorilla system service.
+     */
     private final ComponentName componentName = new ComponentName(
             "com.aura.aosp.gorilla.sysapp",
             "com.aura.aosp.gorilla.service.GorillaSystem");
 
+    /**
+     * Service connection instance which monitors service connects
+     * and disconnects of the Gorilla system service app.
+     */
     private final ServiceConnection serviceConnection = new ServiceConnection()
     {
         public void onServiceConnected(ComponentName className, IBinder service)
         {
             Log.d(LOGTAG, "onServiceConnected: className=" + className.toString());
 
-            IGorillaSystemService gorillaRemote = IGorillaSystemService.Stub.asInterface(service);
-            GorillaConnect.setSystemService(gorillaRemote);
+            IGorillaSystemService gorillaSystemService = IGorillaSystemService.Stub.asInterface(service);
+            GorillaConnect.setSystemService(gorillaSystemService);
+
+            //
+            // The Gorilla system service app has established a
+            // connection to this third party app via a service
+            // intent.
+            //
+            // Validate the connect now by checking server and client
+            // signatures.
+            //
 
             validateConnect();
         }
@@ -61,6 +111,13 @@ public class GorillaClient
         public void onServiceDisconnected(ComponentName className)
         {
             Log.d(LOGTAG, "onServiceDisconnected: className=" + className.toString());
+
+            //
+            // The service connect to the Gorilla service app has been
+            // disconnected by whatsoever reason.
+            //
+            // Register this and inform all listeners.
+            //
 
             GorillaConnect.setSystemService(null);
 
@@ -78,6 +135,10 @@ public class GorillaClient
         }
     };
 
+    /**
+     * Self calling runnable which tries to re-establish a valid
+     * connection to Gorilla system services.
+     */
     private final Runnable serviceConnector = new Runnable()
     {
         @Override
@@ -97,6 +158,12 @@ public class GorillaClient
         }
     };
 
+    /**
+     * Called by third party app to establish a connection between
+     * the third party app and the Gorilla system service.
+     *
+     * @param context an abitrary context.
+     */
     public void connectService(Context context)
     {
         Log.d(LOGTAG, "connectService: ...");
@@ -116,6 +183,10 @@ public class GorillaClient
         handler.post(serviceConnector);
     }
 
+    /**
+     * Called by third party app to disconnect from the
+     * Gorilla system service. Hardly ever used.
+     */
     public void disconnectService()
     {
         Log.d(LOGTAG, "disconnectService: ...");
@@ -129,6 +200,17 @@ public class GorillaClient
         }
     }
 
+    /**
+     * Validate the bi-directional service connection between third party
+     * app and Gorilla system service app.
+     * <p>
+     * This is done by checking the checksum over the local APK package name.
+     * <p>
+     * If the service can be validated, owner identity and online status is
+     * requested and all listeners are informed.
+     * <p>
+     * If not, the action is silently ignored.
+     */
     private void validateConnect()
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
@@ -136,12 +218,12 @@ public class GorillaClient
 
         try
         {
-            String serverSecret = gr.returnYourSecret(apkname);
-            GorillaConnect.setServerSecretBase64(serverSecret);
+            String serverSecret = gr.returnYourSignature(apkname);
+            GorillaConnect.setServerSignatureBase64(serverSecret);
 
             Log.d(LOGTAG, "validateConnect: call"
                     + " apkname=" + apkname
-                    + " serverSecret=" + GorillaConnect.getServerSecretBase64());
+                    + " serverSecret=" + GorillaConnect.getServerSignatureBase64());
 
             String checksum = GorillaConnect.createSHASignatureBase64(apkname);
 
@@ -149,8 +231,8 @@ public class GorillaClient
 
             Log.d(LOGTAG, "validateConnect: call"
                     + " apkname=" + apkname
-                    + " serverSecret=" + GorillaConnect.getServerSecretBase64()
-                    + " clientSecret=" + GorillaConnect.getClientSecretBase64()
+                    + " serverSecret=" + GorillaConnect.getServerSignatureBase64()
+                    + " clientSecret=" + GorillaConnect.getClientSignatureBase64()
                     + " svlink=" + svlink);
 
             if (!svlink) return;
@@ -170,6 +252,11 @@ public class GorillaClient
         }
     }
 
+    /**
+     * Package local request device owner identity and inform all listeners of this.
+     * <p>
+     * If the services are not validated, this action is silently ignored.
+     */
     void getOwnerUUID()
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
@@ -192,6 +279,12 @@ public class GorillaClient
         }
     }
 
+    /**
+     * Package local request uplink status of Gorilla system
+     * service app and inform all listeners of this.
+     * <p>
+     * If the services are not validated, this action is silently ignored.
+     */
     void getUplinkStatus()
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
@@ -214,6 +307,9 @@ public class GorillaClient
         }
     }
 
+    /**
+     * Package local dispatch current service status to all subscribed listeners.
+     */
     void dispatchServiceStatus()
     {
         final boolean connected = GorillaConnect.getServiceStatus();
@@ -236,6 +332,9 @@ public class GorillaClient
         });
     }
 
+    /**
+     * Package local dispatch current uplink status to all subscribed listeners.
+     */
     void dispatchUplinkStatus()
     {
         final boolean connected = GorillaConnect.getUplinkStatus();
@@ -258,6 +357,9 @@ public class GorillaClient
         });
     }
 
+    /**
+     * Package local dispatch current owner identity UUID to all subscribed listeners.
+     */
     void dispatchOwnerUUID()
     {
         String ownerUUID = GorillaConnect.getownerUUIDBase64();
@@ -283,24 +385,16 @@ public class GorillaClient
         });
     }
 
-    private void requestPersisted()
-    {
-        IGorillaSystemService gr = GorillaConnect.getSystemService();
-        if (gr == null) return;
-
-        try
-        {
-            String checksum = GorillaConnect.createSHASignatureBase64(apkname);
-
-            boolean valid = gr.requestPersisted(apkname, checksum);
-            Log.d(LOGTAG, "requestPersisted valid=" + valid);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-
+    /**
+     * Package local handle a received payload. Build a JSON message object and dispatch
+     * to all subscribed listeners.
+     *
+     * @param time       origin time in milliseconds of payload.
+     * @param uuid       UUID of this payload.
+     * @param senderUUID sending user identity UUID.
+     * @param deviceUUID sending device identity UUID.
+     * @param payload    binary payload in base64 encoding.
+     */
     void receivePayload(long time, String uuid, String senderUUID, String deviceUUID, String payload)
     {
         final JSONObject message = new JSONObject();
@@ -329,11 +423,17 @@ public class GorillaClient
         });
     }
 
-    void receivePayloadResult(String resultStr)
+    /**
+     * Package local handle a received payload result. Contains message UUId,
+     * timing and state information.
+     *
+     * @param resultJSON result JSON object in string format.
+     */
+    void receivePayloadResult(String resultJSON)
     {
-        Log.d(LOGTAG, "receivePayloadResult: resultStr=" + resultStr);
+        Log.d(LOGTAG, "receivePayloadResult: resultStr=" + resultJSON);
 
-        final JSONObject result = fromStringJSONOBject(resultStr);
+        final JSONObject result = fromStringJSONOBject(resultJSON);
 
         if (result == null)
         {
@@ -350,13 +450,21 @@ public class GorillaClient
                 {
                     for (GorillaListener gl : gorillaListeners)
                     {
-                        gl.onResultReceived(result);
+                        gl.onMessageResultReceived(result);
                     }
                 }
             }
         });
     }
 
+    /**
+     * Send a payload to a target user and device.
+     *
+     * @param userUUID   target user identity UUID.
+     * @param deviceUUID target device identity UUID.
+     * @param payload    binary payload in base64 encoding.
+     * @return result JSON object if transferred to Gorilla system app or null if transfer failed.
+     */
     @Nullable
     public JSONObject sendPayload(String userUUID, String deviceUUID, String payload)
     {
@@ -388,6 +496,14 @@ public class GorillaClient
         }
     }
 
+    /**
+     * Send a read state for a particula payload.
+     *
+     * @param userUUID    target user identity UUID.
+     * @param deviceUUID  target device identity UUID.
+     * @param messageUUID target message UUID.
+     * @return true if transferred to Gorilla system app.
+     */
     public boolean sendPayloadRead(String userUUID, String deviceUUID, String messageUUID)
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
@@ -410,6 +526,12 @@ public class GorillaClient
         }
     }
 
+    /**
+     * Put an atom created by owner identity and shared with nobody into storage.
+     *
+     * @param atom JSON atom object.
+     * @return true if the atom could be persisted.
+     */
     public boolean putAtom(JSONObject atom)
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
@@ -434,6 +556,13 @@ public class GorillaClient
         }
     }
 
+    /**
+     * Put an atom created by user identity UUID and shared with owner identity into storage.
+     *
+     * @param userUUID target user identity UUID.
+     * @param atom     JSON atom object.
+     * @return true if the atom could be persisted.
+     */
     public boolean putAtomSharedBy(String userUUID, JSONObject atom)
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
@@ -458,6 +587,13 @@ public class GorillaClient
         }
     }
 
+    /**
+     * Put an atom created by owner identity and shared with user identity UUID into storage.
+     *
+     * @param userUUID target user identity UUID.
+     * @param atom     JSON atom object.
+     * @return true if the atom could be persisted.
+     */
     public boolean putAtomSharedWith(String userUUID, JSONObject atom)
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
@@ -482,17 +618,57 @@ public class GorillaClient
         }
     }
 
+    /**
+     * Query atoms create by owner identity shared with nobody.
+     *
+     * @param atomType atom type in reverse domain format.
+     * @param timeFrom time frame from in milliseconds or zero for the epoch.
+     * @param timeUpto time frame upto in milliseconds or zero for the epoch.
+     * @return JSON array of result atoms or null on failure.
+     */
     @Nullable
-    public JSONArray queryAtomsSharedBy(String userUUID, String atomType, long timeFrom, long timeTo)
+    public JSONArray queryAtoms(String atomType, long timeFrom, long timeUpto)
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
         if (gr == null) return null;
 
         try
         {
-            String checksum = GorillaConnect.createSHASignatureBase64(apkname, userUUID, atomType, timeFrom, timeTo);
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, atomType, timeFrom, timeUpto);
 
-            String resultsStr = gr.queryAtomsSharedBy(apkname, userUUID, atomType, timeFrom, timeTo, checksum);
+            String resultsStr = gr.queryAtoms(apkname, atomType, timeFrom, timeUpto, checksum);
+
+            Log.d(LOGTAG, "queryAtoms: resultsStr=" + resultsStr);
+
+            return (resultsStr == null) ? null : new JSONArray(resultsStr);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Query atoms shared by user identity UUID with owner identy.
+     *
+     * @param userUUID target user identity UUID.
+     * @param atomType atom type in reverse domain format.
+     * @param timeFrom time frame from in milliseconds or zero for the epoch.
+     * @param timeUpto time frame upto in milliseconds or zero for the epoch.
+     * @return JSON array of result atoms or null on failure.
+     */
+    @Nullable
+    public JSONArray queryAtomsSharedBy(String userUUID, String atomType, long timeFrom, long timeUpto)
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return null;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, userUUID, atomType, timeFrom, timeUpto);
+
+            String resultsStr = gr.queryAtomsSharedBy(apkname, userUUID, atomType, timeFrom, timeUpto, checksum);
 
             Log.d(LOGTAG, "queryAtomsSharedBy: resultsStr=" + resultsStr);
 
@@ -505,17 +681,26 @@ public class GorillaClient
         }
     }
 
+    /**
+     * Query atoms shared with user identity UUID by owner identy.
+     *
+     * @param userUUID target user identity UUID.
+     * @param atomType atom type in reverse domain format.
+     * @param timeFrom time frame from in milliseconds or zero for the epoch.
+     * @param timeUpto time frame upto in milliseconds or zero for the epoch.
+     * @return JSON array of result atoms or null on failure.
+     */
     @Nullable
-    public JSONArray queryAtomsSharedWith(String userUUID, String atomType, long timeFrom, long timeTo)
+    public JSONArray queryAtomsSharedWith(String userUUID, String atomType, long timeFrom, long timeUpto)
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
         if (gr == null) return null;
 
         try
         {
-            String checksum = GorillaConnect.createSHASignatureBase64(apkname, userUUID, atomType, timeFrom, timeTo);
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, userUUID, atomType, timeFrom, timeUpto);
 
-            String resultsStr = gr.queryAtomsSharedWith(apkname, userUUID, atomType, timeFrom, timeTo, checksum);
+            String resultsStr = gr.queryAtomsSharedWith(apkname, userUUID, atomType, timeFrom, timeUpto, checksum);
             Log.d(LOGTAG, "queryAtomsSharedWith: resultsStr=" + resultsStr);
 
             return (resultsStr == null) ? null : new JSONArray(resultsStr);
@@ -527,6 +712,12 @@ public class GorillaClient
         }
     }
 
+    /**
+     *
+     * @param actionDomain
+     * @param subAction
+     * @return
+     */
     public boolean registerActionEvent(String actionDomain, String subAction)
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
@@ -536,7 +727,7 @@ public class GorillaClient
         {
             String checksum = GorillaConnect.createSHASignatureBase64(apkname, actionDomain, subAction);
 
-            boolean result = gr.registerActionEvent(apkname, actionDomain, subAction, checksum);
+            boolean result = gr.registerActionEventDomain(apkname, actionDomain, subAction, checksum);
 
             Log.d(LOGTAG, "registerActionEvent: result=" + result);
 
@@ -602,6 +793,25 @@ public class GorillaClient
             return null;
         }
     }
+
+    private void requestPersisted()
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname);
+
+            boolean valid = gr.requestPersisted(apkname, checksum);
+            Log.d(LOGTAG, "requestPersisted valid=" + valid);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
 
     //endregion Private helpers.
 }
