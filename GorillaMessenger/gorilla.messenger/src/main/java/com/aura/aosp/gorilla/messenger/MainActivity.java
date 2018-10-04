@@ -223,13 +223,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void displayMessageInList(JSONObject message)
+    private void displayMessageInList(JSONObject payload)
     {
-        String remoteUserUUID = Json.getString(message, "sender");
-        String remoteDeviceUUID = Json.getString(message, "device");
-        String messageText = Json.getString(message, "payload");
+        String remoteUserUUID = Json.getString(payload, "sender");
+        String remoteDeviceUUID = Json.getString(payload, "device");
+        String messageText = Json.getString(payload, "payload");
 
-        Long timeStamp = Json.getLong(message, "time");
+        Long timeStamp = Json.getLong(payload, "time");
         String dateStr = Dates.getLocalDateAndTime(timeStamp);
 
         for (int cinx = 0; cinx < identitiesView.getChildCount(); cinx++)
@@ -298,16 +298,16 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        public void onPayloadReceived(JSONObject messageJson)
+        public void onPayloadReceived(JSONObject payload)
         {
-            Log.d(LOGTAG, "onPayloadReceived: message=" + messageJson.toString());
+            Log.d(LOGTAG, "onPayloadReceived: payload=" + payload.toString());
 
-            displayMessageInList(messageJson);
+            displayMessageInList(payload);
 
-            JSONObject atom = convertMessageToAtomAndPersists(messageJson);
+            JSONObject atom = convertMessageToAtomAndPersists(payload);
 
-            String remoteUserUUID = Json.getString(messageJson, "sender");
-            String remoteDeviceUUID = Json.getString(messageJson, "device");
+            String remoteUserUUID = Json.getString(payload, "sender");
+            String remoteDeviceUUID = Json.getString(payload, "device");
 
             for (ChatProfile chatProfile : chatProfiles)
             {

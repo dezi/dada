@@ -57,48 +57,6 @@ public abstract class GorillaAtom
     }
 
     /**
-     * Set time of atom in milliseconds.
-     *
-     * @param time time of atom in milliseconds.
-     */
-    public void setTime(@NonNull Long time)
-    {
-        GorillaUtils.putJSON(atom, "time", time);
-    }
-
-    /**
-     * Get time of atom in milliseconds.
-     *
-     * @return time of atom in milliseconds or null.
-     */
-    @Nullable
-    public Long getTime()
-    {
-        return GorillaUtils.getJSONLong(atom, "time");
-    }
-
-    /**
-     * Set atom type in reverse domain order.
-     *
-     * @param type atom type in reverse domain order.
-     */
-    public void setType(@NonNull String type)
-    {
-        GorillaUtils.putJSON(atom, "type", type);
-    }
-
-    /**
-     * Get atom type in reverse domain order.
-     *
-     * @return atom type in reverse domain order or null.
-     */
-    @Nullable
-    public String getType()
-    {
-        return GorillaUtils.getJSONString(atom, "type");
-    }
-
-    /**
      * Set atom UUID as byte array.
      */
     public void setUUID(@NonNull byte[] uuid)
@@ -143,12 +101,54 @@ public abstract class GorillaAtom
     }
 
     /**
-     * Get load part of atom as JSON object.
+     * Set time of atom in milliseconds.
+     *
+     * @param time time of atom in milliseconds.
+     */
+    public void setTime(@NonNull Long time)
+    {
+        GorillaUtils.putJSON(atom, "time", time);
+    }
+
+    /**
+     * Get time of atom in milliseconds.
+     *
+     * @return time of atom in milliseconds or null.
+     */
+    @Nullable
+    public Long getTime()
+    {
+        return GorillaUtils.getJSONLong(atom, "time");
+    }
+
+    /**
+     * Set atom type in reverse domain order.
+     *
+     * @param type atom type in reverse domain order.
+     */
+    public void setType(@NonNull String type)
+    {
+        GorillaUtils.putJSON(atom, "type", type);
+    }
+
+    /**
+     * Get atom type in reverse domain order.
+     *
+     * @return atom type in reverse domain order or null.
+     */
+    @Nullable
+    public String getType()
+    {
+        return GorillaUtils.getJSONString(atom, "type");
+    }
+
+    /**
+     * Package private get load part of atom as JSON object.
      *
      * @return load part of atom as JSON object.
      */
     @NonNull
-    protected JSONObject getLoad()
+    JSONObject getLoad()
     {
         JSONObject load = GorillaUtils.getJSONObject(atom, "load");
 
