@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run()
             {
-                GorillaClient.getInstance().registerActionEvent(getPackageName(), null);
+                GorillaClient.getInstance().registerActionEvent(getPackageName());
             }
         }, 2000);
     }

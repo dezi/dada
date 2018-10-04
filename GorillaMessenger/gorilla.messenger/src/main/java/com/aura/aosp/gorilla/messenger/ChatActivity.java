@@ -68,7 +68,10 @@ public class ChatActivity extends AppCompatActivity
 
         MainActivity.addChatProfile(chatProfile);
 
-        GorillaClient.getInstance().registerActionEvent(getPackageName(), remoteUserUUID);
+        String actionDomain = getPackageName();
+        String subAction = "chat=" + remoteUserUUID;
+
+        GorillaClient.getInstance().registerActionEventDomain(actionDomain, subAction);
 
         JSONArray recv = GorillaClient.getInstance().queryAtomsSharedBy(remoteUserUUID, "aura.chat.message", 0, 0);
         JSONArray send = GorillaClient.getInstance().queryAtomsSharedWith(remoteUserUUID, "aura.chat.message", 0, 0);

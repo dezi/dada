@@ -64,8 +64,16 @@ public class GorillaNetwork extends BroadcastReceiver
 
         android.net.NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
-        isMobileAvailable = mobile.isAvailable();
-        isMobileConnected = mobile.isConnectedOrConnecting();
+        if (mobile == null)
+        {
+            isMobileAvailable = false;
+            isMobileConnected = false;
+        }
+        else
+        {
+            isMobileAvailable = mobile.isAvailable();
+            isMobileConnected = mobile.isConnectedOrConnecting();
+        }
 
         if (isMobileAvailable)
         {
@@ -86,8 +94,17 @@ public class GorillaNetwork extends BroadcastReceiver
         }
 
         android.net.NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        isWifiAvailable = wifi.isAvailable();
-        isWifiConnected = wifi.isConnectedOrConnecting();
+
+        if (wifi == null)
+        {
+            isWifiAvailable = false;
+            isWifiConnected = false;
+        }
+        else
+        {
+            isWifiAvailable = wifi.isAvailable();
+            isWifiConnected = wifi.isConnectedOrConnecting();
+        }
 
         if (isWifiConnected)
         {

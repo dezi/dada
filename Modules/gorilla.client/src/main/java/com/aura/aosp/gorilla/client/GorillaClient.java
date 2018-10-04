@@ -367,7 +367,7 @@ public class GorillaClient
         Log.d(LOGTAG, "dispatchOwnerUUID: ownerUUID=" + ownerUUID);
 
         final JSONObject owner = new JSONObject();
-        putJSON(owner, "ownerUUID", ownerUUID);
+        GorillaUtils.putJSON(owner, "ownerUUID", ownerUUID);
 
         handler.post(new Runnable()
         {
@@ -399,11 +399,11 @@ public class GorillaClient
     {
         final JSONObject message = new JSONObject();
 
-        putJSON(message, "uuid", uuid);
-        putJSON(message, "time", time);
-        putJSON(message, "sender", senderUUID);
-        putJSON(message, "device", deviceUUID);
-        putJSON(message, "payload", payload);
+        GorillaUtils.putJSON(message, "uuid", uuid);
+        GorillaUtils.putJSON(message, "time", time);
+        GorillaUtils.putJSON(message, "sender", senderUUID);
+        GorillaUtils.putJSON(message, "device", deviceUUID);
+        GorillaUtils.putJSON(message, "payload", payload);
 
         Log.d(LOGTAG, "receivePayload: message=" + message.toString());
 
@@ -433,7 +433,7 @@ public class GorillaClient
     {
         Log.d(LOGTAG, "receivePayloadResult: resultStr=" + resultJSON);
 
-        final JSONObject result = fromStringJSONOBject(resultJSON);
+        final JSONObject result = GorillaUtils.fromStringJSONOBject(resultJSON);
 
         if (result == null)
         {
@@ -479,7 +479,7 @@ public class GorillaClient
 
             Log.d(LOGTAG, "sendPayload: resultStr=" + resultStr);
 
-            final JSONObject result = fromStringJSONOBject(resultStr);
+            final JSONObject result = GorillaUtils.fromStringJSONOBject(resultStr);
 
             if (result == null)
             {
@@ -713,21 +713,21 @@ public class GorillaClient
     }
 
     /**
+     * Register event on domain.
      *
-     * @param actionDomain
-     * @param subAction
-     * @return
+     * @param actionDomain action domain reverse domain order.
+     * @return true if event was registered.
      */
-    public boolean registerActionEvent(String actionDomain, String subAction)
+    public boolean registerActionEvent(String actionDomain)
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
         if (gr == null) return false;
 
         try
         {
-            String checksum = GorillaConnect.createSHASignatureBase64(apkname, actionDomain, subAction);
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, actionDomain);
 
-            boolean result = gr.registerActionEventDomain(apkname, actionDomain, subAction, checksum);
+            boolean result = gr.registerActionEvent(apkname, actionDomain, checksum);
 
             Log.d(LOGTAG, "registerActionEvent: result=" + result);
 
@@ -740,6 +740,70 @@ public class GorillaClient
         }
     }
 
+    /**
+     * Register event on domain and subaction.
+     *
+     * @param actionDomain action domain reverse domain order.
+     * @param subAction sub action to be recorded.
+     * @return true if event was registered.
+     */
+    public boolean registerActionEventDomain(String actionDomain, String subAction)
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return false;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, actionDomain, subAction);
+
+            boolean result = gr.registerActionEventDomain(apkname, actionDomain, subAction, checksum);
+
+            Log.d(LOGTAG, "registerActionEventDomain: result=" + result);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Register event on domain, context and subaction.
+     *
+     * @param actionDomain action domain reverse domain order.
+     * @param subContext sub context of action domain.
+     * @param subAction sub action to be recorded.
+     * @return true if event was registered.
+     */
+    public boolean registerActionEventDomainContext(String actionDomain, String subContext, String subAction)
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return false;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, actionDomain, subAction);
+
+            boolean result = gr.registerActionEventDomain(apkname, actionDomain, subAction, checksum);
+
+            Log.d(LOGTAG, "registerActionEventDomain: result=" + result);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Subscribe a {@code GorillaListener} for service connection.
+     *
+     * @param gorillaListener Third party app listener.
+     */
     public void subscribeGorillaListener(GorillaListener gorillaListener)
     {
         synchronized (gorillaListeners)
@@ -751,67 +815,45 @@ public class GorillaClient
         }
     }
 
+    /**
+     * Unsubscribe a {@code GorillaListener} from service connection.
+     *
+     * @param gorillaListener Third party app listener.
+     */
     public void unsubscribeGorillaListener(GorillaListener gorillaListener)
     {
         synchronized (gorillaListeners)
         {
-            if (gorillaListeners.contains(gorillaListener))
-            {
-                gorillaListeners.remove(gorillaListener);
-            }
+            gorillaListeners.remove(gorillaListener);
         }
     }
 
-    //endregion Instance implemention.
-
-    //endregion Private helpers.
-
-    private static void putJSON(JSONObject json, String key, Object val)
-    {
-        try
-        {
-            json.put(key, val);
-        }
-        catch (Exception ignore)
-        {
-        }
-    }
-
-    @Nullable
-    private static JSONObject fromStringJSONOBject(String jsonstr)
-    {
-        if (jsonstr == null) return null;
-
-        try
-        {
-            return new JSONObject(jsonstr);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-
-            return null;
-        }
-    }
-
-    private void requestPersisted()
+    /**
+     * Request all persisted messages after validated
+     * connection to Gorilla system service.
+     *
+     * @return true if call accepted by Gorilla service.
+     */
+    private boolean requestPersisted()
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
-        if (gr == null) return;
+        if (gr == null) return false;
 
         try
         {
             String checksum = GorillaConnect.createSHASignatureBase64(apkname);
 
             boolean valid = gr.requestPersisted(apkname, checksum);
+
             Log.d(LOGTAG, "requestPersisted valid=" + valid);
+
+            return valid;
         }
         catch (Exception ex)
         {
             ex.printStackTrace();
+
+            return false;
         }
     }
-
-
-    //endregion Private helpers.
 }
