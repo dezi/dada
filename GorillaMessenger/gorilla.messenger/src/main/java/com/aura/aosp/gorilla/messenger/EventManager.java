@@ -39,17 +39,17 @@ public class EventManager extends GorillaListener
     }
 
     @Override
-    public void onMessageReceived(JSONObject message)
+    public void onPayloadReceived(JSONObject message)
     {
-        Log.d(LOGTAG, "onMessageReceived: message=" + message.toString());
+        Log.d(LOGTAG, "onPayloadReceived: message=" + message.toString());
 
         //startMainActivity();
     }
 
     @Override
-    public void onMessageResultReceived(JSONObject result)
+    public void onPayloadResultReceived(JSONObject result)
     {
-        Log.d(LOGTAG, "onMessageResultReceived: result=" + result.toString());
+        Log.d(LOGTAG, "onPayloadResultReceived: result=" + result.toString());
     }
 
     private void startMainActivity()

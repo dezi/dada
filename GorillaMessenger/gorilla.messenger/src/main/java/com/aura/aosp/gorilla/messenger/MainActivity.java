@@ -298,9 +298,9 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        public void onMessageReceived(JSONObject messageJson)
+        public void onPayloadReceived(JSONObject messageJson)
         {
-            Log.d(LOGTAG, "onMessageReceived: message=" + messageJson.toString());
+            Log.d(LOGTAG, "onPayloadReceived: message=" + messageJson.toString());
 
             displayMessageInList(messageJson);
 
@@ -347,9 +347,9 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        public void onMessageResultReceived(JSONObject result)
+        public void onPayloadResultReceived(JSONObject result)
         {
-            Log.d(LOGTAG, "onMessageResultReceived: result=" + result.toString());
+            Log.d(LOGTAG, "onPayloadResultReceived: result=" + result.toString());
 
             for (ChatProfile chatProfile : chatProfiles)
             {

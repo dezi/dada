@@ -398,15 +398,15 @@ public class GorillaClient
      */
     void receivePayload(long time, String uuid, String senderUUID, String deviceUUID, String payload)
     {
-        final JSONObject message = new JSONObject();
+        final JSONObject payloadJson = new JSONObject();
 
-        GorillaUtils.putJSON(message, "uuid", uuid);
-        GorillaUtils.putJSON(message, "time", time);
-        GorillaUtils.putJSON(message, "sender", senderUUID);
-        GorillaUtils.putJSON(message, "device", deviceUUID);
-        GorillaUtils.putJSON(message, "payload", payload);
+        GorillaUtils.putJSON(payloadJson, "uuid", uuid);
+        GorillaUtils.putJSON(payloadJson, "time", time);
+        GorillaUtils.putJSON(payloadJson, "sender", senderUUID);
+        GorillaUtils.putJSON(payloadJson, "device", deviceUUID);
+        GorillaUtils.putJSON(payloadJson, "payload", payload);
 
-        Log.d(LOGTAG, "receivePayload: message=" + message.toString());
+        Log.d(LOGTAG, "receivePayload: payloadJson=" + payloadJson.toString());
 
         handler.post(new Runnable()
         {
@@ -417,7 +417,7 @@ public class GorillaClient
                 {
                     for (GorillaListener gl : gorillaListeners)
                     {
-                        gl.onMessageReceived(message);
+                        gl.onPayloadReceived(payloadJson);
                     }
                 }
             }
@@ -451,7 +451,7 @@ public class GorillaClient
                 {
                     for (GorillaListener gl : gorillaListeners)
                     {
-                        gl.onMessageResultReceived(result);
+                        gl.onPayloadResultReceived(result);
                     }
                 }
             }
