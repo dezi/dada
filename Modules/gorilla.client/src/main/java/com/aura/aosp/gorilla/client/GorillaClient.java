@@ -30,6 +30,7 @@ import java.util.List;
  *
  * @author Dennis Zierahn
  */
+@SuppressWarnings("unused")
 @SuppressLint("StaticFieldLeak")
 public class GorillaClient
 {
@@ -204,7 +205,7 @@ public class GorillaClient
      * Validate the bi-directional service connection between third party
      * app and Gorilla system service app.
      * <p>
-     * This is done by checking the checksum over the local APK package name.
+     * This is done by checking the checksum over the current APK package name.
      * <p>
      * If the service can be validated, owner identity and online status is
      * requested and all listeners are informed.
@@ -253,7 +254,7 @@ public class GorillaClient
     }
 
     /**
-     * Package local request device owner identity and inform all listeners of this.
+     * Package private request device owner identity and inform all listeners of this.
      * <p>
      * If the services are not validated, this action is silently ignored.
      */
@@ -280,7 +281,7 @@ public class GorillaClient
     }
 
     /**
-     * Package local request uplink status of Gorilla system
+     * Package private request uplink status of Gorilla system
      * service app and inform all listeners of this.
      * <p>
      * If the services are not validated, this action is silently ignored.
@@ -308,7 +309,7 @@ public class GorillaClient
     }
 
     /**
-     * Package local dispatch current service status to all subscribed listeners.
+     * Package private dispatch current service status to all subscribed listeners.
      */
     void dispatchServiceStatus()
     {
@@ -333,7 +334,7 @@ public class GorillaClient
     }
 
     /**
-     * Package local dispatch current uplink status to all subscribed listeners.
+     * Package private dispatch current uplink status to all subscribed listeners.
      */
     void dispatchUplinkStatus()
     {
@@ -358,7 +359,7 @@ public class GorillaClient
     }
 
     /**
-     * Package local dispatch current owner identity UUID to all subscribed listeners.
+     * Package private dispatch current owner identity UUID to all subscribed listeners.
      */
     void dispatchOwnerUUID()
     {
@@ -386,7 +387,7 @@ public class GorillaClient
     }
 
     /**
-     * Package local handle a received payload. Build a JSON message object and dispatch
+     * Package private handle a received payload. Build a JSON message object and dispatch
      * to all subscribed listeners.
      *
      * @param time       origin time in milliseconds of payload.
@@ -424,7 +425,7 @@ public class GorillaClient
     }
 
     /**
-     * Package local handle a received payload result. Contains message UUId,
+     * Package private handle a received payload result. Contains message UUId,
      * timing and state information.
      *
      * @param resultJSON result JSON object in string format.

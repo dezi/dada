@@ -50,6 +50,7 @@ public class ChatFragment extends GUILinearLayout
     private GUIFrameLayout bubbleBox;
     private GUITextView messageBox;
     private GUIIconView statusIcon;
+
     private JSONObject atom;
 
     boolean send;

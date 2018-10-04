@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings({"WeakerAccess", "unused"})
 public class GorillaIntercon
 {
     private final static Map<String, AppData> apkDatas = new HashMap<>();
@@ -175,7 +174,10 @@ public class GorillaIntercon
 
             for (Object param : params)
             {
-                if (param != null) md.update(param.toString().getBytes());
+                if (param != null)
+                {
+                    md.update(param.toString().getBytes());
+                }
             }
 
             return md.digest();
