@@ -4,7 +4,7 @@
     <application>
 
         <service
-            android:name=".GorillaClient"
+            android:name=".GorillaService"
             android:enabled="true"
             android:exported="true">
         </service>

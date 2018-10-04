@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressLint("StaticFieldLeak")
-public class GorillaClient extends Service
+public class GorillaClient
 {
     private static final String LOGTAG = GorillaClient.class.getSimpleName();
 
@@ -616,12 +616,4 @@ public class GorillaClient extends Service
     }
 
     //endregion Private helpers.
-
-    @Override
-    public IBinder onBind(Intent intent)
-    {
-        Log.d(LOGTAG, "onBind: intent=" + intent.toString());
-
-        return new GorillaClientService();
-    }
 }

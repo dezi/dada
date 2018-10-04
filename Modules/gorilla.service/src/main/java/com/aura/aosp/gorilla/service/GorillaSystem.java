@@ -59,7 +59,7 @@ public class GorillaSystem extends Service
 
         Log.d("apkname=%s", apkname);
 
-        ComponentName componentName = new ComponentName(apkname, "com.aura.aosp.gorilla.client.GorillaClient");
+        ComponentName componentName = new ComponentName(apkname, "com.aura.aosp.gorilla.client.GorillaService");
 
         Intent serviceIntent = new Intent();
         serviceIntent.setComponent(componentName);
