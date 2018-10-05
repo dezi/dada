@@ -94,8 +94,75 @@ public class GoatomStorage
     }
 
     @Nullable
-    public static JSONObject getAtom(@NonNull String userUUID, @NonNull String atomUUID)
+    public static JSONObject getAtom(@NonNull String atomUUID)
     {
+        String ownerUUID = Owner.getOwnerUUIDBase64();
+        if (ownerUUID == null) return null;
+
+        return getAtom(ownerUUID, ownerUUID, atomUUID);
+    }
+
+    @Nullable
+    public static JSONObject getAtomSharedBy(@NonNull String userUUID, @NonNull String atomUUID)
+    {
+        String ownerUUID = Owner.getOwnerUUIDBase64();
+        if (ownerUUID == null) return null;
+
+        return getAtom(userUUID, ownerUUID, atomUUID);
+    }
+
+    @Nullable
+    public static JSONObject getAtomSharedWith(@NonNull String userUUID, @NonNull String atomUUID)
+    {
+        String ownerUUID = Owner.getOwnerUUIDBase64();
+        if (ownerUUID == null) return null;
+
+        return getAtom(ownerUUID, userUUID, atomUUID);
+    }
+
+    @Nullable
+    private static JSONObject getAtom(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull String atomUUID)
+    {
+        String atomUUIDStr = UID.getUUIDString(atomUUID);
+        if (atomUUIDStr == null) return null;
+
+        String atomSuffix = atomUUIDStr + ".json";
+
+        File userdir = getStorageDir(ownerUUID, userUUID, false);
+        if (userdir == null) return null;
+
+        File[] typeDirs = userdir.listFiles();
+        if (typeDirs == null) return null;
+
+        long count = 0;
+        long start = System.currentTimeMillis();
+        Log.d("start:...");
+
+        for (File typeDir : typeDirs)
+        {
+            File[] dateDirs = typeDir.listFiles();
+            if (dateDirs == null) continue;
+
+            for (File dateDir : dateDirs)
+            {
+                File[] jsonFiles = dateDir.listFiles();
+                if (jsonFiles == null) continue;
+
+                for (File jsonFile : jsonFiles)
+                {
+                    if (jsonFile.getName().endsWith(atomSuffix))
+                    {
+                        return Json.getFileContent(jsonFile);
+                    }
+
+                    count++;
+                }
+            }
+        }
+
+        long elapsed = System.currentTimeMillis() - start;
+        Log.d("count=%d elapsed=%d", count, elapsed);
+
         return null;
     }
 
@@ -200,7 +267,7 @@ public class GoatomStorage
     }
 
     @Nullable
-    private static File getStorageDir(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull String atomType, boolean create)
+    private static File getStorageDir(@NonNull String ownerUUID, @NonNull String userUUID, boolean create)
     {
         String ownerUUIDStr = UID.getUUIDString(ownerUUID);
         if (ownerUUIDStr == null) return null;
@@ -212,13 +279,32 @@ public class GoatomStorage
         File goatomdir = new File(appfilesdir, "goatom");
         File ownerdir = new File(goatomdir, ownerUUIDStr);
         File userdir = new File(ownerdir, userUUIDStr);
+
+        if (create)
+        {
+            synchronized (mutex)
+            {
+                Err err = Simple.mkdirs(appfilesdir, goatomdir, ownerdir, userdir);
+                if (err != null) return null;
+            }
+        }
+
+        return userdir;
+    }
+
+    @Nullable
+    private static File getStorageDir(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull String atomType, boolean create)
+    {
+        File userdir = getStorageDir(ownerUUID, userUUID, create);
+        if (userdir == null) return null;
+
         File typedir = new File(userdir, atomType);
 
         if (create)
         {
             synchronized (mutex)
             {
-                Err err = Simple.mkdirs(appfilesdir, goatomdir, ownerdir, userdir, typedir);
+                Err err = Simple.mkdirs(typedir);
                 if (err != null) return null;
             }
         }

@@ -188,13 +188,16 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public String getAtom(String apkname, String atomUUID, String checksum)
     {
-        return null;
+        JSONObject atom = GoatomStorage.getAtom(atomUUID);
+        if (atom == null) return null;
+
+        return atom.toString();
     }
 
     @Override
     public String getAtomSharedBy(String apkname, String userUUID, String atomUUID, String checksum)
     {
-        JSONObject atom = GoatomStorage.getAtom(userUUID, atomUUID);
+        JSONObject atom = GoatomStorage.getAtomSharedBy(userUUID, atomUUID);
         if (atom == null) return null;
 
         return atom.toString();
@@ -203,7 +206,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public String getAtomSharedWith(String apkname, String userUUID, String atomUUID, String checksum)
     {
-        JSONObject atom = GoatomStorage.getAtom(userUUID, atomUUID);
+        JSONObject atom = GoatomStorage.getAtomSharedWith(userUUID, atomUUID);
         if (atom == null) return null;
 
         return atom.toString();

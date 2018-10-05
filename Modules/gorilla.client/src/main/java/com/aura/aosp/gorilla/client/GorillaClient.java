@@ -625,6 +625,75 @@ public class GorillaClient
         }
     }
 
+    @Nullable
+    public JSONObject getAtom(String atomUUID)
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return null;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, atomUUID);
+
+            String resultsStr = gr.getAtom(apkname, atomUUID, checksum);
+
+            Log.d(LOGTAG, "getAtom: resultsStr=" + resultsStr);
+
+            return (resultsStr == null) ? null : new JSONObject(resultsStr);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    @Nullable
+    public JSONObject getAtomSharedBy(String userUUID, String atomUUID)
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return null;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, userUUID, atomUUID);
+
+            String resultsStr = gr.getAtomSharedBy(apkname, userUUID, atomUUID, checksum);
+
+            Log.d(LOGTAG, "getAtomSharedBy: resultsStr=" + resultsStr);
+
+            return (resultsStr == null) ? null : new JSONObject(resultsStr);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    @Nullable
+    public JSONObject getAtomSharedWith(String userUUID, String atomUUID)
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return null;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, userUUID, atomUUID);
+
+            String resultsStr = gr.getAtomSharedWith(apkname, userUUID, atomUUID, checksum);
+
+            Log.d(LOGTAG, "getAtomSharedWith: resultsStr=" + resultsStr);
+
+            return (resultsStr == null) ? null : new JSONObject(resultsStr);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * Query atoms create by owner identity shared with nobody.
      *

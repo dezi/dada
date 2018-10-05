@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
@@ -33,6 +34,8 @@ public class EventManager extends GorillaListener
     public void onUplinkChange(boolean connected)
     {
         Log.d(LOGTAG, "onUplinkChange: connected=" + connected);
+
+        if (connected) GorillaClient.getInstance().getAtom(UID.randomUUIDBase64());
     }
 
     @Override
