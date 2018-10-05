@@ -20,6 +20,7 @@ import android.util.Log;
 
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
+import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -429,37 +430,34 @@ public class GorillaClient
     }
 
     /**
-     * Package private handle a received payload result. Contains message UUId,
+     * Package private handle a received payload result. Contains message UUID,
      * timing and state information.
      *
-     * @param resultJSON result JSON object in string format.
+     * @param resultJson result JSON object in string format.
      */
-    void receivePayloadResult(String resultJSON)
+    void receivePayloadResult(String resultJson)
     {
-        Log.d(LOGTAG, "receivePayloadResult: resultStr=" + resultJSON);
+        Log.d(LOGTAG, "receivePayloadResult: resultJson=" + resultJson);
 
-        final JSONObject result = GorillaUtils.fromStringJSONOBject(resultJSON);
+        final GorillaPayloadResult result = new GorillaPayloadResult();
 
-        if (result == null)
+        if (result.set(resultJson))
         {
-            Log.e(LOGTAG, "receivePayloadResult: result failed!");
-            return;
-        }
-
-        handler.post(new Runnable()
-        {
-            @Override
-            public void run()
+            handler.post(new Runnable()
             {
-                synchronized (gorillaListeners)
+                @Override
+                public void run()
                 {
-                    for (GorillaListener gl : gorillaListeners)
+                    synchronized (gorillaListeners)
                     {
-                        gl.onPayloadResultReceived(result);
+                        for (GorillaListener gl : gorillaListeners)
+                        {
+                            gl.onPayloadResultReceived(result);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     /**
@@ -468,10 +466,10 @@ public class GorillaClient
      * @param userUUID   target user identity UUID.
      * @param deviceUUID target device identity UUID.
      * @param payload    binary payload in base64 encoding.
-     * @return result JSON object if transferred to Gorilla system app or null if transfer failed.
+     * @return GorillaPayloadResult or null if transfer to Gorilla system app failed.
      */
     @Nullable
-    public JSONObject sendPayload(String userUUID, String deviceUUID, String payload)
+    public GorillaPayloadResult sendPayload(String userUUID, String deviceUUID, String payload)
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
         if (gr == null) return null;
@@ -484,9 +482,9 @@ public class GorillaClient
 
             Log.d(LOGTAG, "sendPayload: resultStr=" + resultStr);
 
-            final JSONObject result = GorillaUtils.fromStringJSONOBject(resultStr);
+            GorillaPayloadResult result = new GorillaPayloadResult();
 
-            if (result == null)
+            if (! result.set(resultStr))
             {
                 Log.e(LOGTAG, "sendPayload: result failed!");
                 return null;

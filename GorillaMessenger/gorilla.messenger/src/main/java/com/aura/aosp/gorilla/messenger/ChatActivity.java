@@ -19,6 +19,7 @@ import com.aura.aosp.aura.gui.views.GUIIconView;
 import com.aura.aosp.aura.gui.views.GUILinearLayout;
 import com.aura.aosp.aura.gui.views.GUIScrollView;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
+import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 
 import org.json.JSONArray;
@@ -256,13 +257,13 @@ public class ChatActivity extends AppCompatActivity
             {
                 String messageText = editText.getText().toString();
 
-                JSONObject result = GorillaClient.getInstance().sendPayload(chatProfile.remoteUserUUID, chatProfile.remoteDeviceUUID, messageText);
+                GorillaPayloadResult result = GorillaClient.getInstance().sendPayload(chatProfile.remoteUserUUID, chatProfile.remoteDeviceUUID, messageText);
                 if (result == null) return;
 
-                Long time = Json.getLong(result,"time");
+                Long time = result.getTime();
                 if (time == null) return;
 
-                String uuid = Json.getString(result,"uuid");
+                String uuid = result.getUUIDBase64();
                 if (uuid == null) return;
 
                 GorillaMessage message = new GorillaMessage();
@@ -330,13 +331,13 @@ public class ChatActivity extends AppCompatActivity
         }, 1000);
     }
 
-    public void dispatchResult(JSONObject result)
+    public void dispatchResult(GorillaPayloadResult result)
     {
-        Long time = Json.getLong(result, "time");
-        String uuid = Json.getString(result, "uuid");
-        String status = Json.getString(result, "status");
+        Long time = result.getTime();
+        String uuid = result.getUUIDBase64();
+        String status = result.getStatus();
 
-        if ((uuid == null) || (status == null)) return;
+        if ((time == null) || (uuid == null) || (status == null)) return;
 
         Log.d(LOGTAG, "dispatchResult: uuid=" + uuid + " status=" + status + " childCount=" + chatContent.getChildCount());
 

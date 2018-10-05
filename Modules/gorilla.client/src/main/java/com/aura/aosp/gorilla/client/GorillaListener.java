@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
+import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 
 import org.json.JSONObject;
 
@@ -73,7 +74,7 @@ public abstract class GorillaListener
      * @param result JSON object containg the message result.
      *               Todo: describe json layout.
      */
-    public void onPayloadResultReceived(JSONObject result)
+    public void onPayloadResultReceived(GorillaPayloadResult result)
     {
         Log.d(LOGTAG, "onPayloadResultReceived: STUB!");
     }

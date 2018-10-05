@@ -52,6 +52,18 @@ public abstract class GorillaAtom
         return atom.toString();
     }
 
+    public String toPretty()
+    {
+        try
+        {
+            return atom.toString(2);
+        }
+        catch (Exception ignore)
+        {
+            return "";
+        }
+    }
+
     /**
      * Get JSON representation of atom.
      *
@@ -61,6 +73,15 @@ public abstract class GorillaAtom
     public JSONObject get()
     {
         return atom;
+    }
+
+    public boolean set(String jsonstr)
+    {
+        JSONObject newatom = fromStringJSONOBject(jsonstr);
+        if (newatom == null) return false;
+
+        atom = newatom;
+        return true;
     }
 
     /**

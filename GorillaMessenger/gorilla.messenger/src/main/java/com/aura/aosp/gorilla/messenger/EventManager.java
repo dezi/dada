@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
+import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 
@@ -49,7 +50,7 @@ public class EventManager extends GorillaListener
     }
 
     @Override
-    public void onPayloadResultReceived(JSONObject result)
+    public void onPayloadResultReceived(GorillaPayloadResult result)
     {
         Log.d(LOGTAG, "onPayloadResultReceived: result=" + result.toString());
     }

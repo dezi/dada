@@ -7,6 +7,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.aura.aosp.aura.common.simple.Dates;
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.gui.base.GUIDefs;
 import com.aura.aosp.aura.gui.views.GUIFrameLayout;
@@ -198,6 +199,8 @@ public class ChatFragment extends GUILinearLayout
     {
         this.send = send;
         this.atom = atom;
+
+        Log.d("########################## atom=%s", atom.toPretty());
 
         this.messageUUID = atom.getUUIDBase64();
         if (this.messageUUID == null) return;

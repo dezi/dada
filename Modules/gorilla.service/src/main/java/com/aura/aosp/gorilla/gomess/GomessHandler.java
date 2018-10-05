@@ -67,11 +67,20 @@ public class GomessHandler
         Log.d("apkname=" + apkname + " payload=" + payload);
 
         JSONObject result = new JSONObject();
+        JSONObject load = new JSONObject();
+
+        String uuid = UID.randomUUIDBase64();
+        long time = System.currentTimeMillis();
+        Log.d("uuid=" + uuid + " time=" + time);
+
+        Json.put(result, "uuid", uuid);
+        Json.put(result, "time", time);
+        Json.put(result, "load", load);
 
         if ((apkname == null) || (userUUID == null) || (deviceUUID == null) || (payload == null))
         {
-            Json.put(result, "error", "Request parameters missing");
-            Json.put(result, "status", "error");
+            Json.put(load, "error", "Request parameters missing");
+            Json.put(load, "status", "error");
 
             return result;
         }
@@ -85,13 +94,6 @@ public class GomessHandler
 
             return result;
         }
-
-        String uuid = UID.randomUUIDBase64();
-        long time = System.currentTimeMillis();
-        Log.d("uuid=" + uuid + " time=" + time);
-
-        Json.put(result, "uuid", uuid);
-        Json.put(result, "time", time);
 
         GoprotoMetadata metadata = new GoprotoMetadata();
         metadata.setTimeStamp(time);
@@ -110,7 +112,7 @@ public class GomessHandler
 
         addTicketToQueue(ticket);
 
-        Json.put(result, "status", "queued");
+        Json.put(load, "status", "queued");
 
         return result;
     }
