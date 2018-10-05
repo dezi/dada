@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.aura.aosp.gorilla.atoms.GorillaOwner;
+import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 
@@ -33,15 +35,15 @@ public class EventManager extends GorillaListener
     }
 
     @Override
-    public void onOwnerReceived(JSONObject owner)
+    public void onOwnerReceived(GorillaOwner owner)
     {
         Log.d(LOGTAG, "onOwnerReceived: owner=" + owner.toString());
     }
 
     @Override
-    public void onPayloadReceived(JSONObject message)
+    public void onPayloadReceived(GorillaPayload payload)
     {
-        Log.d(LOGTAG, "onPayloadReceived: message=" + message.toString());
+        Log.d(LOGTAG, "onPayloadReceived: message=" + payload.toString());
 
         //startMainActivity();
     }

@@ -9,6 +9,9 @@ package com.aura.aosp.gorilla.client;
 
 import android.util.Log;
 
+import com.aura.aosp.gorilla.atoms.GorillaOwner;
+import com.aura.aosp.gorilla.atoms.GorillaPayload;
+
 import org.json.JSONObject;
 
 /**
@@ -47,10 +50,9 @@ public abstract class GorillaListener
     /**
      * Called whenever the current owner identity changes.
      *
-     * @param owner JSON object containg the owner identity.
-     *              Todo: describe json layout.
+     * @param owner GorillaOwner object.
      */
-    public void onOwnerReceived(JSONObject owner)
+    public void onOwnerReceived(GorillaOwner owner)
     {
         Log.d(LOGTAG, "onOwnerReceived: STUB!");
     }
@@ -58,10 +60,9 @@ public abstract class GorillaListener
     /**
      * Called whenever a payload was received.
      *
-     * @param payload JSON object with payload.
-     *                Todo: describe json layout.
+     * @param payload GorillaPayload object.
      */
-    public void onPayloadReceived(JSONObject payload)
+    public void onPayloadReceived(GorillaPayload payload)
     {
         Log.d(LOGTAG, "onPayloadReceived: STUB!");
     }

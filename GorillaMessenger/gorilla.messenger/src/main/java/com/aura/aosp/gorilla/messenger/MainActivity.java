@@ -22,6 +22,8 @@ import com.aura.aosp.aura.gui.views.GUIListEntry;
 import com.aura.aosp.aura.gui.views.GUIListView;
 import com.aura.aosp.aura.gui.views.GUIScrollView;
 
+import com.aura.aosp.gorilla.atoms.GorillaOwner;
+import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 
@@ -222,13 +224,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void displayMessageInList(JSONObject payload)
+    private void displayMessageInList(GorillaPayload payload)
     {
-        String remoteUserUUID = Json.getString(payload, "sender");
-        String remoteDeviceUUID = Json.getString(payload, "device");
-        String messageText = Json.getString(payload, "payload");
+        String remoteUserUUID = payload.getSenderUUIDBase64();
+        String remoteDeviceUUID = payload.getDeviceUUIDBase64();
+        String messageText = payload.getPayload();
 
-        Long timeStamp = Json.getLong(payload, "time");
+        Long timeStamp = payload.getTime();
         String dateStr = Dates.getLocalDateAndTime(timeStamp);
 
         for (int cinx = 0; cinx < identitiesView.getChildCount(); cinx++)
@@ -280,11 +282,11 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        public void onOwnerReceived(JSONObject owner)
+        public void onOwnerReceived(GorillaOwner owner)
         {
             Log.d(LOGTAG, "onOwnerReceived: owner=" + owner.toString());
 
-            String ownerUUID = Json.getString(owner, "ownerUUID");
+            String ownerUUID = owner.getOwnerUUIDBase64();
 
             ownerIdent = Contacts.getContact(ownerUUID);
 
@@ -297,7 +299,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        public void onPayloadReceived(JSONObject payload)
+        public void onPayloadReceived(GorillaPayload payload)
         {
             Log.d(LOGTAG, "onPayloadReceived: payload=" + payload.toString());
 
@@ -305,8 +307,8 @@ public class MainActivity extends AppCompatActivity
 
             JSONObject atom = convertMessageToAtomAndPersists(payload);
 
-            String remoteUserUUID = Json.getString(payload, "sender");
-            String remoteDeviceUUID = Json.getString(payload, "device");
+            String remoteUserUUID = payload.getSenderUUIDBase64();
+            String remoteDeviceUUID = payload.getDeviceUUIDBase64();
 
             for (ChatProfile chatProfile : chatProfiles)
             {
@@ -319,12 +321,12 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        private JSONObject convertMessageToAtomAndPersists(JSONObject message)
+        private JSONObject convertMessageToAtomAndPersists(GorillaPayload payload)
         {
-            Long time = Json.getLong(message, "time");
-            String uuid = Json.getString(message, "uuid");
-            String text = Json.getString(message, "payload");
-            String remoteUserUUID = Json.getString(message, "sender");
+            Long time = payload.getTime();
+            String uuid = payload.getUUIDBase64();
+            String text = payload.getPayload();
+            String remoteUserUUID = payload.getSenderUUIDBase64();
 
             JSONObject atomLoad = new JSONObject();
             Json.put(atomLoad, "message", text);

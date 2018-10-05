@@ -18,6 +18,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.aura.aosp.gorilla.atoms.GorillaOwner;
+import com.aura.aosp.gorilla.atoms.GorillaPayload;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -364,11 +367,12 @@ public class GorillaClient
     void dispatchOwnerUUID()
     {
         String ownerUUID = GorillaConnect.getownerUUIDBase64();
+        if (ownerUUID == null) return;
 
         Log.d(LOGTAG, "dispatchOwnerUUID: ownerUUID=" + ownerUUID);
 
-        final JSONObject owner = new JSONObject();
-        GorillaUtils.putJSON(owner, "ownerUUID", ownerUUID);
+        final GorillaOwner owner = new GorillaOwner();
+        owner.setOwnerUUID(ownerUUID);
 
         handler.post(new Runnable()
         {
@@ -394,19 +398,19 @@ public class GorillaClient
      * @param uuid       UUID of this payload.
      * @param senderUUID sending user identity UUID.
      * @param deviceUUID sending device identity UUID.
-     * @param payload    binary payload in base64 encoding.
+     * @param payloadStr binary payload in base64 encoding.
      */
-    void receivePayload(long time, String uuid, String senderUUID, String deviceUUID, String payload)
+    void receivePayload(long time, String uuid, String senderUUID, String deviceUUID, String payloadStr)
     {
-        final JSONObject payloadJson = new JSONObject();
+        final GorillaPayload payload = new GorillaPayload();
 
-        GorillaUtils.putJSON(payloadJson, "uuid", uuid);
-        GorillaUtils.putJSON(payloadJson, "time", time);
-        GorillaUtils.putJSON(payloadJson, "sender", senderUUID);
-        GorillaUtils.putJSON(payloadJson, "device", deviceUUID);
-        GorillaUtils.putJSON(payloadJson, "payload", payload);
+        payload.setUUID(uuid);
+        payload.setTime(time);
+        payload.setSenderUUID(senderUUID);
+        payload.setDeviceUUID(deviceUUID);
+        payload.setPayload(payloadStr);
 
-        Log.d(LOGTAG, "receivePayload: payloadJson=" + payloadJson.toString());
+        Log.d(LOGTAG, "receivePayload: payload=" + payload.toString());
 
         handler.post(new Runnable()
         {
@@ -417,7 +421,7 @@ public class GorillaClient
                 {
                     for (GorillaListener gl : gorillaListeners)
                     {
-                        gl.onPayloadReceived(payloadJson);
+                        gl.onPayloadReceived(payload);
                     }
                 }
             }

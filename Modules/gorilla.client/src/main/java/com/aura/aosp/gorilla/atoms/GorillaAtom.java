@@ -47,6 +47,11 @@ public abstract class GorillaAtom
         this.atom = atom;
     }
 
+    public String toString()
+    {
+        return atom.toString();
+    }
+
     /**
      * Get JSON representation of atom.
      *

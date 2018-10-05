@@ -45,7 +45,7 @@ public class GorillaPayload extends GorillaAtom
      */
     public void setSenderUUID(@NonNull String senderUUIDBase64)
     {
-        putJSON(atom, "sender", senderUUIDBase64);
+        putJSON(getLoad(), "sender", senderUUIDBase64);
     }
 
     /**
@@ -56,7 +56,7 @@ public class GorillaPayload extends GorillaAtom
     @Nullable
     public String getSenderUUIDBase64()
     {
-        return getJSONString(atom, "sender");
+        return getJSONString(getLoad(), "sender");
     }
 
     /**
@@ -66,7 +66,7 @@ public class GorillaPayload extends GorillaAtom
      */
     public void setDeviceUUID(@NonNull String deviceUUIDBase64)
     {
-        putJSON(atom, "device", deviceUUIDBase64);
+        putJSON(getLoad(), "device", deviceUUIDBase64);
     }
 
     /**
@@ -77,7 +77,7 @@ public class GorillaPayload extends GorillaAtom
     @Nullable
     public String getDeviceUUIDBase64()
     {
-        return getJSONString(atom, "device");
+        return getJSONString(getLoad(), "device");
     }
 
     /**
@@ -87,7 +87,7 @@ public class GorillaPayload extends GorillaAtom
      */
     public void setPayload(@NonNull String payload)
     {
-        putJSON(atom, "load", payload);
+        putJSON(getLoad(), "payload", payload);
     }
 
     /**
@@ -98,7 +98,7 @@ public class GorillaPayload extends GorillaAtom
     @Nullable
     public String getPayload()
     {
-        return getJSONString(atom, "load");
+        return getJSONString(getLoad(), "payload");
     }
 
 }
