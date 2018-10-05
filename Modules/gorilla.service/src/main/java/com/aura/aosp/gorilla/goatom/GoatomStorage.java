@@ -137,6 +137,7 @@ public class GoatomStorage
         JSONArray results = new JSONArray();
 
         File[] dateDirs = typeDir.listFiles();
+        if (dateDirs == null) return null;
 
         String dateFromStr = (timeFrom != 0) ? Dates.getUniversalDate(timeFrom) : null;
         String dateToStr = (timeFrom != 0) ? Dates.getUniversalDate(timeTo) : null;
@@ -158,6 +159,7 @@ public class GoatomStorage
             Log.d("scan dir=%s", dateDir.toString());
 
             File[] jsonFiles = dateDir.listFiles();
+            if (jsonFiles == null) return null;
 
             for (File jsonFile : jsonFiles)
             {
