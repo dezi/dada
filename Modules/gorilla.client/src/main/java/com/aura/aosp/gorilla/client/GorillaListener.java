@@ -58,10 +58,10 @@ public abstract class GorillaListener
     /**
      * Called whenever a payload was received.
      *
-     * @param message JSON object containg the message.
+     * @param payload JSON object with payload.
      *                Todo: describe json layout.
      */
-    public void onPayloadReceived(JSONObject message)
+    public void onPayloadReceived(JSONObject payload)
     {
         Log.d(LOGTAG, "onPayloadReceived: STUB!");
     }

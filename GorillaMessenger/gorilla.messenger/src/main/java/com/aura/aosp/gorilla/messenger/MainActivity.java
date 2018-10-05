@@ -24,7 +24,6 @@ import com.aura.aosp.aura.gui.views.GUIScrollView;
 
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
-import com.aura.aosp.gorilla.client.GorillaMessage;
 
 import org.json.JSONObject;
 

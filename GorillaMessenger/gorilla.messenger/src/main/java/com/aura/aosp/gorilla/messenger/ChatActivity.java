@@ -18,9 +18,8 @@ import com.aura.aosp.aura.gui.views.GUIFrameLayout;
 import com.aura.aosp.aura.gui.views.GUIIconView;
 import com.aura.aosp.aura.gui.views.GUILinearLayout;
 import com.aura.aosp.aura.gui.views.GUIScrollView;
-import com.aura.aosp.gorilla.client.GorillaAtom;
+import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.client.GorillaClient;
-import com.aura.aosp.gorilla.client.GorillaMessage;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

@@ -7,7 +7,6 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.aura.aosp.aura.common.simple.Dates;
-import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.gui.base.GUIDefs;
 import com.aura.aosp.aura.gui.views.GUIFrameLayout;
@@ -17,10 +16,7 @@ import com.aura.aosp.aura.gui.views.GUIRelativeLayout;
 import com.aura.aosp.aura.gui.views.GUITextView;
 
 import com.aura.aosp.aura.common.simple.Simple;
-import com.aura.aosp.gorilla.client.GorillaAtom;
-import com.aura.aosp.gorilla.client.GorillaMessage;
-
-import org.json.JSONObject;
+import com.aura.aosp.gorilla.atoms.GorillaMessage;
 
 import java.util.HashMap;
 import java.util.Map;

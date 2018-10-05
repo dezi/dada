@@ -5,12 +5,14 @@
  *
  */
 
-package com.aura.aosp.gorilla.client;
+package com.aura.aosp.gorilla.atoms;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import android.util.Base64;
+
+import com.aura.aosp.gorilla.client.GorillaClient;
 
 import org.json.JSONObject;
 
@@ -25,7 +27,7 @@ public abstract class GorillaAtom
     /**
      * All atoms are based on JSON.
      */
-    private JSONObject atom;
+    JSONObject atom;
 
     /**
      * Create empty atom.
@@ -61,7 +63,7 @@ public abstract class GorillaAtom
      */
     public void setUUID(@NonNull byte[] uuid)
     {
-        GorillaUtils.putJSONByteArray(atom, "uuid", uuid);
+        putJSONByteArray(atom, "uuid", uuid);
     }
 
     /**
@@ -72,7 +74,7 @@ public abstract class GorillaAtom
         byte[] uuid = Base64.decode(uuidBase64, Base64.DEFAULT);
         if (uuid == null) return;
 
-        GorillaUtils.putJSONByteArray(atom, "uuid", uuid);
+        putJSONByteArray(atom, "uuid", uuid);
     }
 
     /**
@@ -83,7 +85,7 @@ public abstract class GorillaAtom
     @Nullable
     public byte[] getUUID()
     {
-        return GorillaUtils.getJSONByteArray(atom, "uuid");
+        return getJSONByteArray(atom, "uuid");
     }
 
     /**
@@ -107,7 +109,7 @@ public abstract class GorillaAtom
      */
     public void setTime(@NonNull Long time)
     {
-        GorillaUtils.putJSON(atom, "time", time);
+        putJSON(atom, "time", time);
     }
 
     /**
@@ -118,7 +120,7 @@ public abstract class GorillaAtom
     @Nullable
     public Long getTime()
     {
-        return GorillaUtils.getJSONLong(atom, "time");
+        return getJSONLong(atom, "time");
     }
 
     /**
@@ -128,7 +130,7 @@ public abstract class GorillaAtom
      */
     public void setType(@NonNull String type)
     {
-        GorillaUtils.putJSON(atom, "type", type);
+        putJSON(atom, "type", type);
     }
 
     /**
@@ -139,7 +141,7 @@ public abstract class GorillaAtom
     @Nullable
     public String getType()
     {
-        return GorillaUtils.getJSONString(atom, "type");
+        return getJSONString(atom, "type");
     }
 
     /**
@@ -150,12 +152,12 @@ public abstract class GorillaAtom
     @NonNull
     JSONObject getLoad()
     {
-        JSONObject load = GorillaUtils.getJSONObject(atom, "load");
+        JSONObject load = getJSONObject(atom, "load");
 
         if (load == null)
         {
             load = new JSONObject();
-            GorillaUtils.putJSON(atom, "load", load);
+            putJSON(atom, "load", load);
         }
 
         return load;
@@ -191,5 +193,114 @@ public abstract class GorillaAtom
     public boolean putAtomSharedWidth(@NonNull String userUUID)
     {
         return GorillaClient.getInstance().putAtomSharedWith(userUUID, atom);
+    }
+
+    /**
+     * Put key value to JSON object w/o fucking an exception.
+     *
+     * @param json JSON object.
+     * @param key  key to put.
+     * @param val value to put.
+     */
+    static void putJSON(@NonNull JSONObject json, @NonNull String key, Object val)
+    {
+        try
+        {
+            json.put(key, val);
+        }
+        catch (Exception ignore)
+        {
+        }
+    }
+
+    static void putJSONByteArray(@NonNull JSONObject json, @NonNull String key, byte[] val)
+    {
+        try
+        {
+            if (val == null)
+            {
+                json.remove(key);
+            }
+            else
+            {
+                json.put(key, Base64.encodeToString(val, Base64.NO_WRAP));
+            }
+        }
+        catch (Exception ignore)
+        {
+        }
+    }
+
+    @Nullable
+    static JSONObject getJSONObject(@NonNull JSONObject json, @NonNull String key)
+    {
+        try
+        {
+            return json.getJSONObject(key);
+        }
+        catch (Exception ignore)
+        {
+            return null;
+        }
+    }
+
+    @Nullable
+    static Long getJSONLong(@NonNull JSONObject json, @NonNull String key)
+    {
+        try
+        {
+            return json.getLong(key);
+        }
+        catch (Exception ignore)
+        {
+            return null;
+        }
+    }
+
+    @Nullable
+    static String getJSONString(@NonNull JSONObject json, @NonNull String key)
+    {
+        try
+        {
+            return json.getString(key);
+        }
+        catch (Exception ignore)
+        {
+            return null;
+        }
+    }
+
+    @Nullable
+    static byte[] getJSONByteArray(@NonNull JSONObject json, @NonNull String key)
+    {
+        try
+        {
+            return Base64.decode(json.getString(key), Base64.DEFAULT);
+        }
+        catch (Exception ignore)
+        {
+            return null;
+        }
+    }
+
+    /**
+     * Convert JSON string to JSON object w/o fucking an exception.
+     *
+     * @param jsonstr JSON string object.
+     * @return JSONObject or null.
+     */
+    @Nullable
+    static JSONObject fromStringJSONOBject(@NonNull String jsonstr)
+    {
+        try
+        {
+            return new JSONObject(jsonstr);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+
+            return null;
+        }
     }
 }

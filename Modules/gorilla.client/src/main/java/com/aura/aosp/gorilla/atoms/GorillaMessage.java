@@ -5,14 +5,14 @@
  *
  */
 
-package com.aura.aosp.gorilla.client;
+package com.aura.aosp.gorilla.atoms;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.json.JSONObject;
-
 import java.util.Iterator;
+
+import org.json.JSONObject;
 
 /**
  * The class {@code GorillaMessage} extends to basic
@@ -47,7 +47,7 @@ public class GorillaMessage extends GorillaAtom
      */
     public void setMessageText(@NonNull String messageText)
     {
-        GorillaUtils.putJSON(getLoad(), "message", messageText);
+        putJSON(getLoad(), "message", messageText);
     }
 
     /**
@@ -58,7 +58,7 @@ public class GorillaMessage extends GorillaAtom
     @Nullable
     public String getMessageText()
     {
-        return GorillaUtils.getJSONString(getLoad(), "message");
+        return getJSONString(getLoad(), "message");
     }
 
     /**
@@ -70,15 +70,15 @@ public class GorillaMessage extends GorillaAtom
      */
     public void setStatusTime(@NonNull String status, @NonNull String deviceUUID, @NonNull Long time)
     {
-        JSONObject statusJson = GorillaUtils.getJSONObject(getLoad(), status);
+        JSONObject statusJson = getJSONObject(getLoad(), status);
 
         if (statusJson == null)
         {
             statusJson = new JSONObject();
-            GorillaUtils.putJSON(getLoad(), status, statusJson);
+            putJSON(getLoad(), status, statusJson);
         }
 
-        GorillaUtils.putJSON(statusJson, deviceUUID, time);
+        putJSON(statusJson, deviceUUID, time);
     }
 
     /**
@@ -90,14 +90,14 @@ public class GorillaMessage extends GorillaAtom
     @Nullable
     public Long getStatusTime(@NonNull String status)
     {
-        JSONObject statusJson = GorillaUtils.getJSONObject(getLoad(), status);
+        JSONObject statusJson = getJSONObject(getLoad(), status);
         if (statusJson == null) return null;
 
         Iterator<String> keys = statusJson.keys();
 
         if (keys.hasNext())
         {
-            return GorillaUtils.getJSONLong(statusJson, keys.next());
+            return getJSONLong(statusJson, keys.next());
         }
 
         return null;
@@ -113,9 +113,9 @@ public class GorillaMessage extends GorillaAtom
     @Nullable
     public Long getStatusTime(@NonNull String status, @NonNull String deviceUUID)
     {
-        JSONObject statusJson = GorillaUtils.getJSONObject(getLoad(), status);
+        JSONObject statusJson = getJSONObject(getLoad(), status);
         if (statusJson == null) return null;
 
-        return GorillaUtils.getJSONLong(statusJson, deviceUUID);
+        return getJSONLong(statusJson, deviceUUID);
     }
 }
