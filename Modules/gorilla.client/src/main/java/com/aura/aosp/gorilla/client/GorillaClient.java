@@ -458,6 +458,10 @@ public class GorillaClient
                 }
             });
         }
+        else
+        {
+            Log.e(LOGTAG, "receivePayloadResult: failed result=" + resultJson);
+        }
     }
 
     /**

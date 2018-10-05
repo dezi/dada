@@ -78,8 +78,8 @@ public class ChatActivity extends AppCompatActivity
         JSONArray recv = GorillaClient.getInstance().queryAtomsSharedBy(remoteUserUUID, "aura.chat.message", 0, 0);
         JSONArray send = GorillaClient.getInstance().queryAtomsSharedWith(remoteUserUUID, "aura.chat.message", 0, 0);
 
-        Log.d(LOGTAG,"############ recv=" + Json.toPretty(recv));
-        Log.d(LOGTAG,"############ send=" + Json.toPretty(send));
+        //Log.d(LOGTAG,"############ recv=" + Json.toPretty(recv));
+        //Log.d(LOGTAG,"############ send=" + Json.toPretty(send));
 
         JSONArray combined = new JSONArray();
 
@@ -113,8 +113,6 @@ public class ChatActivity extends AppCompatActivity
                 JSONObject load = Json.getObject(atom, "load");
                 if (load == null) continue;
 
-                Log.d(LOGTAG, "send=" + Json.toPretty(atom));
-
                 Long sort = getLoadTime(load, "queued");
                 if (sort == null) continue;
 
@@ -141,9 +139,7 @@ public class ChatActivity extends AppCompatActivity
             Json.remove(atom, "mode_");
             Json.remove(atom, "sort_");
 
-            Log.d(LOGTAG, "####### atom=" + atom.toString());
-
-            GorillaMessage message = new GorillaMessage(atom);
+            final GorillaMessage message = new GorillaMessage(atom);
 
             ChatFragment cf = new ChatFragment(this);
             chatContent.addView(cf);
@@ -156,11 +152,11 @@ public class ChatActivity extends AppCompatActivity
             {
                 cf.setContent(false, chatProfile.remoteNick, message);
 
-                Long readStatus = cf.getStatus("read");
+                Long readStatus = message.getStatusTime("read");
 
                 if (readStatus == null)
                 {
-                    cf.putStatus("read", System.currentTimeMillis());
+                    message.setStatusTime("read", MainActivity.getOwnerDeviceBase64(), System.currentTimeMillis());
 
                     handler.postDelayed(new Runnable()
                     {
@@ -171,7 +167,7 @@ public class ChatActivity extends AppCompatActivity
 
                             if (ok)
                             {
-                                GorillaClient.getInstance().putAtomSharedWith(remoteUserUUID, atom);
+                                GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, message.get());
                             }
                         }
 

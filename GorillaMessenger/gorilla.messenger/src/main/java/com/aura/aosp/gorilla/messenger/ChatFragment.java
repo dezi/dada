@@ -200,8 +200,6 @@ public class ChatFragment extends GUILinearLayout
         this.send = send;
         this.atom = atom;
 
-        Log.d("########################## atom=%s", atom.toPretty());
-
         this.messageUUID = atom.getUUIDBase64();
         if (this.messageUUID == null) return;
 
