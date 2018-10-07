@@ -1,34 +1,19 @@
 package com.aura.aosp.gorilla.service;
 
+import android.content.ServiceConnection;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.app.Service;
-import android.content.ServiceConnection;
 import android.os.IBinder;
 
 import com.aura.aosp.gorilla.client.IGorillaClientService;
-import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 import com.aura.aosp.aura.common.simple.Log;
 
 public class GorillaSystem extends Service
 {
     private final static String sysApkName = "com.aura.aosp.gorilla.sysapp";
-
-    //region Static stuff.
-
-    //
-    // Public static self start Gorilla Service via intent.
-    //
-    public static void selfStartMainService()
-    {
-        Context context = GorillaBase.getAppContext();
-        Intent serviceIntent = new Intent(context, GorillaSystem.class);
-        context.startService(serviceIntent);
-
-        Log.d("service started...");
-    }
 
     static void startClientService(final String apkname)
     {
@@ -74,19 +59,19 @@ public class GorillaSystem extends Service
 
         try
         {
-            String clientSecret = gr.returnYourSignature(sysApkName);
-            GorillaIntercon.setClientSecret(apkname, clientSecret);
+            String clientSignature = gr.returnYourSignature(sysApkName);
+            GorillaIntercon.setClientSignature(apkname, clientSignature);
 
-            Log.d("call apkname=%s clientSecret=%s", apkname, clientSecret);
+            Log.d("call apkname=%s clientSignature=%s", apkname, clientSignature);
 
             String checksum = GorillaIntercon.createSHASignatureBase64(apkname, sysApkName);
 
             boolean svlink = gr.validateConnect(sysApkName, checksum);
 
-            Log.d("call apkname=%s serverSecret=%s clientSecret=%s svlink=%b",
+            Log.d("call apkname=%s serverSignature=%s clientSignature=%s svlink=%b",
                     sysApkName,
-                    GorillaIntercon.getServerSecretBase64(apkname),
-                    GorillaIntercon.getClientSecretBase64(apkname),
+                    GorillaIntercon.getServerSignatureBase64(apkname),
+                    GorillaIntercon.getClientSignatureBase64(apkname),
                     svlink);
 
             if (!svlink) return;
@@ -99,32 +84,6 @@ public class GorillaSystem extends Service
         }
     }
 
-    //endregion Static stuff.
-
-    //region Instance stuff.
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId)
-    {
-        Log.d("...");
-
-        return START_STICKY;
-        //return START_NOT_STICKY;
-    }
-
-    @Override
-    public void onCreate()
-    {
-        Log.d("...");
-
-        //
-        // Dummy fetch instance to
-        // make sure it is started.
-        //
-
-        GomessHandler.getInstance();
-    }
-
     @Override
     public IBinder onBind(Intent intent)
     {
@@ -132,6 +91,4 @@ public class GorillaSystem extends Service
 
         return new GorillaSystemService();
     }
-
-    //endregion Instance stuff.
 }

@@ -6,11 +6,10 @@ import android.app.Application;
 
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 public class GorillaBase extends Application
 {
-    //region Static stuff.
-
     private static Application appContext;
 
     @NonNull
@@ -18,10 +17,6 @@ public class GorillaBase extends Application
     {
         return appContext;
     }
-
-    //endregion Static stuff.
-
-    //region Instance stuff.
 
     @Override
     public void onCreate()
@@ -34,12 +29,10 @@ public class GorillaBase extends Application
 
         Simple.initialize(this);
 
-        GorillaSystem.selfStartMainService();
+        GomessHandler.startService();
+
         GorillaLocation.startService(this);
 
         GorillaNetwork.logNetworkState();
-
     }
-
-    //endregion Instance stuff.
 }

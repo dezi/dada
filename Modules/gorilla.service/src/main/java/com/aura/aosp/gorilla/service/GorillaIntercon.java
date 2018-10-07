@@ -24,8 +24,8 @@ public class GorillaIntercon
         private IGorillaClientService clientService;
         private IGorillaSystemService systemService;
 
-        private byte[] serverSecret = newSecret();
-        private byte[] clientSecret = newSecret();
+        private byte[] serverSignature = newSecret();
+        private byte[] clientSignature = newSecret();
 
         private boolean svlink;
         private boolean uplink;
@@ -65,50 +65,50 @@ public class GorillaIntercon
         }
     }
 
-    public static void setServerSecret(String apkname, byte[] secret)
+    public static void setServerSignature(String apkname, byte[] secret)
     {
-        getAppData(apkname).serverSecret = secret;
+        getAppData(apkname).serverSignature = secret;
     }
 
-    public static void setServerSecret(String apkname, String secretBase64)
+    public static void setServerSignature(String apkname, String secretBase64)
     {
-        setServerSecret(apkname, Base64.decode(secretBase64, Base64.DEFAULT));
-    }
-
-    @NonNull
-    public static byte[] getServerSecret(String apkname)
-    {
-        return getAppData(apkname).serverSecret;
+        setServerSignature(apkname, Base64.decode(secretBase64, Base64.DEFAULT));
     }
 
     @NonNull
-    public static String getServerSecretBase64(String apkname)
+    public static byte[] getServerSignature(String apkname)
     {
-        byte[] serverSecret = getServerSecret(apkname);
-        return Base64.encodeToString(serverSecret, Base64.NO_WRAP);
-    }
-
-    public static void setClientSecret(String apkname, byte[] secret)
-    {
-        getAppData(apkname).clientSecret = secret;
-    }
-
-    public static void setClientSecret(String apkname, String secretBase64)
-    {
-        setClientSecret(apkname, Base64.decode(secretBase64, Base64.DEFAULT));
+        return getAppData(apkname).serverSignature;
     }
 
     @NonNull
-    public static byte[] getClientSecret(String apkname)
+    public static String getServerSignatureBase64(String apkname)
     {
-        return getAppData(apkname).clientSecret;
+        byte[] serverSignature = getServerSignature(apkname);
+        return Base64.encodeToString(serverSignature, Base64.NO_WRAP);
+    }
+
+    public static void setClientSignature(String apkname, byte[] secret)
+    {
+        getAppData(apkname).clientSignature = secret;
+    }
+
+    public static void setClientSignature(String apkname, String secretBase64)
+    {
+        setClientSignature(apkname, Base64.decode(secretBase64, Base64.DEFAULT));
     }
 
     @NonNull
-    public static String getClientSecretBase64(String apkname)
+    public static byte[] getClientSignature(String apkname)
     {
-        byte[] clientSecret = getClientSecret(apkname);
-        return Base64.encodeToString(clientSecret, Base64.NO_WRAP);
+        return getAppData(apkname).clientSignature;
+    }
+
+    @NonNull
+    public static String getClientSignatureBase64(String apkname)
+    {
+        byte[] clientSignature = getClientSignature(apkname);
+        return Base64.encodeToString(clientSignature, Base64.NO_WRAP);
     }
 
     public static void setClientService(String apkname, IGorillaClientService service)
@@ -169,8 +169,8 @@ public class GorillaIntercon
         {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
 
-            md.update(getServerSecret(apkname));
-            md.update(getClientSecret(apkname));
+            md.update(getServerSignature(apkname));
+            md.update(getClientSignature(apkname));
 
             for (Object param : params)
             {

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.aura.aosp.aura.common.rights.Perms;
-import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
@@ -24,13 +23,7 @@ import com.aura.aosp.aura.gui.views.GUIScrollView;
 import com.aura.aosp.aura.gui.views.GUITextView;
 
 import com.aura.aosp.gorilla.gomess.GomessHandler;
-import com.aura.aosp.gorilla.goproto.GoprotoMetadata;
-import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
-import org.json.JSONObject;
-
-import java.net.InetAddress;
-import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity

@@ -28,7 +28,7 @@ public class GorillaService extends Service
     /**
      * Called when the service is used for the first time.
      *
-     * @param intent service bin intent.
+     * @param intent service bind intent.
      *
      * @return new instance of {@code GorillaClientService}.
      */

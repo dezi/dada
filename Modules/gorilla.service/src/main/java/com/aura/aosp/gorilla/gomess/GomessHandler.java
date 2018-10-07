@@ -29,7 +29,7 @@ public class GomessHandler
     private static GomessHandler instance;
     private static final Object mutex = new Object();
 
-    public static GomessHandler getInstance()
+    public static void startService()
     {
         if (instance == null)
         {
@@ -41,6 +41,11 @@ public class GomessHandler
                 }
             }
         }
+    }
+
+    public static GomessHandler getInstance()
+    {
+        if (instance == null) startService();
 
         return instance;
     }
@@ -294,49 +299,7 @@ public class GomessHandler
                     }
 
                     Simple.sleep(100);
-
-                    continue;
                 }
-
-                /*
-                Integer status = ticket.getStatus();
-
-                if ((status != null) && (status != 0))
-                {
-                    //
-                    // Message is a status message.
-                    //
-                    // No status is generated for status messages.
-                    //
-
-                    Log.d("message status=%04x", status);
-
-                    continue;
-                }
-
-                //
-                // Prepare result json.
-                //
-
-                ticket.setStatus(GoprotoDefs.MsgStatusSend);
-                ticket.setTimeStamp(System.currentTimeMillis());
-
-                JSONObject result = ticket.getTicketResult();
-
-                if (result == null)
-                {
-                    Log.e("ticket result err=%s", Err.getLastErr());
-
-                    continue;
-                }
-
-                err = GorillaSender.sendPayloadResult(ticket, result);
-
-                if (err != null)
-                {
-                    Log.e("ticket result send err=%s", err);
-                }
-                */
             }
         }
     };

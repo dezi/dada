@@ -23,9 +23,9 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     {
         GorillaSystem.startClientService(apkname);
 
-        Log.d("impl apkname=%s serverSecret=%s", apkname, GorillaIntercon.getServerSecretBase64(apkname));
+        Log.d("impl apkname=%s serverSignature=%s", apkname, GorillaIntercon.getServerSignatureBase64(apkname));
 
-        return GorillaIntercon.getServerSecretBase64(apkname);
+        return GorillaIntercon.getServerSignatureBase64(apkname);
     }
 
     @Override
@@ -35,10 +35,10 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
 
         boolean svlink = ((checksum != null) && checksum.equals(solution));
 
-        Log.d("impl apkname=%s serverSecret=%s clientSecret=%s svlink=%b",
+        Log.d("impl apkname=%s serverSignature=%s clientSignature=%s svlink=%b",
                 apkname,
-                GorillaIntercon.getServerSecretBase64(apkname),
-                GorillaIntercon.getClientSecretBase64(apkname),
+                GorillaIntercon.getServerSignatureBase64(apkname),
+                GorillaIntercon.getClientSignatureBase64(apkname),
                 svlink);
 
         if (!svlink) return false;
