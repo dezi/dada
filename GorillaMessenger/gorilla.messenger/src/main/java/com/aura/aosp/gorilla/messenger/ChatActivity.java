@@ -296,8 +296,8 @@ public class ChatActivity extends AppCompatActivity
     {
         String newtitle = remoteNick;
 
-        if (svlink) newtitle += " (system)";
-        if (uplink) newtitle += " (online)";
+        if ((svlink != null) && svlink) newtitle += " (system)";
+        if ((uplink != null) && uplink) newtitle += " (online)";
 
         setTitle(newtitle);
     }
