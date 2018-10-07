@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <!--<color name="colorAccent">#754cff</color>-->
+
+    <color name="black_overlay">#66000000</color>
+
+    <!-- Our custom colors -->
+    <!-- TODO: Create styles/themes -->
+
+    <!-- Text -->
+    <color name="color_text_primary">#ffffff</color>
+    <color name="color_text_secondary">#d0d0d0</color>
+
+    <!-- Launcher -->
+    <color name="color_launcher_background">#393939</color>
+    <color name="color_launcher_overlay_text">#404040</color>
+
+    <!-- Timeline elements -->
+    <color name="color_timeline_button">#ffffff</color>
+    <color name="color_timeline_button_highlight">#6b3efc</color>
+    <color name="color_timeline_hint">#8e6bff</color>
+    <color name="color_timeline_image_background_primary">#f76dee</color>
+    <color name="color_timeline_image_background_secondary">#f9a6f3</color>
+
+    <!-- Action Cluster Container / Mask -->
+    <color name="color_actioncluster_container_mask_background">#a7ba93</color>
+
+    <!-- Action Cluster View -->
+    <color name="color_actioncluster_background">#7eb146</color>
+
+    <!-- Action Cluster Toggle Button -->
+    <color name="color_togglebutton_enabled">@color/color_launcher_background</color>
+    <color name="color_togglebutton_pressed">#a173ce</color>
+    <color name="color_togglebutton_icon">#ffffff</color>
+
+    <!-- Cluster Buttons -->
+    <color name="color_clusterbutton_enabled_final">#7861F4</color>
+    <color name="color_clusterbutton_pressed_final">#5142a3</color>
+    <color name="color_clusterbutton_enabled_cluster">#4cccb0</color>
+    <color name="color_clusterbutton_pressed_cluster">#358775</color>
+    <color name="color_clusterbutton_icon_final">#ffffff</color>
+    <color name="color_clusterbutton_icon_cluster">#f19393</color>
+
+    <!-- Navigation Buttons -->
+    <color name="color_navigation_foo">#80ffe3</color>
+
+    <!-- Special effect items -->
+    <color name="color_ai_circle">#46234D</color>
+    <color name="color_ai_expading_circle">#9e3496</color>
+
+    <!-- Helpers -->
+    <color name="color_transparent">#00000000</color>
+    <color name="color_helper_mask">#ffffff</color>
+
+    <!-- Function: Calendar -->
+    <color name="color_function_calendar_background">#b9b9b9</color>
+
+</resources>

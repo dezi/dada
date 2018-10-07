@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Timeline -->
+    <dimen name="timeline_item_padding_top">0dp</dimen>
+    <dimen name="timeline_item_padding_bottom">0dp</dimen>
+    <dimen name="timeline_item_padding_left">0dp</dimen>
+    <dimen name="timeline_item_padding_right">0dp</dimen>
+    <dimen name="timeline_item_margin_top">5dp</dimen>
+    <dimen name="timeline_item_margin_bottom">5dp</dimen>
+    <dimen name="timeline_item_margin_left">0dp</dimen>
+    <dimen name="timeline_item_margin_right">0dp</dimen>
+
+    <!-- Action Cluster Toggle Button -->
+    <dimen name="togglebutton_lay_margin">48dp</dimen>
+
+    <!-- Action Cluster Container -->
+    <dimen name="actioncluster_container_lay_marginHorizontal">0dp</dimen>
+    <dimen name="actioncluster_container_lay_marginVertical">0dp</dimen>
+    <dimen name="actioncluster_container_paddingHorizontal">0dp</dimen>
+    <dimen name="actioncluster_container_paddingVertical">0dp</dimen>
+
+    <!-- Action Cluster View -->
+    <dimen name="actioncluster_horizontal_lay_marginHorizontal">0dp</dimen>
+    <dimen name="actioncluster_horizontal_lay_marginVertical">0dp</dimen>
+    <dimen name="actioncluster_horizontal_paddingHorizontal">0dp</dimen>
+    <dimen name="actioncluster_horizontal_paddingVertical">0dp</dimen>
+    <dimen name="actioncluster_vertical_lay_marginVertical">0px</dimen>
+    <dimen name="actioncluster_vertical_lay_marginHorizontal">0px</dimen>
+    <dimen name="actioncluster_vertical_paddingHorizontal">0dp</dimen>
+    <dimen name="actioncluster_vertical_paddingVertical">0dp</dimen>
+
+    <!-- Action Cluster Buttons -->
+    <dimen name="clusterbutton_lay_marginHorizontal">5dp</dimen>
+    <dimen name="clusterbutton_lay_marginVertical">5dp</dimen>
+    <dimen name="clusterbutton_paddingHorizontal">0dp</dimen>
+    <dimen name="clusterbutton_paddingVertical">0dp</dimen>
+    <dimen name="clusterbutton_elevationPerLevel">20dp</dimen>
+</resources>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GorillaLauncher</string>
+
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="launcher_welcome_text">Welcome to Aura!</string>
+    <string name="launcher_overlay_text">aura</string>
+
+    <string name="_dotdotdot">...</string>
+    <string name="edit_message">Enter a message</string>
+    <string name="button_send">Send</string>
+    <string name="image_preview">Bildvorschau</string>
+    <string name="cluster_icon">Cluster Icon</string>
+
+    <string name="actions.composeMessage">Compoose New Message</string>
+    <string name="actions.takePhoto">Take Picture</string>
+    <string name="actions_startPhoneCall">Start Phone Call</string>
+    <string name="actions_addNote">Add Note</string>
+    <string name="actions_lookupContact">Lookup Contact</string>
+    <string name="actions_editText">Edit Text</string>
+    <string name="actions_share">Share</string>
+    <string name="actions_newtextsharedwith">New text shared with</string>
+    <string name="actions_viewMovie">View Movie</string>
+    <string name="actions_addAlarm">Add Alarm</string>
+    <string name="actions_openCalendar">Open Calendar</string>
+    <string name="actions_pickDate">Pick Date</string>
+    <string name="action_markSelectedTextBold">Mark Selection Bold</string>
+    <string name="action_markSelectedTextUnderlined">Underline Selected Text</string>
+    <string name="action_markSelectedTextItalic">Mark Selected Text Italic</string>
+    <string name="action_markSelectedTextAlignJustify">Align Justify Selected Text</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="launcher_blur_sampling">8</integer>
+    <integer name="launcher_blur_radius">8</integer>
+    <integer name="launcher_blur_transition_duration">250</integer>
+    <integer name="toggle_actioncluster_transition_duration">80</integer>
+    <integer name="show_function_view_transition_duration">120</integer>
+</resources>
