@@ -65,7 +65,7 @@ class GorillaConnect
     /**
      * Get a new signature from secure random.
      *
-     * @return Signature bytes.
+     * @return signature bytes.
      */
     private static byte[] newSignature()
     {
@@ -89,7 +89,7 @@ class GorillaConnect
     /**
      * Get server signature bytes as base64 encoded string.
      *
-     * @return Server signature bytes as base64 encoded string.
+     * @return server signature bytes as base64 encoded string.
      */
     @NonNull
     static String getServerSignatureBase64()
@@ -100,7 +100,7 @@ class GorillaConnect
     /**
      * Get client signature bytes as base64 encoded string.
      *
-     * @return Client signature bytes as base64 encoded string.
+     * @return client signature bytes as base64 encoded string.
      */
     @NonNull
     static String getClientSignatureBase64()
@@ -145,7 +145,7 @@ class GorillaConnect
     /**
      * Get service status.
      *
-     * @return The current service link status.
+     * @return the current service link status.
      */
     static boolean getServiceStatus()
     {
@@ -168,7 +168,7 @@ class GorillaConnect
     /**
      * Get uplink status.
      *
-     * @return The current service uplink status.
+     * @return the current service uplink status.
      */
     static boolean getUplinkStatus()
     {
@@ -190,7 +190,7 @@ class GorillaConnect
     /**
      * Get current device owner UUID in base 64 encoding.
      *
-     * @return The current device owner UUID in base 64 encoding or null.
+     * @return the current device owner UUID in base 64 encoding or null.
      */
     @Nullable
     static String getownerUUIDBase64()
@@ -203,7 +203,7 @@ class GorillaConnect
      * signatures over the string representation of all given params
      *
      * @param params variable object parameter list.
-     * @return Base 64 SHA signature or null on failure.
+     * @return base64 SHA signature or null on failure.
      */
     @Nullable
     static String createSHASignatureBase64(Object... params)

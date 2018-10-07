@@ -19,6 +19,7 @@ import org.json.JSONObject;
  *
  * @author Dennis Zierahn
  */
+@SuppressWarnings("unused")
 class GorillaUtils
 {
     /**
@@ -26,7 +27,7 @@ class GorillaUtils
      *
      * @param json JSON object.
      * @param key  key to put.
-     * @param val value to put.
+     * @param val  value to put.
      */
     static void putJSON(@NonNull JSONObject json, @NonNull String key, Object val)
     {
@@ -39,6 +40,13 @@ class GorillaUtils
         }
     }
 
+    /**
+     * Put key value to JSON as base64 encoded byte array.
+     *
+     * @param json JSON object.
+     * @param key  key to put.
+     * @param val  value to put.
+     */
     static void putJSONByteArray(@NonNull JSONObject json, @NonNull String key, byte[] val)
     {
         try
@@ -57,6 +65,13 @@ class GorillaUtils
         }
     }
 
+    /**
+     * Get key value from JSON as JSON object.
+     *
+     * @param json JSON object.
+     * @param key  key to get.
+     * @return JSON object or null.
+     */
     @Nullable
     static JSONObject getJSONObject(@NonNull JSONObject json, @NonNull String key)
     {
@@ -70,6 +85,13 @@ class GorillaUtils
         }
     }
 
+    /**
+     * Get key value from JSON as Long object.
+     *
+     * @param json JSON object.
+     * @param key  key to get.
+     * @return Long object or null.
+     */
     @Nullable
     static Long getJSONLong(@NonNull JSONObject json, @NonNull String key)
     {
@@ -83,6 +105,13 @@ class GorillaUtils
         }
     }
 
+    /**
+     * Get key value from JSON as String object.
+     *
+     * @param json JSON object.
+     * @param key  key to get.
+     * @return String object or null.
+     */
     @Nullable
     static String getJSONString(@NonNull JSONObject json, @NonNull String key)
     {
@@ -96,12 +125,22 @@ class GorillaUtils
         }
     }
 
+    /**
+     * Get key value from JSON as base64 encoded byte array.
+     *
+     * @param json JSON object.
+     * @param key  key to get.
+     * @return byte array or null.
+     */
     @Nullable
     static byte[] getJSONByteArray(@NonNull JSONObject json, @NonNull String key)
     {
         try
         {
-            return Base64.decode(json.getString(key), Base64.DEFAULT);
+            String val = json.getString(key);
+            if (val == null) return null;
+
+            return Base64.decode(val, Base64.DEFAULT);
         }
         catch (Exception ignore)
         {
@@ -112,8 +151,8 @@ class GorillaUtils
     /**
      * Convert JSON string to JSON object w/o fucking an exception.
      *
-     * @param jsonstr
-     * @return
+     * @param jsonstr JSON string.
+     * @return JSON Object from string or null.
      */
     @Nullable
     static JSONObject fromStringJSONOBject(@NonNull String jsonstr)
