@@ -28,6 +28,10 @@ android {
         debug {
             signingConfig signingConfigs.debug
         }
+        matthias {
+            signingConfig signingConfigs.debug
+            debuggable true
+        }
         team {
             signingConfig signingConfigs.debug
             debuggable true

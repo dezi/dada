@@ -23,6 +23,9 @@ android {
         debug {
             debuggable true
         }
+        matthias {
+            debuggable true
+        }
         team {
             debuggable true
         }

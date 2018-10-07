@@ -29,7 +29,11 @@ android {
         debug {
             signingConfig signingConfigs.debug
             debuggable true
-            }
+        }
+        matthias {
+            signingConfig signingConfigs.debug
+            debuggable true
+        }
         team {
             signingConfig signingConfigs.debug
             debuggable true

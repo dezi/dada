@@ -49,6 +49,7 @@ public class PublicNodes
         String version = BuildConfig.BUILD_TYPE;
 
         if (version.equals("debug")) version = "dev";
+        if (version.equals("matthias")) version = "matthias";
         if (version.equals("release")) version = "prod";
 
         String bucketFile = "gorilla-public-nodes-" + country + ".json";
