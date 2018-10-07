@@ -13,8 +13,6 @@ import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 
-import org.json.JSONObject;
-
 /**
  * The class {@code GorillaListener} ist just a stub implementation
  * of callbacks from the {@code GorillaClient} instance.
@@ -72,7 +70,6 @@ public abstract class GorillaListener
      * Called whenever a payload result was received.
      *
      * @param result JSON object containg the message result.
-     *               Todo: describe json layout.
      */
     public void onPayloadResultReceived(GorillaPayloadResult result)
     {

@@ -11,8 +11,6 @@ import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 
-import org.json.JSONObject;
-
 public class EventManager extends GorillaListener
 {
     private static final String LOGTAG = EventManager.class.getSimpleName();
@@ -35,7 +33,14 @@ public class EventManager extends GorillaListener
     {
         Log.d(LOGTAG, "onUplinkChange: connected=" + connected);
 
-        if (connected) GorillaClient.getInstance().getAtom(UID.randomUUIDBase64());
+        if (connected)
+        {
+            //
+            // Test dummy.
+            //
+
+            GorillaClient.getInstance().getAtom(UID.randomUUIDBase64());
+        }
     }
 
     @Override

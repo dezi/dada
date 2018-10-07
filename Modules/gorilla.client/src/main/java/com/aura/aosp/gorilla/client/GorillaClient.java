@@ -504,7 +504,7 @@ public class GorillaClient
     }
 
     /**
-     * Send a read state for a particula payload.
+     * Send a read state for a particular payload.
      *
      * @param userUUID    target user identity UUID.
      * @param deviceUUID  target device identity UUID.
