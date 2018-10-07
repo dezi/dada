@@ -25,6 +25,11 @@ public class GorillaMapper
             return "B0Et8SbAQ4e7O3tVhYdJOQ==";
         }
 
+        if (apkname.equals("com.aura.aosp.gorilla.launcher"))
+        {
+            return "ItaNricgTAiIuuZs+XuLUw==";
+        }
+
         Err.err("unknown apk=%s", apkname);
 
         return null;
@@ -47,6 +52,11 @@ public class GorillaMapper
         if (apkuuid.equals("B0Et8SbAQ4e7O3tVhYdJOQ=="))
         {
             return "com.aura.aosp.gorilla.messenger";
+        }
+
+        if (apkuuid.equals("ItaNricgTAiIuuZs+XuLUw=="))
+        {
+            return "com.aura.aosp.gorilla.launcher";
         }
 
         Err.err("unknown apkuuid=%s", apkuuid);
