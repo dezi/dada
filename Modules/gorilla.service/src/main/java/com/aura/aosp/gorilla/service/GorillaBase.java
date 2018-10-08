@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import android.app.Application;
 
+import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
@@ -28,6 +29,20 @@ public class GorillaBase extends Application
         super.onCreate();
 
         Simple.initialize(this);
+
+        Log.d("######################");
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
+        {
+            Log.d("######################");
+
+            Err err = GorillaCron.startBlowJob(this);
+
+            if (err != null)
+            {
+                Log.e("startBlowJob failed!");
+            }
+        }
 
         GomessHandler.startService();
 
