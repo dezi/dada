@@ -17,8 +17,8 @@ import com.aura.aosp.aura.common.simple.Log;
 
 public class GorillaLocation implements LocationListener
 {
-    private final static int MINTIME = 10 * 1000;
     private final static int MINDIST = 10;
+    private final static int MINTIME = 10 * 1000;
     private final static int MAXAGEINMILLIS = 60 * 1000;
 
     private final static GorillaLocation instance = new GorillaLocation();
@@ -111,39 +111,6 @@ public class GorillaLocation implements LocationListener
         storeLocation(location);
     }
 
-    private void storeLocation(Location location)
-    {
-        if (location == null) return;
-
-        Double lastLat = lat;
-        Double lastLon = lon;
-        Double lastAlt = alt;
-
-        lat = location.getLatitude();
-        lon = location.getLongitude();
-        alt = location.getAltitude();
-
-        time = location.getTime();
-        accuracy = location.getAccuracy();
-        provider = location.getProvider();
-
-        Log.d("lat+lon=%f %f alt=%f acc=%f pro=%s age=%d",
-                location.getLatitude(),
-                location.getLongitude(),
-                location.getAltitude(),
-                location.getAccuracy(),
-                location.getProvider(),
-                Dates.getAgeInSeconds(location.getTime())
-        );
-
-        if (Simple.nequals(lastLat, lat, 1000)
-            || Simple.nequals(lastLon, lon, 1000)
-            || Simple.nequals(lastAlt, alt, 1000))
-        {
-            GorillaState.onStateChanged();
-        }
-    }
-
     @Override
     public void onProviderDisabled(String provider)
     {
@@ -208,5 +175,38 @@ public class GorillaLocation implements LocationListener
         }
 
         return null;
+    }
+
+    private void storeLocation(Location location)
+    {
+        if (location == null) return;
+
+        Double lastLat = lat;
+        Double lastLon = lon;
+        Double lastAlt = alt;
+
+        lat = location.getLatitude();
+        lon = location.getLongitude();
+        alt = location.getAltitude();
+
+        time = location.getTime();
+        accuracy = location.getAccuracy();
+        provider = location.getProvider();
+
+        Log.d("lat+lon=%f %f alt=%f acc=%f pro=%s age=%d",
+                location.getLatitude(),
+                location.getLongitude(),
+                location.getAltitude(),
+                location.getAccuracy(),
+                location.getProvider(),
+                Dates.getAgeInSeconds(location.getTime())
+        );
+
+        if (Simple.nequals(lastLat, lat, 1000)
+                || Simple.nequals(lastLon, lon, 1000)
+                || Simple.nequals(lastAlt, alt, 1000))
+        {
+            GorillaState.onStateChanged();
+        }
     }
 }
