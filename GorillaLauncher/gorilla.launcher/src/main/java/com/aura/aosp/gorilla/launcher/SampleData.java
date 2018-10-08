@@ -22,6 +22,104 @@ public class SampleData {
      * @param context
      * @return
      */
+    public final static List<ActionItem> getLauncherInitialActionItems(Context context) {
+        List<ActionItem> items = new ArrayList<>();
+
+        try {
+            items.add(new ActionItem(
+                    context.getResources().getString(R.string.actions_openCalendar),
+                    FuncBaseView.FuncType.OVERLAY,
+                    R.drawable.ic_date_range_black_24dp,
+                    LauncherActivity.class.getMethod("onOpenSimpleCalendar"),
+                    0.970f
+            ));
+
+            items.add(new ActionItem(
+                    context.getResources().getString(R.string.actions_composeMessage),
+                    FuncBaseView.FuncType.OVERLAY,
+                    R.drawable.ic_sms_black_24dp,
+                    new ActionCluster("AC-COMPOSE-MESSAGE", getMessengerActionItems(context)),
+                    0.92f
+            ));
+
+            items.add(new ActionItem(
+                    context.getResources().getString(R.string.actions_startPhoneCall),
+                    FuncBaseView.FuncType.OVERLAY,
+                    R.drawable.ic_call_black_24dp,
+                    "com.aura.aosp.gorilla.launcher.action.START_PHONE_CALL",
+                    0.95f
+            ));
+
+            items.add(new ActionItem(
+                    context.getResources().getString(R.string.actions_addNote),
+                    FuncBaseView.FuncType.OVERLAY,
+                    R.drawable.ic_add_circle_black_24dp,
+                    "com.aura.aosp.gorilla.launcher.action.ADD_NOTE",
+                    0.40f
+            ));
+
+            items.add(new ActionItem(
+                    context.getResources().getString(R.string.actions_newtextsharedwith),
+                    FuncBaseView.FuncType.OVERLAY,
+                    R.drawable.ic_contact_mail_black_24dp,
+                    "com.aura.aosp.gorilla.launcher.action.NEW_TEXT_SHARED_WITH",
+                    0.99f
+            ));
+
+            items.add(new ActionItem(
+                    context.getResources().getString(R.string.actions_lookupContact),
+                    FuncBaseView.FuncType.OVERLAY,
+                    R.drawable.ic_account_circle_black_24dp,
+                    context.getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp"),
+                    0.95f
+            ));
+
+            items.add(new ActionItem(
+                    context.getResources().getString(R.string.actions_lookupContact),
+                    FuncBaseView.FuncType.OVERLAY,
+                    R.drawable.ic_person_black_24dp,
+                    "com.aura.aosp.gorilla.launcher.action.LOOKUP_CONTENT",
+                    0.75f
+            ));
+
+            items.add(new ActionItem(
+                    context.getResources().getString(R.string.actions_viewMovie),
+                    FuncBaseView.FuncType.OVERLAY,
+                    R.drawable.ic_local_movies_black_24dp,
+                    "com.aura.aosp.gorilla.launcher.action.VIEW_MOVIE",
+                    0.70f
+            ));
+
+            items.add(new ActionItem(
+                    context.getResources().getString(R.string.actions_editText),
+                    FuncBaseView.FuncType.OVERLAY,
+                    R.drawable.ic_mode_edit_black_24dp,
+                    "com.aura.aosp.gorilla.launcher.action.EDIT_TEXT",
+                    0.60f
+            ));
+
+            items.add(new ActionItem(
+                    context.getResources().getString(R.string.actions_share),
+                    FuncBaseView.FuncType.OVERLAY,
+                    R.drawable.ic_share_black_24dp,
+                    "com.aura.aosp.gorilla.launcher.action.SHARE",
+                    0.98f
+            ));
+        } catch (NoSuchMethodException e) {
+            Log.e(LOGTAG, String.format("No such action invocation method found: <%s>, Activiy is <%>",
+                    e.getMessage(), LauncherActivity.class));
+        }
+
+        return items;
+    }
+
+    /**
+     * Sample data for actoin button cluster
+     * TODO: To be replaced with data provider(s)
+     *
+     * @param context
+     * @return
+     */
     public final static List<ActionItem> getLauncherActionItems(Context context) {
         List<ActionItem> items = new ArrayList<>();
 
@@ -46,7 +144,7 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_startPhoneCall),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_call_black_24dp,
-                    "de.matthiaslienau.c3po.action.START_PHONE_CALL",
+                    "com.aura.aosp.gorilla.launcher.action.START_PHONE_CALL",
                     0.95f
             ));
 
@@ -54,7 +152,7 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_addNote),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_add_circle_black_24dp,
-                    "de.matthiaslienau.c3po.action.ADD_NOTE",
+                    "com.aura.aosp.gorilla.launcher.action.ADD_NOTE",
                     0.40f
             ));
 
@@ -62,7 +160,7 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_newtextsharedwith),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_contact_mail_black_24dp,
-                    "de.matthiaslienau.c3po.action.NEW_TEXT_SHARED_WITH",
+                    "com.aura.aosp.gorilla.launcher.action.NEW_TEXT_SHARED_WITH",
                     0.99f
             ));
 
@@ -78,7 +176,7 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_lookupContact),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_person_black_24dp,
-                    "de.matthiaslienau.c3po.action.LOOKUP_CONTENT",
+                    "com.aura.aosp.gorilla.launcher.action.LOOKUP_CONTENT",
                     0.75f
             ));
 
@@ -86,7 +184,7 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_viewMovie),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_local_movies_black_24dp,
-                    "de.matthiaslienau.c3po.action.VIEW_MOVIE",
+                    "com.aura.aosp.gorilla.launcher.action.VIEW_MOVIE",
                     0.70f
             ));
 
@@ -94,7 +192,7 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_editText),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_mode_edit_black_24dp,
-                    "de.matthiaslienau.c3po.action.EDIT_TEXT",
+                    "com.aura.aosp.gorilla.launcher.action.EDIT_TEXT",
                     0.60f
             ));
 
@@ -102,7 +200,7 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_share),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_share_black_24dp,
-                    "de.matthiaslienau.c3po.action.SHARE",
+                    "com.aura.aosp.gorilla.launcher.action.SHARE",
                     0.98f
             ));
         } catch (NoSuchMethodException e) {
@@ -136,7 +234,7 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_composeMessage),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_sms_black_24dp,
-                    "de.matthiaslienau.c3po.action.COMPOSE_MESSAGE",
+                    "com.aura.aosp.gorilla.launcher.action.COMPOSE_MESSAGE",
                     0.69f
             ));
 
@@ -144,7 +242,7 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_newtextsharedwith),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_contact_mail_black_24dp,
-                    "de.matthiaslienau.c3po.action.NEW_TEXT_SHARED_WITH",
+                    "com.aura.aosp.gorilla.launcher.action.NEW_TEXT_SHARED_WITH",
                     0.99f
             ));
 
@@ -152,7 +250,7 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_lookupContact),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_person_black_24dp,
-                    "de.matthiaslienau.c3po.action.LOOKUP_CONTENT",
+                    "com.aura.aosp.gorilla.launcher.action.LOOKUP_CONTENT",
                     0.75f
             ));
 
@@ -168,7 +266,7 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_share),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_share_black_24dp,
-                    "de.matthiaslienau.c3po.action.SHARE",
+                    "com.aura.aosp.gorilla.launcher.action.SHARE",
                     0.98f
             ));
         } catch (NoSuchMethodException $e) {
@@ -191,7 +289,7 @@ public class SampleData {
 
         try {
             items.add(new ActionItem(
-                    context.getResources().getString(R.string.action_markSelectedTextBold),
+                    context.getResources().getString(R.string.actions_markSelectedTextBold),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_format_bold_black_24dp,
                     LauncherActivity.class.getMethod("onMarkSelectedTextBold"),
@@ -199,7 +297,7 @@ public class SampleData {
             ));
 
             items.add(new ActionItem(
-                    context.getResources().getString(R.string.action_markSelectedTextItalic),
+                    context.getResources().getString(R.string.actions_markSelectedTextItalic),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_format_italic_black_24dp,
                     LauncherActivity.class.getMethod("onMarkSelectedTextItalic"),
@@ -207,7 +305,7 @@ public class SampleData {
             ));
 
             items.add(new ActionItem(
-                    context.getResources().getString(R.string.action_markSelectedTextUnderlined),
+                    context.getResources().getString(R.string.actions_markSelectedTextUnderlined),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_format_underlined_black_24dp,
                     LauncherActivity.class.getMethod("onMarkSelectedTextUnderlined"),
@@ -215,7 +313,7 @@ public class SampleData {
             ));
 
             items.add(new ActionItem(
-                    context.getResources().getString(R.string.action_markSelectedTextAlignJustify),
+                    context.getResources().getString(R.string.actions_markSelectedTextAlignJustify),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_format_align_justify_black_24dp,
                     LauncherActivity.class.getMethod("onMarkSelectedTextAlignJustify"),
