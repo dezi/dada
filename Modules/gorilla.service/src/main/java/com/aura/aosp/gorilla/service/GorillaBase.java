@@ -3,12 +3,7 @@ package com.aura.aosp.gorilla.service;
 import android.support.annotation.NonNull;
 
 import android.app.Application;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
-import android.content.Context;
 
-import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 
@@ -16,8 +11,18 @@ import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 public class GorillaBase extends Application
 {
+    /**
+     * Process lifetime application context. This
+     * does not leak, because it is valid while
+     * the process exists.
+     */
     private static Application appContext;
 
+    /**
+     * Get application context from elsewhere.
+     *
+     * @return application context.
+     */
     @NonNull
     public static Application getAppContext()
     {
@@ -39,7 +44,7 @@ public class GorillaBase extends Application
 
         GomessHandler.startService();
 
-        GorillaLocation.startService(this);
+        GorillaLocation.startService();
 
         GorillaNetwork.logNetworkState();
     }
