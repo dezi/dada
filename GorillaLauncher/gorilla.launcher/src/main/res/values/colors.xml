@@ -18,6 +18,11 @@
     <color name="color_launcher_background">#393939</color>
     <color name="color_launcher_overlay_text">#404040</color>
 
+    <!-- Main Status Bar -->
+    <color name="color_statusbar_statusimage_active">#78cf5f</color>
+    <color name="color_statusbar_statusimage_inactive">#f2dd7e</color>
+    <color name="color_statusbar_statusimage_disabled">#404040</color>
+
     <!-- Timeline elements -->
     <color name="color_timeline_button">#ffffff</color>
     <color name="color_timeline_button_highlight">#6b3efc</color>
@@ -29,7 +34,7 @@
     <color name="color_actioncluster_container_mask_background">#a7ba93</color>
 
     <!-- Action Cluster View -->
-    <color name="color_actioncluster_background">#7eb146</color>
+    <color name="color_actioncluster_background">#b7ef8c</color>
 
     <!-- Action Cluster Toggle Button -->
     <color name="color_togglebutton_enabled">@color/color_launcher_background</color>
