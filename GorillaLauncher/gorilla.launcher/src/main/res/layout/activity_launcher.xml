@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
-    android:background="@color/color_launcher_background"
+    android:background="@color/color_launcher_background_debug"
     tools:context=".LauncherActivity">
 
     <com.aura.aosp.gorilla.launcher.ui.status.LauncherStatusBar
@@ -23,8 +23,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/_dotdotdot"
-            android:textColor="@color/color_launcher_overlay_text"
-            android:textSize="18dp"
+            android:textColor="@color/color_statusbar_profileinfo"
+            android:textSize="16dp"
             android:textStyle="normal" />
 
         <View
@@ -102,7 +102,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:alpha="0.2"
-            android:background="@color/color_actioncluster_container_mask_background" />
+            android:background="@color/color_actioncluster_container_mask_background_debug" />
 
     </FrameLayout>
 

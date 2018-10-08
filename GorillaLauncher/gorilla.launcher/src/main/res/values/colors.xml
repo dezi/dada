@@ -15,13 +15,15 @@
     <color name="color_text_secondary">#d0d0d0</color>
 
     <!-- Launcher -->
-    <color name="color_launcher_background">#393939</color>
+    <color name="color_launcher_background">#000000</color>
+    <color name="color_launcher_background_debug">#393939</color>
     <color name="color_launcher_overlay_text">#404040</color>
 
     <!-- Main Status Bar -->
     <color name="color_statusbar_statusimage_active">#78cf5f</color>
     <color name="color_statusbar_statusimage_inactive">#f2dd7e</color>
     <color name="color_statusbar_statusimage_disabled">#404040</color>
+    <color name="color_statusbar_profileinfo">#535353</color>
 
     <!-- Timeline elements -->
     <color name="color_timeline_button">#ffffff</color>
@@ -31,7 +33,8 @@
     <color name="color_timeline_image_background_secondary">#f9a6f3</color>
 
     <!-- Action Cluster Container / Mask -->
-    <color name="color_actioncluster_container_mask_background">#a7ba93</color>
+    <color name="color_actioncluster_container_mask_background">#000000</color>
+    <color name="color_actioncluster_container_mask_background_debug">#a7ba93</color>
 
     <!-- Action Cluster View -->
     <color name="color_actioncluster_background">#b7ef8c</color>

@@ -11,11 +11,10 @@
     <dimen name="timeline_item_margin_right">0dp</dimen>
 
     <!-- Main Status Bar -->
-    <dimen name="statusbar_padding_horizontal">5dp</dimen>
+    <dimen name="statusbar_padding_horizontal">8dp</dimen>
     <dimen name="statusbar_padding_vertical">5dp</dimen>
     <dimen name="statusbar_statusimage_padding_horizontal">4dp</dimen>
     <dimen name="statusbar_statusimage_padding_vertical">0dp</dimen>
-
 
     <!-- Action Cluster Toggle Button -->
     <dimen name="togglebutton_lay_margin">48dp</dimen>
