@@ -70,12 +70,12 @@ public abstract class GorillaAtom
      * @return JSON object of atom.
      */
     @NonNull
-    public JSONObject get()
+    public JSONObject getAtom()
     {
         return atom;
     }
 
-    public boolean set(String jsonstr)
+    public boolean setAtom(String jsonstr)
     {
         JSONObject newatom = fromStringJSONOBject(jsonstr);
         if (newatom == null) return false;
@@ -171,7 +171,7 @@ public abstract class GorillaAtom
     }
 
     /**
-     * Package private get load part of atom as JSON object.
+     * Package private getAtom load part of atom as JSON object.
      *
      * @return load part of atom as JSON object.
      */

@@ -247,9 +247,9 @@ public class GorillaClient
                 dispatchServiceStatus();
             }
 
-            getUplinkStatus();
+            requestUplinkStatus();
 
-            getOwnerUUID();
+            requestOwnerUUID();
         }
         catch (Exception ex)
         {
@@ -262,7 +262,7 @@ public class GorillaClient
      * <p>
      * If the services are not validated, this action is silently ignored.
      */
-    void getOwnerUUID()
+    void requestOwnerUUID()
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
         if (gr == null) return;
@@ -290,7 +290,7 @@ public class GorillaClient
      * <p>
      * If the services are not validated, this action is silently ignored.
      */
-    void getUplinkStatus()
+    void requestUplinkStatus()
     {
         IGorillaSystemService gr = GorillaConnect.getSystemService();
         if (gr == null) return;
@@ -338,6 +338,25 @@ public class GorillaClient
     }
 
     /**
+     * Package private dispatch current service status to newly subscribed listener.
+     *
+     * @param newlistener new listener to be updated.
+     */
+    void dispatchServiceStatus(final GorillaListener newlistener)
+    {
+        final boolean connected = GorillaConnect.getServiceStatus();
+
+        handler.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                newlistener.onServiceChange(connected);
+            }
+        });
+    }
+
+    /**
      * Package private dispatch current uplink status to all subscribed listeners.
      */
     void dispatchUplinkStatus()
@@ -358,6 +377,25 @@ public class GorillaClient
                         gl.onUplinkChange(connected);
                     }
                 }
+            }
+        });
+    }
+
+    /**
+     * Package private dispatch current uplink status to newly subscribed listener.
+     *
+     * @param newlistener new listener to be updated.
+     */
+    void dispatchUplinkStatus(final GorillaListener newlistener)
+    {
+        final boolean connected = GorillaConnect.getUplinkStatus();
+
+        handler.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                newlistener.onUplinkChange(connected);
             }
         });
     }
@@ -391,6 +429,28 @@ public class GorillaClient
         });
     }
 
+    /**
+     * Package private dispatch current owner identity UUID to newly subscribed listener.
+     *
+     * @param newlistener new listener to be updated.
+     */
+    void dispatchOwnerUUID(final GorillaListener newlistener)
+    {
+        String ownerUUID = GorillaConnect.getownerUUIDBase64();
+        if (ownerUUID == null) return;
+
+        final GorillaOwner owner = new GorillaOwner();
+        owner.setOwnerUUID(ownerUUID);
+
+        handler.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                newlistener.onOwnerReceived(owner);
+            }
+        });
+    }
     /**
      * Package private handle a received payload. Build a JSON message object and dispatch
      * to all subscribed listeners.
@@ -441,7 +501,7 @@ public class GorillaClient
 
         final GorillaPayloadResult result = new GorillaPayloadResult();
 
-        if (result.set(resultJson))
+        if (result.setAtom(resultJson))
         {
             handler.post(new Runnable()
             {
@@ -488,7 +548,7 @@ public class GorillaClient
 
             GorillaPayloadResult result = new GorillaPayloadResult();
 
-            if (! result.set(resultStr))
+            if (! result.setAtom(resultStr))
             {
                 Log.e(LOGTAG, "sendPayload: result failed!");
                 return null;
@@ -889,6 +949,10 @@ public class GorillaClient
                 gorillaListeners.add(gorillaListener);
             }
         }
+
+        dispatchServiceStatus(gorillaListener);
+        dispatchUplinkStatus(gorillaListener);
+        dispatchOwnerUUID(gorillaListener);
     }
 
     /**

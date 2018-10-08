@@ -2,9 +2,11 @@ package com.aura.aosp.gorilla.messenger;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.aura.aosp.aura.common.crypter.UID;
+import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
@@ -54,7 +56,10 @@ public class EventManager extends GorillaListener
     {
         Log.d(LOGTAG, "onPayloadReceived: message=" + payload.toString());
 
-        //startMainActivity();
+        if (convertPayloadToMessageAndPersist(payload) != null)
+        {
+            startMainActivity();
+        }
     }
 
     @Override
@@ -65,18 +70,57 @@ public class EventManager extends GorillaListener
 
     private void startMainActivity()
     {
-        Log.d(LOGTAG, "startMainActivity: ...");
-
-        Intent startIntent = new Intent(context, MainActivity.class);
-
-        try
+        if (MainActivity.currentMainActivity == null)
         {
-            context.startActivity(startIntent);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
+            Log.d(LOGTAG, "startMainActivity: ...");
+
+            Intent startIntent = new Intent(context, MainActivity.class);
+
+            try
+            {
+                context.startActivity(startIntent);
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
         }
     }
 
+    @Nullable
+    static GorillaMessage convertPayloadToMessageAndPersist(GorillaPayload payload)
+    {
+        Long time = payload.getTime();
+        String uuid = payload.getUUIDBase64();
+        String text = payload.getPayload();
+        String remoteUserUUID = payload.getSenderUUIDBase64();
+        String ownerDeviceUUID = MainActivity.getOwnerDeviceBase64();
+
+        if ((time == null) || (uuid == null) || (text == null) || (remoteUserUUID == null))
+        {
+            Log.e(LOGTAG, "invalid payload=" + payload.toString());
+            return null;
+        }
+
+        if (ownerDeviceUUID == null)
+        {
+            Log.e(LOGTAG, "unknown owner device");
+            return null;
+        }
+
+        GorillaMessage message = new GorillaMessage();
+
+        message.setType("aura.chat.message");
+        message.setTime(time);
+        message.setUUID(uuid);
+        message.setMessageText(text);
+        message.setStatusTime("received", ownerDeviceUUID, System.currentTimeMillis());
+
+        if (! GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, message.getAtom()))
+        {
+            return null;
+        }
+
+        return message;
+    }
 }

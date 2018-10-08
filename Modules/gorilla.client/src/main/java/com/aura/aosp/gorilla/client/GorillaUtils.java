@@ -69,7 +69,7 @@ class GorillaUtils
      * Get key value from JSON as JSON object.
      *
      * @param json JSON object.
-     * @param key  key to get.
+     * @param key  key to getAtom.
      * @return JSON object or null.
      */
     @Nullable
@@ -89,7 +89,7 @@ class GorillaUtils
      * Get key value from JSON as Long object.
      *
      * @param json JSON object.
-     * @param key  key to get.
+     * @param key  key to getAtom.
      * @return Long object or null.
      */
     @Nullable
@@ -109,7 +109,7 @@ class GorillaUtils
      * Get key value from JSON as String object.
      *
      * @param json JSON object.
-     * @param key  key to get.
+     * @param key  key to getAtom.
      * @return String object or null.
      */
     @Nullable
@@ -129,7 +129,7 @@ class GorillaUtils
      * Get key value from JSON as base64 encoded byte array.
      *
      * @param json JSON object.
-     * @param key  key to get.
+     * @param key  key to getAtom.
      * @return byte array or null.
      */
     @Nullable

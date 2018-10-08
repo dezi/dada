@@ -21,6 +21,7 @@ public class Dates
         }
         catch(Exception ex)
         {
+            Err.errp(ex);
             return null;
         }
     }
@@ -37,6 +38,7 @@ public class Dates
         }
         catch(Exception ex)
         {
+            Err.errp(ex);
             return null;
         }
     }
@@ -53,6 +55,7 @@ public class Dates
         }
         catch(Exception ex)
         {
+            Err.errp(ex);
             return null;
         }
     }

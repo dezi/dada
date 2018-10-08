@@ -22,6 +22,7 @@ import com.aura.aosp.aura.gui.views.GUIListEntry;
 import com.aura.aosp.aura.gui.views.GUIListView;
 import com.aura.aosp.aura.gui.views.GUIScrollView;
 
+import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
@@ -36,6 +37,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
 {
     private static final String LOGTAG = MainActivity.class.getSimpleName();
+
+    public static MainActivity currentMainActivity;
 
     public static Identity ownerIdent;
     public static List<ChatProfile> chatProfiles = new ArrayList<>();
@@ -96,6 +99,8 @@ public class MainActivity extends AppCompatActivity
                 GorillaClient.getInstance().registerActionEvent(getPackageName());
             }
         }, 2000);
+
+        currentMainActivity = this;
     }
 
     @Override
@@ -106,6 +111,8 @@ public class MainActivity extends AppCompatActivity
         Log.d(LOGTAG, "onDestroy: ...");
 
         GorillaClient.getInstance().unsubscribeGorillaListener(listener);
+
+        currentMainActivity = null;
     }
 
     @Override
@@ -227,21 +234,28 @@ public class MainActivity extends AppCompatActivity
 
     private void displayMessageInList(GorillaPayload payload)
     {
+        Long timeStamp = payload.getTime();
+        String messageText = payload.getPayload();
         String remoteUserUUID = payload.getSenderUUIDBase64();
         String remoteDeviceUUID = payload.getDeviceUUIDBase64();
-        String messageText = payload.getPayload();
 
-        Long timeStamp = payload.getTime();
+        if ((timeStamp == null) || (messageText == null) ||
+                (remoteUserUUID == null) || (remoteDeviceUUID == null))
+        {
+            Log.e(LOGTAG, "invalid payload=" + payload.toString());
+            return;
+        }
+
         String dateStr = Dates.getLocalDateAndTime(timeStamp);
 
         for (int cinx = 0; cinx < identitiesView.getChildCount(); cinx++)
         {
             View child = identitiesView.getChildAt(cinx);
-            if (! (child instanceof GUIListEntry)) continue;
+            if (!(child instanceof GUIListEntry)) continue;
 
-            Identity identity = (Identity )child.getTag();
-            if (! identity.getUserUUIDBase64().equals(remoteUserUUID)) continue;
-            if (! identity.getDeviceUUIDBase64().equals(remoteDeviceUUID)) continue;
+            Identity identity = (Identity) child.getTag();
+            if (!identity.getUserUUIDBase64().equals(remoteUserUUID)) continue;
+            if (!identity.getDeviceUUIDBase64().equals(remoteDeviceUUID)) continue;
 
             ((GUIListEntry) child).infoView.setText(messageText);
             ((GUIListEntry) child).dateView.setText(dateStr);
@@ -304,19 +318,20 @@ public class MainActivity extends AppCompatActivity
         {
             Log.d(LOGTAG, "onPayloadReceived: payload=" + payload.toString());
 
-            displayMessageInList(payload);
+            GorillaMessage message = EventManager.convertPayloadToMessageAndPersist(payload);
+            if (message == null) return;
 
-            JSONObject atom = convertMessageToAtomAndPersists(payload);
+            displayMessageInList(payload);
 
             String remoteUserUUID = payload.getSenderUUIDBase64();
             String remoteDeviceUUID = payload.getDeviceUUIDBase64();
 
             for (ChatProfile chatProfile : chatProfiles)
             {
-                if (! chatProfile.remoteUserUUID.equals(remoteUserUUID)) continue;
-                if (! chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
+                if (!chatProfile.remoteUserUUID.equals(remoteUserUUID)) continue;
+                if (!chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
 
-                chatProfile.activity.dispatchMessage(atom);
+                chatProfile.activity.dispatchMessage(message);
 
                 break;
             }

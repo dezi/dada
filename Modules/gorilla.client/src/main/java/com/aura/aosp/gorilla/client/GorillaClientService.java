@@ -71,8 +71,8 @@ class GorillaClientService extends IGorillaClientService.Stub
             GorillaClient.getInstance().dispatchServiceStatus();
         }
 
-        GorillaClient.getInstance().getUplinkStatus();
-        GorillaClient.getInstance().getOwnerUUID();
+        GorillaClient.getInstance().requestUplinkStatus();
+        GorillaClient.getInstance().requestOwnerUUID();
 
         return true;
     }

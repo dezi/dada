@@ -13,7 +13,6 @@ import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.common.univid.Owner;
 
-import com.aura.aosp.aura.gui.base.GUIDefs;
 import com.aura.aosp.aura.gui.views.GUIButtonView;
 import com.aura.aosp.aura.gui.views.GUIFrameLayout;
 import com.aura.aosp.aura.gui.views.GUILinearLayout;
@@ -21,6 +20,7 @@ import com.aura.aosp.aura.gui.views.GUIListEntry;
 import com.aura.aosp.aura.gui.views.GUIListView;
 import com.aura.aosp.aura.gui.views.GUIScrollView;
 import com.aura.aosp.aura.gui.views.GUITextView;
+import com.aura.aosp.aura.gui.base.GUIDefs;
 
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 

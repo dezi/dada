@@ -167,7 +167,7 @@ public class ChatActivity extends AppCompatActivity
 
                             if (ok)
                             {
-                                GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, message.get());
+                                GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, message.getAtom());
                             }
                         }
 
@@ -269,7 +269,7 @@ public class ChatActivity extends AppCompatActivity
                 message.setType("aura.chat.message");
                 message.setMessageText(messageText);
 
-                GorillaClient.getInstance().putAtomSharedWith(chatProfile.remoteUserUUID, message.get());
+                GorillaClient.getInstance().putAtomSharedWith(chatProfile.remoteUserUUID, message.getAtom());
 
                 editText.setText("");
 
@@ -302,13 +302,11 @@ public class ChatActivity extends AppCompatActivity
         setTitle(newtitle);
     }
 
-    public void dispatchMessage(JSONObject atom)
+    public void dispatchMessage(GorillaMessage message)
     {
-        Log.d(LOGTAG, "dispatchMessage: atom=" + atom);
+        Log.d(LOGTAG, "dispatchMessage: message=" + message.toString());
 
-        GorillaMessage message = new GorillaMessage(atom);
-
-        final String uuid = Json.getString(atom, "uuid");
+        final String uuid = message.getUUIDBase64();
 
         ChatFragment cf = new ChatFragment(this);
         cf.setContent(false, chatProfile.remoteNick, message);
@@ -353,7 +351,7 @@ public class ChatActivity extends AppCompatActivity
             GorillaMessage message = cf.getMessage();
             if (message == null) continue;
 
-            GorillaClient.getInstance().putAtomSharedWith(remoteUserUUID, message.get());
+            GorillaClient.getInstance().putAtomSharedWith(remoteUserUUID, message.getAtom());
         }
     }
 
