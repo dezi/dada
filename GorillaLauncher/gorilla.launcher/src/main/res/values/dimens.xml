@@ -13,7 +13,7 @@
     <!-- Main Status Bar -->
     <dimen name="statusbar_padding_horizontal">8dp</dimen>
     <dimen name="statusbar_padding_vertical">5dp</dimen>
-    <dimen name="statusbar_statusimage_padding_horizontal">4dp</dimen>
+    <dimen name="statusbar_statusimage_padding_horizontal">2dp</dimen>
     <dimen name="statusbar_statusimage_padding_vertical">0dp</dimen>
 
     <!-- Action Cluster Toggle Button -->

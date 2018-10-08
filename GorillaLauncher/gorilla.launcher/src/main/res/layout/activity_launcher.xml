@@ -5,18 +5,20 @@
     android:id="@+id/launcher"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:keepScreenOn="true"
     android:background="@color/color_launcher_background_debug"
+    android:keepScreenOn="true"
     tools:context=".LauncherActivity">
 
     <com.aura.aosp.gorilla.launcher.ui.status.LauncherStatusBar
         android:id="@+id/statusBar"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:paddingHorizontal="@dimen/statusbar_padding_horizontal"
-        android:paddingVertical="@dimen/statusbar_padding_vertical"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" >
+        android:paddingBottom="@dimen/statusbar_padding_vertical"
+        android:paddingEnd="@dimen/statusbar_padding_horizontal"
+        android:paddingStart="@dimen/statusbar_padding_horizontal"
+        android:paddingTop="@dimen/statusbar_padding_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/statusProfileInfo"
@@ -24,33 +26,38 @@
             android:layout_height="match_parent"
             android:text="@string/_dotdotdot"
             android:textColor="@color/color_statusbar_profileinfo"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:textStyle="normal" />
 
         <View
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
         <ImageView
             android:id="@+id/statusImageSystem"
             android:layout_width="wrap_content"
-            android:layout_height="16dp"
-            android:layout_gravity="right|center_vertical"
-            android:paddingVertical="@dimen/statusbar_statusimage_padding_vertical"
-            android:paddingHorizontal="@dimen/statusbar_statusimage_padding_horizontal"
+            android:layout_height="13dp"
+            android:layout_gravity="end|center_vertical"
+            android:paddingBottom="@dimen/statusbar_statusimage_padding_vertical"
+            android:paddingEnd="@dimen/statusbar_statusimage_padding_horizontal"
+            android:paddingStart="@dimen/statusbar_statusimage_padding_horizontal"
+            android:paddingTop="@dimen/statusbar_statusimage_padding_vertical"
             android:tint="@color/color_statusbar_statusimage_disabled"
             app:srcCompat="@drawable/timeline_oval_18dp" />
 
         <ImageView
             android:id="@+id/statusImageOnline"
             android:layout_width="wrap_content"
-            android:layout_height="16dp"
-            android:layout_gravity="right|center_vertical"
-            android:paddingVertical="@dimen/statusbar_statusimage_padding_vertical"
-            android:paddingHorizontal="@dimen/statusbar_statusimage_padding_horizontal"
+            android:layout_height="13dp"
+            android:layout_gravity="end|center_vertical"
+            android:paddingBottom="@dimen/statusbar_statusimage_padding_vertical"
+            android:paddingEnd="@dimen/statusbar_statusimage_padding_horizontal"
+            android:paddingStart="@dimen/statusbar_statusimage_padding_horizontal"
+            android:paddingTop="@dimen/statusbar_statusimage_padding_vertical"
             android:tint="@color/color_statusbar_statusimage_disabled"
             app:srcCompat="@drawable/timeline_oval_18dp" />
+
     </com.aura.aosp.gorilla.launcher.ui.status.LauncherStatusBar>
 
     <android.support.constraint.ConstraintLayout
@@ -66,7 +73,7 @@
             android:gravity="center"
             android:text="@string/launcher_overlay_text"
             android:textColor="@color/color_launcher_overlay_text"
-            android:textSize="50dp"
+            android:textSize="50sp"
             android:textStyle="bold" />
 
         <com.aura.aosp.gorilla.launcher.ui.content.TimelineView
@@ -88,10 +95,14 @@
         android:id="@+id/actionClusterContainer"
         android:layout_width="match_parent"
         android:layout_height="400dp"
-        android:layout_marginHorizontal="@dimen/actioncluster_container_lay_marginHorizontal"
-        android:layout_marginVertical="@dimen/actioncluster_container_lay_marginVertical"
-        android:paddingHorizontal="@dimen/actioncluster_container_paddingHorizontal"
-        android:paddingVertical="@dimen/actioncluster_container_paddingVertical"
+        android:layout_marginBottom="@dimen/actioncluster_container_lay_marginVertical"
+        android:layout_marginEnd="@dimen/actioncluster_container_lay_marginHorizontal"
+        android:layout_marginStart="@dimen/actioncluster_container_lay_marginHorizontal"
+        android:layout_marginTop="@dimen/actioncluster_container_lay_marginVertical"
+        android:paddingBottom="@dimen/actioncluster_container_paddingVertical"
+        android:paddingEnd="@dimen/actioncluster_container_paddingHorizontal"
+        android:paddingStart="@dimen/actioncluster_container_paddingHorizontal"
+        android:paddingTop="@dimen/actioncluster_container_paddingVertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 

@@ -9,13 +9,17 @@
         android:id="@+id/actionCluster"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/actioncluster_horizontal_lay_marginHorizontal"
-        android:layout_marginVertical="@dimen/actioncluster_horizontal_lay_marginVertical"
+        android:layout_marginBottom="@dimen/actioncluster_horizontal_lay_marginVertical"
+        android:layout_marginEnd="@dimen/actioncluster_horizontal_lay_marginHorizontal"
+        android:layout_marginStart="@dimen/actioncluster_horizontal_lay_marginHorizontal"
+        android:layout_marginTop="@dimen/actioncluster_horizontal_lay_marginVertical"
         android:alpha="1"
         android:fadingEdge="horizontal"
         android:fadingEdgeLength="66dp"
-        android:paddingHorizontal="@dimen/actioncluster_horizontal_paddingHorizontal"
-        android:paddingVertical="@dimen/actioncluster_horizontal_paddingVertical"
+        android:paddingBottom="@dimen/actioncluster_horizontal_paddingVertical"
+        android:paddingEnd="@dimen/actioncluster_horizontal_paddingHorizontal"
+        android:paddingStart="@dimen/actioncluster_horizontal_paddingHorizontal"
+        android:paddingTop="@dimen/actioncluster_horizontal_paddingVertical"
         android:requiresFadingEdge="vertical|horizontal" />
 
 </FrameLayout>

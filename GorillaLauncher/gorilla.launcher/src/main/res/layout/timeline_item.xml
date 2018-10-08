@@ -4,17 +4,17 @@
     android:id="@+id/item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/timeline_item_margin_top"
-    android:layout_marginRight="@dimen/timeline_item_margin_right"
     android:layout_marginBottom="@dimen/timeline_item_margin_bottom"
-    android:layout_marginLeft="@dimen/timeline_item_margin_left"
-    android:paddingTop="@dimen/timeline_item_padding_top"
-    android:paddingRight="@dimen/timeline_item_padding_right"
-    android:paddingBottom="@dimen/timeline_item_padding_bottom"
-    android:paddingLeft="@dimen/timeline_item_padding_left"
+    android:layout_marginEnd="@dimen/timeline_item_margin_right"
+    android:layout_marginStart="@dimen/timeline_item_margin_left"
+    android:layout_marginTop="@dimen/timeline_item_margin_top"
     android:background="@color/color_launcher_background"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:paddingBottom="@dimen/timeline_item_padding_bottom"
+    android:paddingEnd="@dimen/timeline_item_padding_right"
+    android:paddingStart="@dimen/timeline_item_padding_left"
+    android:paddingTop="@dimen/timeline_item_padding_top">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/container"
