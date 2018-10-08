@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.launcher.ui.navigation;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -74,9 +75,28 @@ public class ClusterButtonView extends FloatingActionButton {
                     setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Log.d(LOGTAG, String.format("Executing onClick for INTENT action  <%s>", actionItem.getAction()));
-                            Intent intent = new Intent(actionItem.getAction());
-                            getContext().startActivity(intent);
+                            Log.d(LOGTAG, String.format("Executing onClick for ACTION <%s>", actionItem.getAction()));
+                            try {
+                                Intent intent = new Intent(actionItem.getAction());
+                                getContext().startActivity(intent);
+                            } catch (ActivityNotFoundException e) {
+                                Log.e(LOGTAG, String.format("Could not invoke ACTION <%s>", actionItem.getAction()));
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } else if (actionItem.getIntent() != null) {
+                    // Invoke action based on method of current activity
+                    setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Log.d(LOGTAG, String.format("Executing onClick for INTENT <%s>", actionItem.getIntent().toString()));
+                            try {
+                                getContext().startActivity(actionItem.getIntent());
+                            } catch (ActivityNotFoundException e) {
+                                Log.e(LOGTAG, String.format("Could not invoke INTENT <%s>", actionItem.getIntent().toString()));
+                                e.printStackTrace();
+                            }
                         }
                     });
                 } else if (actionItem.getMethod() != null) {
@@ -84,11 +104,11 @@ public class ClusterButtonView extends FloatingActionButton {
                     setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Log.d(LOGTAG, String.format("Executing onClick for METHOD action <%s>", actionItem.getMethod().toString()));
+                            Log.d(LOGTAG, String.format("Executing onClick for METHOD <%s>", actionItem.getMethod().toString()));
                             try {
                                 actionItem.getMethod().invoke(activity);
                             } catch (Exception e) {
-                                Log.e(LOGTAG, String.format("Could not invoke METHOD action <%s>", actionItem.getMethod().toString()));
+                                Log.e(LOGTAG, String.format("Could not invoke METHOD <%s>", actionItem.getMethod().toString()));
                                 e.printStackTrace();
                             }
                         }

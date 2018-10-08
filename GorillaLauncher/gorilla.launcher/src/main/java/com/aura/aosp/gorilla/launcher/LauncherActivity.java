@@ -33,8 +33,15 @@ import android.widget.FrameLayout;
 
 import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.crypter.Utils;
+import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
+import com.aura.aosp.gorilla.atoms.GorillaOwner;
+import com.aura.aosp.gorilla.atoms.GorillaPayload;
+import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
+import com.aura.aosp.gorilla.client.GorillaClient;
+import com.aura.aosp.gorilla.client.GorillaListener;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.ActionItem;
 import com.aura.aosp.gorilla.launcher.model.TimelineItem;
@@ -44,12 +51,15 @@ import com.aura.aosp.gorilla.launcher.ui.animation.easing.EasingInterpolator;
 import com.aura.aosp.gorilla.launcher.ui.common.FuncViewManager;
 import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
 import com.aura.aosp.gorilla.launcher.ui.content.FuncBaseView;
+import com.aura.aosp.gorilla.launcher.ui.content.LauncherView;
 import com.aura.aosp.gorilla.launcher.ui.content.SimpleCalendarView;
 import com.aura.aosp.gorilla.launcher.ui.content.TimelineAdapter;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterAdapter;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterView;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ClusterButtonView;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ToggleClusterButton;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,7 +68,7 @@ import java.util.List;
 import jp.wasabeef.blurry.Blurry;
 
 /**
- * Main activity, i.e. the new "launcher" screen
+ * Main activity, i.e. the "launcher" screen
  */
 public class LauncherActivity extends AppCompatActivity {
 
@@ -83,7 +93,7 @@ public class LauncherActivity extends AppCompatActivity {
 
     private static ExpandingCircleAnimationDrawable mCircle;
 
-    private ConstraintLayout launcherView;
+    private LauncherView launcherView;
 
     private ConstraintLayout timelineContainer;
     private RecyclerView timelineView;
@@ -100,9 +110,14 @@ public class LauncherActivity extends AppCompatActivity {
     private FuncViewManager funcViewManager = new FuncViewManager();
 
     @Nullable
-    public static Identity getOwnerIdent()
-    {
+    public static Identity getOwnerIdent() {
         return ownerIdent;
+    }
+
+    @Nullable
+    public static String getOwnerDeviceBase64() {
+        if (ownerIdent == null) return null;
+        return ownerIdent.getDeviceUUIDBase64();
     }
 
     @Override
@@ -111,13 +126,8 @@ public class LauncherActivity extends AppCompatActivity {
 
         Log.d(LOGTAG, "onCreate: ...");
 
-
-        Log.d(LOGTAG, String.format("My UUID: <%s>", UID.randomUUIDBase64()));
-        //
         // Initialize Gorilla application
-        //
         Simple.initialize(this.getApplication());
-
 
         // Check for owner identity:
         if (ownerIdent == null) {
@@ -125,9 +135,20 @@ public class LauncherActivity extends AppCompatActivity {
             Simple.startActivity(LauncherActivity.this, launchIntent);
         }
 
-        //
+        // Subscribe to Gorilla listener
+        GorillaClient.getInstance().subscribeGorillaListener(listener);
+
+        // Register generic "launcher opened" event with Gorilla
+        new Handler().postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                GorillaClient.getInstance().registerActionEvent(getPackageName());
+            }
+        }, 2000);
+
         // Get some resource values
-        //
         blurSampliong = getResources().getInteger(R.integer.launcher_blur_sampling);
         blurRadius = getResources().getInteger(R.integer.launcher_blur_radius);
         blurTransisitionDuration = getResources().getInteger(R.integer.launcher_blur_transition_duration);
@@ -135,9 +156,7 @@ public class LauncherActivity extends AppCompatActivity {
         showFunctionViewTransitionDuration = getResources().getInteger(R.integer.show_function_view_transition_duration);
         clusterElevationPerLevel = getResources().getDimension(R.dimen.clusterbutton_elevationPerLevel);
 
-        //
         // Identify main layout and components
-        //
         setContentView(R.layout.activity_launcher);
         launcherView = findViewById(R.id.launcher);
 
@@ -150,26 +169,8 @@ public class LauncherActivity extends AppCompatActivity {
         actionClusterMask = actionClusterContainer.findViewById(R.id.actionClusterMask);
         actionClusterMask.setVisibility(View.VISIBLE);
 
-        //
-        // Hide the status and action bar.
-        //
-//        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-
-        // Note that some of these constants are new as of API 16 (Jelly Bean)
-        // and API 19 (KitKat). It is safe to use them, as they are inlined
-        // at compile-time and do nothing on earlier devices.
-        launcherView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-
-        // Hide UI first
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
-        }
+        // Hide status and action bars
+        hideStatusAndActionBar();
 
 //        // Testing:
 //        addHolisticAiCircle();
@@ -191,11 +192,9 @@ public class LauncherActivity extends AppCompatActivity {
         timelineAdapter = new TimelineAdapter(new ArrayList<TimelineItem>(), this);
         timelineView.setAdapter(timelineAdapter);
 
-        //
         // Create action cluster toggle button
         // Programmatically define background colors for states because XML definition leads to obscure error with
         // "Invalid drawable added to LayerDrawable! Drawable already belongs to another owner but does not expose a constant state"
-        //
         int[][] states = new int[][]{
                 new int[]{android.R.attr.state_enabled},
                 new int[]{android.R.attr.state_pressed}
@@ -787,13 +786,37 @@ public class LauncherActivity extends AppCompatActivity {
         };
     }
 
+    /**
+     * Go fullscreen: Hide the status and action bar
+     */
+    protected void hideStatusAndActionBar() {
+
+//        this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+//        this.getSupportActionBar().hide();
+
+        // Note that some of these constants are new as of API 16 (Jelly Bean)
+        // and API 19 (KitKat). It is safe to use them, as they are inlined
+        // at compile-time and do nothing on earlier devices.
+        launcherView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
 
-        // Hide the status and action bar.
-//        this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-//        this.getSupportActionBar().hide();
+        // Hide status and action bars
+        hideStatusAndActionBar();
 
 //        mCircle.start();
     }
@@ -803,4 +826,116 @@ public class LauncherActivity extends AppCompatActivity {
 //        mCircle.stop();
         super.onPause();
     }
+
+    /**
+     * Gorilla Listener for receiving/sending actions and atoms
+     */
+    private final GorillaListener listener = new GorillaListener() {
+        @Override
+        public void onServiceChange(boolean connected) {
+            Log.d(LOGTAG, "onServiceChange: connected=" + connected);
+
+            svlink = connected;
+
+//            updateTitle();
+//
+//            for (ChatProfile chatProfile : chatProfiles)
+//            {
+//                chatProfile.activity.setStatus(svlink, uplink);
+//                chatProfile.activity.updateTitle();
+//            }
+        }
+
+        @Override
+        public void onUplinkChange(boolean connected) {
+            Log.d(LOGTAG, "onUplinkChange: connected=" + connected);
+
+            uplink = connected;
+
+//            updateTitle();
+//
+//            for (ChatProfile chatProfile : chatProfiles)
+//            {
+//                chatProfile.activity.setStatus(svlink, uplink);
+//                chatProfile.activity.updateTitle();
+//            }
+        }
+
+        @Override
+        public void onOwnerReceived(GorillaOwner owner) {
+            Log.d(LOGTAG, "onOwnerReceived: +++++ CURRENT +++++ owner=" + owner.toString());
+
+            String ownerUUID = owner.getOwnerUUIDBase64();
+
+            ownerIdent = Contacts.getContact(ownerUUID);
+
+            Log.d(LOGTAG, "onOwnerReceived: +++++ contact +++++ nick=" + ownerIdent.getNick());
+
+            launcherView.updateOverlayText(ownerIdent.getNick());
+
+//            updateTitle();
+//
+//            for (ChatProfile chatProfile : chatProfiles)
+//            {
+//                chatProfile.activity.finish();
+//            }
+        }
+
+        @Override
+        public void onPayloadReceived(GorillaPayload payload) {
+            Log.d(LOGTAG, "onPayloadReceived: payload=" + payload.toString());
+
+//            displayMessageInList(payload);
+
+            JSONObject atom = convertMessageToAtomAndPersists(payload);
+
+            String remoteUserUUID = payload.getSenderUUIDBase64();
+            String remoteDeviceUUID = payload.getDeviceUUIDBase64();
+
+//            for (ChatProfile chatProfile : chatProfiles)
+//            {
+//                if (! chatProfile.remoteUserUUID.equals(remoteUserUUID)) continue;
+//                if (! chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
+//
+//                chatProfile.activity.dispatchMessage(atom);
+//
+//                break;
+//            }
+        }
+
+        private JSONObject convertMessageToAtomAndPersists(GorillaPayload payload) {
+            Long time = payload.getTime();
+            String uuid = payload.getUUIDBase64();
+            String text = payload.getPayload();
+            String remoteUserUUID = payload.getSenderUUIDBase64();
+
+            JSONObject atomLoad = new JSONObject();
+            Json.put(atomLoad, "message", text);
+
+            JSONObject received = new JSONObject();
+            Json.put(received, LauncherActivity.getOwnerDeviceBase64(), System.currentTimeMillis());
+            Json.put(atomLoad, "received", received);
+
+            JSONObject atom = new JSONObject();
+
+            Json.put(atom, "uuid", uuid);
+            Json.put(atom, "time", time);
+            Json.put(atom, "type", "aura.chat.message");
+            Json.put(atom, "load", atomLoad);
+
+            GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, atom);
+
+            return atom;
+        }
+
+        @Override
+        public void onPayloadResultReceived(GorillaPayloadResult result) {
+            Log.d(LOGTAG, "onPayloadResultReceived: result=" + result.toString());
+
+//            for (ChatProfile chatProfile : chatProfiles)
+//            {
+//                chatProfile.activity.dispatchResult(result);
+//            }
+        }
+    };
 }

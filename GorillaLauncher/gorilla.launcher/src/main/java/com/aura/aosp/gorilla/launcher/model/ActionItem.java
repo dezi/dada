@@ -1,5 +1,8 @@
 package com.aura.aosp.gorilla.launcher.model;
 
+import android.content.Intent;
+import android.support.annotation.Nullable;
+
 import com.aura.aosp.gorilla.launcher.ui.content.FuncBaseView;
 
 import java.lang.reflect.Method;
@@ -15,6 +18,7 @@ public class ActionItem extends AbstractActionItem {
     protected Integer imageId;
     protected String action;
     protected Method method;
+    protected Intent intent;
     protected ActionCluster actionCluster;
     protected Float absoluteScore;
 
@@ -23,25 +27,9 @@ public class ActionItem extends AbstractActionItem {
      * @param funcType
      * @param imageId
      * @param action
-     */
-    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, String action) {
-        setType(ItemType.TYPE_FINAL);
-        setName(name);
-        setFuncType(funcType);
-        setImageId(imageId);
-        setAction(action);
-        setAbsoluteScore(0.f);
-    }
-
-    /**
-     *
-     * @param name
-     * @param funcType
-     * @param imageId
-     * @param action
      * @param initialScore
      */
-    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, String action, Float initialScore) {
+    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, String action, @Nullable Float initialScore) {
         setType(ItemType.TYPE_FINAL);
         setName(name);
         setFuncType(funcType);
@@ -56,24 +44,7 @@ public class ActionItem extends AbstractActionItem {
      * @param imageId
      * @param method
      */
-    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, Method method) {
-        setType(ItemType.TYPE_FINAL);
-        setName(name);
-        setFuncType(funcType);
-        setImageId(imageId);
-        setMethod(method);
-        setAbsoluteScore(0.f);
-    }
-
-    /**
-     *
-     * @param name
-     * @param funcType
-     * @param imageId
-     * @param method
-     * @param initialScore
-     */
-    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, Method method, Float initialScore) {
+    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, Method method, @Nullable Float initialScore) {
         setType(ItemType.TYPE_FINAL);
         setName(name);
         setFuncType(funcType);
@@ -86,26 +57,26 @@ public class ActionItem extends AbstractActionItem {
      * @param name
      * @param funcType
      * @param imageId
-     * @param actionCluster
+     * @param intent
+     * @param initialScore
      */
-    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, ActionCluster actionCluster) {
-        setType(ItemType.TYPE_CLUSTER);
+    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, Intent intent,@Nullable Float initialScore) {
+        setType(ItemType.TYPE_FINAL);
         setName(name);
         setFuncType(funcType);
         setImageId(imageId);
-        setActionCluster(actionCluster);
-        setAbsoluteScore(0.f);
+        setIntent(intent);
+        setAbsoluteScore(initialScore);
     }
 
     /**
-     *
      * @param name
      * @param funcType
      * @param imageId
      * @param actionCluster
      * @param initialScore
      */
-    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, ActionCluster actionCluster, Float initialScore) {
+    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, ActionCluster actionCluster, @Nullable Float initialScore) {
         setType(ItemType.TYPE_CLUSTER);
         setName(name);
         setFuncType(funcType);
@@ -142,8 +113,8 @@ public class ActionItem extends AbstractActionItem {
         return absoluteScore;
     }
 
-    public void setAbsoluteScore(Float absoluteScore) {
-        this.absoluteScore = absoluteScore;
+    public void setAbsoluteScore(@Nullable  Float absoluteScore) {
+        this.absoluteScore = absoluteScore != null? absoluteScore : 1.0f;
     }
 
     public String getAction() {
@@ -160,6 +131,14 @@ public class ActionItem extends AbstractActionItem {
 
     public void setMethod(Method method) {
         this.method = method;
+    }
+
+    public Intent getIntent() {
+        return intent;
+    }
+
+    public void setIntent(Intent intent) {
+        this.intent = intent;
     }
 
     public ActionCluster getActionCluster() {

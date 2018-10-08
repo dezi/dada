@@ -69,6 +69,14 @@ public class SampleData {
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_lookupContact),
                     FuncBaseView.FuncType.OVERLAY,
+                    R.drawable.ic_account_circle_black_24dp,
+                    context.getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp"),
+                    0.95f
+            ));
+
+            items.add(new ActionItem(
+                    context.getResources().getString(R.string.actions_lookupContact),
+                    FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_person_black_24dp,
                     "de.matthiaslienau.c3po.action.LOOKUP_CONTENT",
                     0.75f
