@@ -39,9 +39,6 @@ android {
     }
     productFlavors {
     }
-    lintOptions {
-        disable 'GoogleAppIndexingWarning'
-    }
 }
 
 

@@ -41,9 +41,6 @@ android {
     }
     productFlavors {
     }
-    lintOptions {
-        disable 'GoogleAppIndexingWarning'
-    }
 }
 
 dependencies {
