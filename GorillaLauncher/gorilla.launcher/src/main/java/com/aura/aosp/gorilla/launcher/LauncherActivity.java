@@ -841,8 +841,9 @@ public class LauncherActivity extends AppCompatActivity {
         public void onServiceChange(boolean connected) {
             Log.d(LOGTAG, "onServiceChange: connected=" + connected);
 
-            svlink = connected;
-            statusBar.setSvLink(connected);
+            if (statusBar != null) {
+                statusBar.setSvLink(connected);
+            }
 
 //            updateTitle();
 //
@@ -857,8 +858,9 @@ public class LauncherActivity extends AppCompatActivity {
         public void onUplinkChange(boolean connected) {
             Log.d(LOGTAG, "onUplinkChange: connected=" + connected);
 
-            uplink = connected;
-            statusBar.setUplink(connected);
+            if (statusBar != null) {
+                statusBar.setUplink(connected);
+            }
 
 //            updateTitle();
 //
@@ -877,9 +879,16 @@ public class LauncherActivity extends AppCompatActivity {
 
             ownerIdent = Contacts.getContact(ownerUUID);
 
-            Log.d(LOGTAG, "onOwnerReceived: +++++ contact +++++ nick=" + ownerIdent.getNick());
+            if (ownerIdent != null) {
 
-            launcherView.updateOverlayText(ownerIdent.getNick());
+                Log.d(LOGTAG, "onOwnerReceived: +++++ CONTACT +++++ nick=" + ownerIdent.getNick());
+
+                String nick = ownerIdent.getNick();
+
+                if (statusBar != null) {
+                    statusBar.setProfileInfo(nick);
+                }
+            }
 
 //            updateTitle();
 //
