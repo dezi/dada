@@ -58,12 +58,15 @@ import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterAdapter;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterView;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ClusterButtonView;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ToggleClusterButton;
+import com.aura.aosp.gorilla.launcher.ui.status.LauncherStatusBar;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 ;
 import jp.wasabeef.blurry.Blurry;
 
@@ -95,6 +98,7 @@ public class LauncherActivity extends AppCompatActivity {
 
     private LauncherView launcherView;
 
+    private LauncherStatusBar statusBar;
     private ConstraintLayout timelineContainer;
     private RecyclerView timelineView;
     private TimelineAdapter timelineAdapter;
@@ -159,6 +163,8 @@ public class LauncherActivity extends AppCompatActivity {
         // Identify main layout and components
         setContentView(R.layout.activity_launcher);
         launcherView = findViewById(R.id.launcher);
+
+        statusBar = findViewById(R.id.statusBar);
 
         timelineContainer = launcherView.findViewById(R.id.timelineContainer);
         timelineView = launcherView.findViewById(R.id.timeline);
@@ -836,6 +842,7 @@ public class LauncherActivity extends AppCompatActivity {
             Log.d(LOGTAG, "onServiceChange: connected=" + connected);
 
             svlink = connected;
+            statusBar.setSvLink(connected);
 
 //            updateTitle();
 //
@@ -851,6 +858,7 @@ public class LauncherActivity extends AppCompatActivity {
             Log.d(LOGTAG, "onUplinkChange: connected=" + connected);
 
             uplink = connected;
+            statusBar.setUplink(connected);
 
 //            updateTitle();
 //
