@@ -40,9 +40,9 @@ public class GorillaLocation implements LocationListener
         return instance;
     }
 
-    public static void startService(Context appcontext)
+    public static void startService()
     {
-        instance.start(appcontext);
+        instance.start();
     }
 
     public static void stopService()
@@ -50,9 +50,9 @@ public class GorillaLocation implements LocationListener
         instance.stop();
     }
 
-    private void start(Context appcontext)
+    private void start()
     {
-        if (Perms.checkLocationPermission(appcontext))
+        try
         {
             LocationManager locationManager = Simple.getLocationManager();
 
@@ -90,9 +90,13 @@ public class GorillaLocation implements LocationListener
                 storeLocation(last);
             }
         }
-        else
+        catch (SecurityException ex)
         {
             Log.e("no permission!");
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
     }
 
