@@ -9,7 +9,10 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.view.animation.AnimationUtils;
 
-public class ExpandingCircleAnimationDrawable extends Drawable implements Animatable, Runnable {
+/**
+ * Test drawable
+ */
+public class ExpandingCircleDrawable extends Drawable implements Animatable, Runnable {
 
     private Paint mPaint;
     private float mRadius;
@@ -17,7 +20,7 @@ public class ExpandingCircleAnimationDrawable extends Drawable implements Animat
     private long mStartTicks = 0;
     private boolean mIsRunning = false;
 
-    public ExpandingCircleAnimationDrawable(float radius, int color) {
+    public ExpandingCircleDrawable(float radius, int color) {
         super();
 
         mRadius = radius;

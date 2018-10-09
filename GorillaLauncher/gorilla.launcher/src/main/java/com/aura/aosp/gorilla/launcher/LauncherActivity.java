@@ -1,17 +1,10 @@
 package com.aura.aosp.gorilla.launcher;
 
-import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
-import android.graphics.PixelFormat;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.ActionBar;
@@ -24,11 +17,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 
 import com.aura.aosp.aura.common.simple.Json;
@@ -44,9 +32,8 @@ import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.ActionItem;
 import com.aura.aosp.gorilla.launcher.model.TimelineItem;
-import com.aura.aosp.gorilla.launcher.ui.animation.drawable.ExpandingCircleAnimationDrawable;
-import com.aura.aosp.gorilla.launcher.ui.animation.easing.Easing;
-import com.aura.aosp.gorilla.launcher.ui.animation.easing.EasingInterpolator;
+import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
+import com.aura.aosp.gorilla.launcher.ui.animation.drawable.ExpandingCircleDrawable;
 import com.aura.aosp.gorilla.launcher.ui.common.FuncViewManager;
 import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
 import com.aura.aosp.gorilla.launcher.ui.content.FuncBaseView;
@@ -73,7 +60,6 @@ public class LauncherActivity extends AppCompatActivity {
 
     private final static String LOGTAG = LauncherActivity.class.getSimpleName();
 
-    private static final float INITIAL_CLUSTER_BUTTON_ALPHA = 0.8f;
     private static final boolean SHOW_STARTUP_ANIMATIONS = false;
 
     public static Identity ownerIdent;
@@ -90,7 +76,7 @@ public class LauncherActivity extends AppCompatActivity {
     private static int blurRadius;
     private static int blurTransisitionDuration;
 
-    private static ExpandingCircleAnimationDrawable mCircle;
+    private static ExpandingCircleDrawable mCircle;
 
     private LauncherView launcherView;
 
@@ -172,8 +158,10 @@ public class LauncherActivity extends AppCompatActivity {
         // Hide status and action bars
         hideStatusAndActionBar();
 
-//        // Testing:
-//        addHolisticAiCircle();
+//        // Testing drawables:
+//        Drawable ringDrawable = new RingDrawable(getApplicationContext());
+//        mCircle = new ExpandingCircleDrawable(400, R.color.color_ai_circle);
+//        launcherView.setForeground(mCircle);
 
         //
         // Create main timeline list items
@@ -243,7 +231,7 @@ public class LauncherActivity extends AppCompatActivity {
                 public void run() {
                     ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
                     activateActionClusterView(actionClusterView);
-                    doClusterDemoAnimation(actionClusterView);
+                    Effects.doClusterDemoAnimation(actionClusterView);
                 }
             }, 800);
             Handler handler2 = new Handler();
@@ -388,6 +376,7 @@ public class LauncherActivity extends AppCompatActivity {
             deactivateView((ViewGroup) invokingActionClusterView.getParent());
         } else {
             deactivateBackgroundView();
+            toggleClusterButton.minimize();
 //            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_forward_black_24dp, getTheme()));
         }
 
@@ -413,6 +402,7 @@ public class LauncherActivity extends AppCompatActivity {
             Log.d(LOGTAG, String.format("Removed Action Cluster <%s>", ((ViewGroup) actionClusterView.getParent()).getId()));
         } else {
 //            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_24dp, getTheme()));
+            toggleClusterButton.maximize();
             actionClusterView.fadeOut();
             activateBackgroundView();
             actionClusterContainer.removeView(actionClusterView);
@@ -613,125 +603,6 @@ public class LauncherActivity extends AppCompatActivity {
 ////                .color(R.color.color_transparent)
 //                .animate(blurTransisitionDuration)
 //                .onto(viewGroup);
-    }
-
-
-    /**
-     * Bounce animation
-     *
-     * @param targetView
-     */
-    private void doClusterDemoAnimation(View targetView) {
-
-        ObjectAnimator animator = ObjectAnimator.ofFloat(targetView, "translationX", 450, 150, 0);
-        animator.setInterpolator(new EasingInterpolator(Easing.BACK_IN));
-        animator.setStartDelay(40);
-        animator.setDuration(1500);
-        animator.start();
-    }
-
-    /**
-     * Testing different kind of view animations...
-     */
-    private void doTestAnimation() {
-
-        // Animation set for action cluster view
-        AnimationSet abcAnimationSet = new AnimationSet(true);
-
-        Animation fabAlphaAnimation = new AlphaAnimation(0.2f, INITIAL_CLUSTER_BUTTON_ALPHA);
-        fabAlphaAnimation.setDuration(1200);
-
-//        final Interpolator abcInterpolator = PathInterpolatorCompat.create(0.550f, 0.055f, 0.675f, 0.19f);
-//        Interpolator bi = new BounceInterpolator();
-//        EasingInterpolator ioInterpolator = new EasingInterpolator(Easing.BOUNCE_IN_OUT);
-
-        ScaleAnimation abcScaleAnimationGrow = new ScaleAnimation(0.5f, 1.2f, 0.5f, 1.2f);
-        abcScaleAnimationGrow.setInterpolator(new BounceInterpolator());
-        abcScaleAnimationGrow.setDuration(600);
-
-        ScaleAnimation abcScaleAnimationShrink = new ScaleAnimation(1.2f, 1f, 1.2f, 1f);
-        abcScaleAnimationShrink.setInterpolator(new BounceInterpolator());
-        abcScaleAnimationShrink.setDuration(600);
-
-        abcAnimationSet.addAnimation(fabAlphaAnimation);
-        abcAnimationSet.addAnimation(abcScaleAnimationGrow);
-        abcAnimationSet.addAnimation(abcScaleAnimationShrink);
-
-        ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
-        actionClusterView.setAnimation(abcAnimationSet);
-        abcAnimationSet.start();
-    }
-
-    /**
-     * PLAYGROUND: Put fancy-holistic AI bubble animation discretely on top of background
-     */
-    private void addHolisticAiCircle() {
-
-//        Drawable ringDrawable = this.getRingDrawable();
-        mCircle = new ExpandingCircleAnimationDrawable(400, R.color.color_ai_circle);
-        launcherView.setForeground(mCircle);
-
-    }
-
-    /**
-     * PLAYGROUND: Get drawable from canvas
-     *
-     * @return
-     */
-    private Drawable getRingDrawable() {
-
-        return new Drawable() {
-            @Override
-            public void draw(@NonNull Canvas canvas) {
-                Paint mPaint = new Paint();
-
-                mPaint.setStyle(Paint.Style.STROKE);
-                mPaint.setStrokeWidth(24);
-//                mPaint.setPathEffect(new PathEffect());
-                // Setting the color of the circle
-                mPaint.setColor(getResources().getColor(R.color.color_ai_expading_circle, getTheme()));
-                mPaint.setAntiAlias(true);
-
-                this.setAlpha(75);
-
-                // Draw the circle at (x,y) with radius 250
-                int radius = 230;
-                int mX = 300;
-                int mY = 600;
-
-                canvas.drawCircle(mX, mY, radius, mPaint);
-
-//                mPaint.setColor(Color.YELLOW);
-//                mPaint.setDither(true);                    // set the dither to true
-//                mPaint.setStyle(Paint.Style.STROKE);       // set to STOKE
-//                mPaint.setStrokeJoin(Paint.Join.ROUND);    // set the join to round you want
-//                mPaint.setStrokeCap(Paint.Cap.ROUND);      // set the paint cap to round too
-//                mPaint.setPathEffect(new CornerPathEffect(50) );   // set the path effect when they join.
-//                mPaint.setAntiAlias(true);
-
-//                RectF oval = new RectF(mX - radius, mY - radius, mX + radius, mY + radius);
-//                canvas.drawArc(oval, -90, 90, false, mPaint);
-//                mPaint.setColor(Color.RED);
-//                canvas.drawArc(oval, -90, 89, false, mPaint);
-
-                // Redraw the canvas
-//                invalidateSelf();
-            }
-
-            @Override
-            public void setAlpha(int i) {
-            }
-
-            @Override
-            public void setColorFilter(@Nullable ColorFilter colorFilter) {
-
-            }
-
-            @Override
-            public int getOpacity() {
-                return PixelFormat.UNKNOWN;
-            }
-        };
     }
 
     /**

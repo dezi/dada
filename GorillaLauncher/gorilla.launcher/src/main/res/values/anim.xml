@@ -8,6 +8,10 @@
     <integer name="actioncluster_fadein_transition_duration">80</integer>
     <integer name="actioncluster_fadeout_transition_duration">80</integer>
 
+    <!-- Action Cluster Toggle Button -->
+    <integer name="toggleclusterbutton_fadein_transition_duration">260</integer>
+    <integer name="toggleclusterbutton_fadeout_transition_duration">60</integer>
+
     <!-- Func Views -->
     <integer name="funcview_fadein_transition_duration">120</integer>
     <integer name="funcview_fadeout_transition_duration">120</integer>

@@ -60,6 +60,14 @@ public class ActionClusterStore {
                     items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_composeMessage),
                             FuncBaseView.FuncType.OVERLAY,
+                            R.drawable.ic_sms_black_24dp,
+                            new ActionCluster("AC-COMPOSE-MESSAGE", SampleData.getMessengerActionItems(context)),
+                            0.92f
+                    ));
+
+                    items.add(new ActionItem(
+                            context.getResources().getString(R.string.actions_composeMessage),
+                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_message_black_24dp,
                             "com.aura.aosp.gorilla.launcher.action.EDIT_TEXT",
                             0.98f
