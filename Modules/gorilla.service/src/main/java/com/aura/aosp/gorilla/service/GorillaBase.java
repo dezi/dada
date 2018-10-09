@@ -1,5 +1,12 @@
 package com.aura.aosp.gorilla.service;
 
+/*
+ * Copyright (C) 2018 Aura Software Inc.
+ *
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ */
+
 import android.support.annotation.NonNull;
 
 import android.app.Application;
@@ -9,6 +16,21 @@ import com.aura.aosp.aura.common.simple.Simple;
 
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
+/**
+ * The class {@code GorillaBase} is executed first
+ * once any activity, broadcast, service or job
+ * is started.
+ * <p>
+ * {@code GorillaBase} needs to be registered in manifest:
+ * <p>
+ * <pre>
+ * {@code
+ * <application android:name=".GorillaBase">
+ * }
+ * </pre>
+ *
+ * @author Dennis Zierahn
+ */
 public class GorillaBase extends Application
 {
     /**

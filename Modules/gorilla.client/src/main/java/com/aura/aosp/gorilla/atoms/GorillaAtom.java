@@ -47,16 +47,34 @@ public abstract class GorillaAtom
         this.atom = atom;
     }
 
+    /**
+     * Convert atom contents to JSON string.
+     *
+     * @return JSON string.
+     */
     public String toString()
     {
-        return atom.toString();
+        //
+        // No no no escaped forward slashes...
+        //
+
+        return atom.toString().replace("\\/", "/");
     }
 
+    /**
+     * Convert atom contents to indented JSON string.
+     *
+     * @return JSON string.
+     */
     public String toPretty()
     {
         try
         {
-            return atom.toString(2);
+            //
+            // No no no escaped forward slashes...
+            //
+
+            return atom.toString(2).replace("\\/", "/");
         }
         catch (Exception ignore)
         {
@@ -72,9 +90,23 @@ public abstract class GorillaAtom
     @NonNull
     public JSONObject getAtom()
     {
+        //
+        // Since the content IS a JSON, we simply return it.
+        //
+
         return atom;
     }
 
+    //
+    // .
+    //
+
+    /**
+     * Populate atom from JSON string.
+     *
+     * @param jsonstr input JSON string.
+     * @return true if successfull parsed.
+     */
     public boolean setAtom(String jsonstr)
     {
         JSONObject newatom = fromStringJSONOBject(jsonstr);
@@ -86,6 +118,8 @@ public abstract class GorillaAtom
 
     /**
      * Set atom UUID as byte array.
+     *
+     * @param uuid byte array.
      */
     public void setUUID(@NonNull byte[] uuid)
     {
@@ -94,6 +128,8 @@ public abstract class GorillaAtom
 
     /**
      * Set atom UUID as base64 encoded string.
+     *
+     * @param uuidBase64 base64 encoded byte array.
      */
     public void setUUID(@NonNull String uuidBase64)
     {
@@ -239,7 +275,7 @@ public abstract class GorillaAtom
         }
     }
 
-    static void putJSONByteArray(@NonNull JSONObject json, @NonNull String key, byte[] val)
+    void putJSONByteArray(@NonNull JSONObject json, @NonNull String key, byte[] val)
     {
         try
         {
@@ -258,7 +294,7 @@ public abstract class GorillaAtom
     }
 
     @Nullable
-    static JSONObject getJSONObject(@NonNull JSONObject json, @NonNull String key)
+    JSONObject getJSONObject(@NonNull JSONObject json, @NonNull String key)
     {
         try
         {
@@ -271,7 +307,7 @@ public abstract class GorillaAtom
     }
 
     @Nullable
-    static Long getJSONLong(@NonNull JSONObject json, @NonNull String key)
+    Long getJSONLong(@NonNull JSONObject json, @NonNull String key)
     {
         try
         {
@@ -284,7 +320,7 @@ public abstract class GorillaAtom
     }
 
     @Nullable
-    static String getJSONString(@NonNull JSONObject json, @NonNull String key)
+    String getJSONString(@NonNull JSONObject json, @NonNull String key)
     {
         try
         {
@@ -297,7 +333,7 @@ public abstract class GorillaAtom
     }
 
     @Nullable
-    static byte[] getJSONByteArray(@NonNull JSONObject json, @NonNull String key)
+    byte[] getJSONByteArray(@NonNull JSONObject json, @NonNull String key)
     {
         try
         {
@@ -316,7 +352,7 @@ public abstract class GorillaAtom
      * @return JSONObject or null.
      */
     @Nullable
-    static JSONObject fromStringJSONOBject(@NonNull String jsonstr)
+    JSONObject fromStringJSONOBject(@NonNull String jsonstr)
     {
         try
         {

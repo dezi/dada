@@ -7,7 +7,6 @@
 
 package com.aura.aosp.gorilla.atoms;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.json.JSONObject;
