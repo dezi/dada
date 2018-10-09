@@ -15,7 +15,7 @@ import android.util.Base64;
 import org.json.JSONObject;
 
 /**
- * Ubiquouos static utility methods.
+ * Ubiquitous static utility methods.
  *
  * @author Dennis Zierahn
  */
