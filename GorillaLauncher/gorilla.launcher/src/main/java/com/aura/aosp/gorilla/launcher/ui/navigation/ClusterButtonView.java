@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.aura.aosp.gorilla.launcher.R;
+import com.aura.aosp.gorilla.launcher.model.AbstractActionItem;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.ActionItem;
 
@@ -61,13 +63,19 @@ public class ClusterButtonView extends FloatingActionButton {
 
         switch (actionItem.getType()) {
 
-            case TYPE_FINAL:
+            // Call to an internal or external action/function view
+            case TYPE_ACTION_INTERN:
             default:
 
-                // Call to a func/app view
-                useEnabledColor = R.color.color_clusterbutton_enabled_final;
-                usePressedColor = R.color.color_clusterbutton_pressed_final;
-                useIconColor = R.color.color_clusterbutton_icon_final;
+                if (actionItem.getType() == AbstractActionItem.ItemType.TYPE_ACTION_INTERN) {
+                    useEnabledColor = R.color.color_clusterbutton_enabled_action_intern;
+                    usePressedColor = R.color.color_clusterbutton_pressed_action_intern;
+                    useIconColor = R.color.color_clusterbutton_icon_action_intern;
+                } else {
+                    useEnabledColor = R.color.color_clusterbutton_enabled_action_extern;
+                    usePressedColor = R.color.color_clusterbutton_pressed_action_extern;
+                    useIconColor = R.color.color_clusterbutton_icon_action_extern;
+                }
 
                 // Set on click (action) listener
                 if (actionItem.getAction() != null) {
@@ -117,9 +125,9 @@ public class ClusterButtonView extends FloatingActionButton {
 
                 break;
 
+            // Call to a nested action cluster
             case TYPE_CLUSTER:
 
-                // Call to a nested action cluster
                 useEnabledColor = R.color.color_clusterbutton_enabled_cluster;
                 usePressedColor = R.color.color_clusterbutton_pressed_cluster;
                 useIconColor = R.color.color_clusterbutton_icon_cluster;

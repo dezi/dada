@@ -46,7 +46,7 @@ public class ActionClusterStore {
                             FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_add_a_photo_black_24dp,
                             LauncherActivity.class.getMethod("onOpenSimpleCalendar"),
-                            0.970f
+                            0.870f
                     ));
 
                     items.add(new ActionItem(
@@ -58,20 +58,24 @@ public class ActionClusterStore {
                     ));
 
                     items.add(new ActionItem(
-                            context.getResources().getString(R.string.actions_switchProfile),
-                            FuncBaseView.FuncType.OVERLAY,
-                            R.drawable.ic_account_circle_black_24dp,
-                            context.getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp"),
-                            0.95f
-                    ));
-
-                    items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_composeMessage),
                             FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_message_black_24dp,
                             "com.aura.aosp.gorilla.launcher.action.EDIT_TEXT",
-                            0.60f
+                            0.98f
                     ));
+
+                    ActionItem switchProfileActionItem = new ActionItem(
+                            context.getResources().getString(R.string.actions_switchProfile),
+                            FuncBaseView.FuncType.OVERLAY,
+                            R.drawable.ic_account_circle_black_24dp,
+                            context.getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp"),
+                            0.97f
+                    );
+
+                    switchProfileActionItem.setType(ActionItem.ItemType.TYPE_ACTION_EXTERN);
+                    items.add(switchProfileActionItem);
+
                 } catch (NoSuchMethodException e) {
                     Log.e(LOGTAG, String.format("No such action invocation method found: <%s>, Activiy is <%>",
                             e.getMessage(), LauncherActivity.class));

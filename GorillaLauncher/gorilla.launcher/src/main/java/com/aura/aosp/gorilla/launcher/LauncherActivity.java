@@ -89,8 +89,6 @@ public class LauncherActivity extends AppCompatActivity {
     private static int blurSampliong;
     private static int blurRadius;
     private static int blurTransisitionDuration;
-    private static int toggleActionClusterTransitionDuration;
-    private static int showFunctionViewTransitionDuration;
 
     private static ExpandingCircleAnimationDrawable mCircle;
 
@@ -154,8 +152,6 @@ public class LauncherActivity extends AppCompatActivity {
         blurSampliong = getResources().getInteger(R.integer.launcher_blur_sampling);
         blurRadius = getResources().getInteger(R.integer.launcher_blur_radius);
         blurTransisitionDuration = getResources().getInteger(R.integer.launcher_blur_transition_duration);
-        toggleActionClusterTransitionDuration = getResources().getInteger(R.integer.toggle_actioncluster_transition_duration);
-        showFunctionViewTransitionDuration = getResources().getInteger(R.integer.show_function_view_transition_duration);
         clusterElevationPerLevel = getResources().getDimension(R.dimen.clusterbutton_elevationPerLevel);
 
         // Identify main layout and components
@@ -220,10 +216,11 @@ public class LauncherActivity extends AppCompatActivity {
                     public void onGlobalLayout() {
                         // Create initial action button cluster (attach it to "root" container)
                         actionClusterStore = new ActionClusterStore(getApplicationContext());
+
                         ActionCluster initialActionCluster = actionClusterStore.getClusterForActionEvent(getPackageName());
-                        List<ActionItem> initialActionItems = initialActionCluster.getActionItems();
-//                        List<ActionItem> initialActionItems = SampleData.getLauncherActionItems(toggleClusterButton.getContext());
-                        createActionClusterView(new ActionCluster("AC-ROOT", initialActionItems), null, false);
+//                        ActionCluster initialActionCluster = SampleData.getLauncherActionCluster(toggleClusterButton.getContext());
+
+                        createActionClusterView(initialActionCluster, null, false);
                         // Remove listener when done
                         toggleClusterButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
@@ -245,7 +242,7 @@ public class LauncherActivity extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 public void run() {
                     ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
-                    activateActionClusterView(actionClusterView, 350);
+                    activateActionClusterView(actionClusterView);
                     doClusterDemoAnimation(actionClusterView);
                 }
             }, 800);
@@ -253,7 +250,7 @@ public class LauncherActivity extends AppCompatActivity {
             handler2.postDelayed(new Runnable() {
                 public void run() {
                     ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
-                    deactivateActionClusterView(actionClusterView, 450);
+                    deactivateActionClusterView(actionClusterView);
                 }
             }, 2500);
         }
@@ -336,7 +333,7 @@ public class LauncherActivity extends AppCompatActivity {
         actionClusterContainer.addView(actionClusterFrame);
 
         if (instantShow) {
-            activateActionClusterView(actionClusterView, null);
+            activateActionClusterView(actionClusterView);
         }
 
         Log.d(LOGTAG, String.format("Added action cluster <%s>", actionCluster.getName()));
@@ -346,9 +343,8 @@ public class LauncherActivity extends AppCompatActivity {
      * Show action cluster
      *
      * @param actionClusterView
-     * @param duration
      */
-    public void activateActionClusterView(final ActionClusterView actionClusterView, @Nullable Integer duration) {
+    public void activateActionClusterView(final ActionClusterView actionClusterView) {
 
         ClusterButtonView invokingActionClusterView = actionClusterView.getInvokingActionButtonView();
 
@@ -392,10 +388,10 @@ public class LauncherActivity extends AppCompatActivity {
             deactivateView((ViewGroup) invokingActionClusterView.getParent());
         } else {
             deactivateBackgroundView();
+//            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_forward_black_24dp, getTheme()));
         }
 
-        fadeInView(actionClusterView, duration);
-        toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_forward_black_24dp, getTheme()));
+        actionClusterView.fadeIn();
 
         // Put View into list of active Action Cluster Views
         activeActionClusterViews.add(actionClusterView);
@@ -405,20 +401,19 @@ public class LauncherActivity extends AppCompatActivity {
      * Hide action cluster
      *
      * @param actionClusterView
-     * @param duration
      */
-    public void deactivateActionClusterView(ActionClusterView actionClusterView, @Nullable Integer duration) {
+    public void deactivateActionClusterView(ActionClusterView actionClusterView) {
 
         ClusterButtonView invokingActionButtonView = actionClusterView.getInvokingActionButtonView();
 
         if (invokingActionButtonView != null) {
-            fadeOutView(actionClusterView, duration);
+            actionClusterView.fadeOut();
             activateView((ViewGroup) invokingActionButtonView.getParent());
             actionClusterContainer.removeView((ViewGroup) actionClusterView.getParent());
             Log.d(LOGTAG, String.format("Removed Action Cluster <%s>", ((ViewGroup) actionClusterView.getParent()).getId()));
         } else {
-            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_24dp, getTheme()));
-            fadeOutView(actionClusterView, duration);
+//            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_24dp, getTheme()));
+            actionClusterView.fadeOut();
             activateBackgroundView();
             actionClusterContainer.removeView(actionClusterView);
             Log.d(LOGTAG, String.format("Removed Action Cluster <%s>", actionClusterView.getId()));
@@ -436,12 +431,12 @@ public class LauncherActivity extends AppCompatActivity {
 
         switch (actionClusterView.getVisibility()) {
             case View.VISIBLE:
-                deactivateActionClusterView(actionClusterView, null);
+                deactivateActionClusterView(actionClusterView);
                 break;
 
             case View.GONE:
             case View.INVISIBLE:
-                activateActionClusterView(actionClusterView, null);
+                activateActionClusterView(actionClusterView);
                 break;
         }
     }
@@ -469,18 +464,18 @@ public class LauncherActivity extends AppCompatActivity {
                     actionClusterView.getGlobalVisibleRect(viewRect);
 
                     if (!viewRect.contains(rawX, rawY)) {
-                        deactivateActionClusterView(actionClusterView, null);
+                        deactivateActionClusterView(actionClusterView);
                     }
                 }
 
                 // Check for active "function view(s)" and close them if touch happened outside visible rect
-                for (final View funcView : funcViewManager.getFuncViews().values()) {
+                for (final FuncBaseView funcView : funcViewManager.getFuncViews().values()) {
                     Rect viewRect = new Rect();
                     View innerView = funcView.findViewById(R.id.funcInnerView);
                     innerView.getGlobalVisibleRect(viewRect);
 
                     if (!viewRect.contains(rawX, rawY)) {
-                        fadeOutView(funcView, null);
+                        funcView.fadeOut();
                         // Completely remove view
 //                        launcherView.removeView(funcView);
                         funcViewManager.removeFuncView(funcView);
@@ -518,7 +513,7 @@ public class LauncherActivity extends AppCompatActivity {
         LayoutInflater inflater = LayoutInflater.from(this);
         SimpleCalendarView simpleCalendarView = (SimpleCalendarView) inflater.inflate(R.layout.action_simple_calendar, launcherView, false);
         simpleCalendarView.setVisibility(View.INVISIBLE);
-        fadeInView(simpleCalendarView, null);
+        simpleCalendarView.fadeIn();
 
         // Add view to launcher
         launcherView.addView(simpleCalendarView);
@@ -563,61 +558,6 @@ public class LauncherActivity extends AppCompatActivity {
     public void onMarkSelectedTextAlignJustify() {
 
         onOpenSimpleCalendar();
-    }
-
-    /**
-     * Standard fade in animations for "function views"
-     *
-     * @param view
-     */
-    private void fadeInView(View view, @Nullable Integer duration) {
-
-        if (duration == null) {
-            if (view.getClass() == ActionClusterView.class) {
-                duration = showFunctionViewTransitionDuration;
-            } else {
-                duration = toggleActionClusterTransitionDuration;
-            }
-        }
-
-        view.setAlpha(0f);
-        view.setScaleX(0f);
-        view.setScaleY(0f);
-        view.setVisibility(View.VISIBLE);
-
-        view.animate()
-                .alpha(1f)
-                .scaleX(1f).scaleY(1f)
-                .setDuration(duration)
-                .start();
-    }
-
-    /**
-     * Standard fade out animations for "function views"
-     *
-     * @param view
-     */
-    private void fadeOutView(final View view, @Nullable Integer duration) {
-
-        if (duration == null) {
-            if (view.getClass() == ActionClusterView.class) {
-                duration = showFunctionViewTransitionDuration;
-            } else {
-                duration = toggleActionClusterTransitionDuration;
-            }
-        }
-
-        view.animate()
-                .alpha(0.f)
-                .scaleX(0.f).scaleY(0.f)
-                .setDuration(duration)
-                .withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        view.setVisibility(View.GONE);
-                    }
-                })
-                .start();
     }
 
     /**

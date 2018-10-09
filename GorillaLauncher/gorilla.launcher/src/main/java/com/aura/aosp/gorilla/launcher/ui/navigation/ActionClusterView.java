@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.aura.aosp.gorilla.launcher.R;
+import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 
 /**
  * Main view which holds and manages the "Action Cluster"
@@ -52,6 +53,16 @@ public class ActionClusterView extends RecyclerView implements View.OnTouchListe
 //        }
 
         a.recycle();
+    }
+
+    public void fadeIn() {
+        Integer duration = getContext().getResources().getInteger(R.integer.actioncluster_fadein_transition_duration);
+        Effects.fadeInView(this, getContext(), duration);
+    }
+
+    public void fadeOut() {
+        Integer duration = getContext().getResources().getInteger(R.integer.actioncluster_fadein_transition_duration);
+        Effects.fadeOutView(this, getContext(), duration);
     }
 
     /**
