@@ -2,6 +2,7 @@ package com.aura.aosp.gorilla.service;
 
 import android.support.annotation.NonNull;
 
+import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Simple;
@@ -61,11 +62,12 @@ public class GorillaState
             realState.setType("aura.event.state");
             GoatomStorage.putAtom(realState.getAtom());
 
+            Log.d("state=%s", realState.toPretty());
+
             lastState = thisState;
 
-            GopoorSuggest.precomputeSuggestionsByState(realState.getLoad());
-
-            Log.d("state=%s", realState.toPretty());
+            Err err = GopoorSuggest.precomputeSuggestionsByState(realState.getLoad());
+            if (err != null) Log.e("failed! err=%s", err.toString());
         }
     }
 }

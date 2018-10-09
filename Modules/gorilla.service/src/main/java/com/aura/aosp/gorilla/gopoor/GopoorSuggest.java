@@ -23,17 +23,51 @@ import java.util.Map;
 
 public class GopoorSuggest
 {
+    /**
+     * Number of seconds for recent events.
+     */
     public final static int RECENT_SECONDS = 600;
+
+    /**
+     * GPS accuracy for making a different gps location.
+     */
     public final static int GPS_ACCURACY = 1000;
 
+    /**
+     * Indicates that all stored events have been cached.
+     */
     private static boolean fetched;
 
+    /**
+     * Map from an enviroment tag (net.mobile, device.xxxx, device.yyyy)
+     * to row index in matrix.
+     */
     private final static Map<String, Integer> envtag2index = new HashMap<>();
+
+    /**
+     * Reverse map from column index to environment tag.
+     */
     private final static SparseArray<String> index2envtag = new SparseArray<>();
+
+    /**
+     * Event identifier to column index in matrix.
+     */
     private final static Map<String, SparseIntArray> event2column = new HashMap<>();
-    private final static List<JSONObject> recentEvents = new ArrayList<>();
+
+    /**
+     * Environmet category (net.*, wifi,*, hour.*)
+     * to corresponding row indices in matrix.
+     */
     private final static Map<String, ArrayList<Integer>> envcat2indexlist = new HashMap<>();
 
+    /**
+     * Dedicated list with recent events.
+     */
+    private final static List<JSONObject> recentEvents = new ArrayList<>();
+
+    /**
+     * Current suggestion results.
+     */
     private static JSONArray currentSuggestions;
 
     @Nullable
@@ -154,6 +188,10 @@ public class GopoorSuggest
             Json.put(score, "gps", scoreGps);
             Json.put(score, "total", scoreTotal);
         }
+
+        //
+        // Normalize all scores to be between 0.0 .. 1.0.
+        //
 
         for (String domain : event2column.keySet())
         {
