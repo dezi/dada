@@ -112,7 +112,8 @@ public class GopoorSuggest
         //
 
         Map<String, JSONObject> domScores = new HashMap<>();
-        double scoreOverall = 0.0;
+        double totalOverall = 0.0;
+        double countOverall = 0.0;
 
         for (Map.Entry<String, SparseIntArray> entry : event2column.entrySet())
         {
@@ -123,7 +124,16 @@ public class GopoorSuggest
             domScores.put(domain, score);
 
             //
-            // Score network environment category.
+            // Score total event count.
+            //
+
+            double scoreCount = getScoreForEnvcat(column, envcat2indexlist.get("device"));
+            countOverall += scoreCount;
+
+            Json.put(score, "count", scoreCount);
+
+            //
+            // Score individual event categories.
             //
 
             double scoreNet = getScoreForEnvtagIndex(column, envcat2indexlist.get("net"), curNet);
@@ -134,6 +144,7 @@ public class GopoorSuggest
             double scoreGps = getScoreForEnvtagIndex(column, envcat2indexlist.get("gps"), curGps);
 
             double scoreTotal = scoreNet + scoreDevice + scoreDayOfWeek + scorePartOfMonth + scoreHourOfDay + scoreGps;
+            totalOverall += scoreTotal;
 
             Json.put(score, "net", scoreNet);
             Json.put(score, "device", scoreDevice);
@@ -142,29 +153,38 @@ public class GopoorSuggest
             Json.put(score, "hour", scoreHourOfDay);
             Json.put(score, "gps", scoreGps);
             Json.put(score, "total", scoreTotal);
-
-            scoreOverall += scoreTotal;
         }
 
         for (String domain : event2column.keySet())
         {
             JSONObject scoreJson = domScores.get(domain);
 
+            Double count = Json.getDouble(scoreJson, "count");
+            if (count == null) continue;
+
+            double countNormalized = (countOverall > 0) ? (count / countOverall) : 0.0;
+            Json.put(scoreJson, "count", countNormalized);
+
             Double total = Json.getDouble(scoreJson, "total");
             if (total == null) continue;
 
-            double score = (scoreOverall > 0) ? (total / scoreOverall) : 0.0;
-            Json.put(scoreJson, "score", score);
+            double scoreNormalized = (totalOverall > 0) ? (total / totalOverall) : 0.0;
+            Json.put(scoreJson, "score", scoreNormalized);
 
-            Log.d("%s => net=%f dev=%f dow=%f pom=%f hod=%f gps=%s total=%f score=%f", domain,
+            double finalScore = (countNormalized + scoreNormalized) / 2.0;
+            Json.put(scoreJson, "final", finalScore);
+
+            Log.d("%s => net=%.2f dev=%.2f dow=%.2f pom=%.2f hod=%.2f gps=%.2f count=%.2f total=%.2f score=%.2f final=%.2f", domain,
                     Json.getDouble(scoreJson, "net"),
                     Json.getDouble(scoreJson, "device"),
                     Json.getDouble(scoreJson, "wday"),
                     Json.getDouble(scoreJson, "mpart"),
                     Json.getDouble(scoreJson, "hour"),
                     Json.getDouble(scoreJson, "gps"),
+                    Json.getDouble(scoreJson, "count"),
                     Json.getDouble(scoreJson, "total"),
-                    Json.getDouble(scoreJson, "score")
+                    Json.getDouble(scoreJson, "score"),
+                    Json.getDouble(scoreJson, "final")
             );
         }
 
@@ -213,6 +233,8 @@ public class GopoorSuggest
 
         float deviation = differs / (float) envCatIndexes.size();
 
+        Log.d("envTagIndex=%s deviation=%f average=%f cats=%d", envTagIndex, deviation, average, envCatIndexes.size());
+
         if (deviation < (average / 10f))
         {
             //
@@ -220,10 +242,38 @@ public class GopoorSuggest
             // Therefore this category yields no score.
             //
 
+            Log.d("envTagIndex=%s deviation=%f average=%f unspecific...", envTagIndex, deviation, average);
+
             return 0.0;
         }
 
         return column.get(envTagIndex) / (double) total;
+    }
+
+    @NonNull
+    private static Double getScoreForEnvcat(SparseIntArray column, ArrayList<Integer> envCatIndexes)
+    {
+        if (envCatIndexes.size() == 0)
+        {
+            //
+            // Environment tag not present or no category data.
+            //
+
+            return 0.0;
+        }
+
+        //
+        // Compute total in this category.
+        //
+
+        int total = 0;
+
+        for (int inx = 0; inx < envCatIndexes.size(); inx++)
+        {
+            total += column.get(envCatIndexes.get(inx));
+        }
+
+        return (double) total;
     }
 
     @Nullable
