@@ -5,12 +5,11 @@
     android:id="@+id/toggleClusterButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_gravity="bottom|end"
     android:layout_margin="@dimen/togglebutton_lay_margin"
-    android:clickable="true"
     android:elevation="0dp"
     android:onClick="toggleActionCluster"
     android:src="@drawable/ic_add_black_24dp"
     android:tint="@color/color_togglebutton_icon"
-    android:layout_gravity="bottom|right"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent" />

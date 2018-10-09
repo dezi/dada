@@ -17,7 +17,7 @@
         android:background="@android:color/background_light"
         android:lines="@android:integer/config_longAnimTime"
         android:padding="8dp"
-        android:text="TextView"
+        android:text="@string/_dotdotdot"
         android:textAlignment="viewEnd"
         android:textAppearance="@android:style/Animation.Toast"
         android:textColor="@android:color/black"

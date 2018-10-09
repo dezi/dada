@@ -31,8 +31,6 @@ import android.view.animation.BounceInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 
-import com.aura.aosp.aura.common.crypter.UID;
-import com.aura.aosp.aura.common.crypter.Utils;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
@@ -42,6 +40,7 @@ import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
+import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.ActionItem;
 import com.aura.aosp.gorilla.launcher.model.TimelineItem;
@@ -63,10 +62,7 @@ import com.aura.aosp.gorilla.launcher.ui.status.LauncherStatusBar;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 ;
 import jp.wasabeef.blurry.Blurry;
 
@@ -87,6 +83,8 @@ public class LauncherActivity extends AppCompatActivity {
     private static Boolean uplink;
 
     private Float clusterElevationPerLevel;
+
+    private ActionClusterStore actionClusterStore;
 
     private static int blurSampliong;
     private static int blurRadius;
@@ -194,6 +192,7 @@ public class LauncherActivity extends AppCompatActivity {
 
         // specify adapter
         // TODO: Replace with aggregated stream items from "Gorilla Content/Timeline Atoms"
+
         timelineAdapter = new TimelineAdapter(SampleData.getStreamData(), this);
         timelineAdapter = new TimelineAdapter(new ArrayList<TimelineItem>(), this);
         timelineView.setAdapter(timelineAdapter);
@@ -220,7 +219,10 @@ public class LauncherActivity extends AppCompatActivity {
                     @Override
                     public void onGlobalLayout() {
                         // Create initial action button cluster (attach it to "root" container)
-                        List<ActionItem> initialActionItems = SampleData.getLauncherActionItems(toggleClusterButton.getContext());
+                        actionClusterStore = new ActionClusterStore(getApplicationContext());
+                        ActionCluster initialActionCluster = actionClusterStore.getClusterForActionEvent(getPackageName());
+                        List<ActionItem> initialActionItems = initialActionCluster.getActionItems();
+//                        List<ActionItem> initialActionItems = SampleData.getLauncherActionItems(toggleClusterButton.getContext());
                         createActionClusterView(new ActionCluster("AC-ROOT", initialActionItems), null, false);
                         // Remove listener when done
                         toggleClusterButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -841,8 +843,9 @@ public class LauncherActivity extends AppCompatActivity {
         public void onServiceChange(boolean connected) {
             Log.d(LOGTAG, "onServiceChange: connected=" + connected);
 
-            svlink = connected;
-            statusBar.setSvLink(connected);
+            if (statusBar != null) {
+                statusBar.setSvLink(connected);
+            }
 
 //            updateTitle();
 //
@@ -857,8 +860,9 @@ public class LauncherActivity extends AppCompatActivity {
         public void onUplinkChange(boolean connected) {
             Log.d(LOGTAG, "onUplinkChange: connected=" + connected);
 
-            uplink = connected;
-            statusBar.setUplink(connected);
+            if (statusBar != null) {
+                statusBar.setUplink(connected);
+            }
 
 //            updateTitle();
 //
@@ -877,9 +881,16 @@ public class LauncherActivity extends AppCompatActivity {
 
             ownerIdent = Contacts.getContact(ownerUUID);
 
-            Log.d(LOGTAG, "onOwnerReceived: +++++ contact +++++ nick=" + ownerIdent.getNick());
+            if (ownerIdent != null) {
 
-            launcherView.updateOverlayText(ownerIdent.getNick());
+                Log.d(LOGTAG, "onOwnerReceived: +++++ CONTACT +++++ nick=" + ownerIdent.getNick());
+
+                String nick = ownerIdent.getNick();
+
+                if (statusBar != null) {
+                    statusBar.setProfileInfo(nick);
+                }
+            }
 
 //            updateTitle();
 //
