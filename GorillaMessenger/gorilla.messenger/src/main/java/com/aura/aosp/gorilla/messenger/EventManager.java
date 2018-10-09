@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.aura.aosp.aura.common.crypter.UID;
+import com.aura.aosp.aura.common.univid.Contacts;
+import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
@@ -16,6 +18,29 @@ import com.aura.aosp.gorilla.client.GorillaListener;
 public class EventManager extends GorillaListener
 {
     private static final String LOGTAG = EventManager.class.getSimpleName();
+
+    private static Identity ownerIdent;
+
+    @Nullable
+    public static Identity getOwnerIdent()
+    {
+        return ownerIdent;
+    }
+
+    @Nullable
+    public static String getOwnerNick()
+    {
+        if (ownerIdent == null) return null;
+        return ownerIdent.getNick();
+    }
+
+
+    @Nullable
+    public static String getOwnerDeviceBase64()
+    {
+        if (ownerIdent == null) return null;
+        return ownerIdent.getDeviceUUIDBase64();
+    }
 
     private final Context context;
 
@@ -49,6 +74,9 @@ public class EventManager extends GorillaListener
     public void onOwnerReceived(GorillaOwner owner)
     {
         Log.d(LOGTAG, "onOwnerReceived: owner=" + owner.toString());
+
+        String ownerUUID = owner.getOwnerUUIDBase64();
+        ownerIdent = Contacts.getContact(ownerUUID);
     }
 
     @Override
@@ -94,7 +122,7 @@ public class EventManager extends GorillaListener
         String uuid = payload.getUUIDBase64();
         String text = payload.getPayload();
         String remoteUserUUID = payload.getSenderUUIDBase64();
-        String ownerDeviceUUID = MainActivity.getOwnerDeviceBase64();
+        String ownerDeviceUUID = getOwnerDeviceBase64();
 
         if ((time == null) || (uuid == null) || (text == null) || (remoteUserUUID == null))
         {

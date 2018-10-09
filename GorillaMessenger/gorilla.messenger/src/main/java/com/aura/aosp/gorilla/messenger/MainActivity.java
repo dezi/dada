@@ -40,26 +40,12 @@ public class MainActivity extends AppCompatActivity
 
     public static MainActivity currentMainActivity;
 
-    public static Identity ownerIdent;
     public static List<ChatProfile> chatProfiles = new ArrayList<>();
 
     private static Boolean svlink;
     private static Boolean uplink;
 
     private GUIListView identitiesView;
-
-    @Nullable
-    public static Identity getOwnerIdent()
-    {
-        return ownerIdent;
-    }
-
-    @Nullable
-    public static String getOwnerDeviceBase64()
-    {
-        if (ownerIdent == null) return null;
-        return ownerIdent.getDeviceUUIDBase64();
-    }
 
     public static void addChatProfile(ChatProfile chatProfile)
     {
@@ -151,7 +137,10 @@ public class MainActivity extends AppCompatActivity
     {
         String newtitle = title;
 
-        if (ownerIdent != null) newtitle += " " + ownerIdent.getNick();
+        if (EventManager.getOwnerNick() != null)
+        {
+            newtitle += " " + EventManager.getOwnerNick();
+        }
 
         if ((svlink != null) && svlink) newtitle += " (system)";
         if ((uplink != null) && uplink) newtitle += " (online)";
@@ -198,7 +187,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view)
                 {
-                    if (ownerIdent == null)
+                    if (EventManager.getOwnerIdent() == null)
                     {
                         Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp");
 
@@ -301,10 +290,6 @@ public class MainActivity extends AppCompatActivity
         {
             Log.d(LOGTAG, "onOwnerReceived: owner=" + owner.toString());
 
-            String ownerUUID = owner.getOwnerUUIDBase64();
-
-            ownerIdent = Contacts.getContact(ownerUUID);
-
             updateTitle();
 
             for (ChatProfile chatProfile : chatProfiles)
@@ -348,7 +333,7 @@ public class MainActivity extends AppCompatActivity
             Json.put(atomLoad, "message", text);
 
             JSONObject received = new JSONObject();
-            Json.put(received, MainActivity.getOwnerDeviceBase64(), System.currentTimeMillis());
+            Json.put(received, EventManager.getOwnerDeviceBase64(), System.currentTimeMillis());
             Json.put(atomLoad, "received", received);
 
             JSONObject atom = new JSONObject();
