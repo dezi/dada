@@ -6,7 +6,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
+
+import jp.wasabeef.blurry.Blurry;
 
 /**
  * Launcher button for toggling main action button cluster
@@ -31,5 +34,25 @@ public class ToggleClusterButton extends FloatingActionButton {
 
     public void fadeOut() {
         Effects.fadeOutView(this, getContext(), null);
+    }
+
+    public void maximize() {
+        Integer duration = getContext().getResources().getInteger(R.integer.toggleclusterbutton_fadein_transition_duration);
+        animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(duration)
+                .start();
+    }
+
+    public void minimize() {
+        Integer duration = getContext().getResources().getInteger(R.integer.toggleclusterbutton_fadeout_transition_duration);
+        animate()
+                .alpha(0.3f)
+                .scaleX(0.5f)
+                .scaleY(0.5f)
+                .setDuration(duration)
+                .start();
     }
 }
