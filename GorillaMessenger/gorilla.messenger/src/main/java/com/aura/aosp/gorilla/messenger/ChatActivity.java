@@ -146,7 +146,7 @@ public class ChatActivity extends AppCompatActivity
 
             if (mode.equals("send"))
             {
-                cf.setContent(true, MainActivity.ownerIdent.getNick(), message);
+                cf.setContent(true, EventManager.getOwnerNick(), message);
             }
             else
             {
@@ -156,7 +156,12 @@ public class ChatActivity extends AppCompatActivity
 
                 if (readStatus == null)
                 {
-                    message.setStatusTime("read", MainActivity.getOwnerDeviceBase64(), System.currentTimeMillis());
+                    String ownerDeviceUUID = EventManager.getOwnerDeviceBase64();
+
+                    if (ownerDeviceUUID != null)
+                    {
+                        message.setStatusTime("read", ownerDeviceUUID, System.currentTimeMillis());
+                    }
 
                     handler.postDelayed(new Runnable()
                     {
@@ -274,7 +279,7 @@ public class ChatActivity extends AppCompatActivity
                 editText.setText("");
 
                 ChatFragment cf = new ChatFragment(view.getContext());
-                cf.setContent(true, MainActivity.ownerIdent.getNick(), message);
+                cf.setContent(true, EventManager.getOwnerNick(), message);
                 chatContent.addView(cf);
 
                 scrollDown();

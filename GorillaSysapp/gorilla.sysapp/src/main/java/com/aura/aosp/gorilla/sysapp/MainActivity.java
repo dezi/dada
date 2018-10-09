@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.sysapp;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.LinearLayout;
 import android.view.Gravity;
@@ -30,6 +31,9 @@ public class MainActivity extends AppCompatActivity
 {
     private static final String LOGTAG = MainActivity.class.getSimpleName();
 
+    private static final int REQUEST_LOCATION = 4711;
+    private static final int REQUEST_EXTERNAL = 4712;
+
     private GUITextView identview;
 
     @Override
@@ -43,12 +47,19 @@ public class MainActivity extends AppCompatActivity
 
         if (!Perms.checkLocationPermission(this))
         {
-            Perms.requestPermissionForNeed(this, "loc", 4711);
+            Perms.requestPermissionForNeed(this, "loc", REQUEST_LOCATION);
         }
+    }
 
-        if (!Perms.checkExternalPermission(this))
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        if (requestCode == REQUEST_LOCATION)
         {
-            Perms.requestPermissionForNeed(this, "ext", 4711);
+            if (!Perms.checkExternalPermission(this))
+            {
+                Perms.requestPermissionForNeed(this, "ext", REQUEST_LOCATION);
+            }
         }
     }
 

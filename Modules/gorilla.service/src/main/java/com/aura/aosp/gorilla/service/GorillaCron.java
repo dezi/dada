@@ -34,7 +34,7 @@ public class GorillaCron extends JobService
         JobInfo.Builder builder = new JobInfo.Builder(47110815, new ComponentName(context, GorillaCron.class));
 
         builder.setPersisted(true);
-        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_NONE);
         builder.setRequiresCharging(false);
         builder.setRequiresDeviceIdle(false);
 
@@ -65,9 +65,15 @@ public class GorillaCron extends JobService
     {
         Log.d("...");
 
-        jobFinished(jobParameters, true);
+        //
+        // false:
+        // Mark job as done, avoiding a call to onStopJob
+        //
+        // true:
+        // Mark job as unfinished, provoking a call to onStopJob
+        //
 
-        return true;
+        return false;
     }
 
     @Override
@@ -75,7 +81,15 @@ public class GorillaCron extends JobService
     {
         Log.d("...");
 
-        jobFinished(jobParameters, true);
+        jobFinished(jobParameters, false);
+
+        //
+        // true:
+        // Mark job as done, but keep the job discription.
+        //
+        // false:
+        // Mark job as done, destroy job description.
+        //
 
         return true;
     }

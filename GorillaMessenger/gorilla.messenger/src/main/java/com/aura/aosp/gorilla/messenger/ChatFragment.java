@@ -88,81 +88,43 @@ public class ChatFragment extends GUILinearLayout
 
     public void setStatusIcon(String status, Long timeStamp)
     {
-        try
+        String deviceUUID = EventManager.getOwnerDeviceBase64();
+        if (deviceUUID == null) return;
+
+        atom.setStatusTime(status, deviceUUID, timeStamp);
+
+        if (status.equals("queued"))
         {
-            putStatus(status, timeStamp);
-
-            if (status.equals("queued"))
-            {
-                statusIcon.setImageResource(R.drawable.ms_server_wait);
-                timeQueued = timeStamp;
-                makeTimeStatus();
-            }
-
-            if (status.equals("send"))
-            {
-                statusIcon.setImageResource(R.drawable.ms_server_recv);
-                timeSend = timeStamp;
-                makeTimeStatus();
-            }
-
-            if (status.equals("persisted"))
-            {
-                statusIcon.setImageResource(R.drawable.ms_server_persist);
-                timePersisted = timeStamp;
-                makeTimeStatus();
-            }
-
-            if (status.equals("received"))
-            {
-                statusIcon.setImageResource(R.drawable.ms_client_recv);
-                timeReceived = timeStamp;
-                makeTimeStatus();
-            }
-
-            if (status.equals("read"))
-            {
-                statusIcon.setImageResource(R.drawable.ms_client_read);
-                timeRead = timeStamp;
-            }
+            statusIcon.setImageResource(R.drawable.ms_server_wait);
+            timeQueued = timeStamp;
+            makeTimeStatus();
         }
-        catch (Exception ex)
+
+        if (status.equals("send"))
         {
-            ex.printStackTrace();
+            statusIcon.setImageResource(R.drawable.ms_server_recv);
+            timeSend = timeStamp;
+            makeTimeStatus();
         }
-    }
 
-    public void putStatus(String status, long timeStamp)
-    {
-        try
+        if (status.equals("persisted"))
         {
-            Identity ownerIdent = MainActivity.getOwnerIdent();
-            if (ownerIdent == null) return;
-
-            String deviceUUID = ownerIdent.getDeviceUUIDBase64();
-            if (deviceUUID == null) return;
-
-            atom.setStatusTime(status, deviceUUID, timeStamp);
+            statusIcon.setImageResource(R.drawable.ms_server_persist);
+            timePersisted = timeStamp;
+            makeTimeStatus();
         }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
 
-    @Nullable
-    public Long getStatus(String status)
-    {
-        try
+        if (status.equals("received"))
         {
-            String deviceUUID = MainActivity.getOwnerDeviceBase64();
-            if (deviceUUID == null) return null;
-
-            return atom.getStatusTime(status, deviceUUID);
+            statusIcon.setImageResource(R.drawable.ms_client_recv);
+            timeReceived = timeStamp;
+            makeTimeStatus();
         }
-        catch (Exception ignore)
+
+        if (status.equals("read"))
         {
-            return null;
+            statusIcon.setImageResource(R.drawable.ms_client_read);
+            timeRead = timeStamp;
         }
     }
 
@@ -212,12 +174,12 @@ public class ChatFragment extends GUILinearLayout
         GUILinearLayout recvPart = new GUILinearLayout(getContext());
         recvPart.setOrientation(VERTICAL);
         recvPart.setGravity(Gravity.START);
-        recvPart.setSizeDip(Simple.MP, send ? Simple.MP: Simple.WC);
+        recvPart.setSizeDip(Simple.MP, send ? Simple.MP : Simple.WC);
 
         GUILinearLayout sendPart = new GUILinearLayout(getContext());
         sendPart.setOrientation(VERTICAL);
         sendPart.setGravity(Gravity.END);
-        sendPart.setSizeDip(Simple.MP, send ? Simple.WC: Simple.MP);
+        sendPart.setSizeDip(Simple.MP, send ? Simple.WC : Simple.MP);
 
         ((LayoutParams) recvPart.getLayoutParams()).weight = send ? 0.75f : 0.25f;
         ((LayoutParams) sendPart.getLayoutParams()).weight = send ? 0.25f : 0.75f;
@@ -250,7 +212,7 @@ public class ChatFragment extends GUILinearLayout
         {
             Integer color = SENDUSERCOLOR;
 
-            if (! send)
+            if (!send)
             {
                 color = users2Colors.get(username);
 
@@ -300,7 +262,8 @@ public class ChatFragment extends GUILinearLayout
         if (messageText != null)
         {
             messageBox.setText(messageText);
-        } else
+        }
+        else
         {
             messageBox.setTextSizeDip(12);
         }
@@ -328,7 +291,7 @@ public class ChatFragment extends GUILinearLayout
         timeBox.setText(timeTag);
 
         statusIcon = new GUIIconView(getContext());
-        statusIcon.setSizeDip(16,16);
+        statusIcon.setSizeDip(16, 16);
         statusIcon.setPaddingDip(GUIDefs.PADDING_ZERO);
 
         if (send)
