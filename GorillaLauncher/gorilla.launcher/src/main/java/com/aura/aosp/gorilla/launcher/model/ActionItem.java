@@ -30,7 +30,7 @@ public class ActionItem extends AbstractActionItem {
      * @param initialScore
      */
     public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, String action, @Nullable Float initialScore) {
-        setType(ItemType.TYPE_FINAL);
+        setType(ItemType.TYPE_ACTION_INTERN);
         setName(name);
         setFuncType(funcType);
         setImageId(imageId);
@@ -45,7 +45,7 @@ public class ActionItem extends AbstractActionItem {
      * @param method
      */
     public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, Method method, @Nullable Float initialScore) {
-        setType(ItemType.TYPE_FINAL);
+        setType(ItemType.TYPE_ACTION_INTERN);
         setName(name);
         setFuncType(funcType);
         setImageId(imageId);
@@ -61,7 +61,7 @@ public class ActionItem extends AbstractActionItem {
      * @param initialScore
      */
     public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, Intent intent,@Nullable Float initialScore) {
-        setType(ItemType.TYPE_FINAL);
+        setType(ItemType.TYPE_ACTION_INTERN);
         setName(name);
         setFuncType(funcType);
         setImageId(imageId);

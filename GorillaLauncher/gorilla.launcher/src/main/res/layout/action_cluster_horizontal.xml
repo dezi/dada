@@ -15,7 +15,7 @@
         android:layout_marginTop="@dimen/actioncluster_horizontal_lay_marginVertical"
         android:alpha="1"
         android:fadingEdge="horizontal"
-        android:fadingEdgeLength="66dp"
+        android:fadingEdgeLength="@dimen/actioncluster_fading_edge_length"
         android:paddingBottom="@dimen/actioncluster_horizontal_paddingVertical"
         android:paddingEnd="@dimen/actioncluster_horizontal_paddingHorizontal"
         android:paddingStart="@dimen/actioncluster_horizontal_paddingHorizontal"

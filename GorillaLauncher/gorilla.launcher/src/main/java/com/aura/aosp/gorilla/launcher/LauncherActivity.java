@@ -221,9 +221,8 @@ public class LauncherActivity extends AppCompatActivity {
                         // Create initial action button cluster (attach it to "root" container)
                         actionClusterStore = new ActionClusterStore(getApplicationContext());
                         ActionCluster initialActionCluster = actionClusterStore.getClusterForActionEvent(getPackageName());
-                        List<ActionItem> initialActionItems = initialActionCluster.getActionItems();
 //                        List<ActionItem> initialActionItems = SampleData.getLauncherActionItems(toggleClusterButton.getContext());
-                        createActionClusterView(new ActionCluster("AC-ROOT", initialActionItems), null, false);
+                        createActionClusterView(initialActionCluster, null, false);
                         // Remove listener when done
                         toggleClusterButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
@@ -392,10 +391,10 @@ public class LauncherActivity extends AppCompatActivity {
             deactivateView((ViewGroup) invokingActionClusterView.getParent());
         } else {
             deactivateBackgroundView();
+            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_forward_black_24dp, getTheme()));
         }
 
         fadeInView(actionClusterView, duration);
-        toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_forward_black_24dp, getTheme()));
 
         // Put View into list of active Action Cluster Views
         activeActionClusterViews.add(actionClusterView);

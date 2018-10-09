@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Timeline -->
+    <dimen name="timeline_fading_edge_length">80dp</dimen>
+
+    <!-- Timeline Item -->
     <dimen name="timeline_item_padding_top">0dp</dimen>
     <dimen name="timeline_item_padding_bottom">0dp</dimen>
     <dimen name="timeline_item_padding_left">0dp</dimen>
@@ -26,6 +29,7 @@
     <dimen name="actioncluster_container_paddingVertical">0dp</dimen>
 
     <!-- Action Cluster View -->
+    <dimen name="actioncluster_fading_edge_length">60dp</dimen>
     <dimen name="actioncluster_horizontal_lay_marginHorizontal">0dp</dimen>
     <dimen name="actioncluster_horizontal_lay_marginVertical">0dp</dimen>
     <dimen name="actioncluster_horizontal_paddingHorizontal">0dp</dimen>

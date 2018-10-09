@@ -11,4 +11,4 @@
     android:paddingBottom="@dimen/clusterbutton_paddingVertical"
     android:paddingTop="@dimen/clusterbutton_paddingVertical"
     android:src="@drawable/ic_error_outline_black_24dp"
-    android:tint="@color/color_clusterbutton_icon_final" />
+    android:tint="@color/color_clusterbutton_icon_action_intern" />
