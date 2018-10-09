@@ -5,7 +5,7 @@
  *
  */
 
-package com.aura.aosp.gorilla.atoms;
+package com.aura.aosp.gorilla.goatoms;
 
 import android.support.annotation.Nullable;
 

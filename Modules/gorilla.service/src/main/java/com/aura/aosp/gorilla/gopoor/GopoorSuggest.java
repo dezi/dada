@@ -84,29 +84,32 @@ public class GopoorSuggest
     private static Err precomputeSuggestions(@NonNull JSONObject state)
     {
         Long curTime = Json.getLong(state, "time");
-        if ((curTime == null) || (curTime <= 0)) return Err.err("time missing in state");
+        if ((curTime == null) || (curTime <= 0))
+        {
+            //
+            // Final exit here, will probably never happen.
+            //
+
+            return Err.err("time missing in state");
+        }
+
+        //
+        // Prepare index numbers from environment state.
+        //
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(curTime);
 
         Integer curNet = getEnvtag2Index(getNetEnvironment(state));
+        Integer curGps = getEnvtag2Index(getGpsEnvironment(state));
         Integer curDevice = getEnvtag2Index(Json.getString(state, "device"));
         Integer curDayOfWeek = getEnvtag2Index("wday." + Integer.toString(calendar.get(Calendar.DAY_OF_WEEK)));
         Integer curPartOfMonth = getEnvtag2Index("mpart." + Integer.toString((calendar.get(Calendar.DAY_OF_MONTH) / 10) + 1));
         Integer curHourOfDay = getEnvtag2Index("hour." + String.format(Locale.ROOT, "%02d", calendar.get(Calendar.HOUR_OF_DAY)));
 
-        Integer curGps = null;
-
-        Double lat = Json.getDouble(state, "lat");
-        Double lon = Json.getDouble(state, "lon");
-
-        if ((lat != null) && (lon != null))
-        {
-            lat = ((double) Math.round(lat * GPS_ACCURACY) / GPS_ACCURACY);
-            lon = ((double) Math.round(lon * GPS_ACCURACY) / GPS_ACCURACY);
-
-            curGps = getEnvtag2Index("gps." + String.format(Locale.ROOT, "%f/%f", lat, lon));
-        }
+        //
+        // Compute score of each known event.
+        //
 
         Map<String, JSONObject> domScores = new HashMap<>();
         double scoreOverall = 0.0;
@@ -333,6 +336,23 @@ public class GopoorSuggest
             {
                 recentEvents.add(load);
             }
+        }
+
+        return null;
+    }
+
+    @NonNull
+    private static String getGpsEnvironment(JSONObject state)
+    {
+        Double lat = Json.getDouble(state, "lat");
+        Double lon = Json.getDouble(state, "lon");
+
+        if ((lat != null) && (lon != null))
+        {
+            lat = ((double) Math.round(lat * GPS_ACCURACY) / GPS_ACCURACY);
+            lon = ((double) Math.round(lon * GPS_ACCURACY) / GPS_ACCURACY);
+
+            return "gps." + String.format(Locale.ROOT, "%f/%f", lat, lon);
         }
 
         return null;

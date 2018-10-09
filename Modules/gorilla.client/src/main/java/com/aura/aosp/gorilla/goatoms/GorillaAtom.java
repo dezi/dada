@@ -5,7 +5,7 @@
  *
  */
 
-package com.aura.aosp.gorilla.atoms;
+package com.aura.aosp.gorilla.goatoms;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,7 +27,7 @@ public abstract class GorillaAtom
     /**
      * All atoms are based on JSON.
      */
-    JSONObject atom;
+    private JSONObject atom;
 
     /**
      * Create empty atom.

@@ -7,6 +7,7 @@ import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
+
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
 import com.aura.aosp.gorilla.gopoor.GopoorSuggest;
 
@@ -17,38 +18,22 @@ public class GorillaState
     private static String lastState;
 
     @NonNull
-    private static JSONObject getStateTimeless()
+    private static com.aura.aosp.gorilla.goatoms.GorillaState getStateTimeless()
     {
-        JSONObject state = new JSONObject();
+        com.aura.aosp.gorilla.goatoms.GorillaState state = new com.aura.aosp.gorilla.goatoms.GorillaState();
+
+        state.setMobileConnected(GorillaNetwork.isMobileConnected());
+        state.setWifiConnected(GorillaNetwork.isWifiConnected());
+        state.setWifiName(GorillaNetwork.getWifiName());
 
         GorillaLocation gl = GorillaLocation.getInstance();
-
-        Double lat = gl.getLat();
-        Double lon = gl.getLon();
-
-        if ((lat != null) && (lon != null))
-        {
-            lat = ((double) Math.round(lat * 1000) / 1000.0);
-            lon = ((double) Math.round(lon * 1000) / 1000.0);
-
-            Json.put(state, "gps.lat", lat);
-            Json.put(state, "gps.lon", lon);
-        }
-
-        boolean mobile = GorillaNetwork.isMobileConnected();
-        Json.put(state, "net.mobile", mobile);
-
-        boolean wifi = GorillaNetwork.isWifiConnected();
-        Json.put(state, "net.wifi", wifi);
-
-        String wifiName = GorillaNetwork.getWifiName();
-        if (wifiName != null) Json.put(state, "wifi", wifiName);
+        state.setLatLon(gl.getLat(), gl.getLon());
 
         Identity identity = Owner.getOwnerIdentity();
 
-        if (identity != null )
+        if (identity != null)
         {
-            Json.put(state, "device", identity.getDeviceUUIDBase64());
+            state.setDeviceUUIDBase64(identity.getDeviceUUIDBase64());
         }
 
         return state;
@@ -57,11 +42,11 @@ public class GorillaState
     @NonNull
     public static JSONObject getState()
     {
-        JSONObject state = getStateTimeless();
+        com.aura.aosp.gorilla.goatoms.GorillaState state = getStateTimeless();
 
-        Json.put(state, "time", System.currentTimeMillis());
+        state.setTime(System.currentTimeMillis());
 
-        return state;
+        return state.getAtom();
     }
 
     static void onStateChanged()
@@ -78,6 +63,8 @@ public class GorillaState
 
             Json.put(atom,"type", "aura.event.state");
             Json.put(atom,"load", realState);
+
+            Log.d("############################ event=%s", Json.toPretty(atom));
 
             GoatomStorage.putAtom(atom);
 
