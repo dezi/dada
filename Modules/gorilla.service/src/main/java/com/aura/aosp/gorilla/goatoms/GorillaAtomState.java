@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import org.json.JSONObject;
 
 /**
- * The class {@code Status} extends to basic
+ * The class {@code GorillaAtomState} extends to basic
  * {@code GorillaAtom} by status values.
  *
  * @author Dennis Zierahn
@@ -22,9 +22,9 @@ public class GorillaAtomState extends GorillaAtom
     }
 
     /**
-     * Create payload atom from JSONObject.
+     * Create state atom from JSONObject.
      *
-     * @param status JSON status atom object.
+     * @param status JSON state atom object.
      */
     public GorillaAtomState(JSONObject status)
     {

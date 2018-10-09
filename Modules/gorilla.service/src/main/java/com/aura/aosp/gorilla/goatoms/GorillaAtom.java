@@ -238,7 +238,7 @@ public abstract class GorillaAtom
      * @return null if the atom could be persisted or error.
      */
     @Nullable
-    public Err putAtom()
+    public Err putStorage()
     {
         return GoatomStorage.putAtom(atom);
     }
@@ -249,7 +249,7 @@ public abstract class GorillaAtom
      * @param userUUID target user identity UUID.
      * @return null if the atom could be persisted or error.
      */
-    public Err putAtomSharedBy(@NonNull String userUUID)
+    public Err putStorageSharedBy(@NonNull String userUUID)
     {
         return GoatomStorage.putAtomSharedBy(userUUID, atom);
     }
@@ -260,7 +260,7 @@ public abstract class GorillaAtom
      * @param userUUID target user identity UUID.
      * @return null if the atom could be persisted or error.
      */
-    public Err putAtomSharedWidth(@NonNull String userUUID)
+    public Err putStorageSharedWidth(@NonNull String userUUID)
     {
         return GoatomStorage.putAtomSharedWith(userUUID, atom);
     }
