@@ -52,12 +52,29 @@ public class GorillaAtomState extends GorillaAtom
         return getJSONLong(getLoad(), "time");
     }
 
-    public void setLatLon(Double lat, Double lon)
+    public void setLatLonCoarse(Double lat, Double lon)
     {
-        if ((lat != null) && (lon != null))
+        if ((lat == null) || (lon == null))
+        {
+            lat = null;
+            lon = null;
+        }
+        else
         {
             lat = ((double) Math.round(lat * 1000) / 1000.0);
             lon = ((double) Math.round(lon * 1000) / 1000.0);
+        }
+
+        putJSON(getLoad(), "gps.lat", lat);
+        putJSON(getLoad(), "gps.lon", lon);
+    }
+
+    public void setLatLonFine(Double lat, Double lon)
+    {
+        if ((lat == null) || (lon == null))
+        {
+            lat = null;
+            lon = null;
         }
 
         putJSON(getLoad(), "gps.lat", lat);

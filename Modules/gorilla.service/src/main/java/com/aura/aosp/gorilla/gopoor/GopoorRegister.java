@@ -3,15 +3,11 @@ package com.aura.aosp.gorilla.gopoor;
 import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.common.simple.Err;
-import com.aura.aosp.aura.common.simple.Json;
-
 import com.aura.aosp.aura.common.simple.Log;
+
+import com.aura.aosp.gorilla.service.GorillaState;
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
 import com.aura.aosp.gorilla.goatoms.GorillaAtomEvent;
-import com.aura.aosp.gorilla.goatoms.GorillaAtomState;
-import com.aura.aosp.gorilla.service.GorillaState;
-
-import org.json.JSONObject;
 
 public class GopoorRegister
 {

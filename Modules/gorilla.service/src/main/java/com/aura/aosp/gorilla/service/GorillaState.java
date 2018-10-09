@@ -2,10 +2,9 @@ package com.aura.aosp.gorilla.service;
 
 import android.support.annotation.NonNull;
 
-import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.common.univid.Owner;
-import com.aura.aosp.aura.common.simple.Json;
+import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.simple.Log;
 
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
@@ -19,7 +18,7 @@ public class GorillaState
     private static String lastState;
 
     @NonNull
-    private static GorillaAtomState getStateTimeless()
+    private static GorillaAtomState getStateCoarse()
     {
         GorillaAtomState state = new GorillaAtomState();
 
@@ -28,7 +27,7 @@ public class GorillaState
         state.setWifiName(GorillaNetwork.getWifiName());
 
         GorillaLocation gl = GorillaLocation.getInstance();
-        state.setLatLon(gl.getLat(), gl.getLon());
+        state.setLatLonCoarse(gl.getLat(), gl.getLon());
 
         Identity identity = Owner.getOwnerIdentity();
 
@@ -43,26 +42,18 @@ public class GorillaState
     @NonNull
     public static GorillaAtomState getState()
     {
-        GorillaAtomState state = getStateTimeless();
+        GorillaAtomState state = getStateCoarse();
 
+        GorillaLocation gl = GorillaLocation.getInstance();
+        state.setLatLonFine(gl.getLat(), gl.getLon());
         state.setStateTime(System.currentTimeMillis());
 
         return state;
     }
 
-    @NonNull
-    public static JSONObject getStateAsJsonObject()
-    {
-        GorillaAtomState state = getStateTimeless();
-
-        state.setTime(System.currentTimeMillis());
-
-        return state.getLoad();
-    }
-
     static void onStateChanged()
     {
-        String thisState = getStateTimeless().toString();
+        String thisState = getStateCoarse().toString();
 
         if (Simple.nequals(lastState, thisState))
         {

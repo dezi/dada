@@ -65,7 +65,7 @@ public class GopoorSuggest
 
         addEvent(event);
 
-        return precomputeSuggestions(GorillaState.getStateAsJsonObject());
+        return precomputeSuggestions(GorillaState.getState().getLoad());
     }
 
     @Nullable
