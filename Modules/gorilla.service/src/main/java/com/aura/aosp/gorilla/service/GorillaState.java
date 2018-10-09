@@ -67,16 +67,14 @@ public class GorillaState
         if (Simple.nequals(lastState, thisState))
         {
             GorillaAtomState realState = getState();
-
             realState.setType("aura.event.state");
-
-            Log.d("state=%s", realState.toPretty());
-
             GoatomStorage.putAtom(realState.getAtom());
 
             lastState = thisState;
 
             GopoorSuggest.precomputeSuggestionsByState(realState.getLoad());
+
+            Log.d("state=%s", realState.toPretty());
         }
     }
 }

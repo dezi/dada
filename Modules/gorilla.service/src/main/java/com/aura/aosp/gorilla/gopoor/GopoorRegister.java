@@ -7,6 +7,8 @@ import com.aura.aosp.aura.common.simple.Json;
 
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
+import com.aura.aosp.gorilla.goatoms.GorillaAtomEvent;
+import com.aura.aosp.gorilla.goatoms.GorillaAtomState;
 import com.aura.aosp.gorilla.service.GorillaState;
 
 import org.json.JSONObject;
@@ -16,66 +18,54 @@ public class GopoorRegister
     @Nullable
     public static Err registerActionEvent(String actionDomain)
     {
-        JSONObject load = new JSONObject();
+        GorillaAtomEvent event = new GorillaAtomEvent();
 
-        Json.put(load, "domain", actionDomain);
-        Json.put(load, "state", GorillaState.getStateAsJsonObject());
+        event.setType("aura.event.action");
+        event.setState(GorillaState.getState());
+        event.setDomain(actionDomain);
 
-        JSONObject atom = new JSONObject();
+        Log.d("event=%s", event.toString());
 
-        Json.put(atom, "type", "aura.event.action");
-        Json.put(atom, "load", load);
-
-        Log.d("atom=%s", atom.toString());
-
-        Err err = GoatomStorage.putAtom(atom);
+        Err err = GoatomStorage.putAtom(event.getAtom());
         if (err != null) return err;
 
-        return GopoorSuggest.precomputeSuggestionsByEvent(atom);
+        return GopoorSuggest.precomputeSuggestionsByEvent(event.getAtom());
     }
 
     @Nullable
     public static Err registerActionEvent(String actionDomain, String subAction)
     {
-        JSONObject load = new JSONObject();
+        GorillaAtomEvent event = new GorillaAtomEvent();
 
-        Json.put(load, "domain", actionDomain);
-        Json.put(load, "action", subAction);
-        Json.put(load, "state", GorillaState.getStateAsJsonObject());
+        event.setType("aura.event.action");
+        event.setState(GorillaState.getState());
+        event.setDomain(actionDomain);
+        event.setAction(subAction);
 
-        JSONObject atom = new JSONObject();
+        Log.d("event=%s", event.toString());
 
-        Json.put(atom, "type", "aura.event.action");
-        Json.put(atom, "load", load);
-
-        Log.d("atom=%s", atom.toString());
-
-        Err err = GoatomStorage.putAtom(atom);
+        Err err = GoatomStorage.putAtom(event.getAtom());
         if (err != null) return err;
 
-        return GopoorSuggest.precomputeSuggestionsByEvent(atom);
+        return GopoorSuggest.precomputeSuggestionsByEvent(event.getAtom());
     }
 
     @Nullable
     public static Err registerContextEvent(String actionDomain, String subContext, String subAction)
     {
-        JSONObject load = new JSONObject();
+        GorillaAtomEvent event = new GorillaAtomEvent();
 
-        Json.put(load, "domain", actionDomain);
-        Json.put(load, "context", subContext);
-        Json.put(load, "action", subAction);
-        Json.put(load, "state", GorillaState.getStateAsJsonObject());
+        event.setType("aura.event.context");
+        event.setState(GorillaState.getState());
+        event.setDomain(actionDomain);
+        event.setAction(subAction);
+        event.setContext(subContext);
 
-        JSONObject atom = new JSONObject();
+        Log.d("event=%s", event.toString());
 
-        Json.put(atom, "type", "aura.event.context");
-        Json.put(atom, "load", load);
-
-        Log.d("atom=%s", atom.toString());
-
-        Err err = GoatomStorage.putAtom(atom);
+        Err err = GoatomStorage.putAtom(event.getAtom());
         if (err != null) return err;
 
-        return GopoorSuggest.precomputeSuggestionsByEvent(atom);
-    }
+        return GopoorSuggest.precomputeSuggestionsByEvent(event.getAtom());
+   }
 }
