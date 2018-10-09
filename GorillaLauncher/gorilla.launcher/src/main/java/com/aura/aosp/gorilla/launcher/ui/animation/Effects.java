@@ -41,6 +41,8 @@ public class Effects {
      * Standard fade out transition for views
      *
      * @param view
+     * @param context
+     * @param duration
      */
     public static void fadeOutView(final View view, Context context, @Nullable Integer duration) {
 
