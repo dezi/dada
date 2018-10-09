@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class ActionClusterStore {
 
-    private static final String LOGTAG = SampleData.class.getSimpleName();
+    private static final String LOGTAG = ActionClusterStore.class.getSimpleName();
 
     private ActionCluster actionCluster;
     private Context context;

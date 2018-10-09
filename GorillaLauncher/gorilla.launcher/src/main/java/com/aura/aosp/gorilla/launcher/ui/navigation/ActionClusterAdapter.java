@@ -12,7 +12,7 @@ import com.aura.aosp.gorilla.launcher.model.ActionItem;
 import java.util.List;
 
 /**
- * Adapter which handles the mapping of stream data to the timeline
+ * Adapter which handles the mapping of action cluster button data to the cluster button view
  * recycler view items.
  */
 public class ActionClusterAdapter extends RecyclerView.Adapter<ActionClusterViewHolder> {

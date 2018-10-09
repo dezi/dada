@@ -4,17 +4,18 @@
     android:id="@+id/item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/timeline_item_margin_bottom"
-    android:layout_marginEnd="@dimen/timeline_item_margin_right"
-    android:layout_marginStart="@dimen/timeline_item_margin_left"
-    android:layout_marginTop="@dimen/timeline_item_margin_top"
-    android:background="@color/color_launcher_background"
+    android:layout_marginBottom="@dimen/contentstream_item_margin_bottom"
+    android:layout_marginEnd="@dimen/contentstream_item_margin_right"
+    android:layout_marginStart="@dimen/contentstream_item_margin_left"
+    android:layout_marginTop="@dimen/contentstream_item_margin_top"
+    android:background="@color/color_launcher_background_debug"
     android:clickable="true"
     android:focusable="true"
-    android:paddingBottom="@dimen/timeline_item_padding_bottom"
-    android:paddingEnd="@dimen/timeline_item_padding_right"
-    android:paddingStart="@dimen/timeline_item_padding_left"
-    android:paddingTop="@dimen/timeline_item_padding_top">
+    android:layout_gravity="end"
+    android:paddingBottom="@dimen/contentstream_item_padding_bottom"
+    android:paddingEnd="@dimen/contentstream_item_padding_right"
+    android:paddingStart="@dimen/contentstream_item_padding_left"
+    android:paddingTop="@dimen/contentstream_item_padding_top">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/container"
@@ -36,12 +37,12 @@
             android:contentDescription="@string/image_preview"
             android:src="@drawable/ic_blur_on_black_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/description"
+            app:layout_constraintEnd_toStartOf="@+id/previewText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/description"
+            android:id="@+id/previewText"
             android:layout_width="95dp"
             android:layout_height="30dp"
             android:layout_marginBottom="8dp"
@@ -88,8 +89,8 @@
                 android:layout_marginTop="8dp"
                 android:baselineAlignBottom="false"
                 android:contentDescription="@string/cluster_icon"
-                android:src="@drawable/timeline_oval_24dp"
-                android:tint="@color/color_timeline_button"
+                android:src="@drawable/contentstream_oval_24dp"
+                android:tint="@color/color_contentstream_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
