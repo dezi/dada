@@ -31,15 +31,15 @@ import com.aura.aosp.gorilla.client.GorillaListener;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.ActionItem;
-import com.aura.aosp.gorilla.launcher.model.TimelineItem;
+import com.aura.aosp.gorilla.launcher.store.ContentStreamStore;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 import com.aura.aosp.gorilla.launcher.ui.animation.drawable.ExpandingCircleDrawable;
 import com.aura.aosp.gorilla.launcher.ui.common.FuncViewManager;
 import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
+import com.aura.aosp.gorilla.launcher.ui.content.ContentStreamAdapter;
 import com.aura.aosp.gorilla.launcher.ui.content.FuncBaseView;
 import com.aura.aosp.gorilla.launcher.ui.content.LauncherView;
 import com.aura.aosp.gorilla.launcher.ui.content.SimpleCalendarView;
-import com.aura.aosp.gorilla.launcher.ui.content.TimelineAdapter;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterAdapter;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterView;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ClusterButtonView;
@@ -70,6 +70,7 @@ public class LauncherActivity extends AppCompatActivity {
 
     private Float clusterElevationPerLevel;
 
+    private ContentStreamStore contentStreamStore;
     private ActionClusterStore actionClusterStore;
 
     private static int blurSampliong;
@@ -81,10 +82,10 @@ public class LauncherActivity extends AppCompatActivity {
     private LauncherView launcherView;
 
     private LauncherStatusBar statusBar;
-    private ConstraintLayout timelineContainer;
-    private RecyclerView timelineView;
-    private TimelineAdapter timelineAdapter;
-    private SmartScrollableLayoutManager timelineLayoutManager;
+    private ConstraintLayout contentstreamContainer;
+    private RecyclerView contentstreamView;
+    private ContentStreamAdapter contentStreamAdapter;
+    private SmartScrollableLayoutManager contentstreamLayoutManager;
 
     private ToggleClusterButton toggleClusterButton;
 
@@ -146,8 +147,8 @@ public class LauncherActivity extends AppCompatActivity {
 
         statusBar = findViewById(R.id.statusBar);
 
-        timelineContainer = launcherView.findViewById(R.id.timelineContainer);
-        timelineView = launcherView.findViewById(R.id.timeline);
+        contentstreamContainer = launcherView.findViewById(R.id.contentstreamContainer);
+        contentstreamView = launcherView.findViewById(R.id.contentstream);
 
         actionClusterContainer = launcherView.findViewById(R.id.actionClusterContainer);
         toggleClusterButton = launcherView.findViewById(R.id.toggleClusterButton);
@@ -164,22 +165,23 @@ public class LauncherActivity extends AppCompatActivity {
 //        launcherView.setForeground(mCircle);
 
         //
-        // Create main timeline list items
+        // Create main content stream items
         //
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
-//        timelineView.setHasFixedSize(true);
+//        contentstreamView.setHasFixedSize(true);
 
         // use a linear layout manager
-        timelineLayoutManager = new SmartScrollableLayoutManager(this);
-        timelineView.setLayoutManager(timelineLayoutManager);
+        contentstreamLayoutManager = new SmartScrollableLayoutManager(this);
+        contentstreamView.setLayoutManager(contentstreamLayoutManager);
 
-        // specify adapter
-        // TODO: Replace with aggregated stream items from "Gorilla Content/Timeline Atoms"
+        // TODO: Replace with aggregated stream items from "Gorilla Content Stream Atoms"
+        // Create initial content stream items and specify adapter
+        contentStreamStore = new ContentStreamStore(getApplicationContext());
 
-        timelineAdapter = new TimelineAdapter(SampleData.getStreamData(), this);
-        timelineAdapter = new TimelineAdapter(new ArrayList<TimelineItem>(), this);
-        timelineView.setAdapter(timelineAdapter);
+//        contentStreamAdapter = new ContentStreamAdapter(SampleData.getDummyStreamData(), this);
+        contentStreamAdapter = new ContentStreamAdapter(contentStreamStore.getItemsForAtomContext("aura.uxtream.launcher"), this);
+        contentstreamView.setAdapter(contentStreamAdapter);
 
         // Create action cluster toggle button
         // Programmatically define background colors for states because XML definition leads to obscure error with
@@ -438,7 +440,7 @@ public class LauncherActivity extends AppCompatActivity {
         Integer rawY = (int) ev.getRawY();
 
         // If action buttons cluster is active and touch happened outside action cluster view,
-        // toggle action button cluster and return to normal timeline view state
+        // toggle action button cluster and return to normal content stream view state
 
         switch (ev.getAction()) {
 
@@ -555,10 +557,10 @@ public class LauncherActivity extends AppCompatActivity {
      */
     public void activateBackgroundView() {
 
-//        timelineView.setLayoutFrozen(true);
-        timelineContainer.setEnabled(true);
-        timelineLayoutManager.setScrollEnabled(true);
-        Blurry.delete(timelineContainer);
+//        contentstreamView.setLayoutFrozen(true);
+        contentstreamContainer.setEnabled(true);
+        contentstreamLayoutManager.setScrollEnabled(true);
+        Blurry.delete(contentstreamContainer);
     }
 
     /**
@@ -566,16 +568,16 @@ public class LauncherActivity extends AppCompatActivity {
      */
     public void deactivateBackgroundView() {
 
-        timelineLayoutManager.setScrollEnabled(false);
-        timelineContainer.setEnabled(false);
-//        timelineView.setLayoutFrozen(true);
+        contentstreamLayoutManager.setScrollEnabled(false);
+        contentstreamContainer.setEnabled(false);
+//        contentstreamView.setLayoutFrozen(true);
 
         Blurry.with(this)
                 .radius(blurRadius)
                 .sampling(blurSampliong)
 //                .color(R.color.color_transparent)
                 .animate(blurTransisitionDuration)
-                .onto(timelineContainer);
+                .onto(contentstreamContainer);
     }
 
 

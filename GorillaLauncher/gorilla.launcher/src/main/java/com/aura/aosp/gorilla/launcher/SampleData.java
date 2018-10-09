@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.ActionItem;
-import com.aura.aosp.gorilla.launcher.model.TimelineItem;
+import com.aura.aosp.gorilla.launcher.model.ContentStreamItem;
 import com.aura.aosp.gorilla.launcher.ui.content.FuncBaseView;
 
 import java.util.ArrayList;
@@ -239,273 +239,273 @@ public class SampleData {
     }
 
     /**
-     * Sample data for stream/timeline interface
+     * Sample data for content stream interface
      * TODO: To be replaced with data provider(s)
      *
      * @return
      */
-    public final static List<TimelineItem> getStreamData() {
-        List<TimelineItem> items = new ArrayList<>();
+    public final static List<ContentStreamItem> getDummyStreamData() {
+        List<ContentStreamItem> items = new ArrayList<>();
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Malte",
                 "Howdy, here are the files...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "",
                 "",
                 0));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Abi",
                 "I need some really holistic...",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Andreas",
                 "Hello everybody, greetings from Hanoi!",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "dezi",
                 "Wie wäre es mit einem Kaffee?",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Matthias",
                 "Ich schreibe mir am liebsten selbst.",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Laurie",
                 "Here's your account data...",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Nixie",
                 "Hello, everything okay?",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Malte",
                 "Howdy, here are the files...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Caroline",
                 "I need some really holistic...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Mr. Hoi",
                 "Hello everybody, greetings from Hanoi!",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "dezi",
                 "Wie wäre es mit einem Kaffee?",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Matthias",
                 "Ich schreibe mir am liebsten selbst.",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Nilie",
                 "Here's your account data...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Laurie",
                 "How are you. Please send me some...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Nixie",
                 "Hello, everything okay?",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Ola",
                 "Howdy, here are the files...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Abi",
                 "I need some really universal...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "dezi",
                 "Wie wäre es mit einem Kaffee?",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Matthias",
                 "Was?",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Laurie",
                 "Here's your license accoutn data...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Nixie",
                 "Hello, everything okay?",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Malte",
                 "Howdy, here are the files...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "",
                 "",
                 0));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Abi",
                 "I need some really holistic...",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Andreas",
                 "Hello everybody, greetings from Hanoi!",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "dezi",
                 "Wie wäre es mit einem Kaffee?",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Matthias",
                 "Ich schreibe mir am liebsten selbst.",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Laurie",
                 "Here's your account data...",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Nixie",
                 "Hello, everything okay?",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Malte",
                 "Howdy, here are the files...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Caroline",
                 "I need some really holistic...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Mr. Hoi",
                 "Hello everybody, greetings from Hanoi!",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "dezi",
                 "Wie wäre es mit einem Kaffee?",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Matthias",
                 "Ich schreibe mir am liebsten selbst.",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Nilie",
                 "Here's your account data...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Laurie",
                 "How are you. Please send me some...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Nixie",
                 "Hello, everything okay?",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Ola",
                 "Howdy, here are the files...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Abi",
                 "I need some really universal...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "dezi",
                 "Wie wäre es mit einem Kaffee?",
                 R.drawable.ic_blur_on_black_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "highlight",
                 "Matthias",
                 "Was?",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Laurie",
                 "Here's your license accoutn data...",
-                R.drawable.timeline_oval_24dp));
+                R.drawable.contentstream_oval_24dp));
 
-        items.add(new TimelineItem(
+        items.add(new ContentStreamItem(
                 "default",
                 "Nixie",
                 "Hello, everything okay?",

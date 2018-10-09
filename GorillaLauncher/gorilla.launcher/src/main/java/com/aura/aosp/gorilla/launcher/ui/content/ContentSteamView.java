@@ -8,21 +8,21 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 /**
- * "Timeline" view (child of "Launcher" view)
+ * "Content Stream" view (child of "Launcher" view)
  */
-public class TimelineView extends RecyclerView {
+public class ContentSteamView extends RecyclerView {
 
-    private static final String LOGTAG = TimelineView.class.getSimpleName();
+    private static final String LOGTAG = ContentSteamView.class.getSimpleName();
 
-    public TimelineView(Context context) {
+    public ContentSteamView(Context context) {
         super(context);
     }
 
-    public TimelineView(Context context, @Nullable AttributeSet attrs) {
+    public ContentSteamView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public TimelineView(Context context, @Nullable AttributeSet attrs, int defStyle) {
+    public ContentSteamView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
