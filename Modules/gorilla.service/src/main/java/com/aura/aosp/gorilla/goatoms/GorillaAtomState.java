@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.goatoms;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.json.JSONObject;
@@ -10,12 +11,12 @@ import org.json.JSONObject;
  *
  * @author Dennis Zierahn
  */
-public class GorillaState extends GorillaAtom
+public class GorillaAtomState extends GorillaAtom
 {
     /**
      * Create empty state atom.
      */
-    public GorillaState()
+    public GorillaAtomState()
     {
         super();
     }
@@ -25,9 +26,30 @@ public class GorillaState extends GorillaAtom
      *
      * @param status JSON status atom object.
      */
-    public GorillaState(JSONObject status)
+    public GorillaAtomState(JSONObject status)
     {
         super(status);
+    }
+
+    /**
+     * Set time of state in milliseconds.
+     *
+     * @param time time of state in milliseconds.
+     */
+    public void setStateTime(@NonNull Long time)
+    {
+        putJSON(getLoad(), "time", time);
+    }
+
+    /**
+     * Get time of state in milliseconds.
+     *
+     * @return time of state in milliseconds or null.
+     */
+    @Nullable
+    public Long setStateTime()
+    {
+        return getJSONLong(getLoad(), "time");
     }
 
     public void setLatLon(Double lat, Double lon)
@@ -38,39 +60,39 @@ public class GorillaState extends GorillaAtom
             lon = ((double) Math.round(lon * 1000) / 1000.0);
         }
 
-        putJSON(getAtom(), "gps.lat", lat);
-        putJSON(getAtom(), "gps.lon", lon);
+        putJSON(getLoad(), "gps.lat", lat);
+        putJSON(getLoad(), "gps.lon", lon);
     }
 
     @Nullable
     public String getLat()
     {
-        return getJSONString(getAtom(), "gps.lat");
+        return getJSONString(getLoad(), "gps.lat");
     }
 
     @Nullable
     public String getLon()
     {
-        return getJSONString(getAtom(), "gps.lon");
+        return getJSONString(getLoad(), "gps.lon");
     }
 
     public void setMobileConnected(boolean connected)
     {
-        putJSON(getAtom(), "net.mobile", connected);
+        putJSON(getLoad(), "net.mobile", connected);
     }
 
     public void setWifiConnected(boolean connected)
     {
-        putJSON(getAtom(), "net.wifi", connected);
+        putJSON(getLoad(), "net.wifi", connected);
     }
 
     public void setWifiName(@Nullable String wifiname)
     {
-        putJSON(getAtom(), "wifi", wifiname);
+        putJSON(getLoad(), "wifi", wifiname);
     }
 
     public void setDeviceUUIDBase64(@Nullable String deviceUUIDbase64)
     {
-        putJSON(getAtom(), "device", deviceUUIDbase64);
+        putJSON(getLoad(), "device", deviceUUIDbase64);
     }
 }

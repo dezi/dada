@@ -114,6 +114,35 @@ public abstract class GorillaAtom
     }
 
     /**
+     * Get atom load part as JSON object.
+     *
+     * @return load part as JSON object.
+     */
+    @NonNull
+    public JSONObject getLoad()
+    {
+        JSONObject load = getJSONObject(atom, "load");
+
+        if (load == null)
+        {
+            load = new JSONObject();
+            putJSON(atom, "load", load);
+        }
+
+        return load;
+    }
+
+    /**
+     * Set load part of atom from JSON object.
+     *
+     * @param load JSON object.
+     */
+    public void setLoad(JSONObject load)
+    {
+        putJSON(atom, "load", load);
+    }
+
+    /**
      * Set atom UUID as byte array.
      *
      * @param uuid byte array.
@@ -201,25 +230,6 @@ public abstract class GorillaAtom
     public String getType()
     {
         return getJSONString(atom, "type");
-    }
-
-    /**
-     * Package private getAtom load part of atom as JSON object.
-     *
-     * @return load part of atom as JSON object.
-     */
-    @NonNull
-    JSONObject getLoad()
-    {
-        JSONObject load = getJSONObject(atom, "load");
-
-        if (load == null)
-        {
-            load = new JSONObject();
-            putJSON(atom, "load", load);
-        }
-
-        return load;
     }
 
     /**

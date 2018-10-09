@@ -19,7 +19,7 @@ public class GopoorRegister
         JSONObject load = new JSONObject();
 
         Json.put(load, "domain", actionDomain);
-        Json.put(load, "state", GorillaState.getState());
+        Json.put(load, "state", GorillaState.getStateAsJsonObject());
 
         JSONObject atom = new JSONObject();
 
@@ -41,7 +41,7 @@ public class GopoorRegister
 
         Json.put(load, "domain", actionDomain);
         Json.put(load, "action", subAction);
-        Json.put(load, "state", GorillaState.getState());
+        Json.put(load, "state", GorillaState.getStateAsJsonObject());
 
         JSONObject atom = new JSONObject();
 
@@ -64,7 +64,7 @@ public class GopoorRegister
         Json.put(load, "domain", actionDomain);
         Json.put(load, "context", subContext);
         Json.put(load, "action", subAction);
-        Json.put(load, "state", GorillaState.getState());
+        Json.put(load, "state", GorillaState.getStateAsJsonObject());
 
         JSONObject atom = new JSONObject();
 

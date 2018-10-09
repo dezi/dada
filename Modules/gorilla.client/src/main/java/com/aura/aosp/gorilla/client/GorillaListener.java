@@ -9,9 +9,9 @@ package com.aura.aosp.gorilla.client;
 
 import android.util.Log;
 
-import com.aura.aosp.gorilla.goatoms.GorillaOwner;
-import com.aura.aosp.gorilla.goatoms.GorillaPayload;
-import com.aura.aosp.gorilla.goatoms.GorillaPayloadResult;
+import com.aura.aosp.gorilla.atoms.GorillaOwner;
+import com.aura.aosp.gorilla.atoms.GorillaPayload;
+import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 
 /**
  * The class {@code GorillaListener} ist just a stub implementation

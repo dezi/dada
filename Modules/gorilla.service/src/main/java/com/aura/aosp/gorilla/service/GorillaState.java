@@ -9,6 +9,7 @@ import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
+import com.aura.aosp.gorilla.goatoms.GorillaAtomState;
 import com.aura.aosp.gorilla.gopoor.GopoorSuggest;
 
 import org.json.JSONObject;
@@ -18,9 +19,9 @@ public class GorillaState
     private static String lastState;
 
     @NonNull
-    private static com.aura.aosp.gorilla.goatoms.GorillaState getStateTimeless()
+    private static GorillaAtomState getStateTimeless()
     {
-        com.aura.aosp.gorilla.goatoms.GorillaState state = new com.aura.aosp.gorilla.goatoms.GorillaState();
+        GorillaAtomState state = new GorillaAtomState();
 
         state.setMobileConnected(GorillaNetwork.isMobileConnected());
         state.setWifiConnected(GorillaNetwork.isWifiConnected());
@@ -40,13 +41,23 @@ public class GorillaState
     }
 
     @NonNull
-    public static JSONObject getState()
+    public static GorillaAtomState getState()
     {
-        com.aura.aosp.gorilla.goatoms.GorillaState state = getStateTimeless();
+        GorillaAtomState state = getStateTimeless();
+
+        state.setStateTime(System.currentTimeMillis());
+
+        return state;
+    }
+
+    @NonNull
+    public static JSONObject getStateAsJsonObject()
+    {
+        GorillaAtomState state = getStateTimeless();
 
         state.setTime(System.currentTimeMillis());
 
-        return state.getAtom();
+        return state.getLoad();
     }
 
     static void onStateChanged()
@@ -55,22 +66,17 @@ public class GorillaState
 
         if (Simple.nequals(lastState, thisState))
         {
-            JSONObject realState = getState();
+            GorillaAtomState realState = getState();
 
-            Log.d("state=%s", realState.toString());
+            realState.setType("aura.event.state");
 
-            JSONObject atom = new JSONObject();
+            Log.d("state=%s", realState.toPretty());
 
-            Json.put(atom,"type", "aura.event.state");
-            Json.put(atom,"load", realState);
-
-            Log.d("############################ event=%s", Json.toPretty(atom));
-
-            GoatomStorage.putAtom(atom);
+            GoatomStorage.putAtom(realState.getAtom());
 
             lastState = thisState;
 
-            GopoorSuggest.precomputeSuggestionsByState(realState);
+            GopoorSuggest.precomputeSuggestionsByState(realState.getLoad());
         }
     }
 }

@@ -18,9 +18,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.aura.aosp.gorilla.goatoms.GorillaOwner;
-import com.aura.aosp.gorilla.goatoms.GorillaPayload;
-import com.aura.aosp.gorilla.goatoms.GorillaPayloadResult;
+import com.aura.aosp.gorilla.atoms.GorillaOwner;
+import com.aura.aosp.gorilla.atoms.GorillaPayload;
+import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
