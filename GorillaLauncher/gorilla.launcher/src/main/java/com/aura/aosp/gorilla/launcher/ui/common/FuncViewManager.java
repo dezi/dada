@@ -12,17 +12,17 @@ import java.util.Map;
  */
 public class FuncViewManager {
 
-    private Map<FuncBaseView.FuncType, View> funcViews;
+    private Map<FuncBaseView.FuncType, FuncBaseView> funcViews;
 
     public FuncViewManager() {
         funcViews = new HashMap<>();
     }
 
-    public Map<FuncBaseView.FuncType, View> getFuncViews() {
+    public Map<FuncBaseView.FuncType, FuncBaseView> getFuncViews() {
         return funcViews;
     }
 
-    public void addFuncView(FuncBaseView.FuncType funcType, View funcView) {
+    public void addFuncView(FuncBaseView.FuncType funcType, FuncBaseView funcView) {
         funcViews.put(funcType, funcView);
     }
 
