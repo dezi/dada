@@ -109,7 +109,7 @@ public class GopoorSuggest
     }
 
     @Nullable
-    public static JSONArray suggestContextActions(@NonNull String actionDomain, String subContext)
+    public static JSONArray suggestContextActions(@NonNull String actionDomain, @NonNull String subContext)
     {
         return null;
     }
@@ -166,6 +166,7 @@ public class GopoorSuggest
 
         Integer curNet = getEnvtag2Index(getNetEnvironment(state));
         Integer curGps = getEnvtag2Index(getGpsEnvironment(state));
+        Integer curWifi = getEnvtag2Index(getWifiEnvironment(state));
         Integer curDevice = getEnvtag2Index(getDeviceEnvironment(state));
         Integer curHourOfDay = getEnvtag2Index(getHourOfDayEnvironment(calendar));
         Integer curDayOfWeek = getEnvtag2Index(getDayOfWeekEnvironment(calendar));
@@ -204,6 +205,7 @@ public class GopoorSuggest
 
             double scoreNet = getScoreForEnvtagIndex(column, envcat2rowlist.get("net"), curNet);
             double scoreGps = getScoreForEnvtagIndex(column, envcat2rowlist.get("gps"), curGps);
+            double scoreWifi = getScoreForEnvtagIndex(column, envcat2rowlist.get("wifi"), curWifi);
             double scoreDevice = getScoreForEnvtagIndex(column, envcat2rowlist.get("device"), curDevice);
             double scoreHourOfDay = getScoreForEnvtagIndex(column, envcat2rowlist.get("hour"), curHourOfDay);
             double scoreDayOfWeek = getScoreForEnvtagIndex(column, envcat2rowlist.get("wday"), curDayOfWeek);
@@ -214,6 +216,7 @@ public class GopoorSuggest
 
             Json.put(score, "net", scoreNet);
             Json.put(score, "gps", scoreGps);
+            Json.put(score, "wifi", scoreWifi);
             Json.put(score, "device", scoreDevice);
             Json.put(score, "hour", scoreHourOfDay);
             Json.put(score, "wday", scoreDayOfWeek);
@@ -265,8 +268,9 @@ public class GopoorSuggest
         {
             JSONObject scoreJson = Json.getObject(resultScores, inx);
 
-            Log.d("net=%.2f dev=%.2f dow=%.2f pom=%.2f hod=%.2f gps=%.2f count=%.2f total=%.2f score=%.2f final=%.2f => %s",
+            Log.d("net=%.2f wif=%.2f dev=%.2f dow=%.2f pom=%.2f hod=%.2f gps=%.2f count=%.2f total=%.2f score=%.2f final=%.2f => %s",
                     Json.getDouble(scoreJson, "net"),
+                    Json.getDouble(scoreJson, "wifi"),
                     Json.getDouble(scoreJson, "device"),
                     Json.getDouble(scoreJson, "wday"),
                     Json.getDouble(scoreJson, "mpart"),
@@ -286,7 +290,7 @@ public class GopoorSuggest
     @NonNull
     private static Double getScoreForEnvtagIndex(SparseIntArray column, ArrayList<Integer> envCatIndexes, Integer envTagIndex)
     {
-        if ((envTagIndex == null) || (envCatIndexes.size() == 0))
+        if ((envCatIndexes == null) || (envCatIndexes.size() == 0))
         {
             //
             // Environment tag not present or no category data.
@@ -345,7 +349,7 @@ public class GopoorSuggest
     @NonNull
     private static Double getScoreForEnvcat(SparseIntArray column, ArrayList<Integer> envCatIndexes)
     {
-        if (envCatIndexes.size() == 0)
+        if ((envCatIndexes == null) || (envCatIndexes.size() == 0))
         {
             //
             // Environment tag not present or no category data.
@@ -432,6 +436,12 @@ public class GopoorSuggest
         GorillaAtomState state = new GorillaAtomState();
         state.setLoad(stateJson);
 
+        Long time = state.getStateTime();
+        if (time == null) return Err.errp("no time in state");
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+
         if (!event2column.containsKey(domain))
         {
             event2column.put(domain, new SparseIntArray());
@@ -439,54 +449,17 @@ public class GopoorSuggest
 
         SparseIntArray column = event2column.get(domain);
 
-        String device = state.getDeviceUUIDBase64();
-        if (device != null)
+        countEnvironmentTag(column, getNetEnvironment(state));
+        countEnvironmentTag(column, getGpsEnvironment(state));
+        countEnvironmentTag(column, getWifiEnvironment(state));
+        countEnvironmentTag(column, getDeviceEnvironment(state));
+        countEnvironmentTag(column, getHourOfDayEnvironment(calendar));
+        countEnvironmentTag(column, getDayOfWeekEnvironment(calendar));
+        countEnvironmentTag(column, getPartOfMonthEnvironment(calendar));
+
+        if (time >= (System.currentTimeMillis() - RECENT_SECONDS * 1000))
         {
-            countEnvironmentTag(column, "device." + device);
-        }
-
-        String wifi = state.getWifiName();
-        if (wifi != null)
-        {
-            countEnvironmentTag(column, "wifi." + wifi);
-        }
-
-        Double lat = state.getLat();
-        Double lon = state.getLon();
-
-        if ((lat != null) && (lon != null))
-        {
-            lat = ((double) Math.round(lat * GPS_ACCURACY) / GPS_ACCURACY);
-            lon = ((double) Math.round(lon * GPS_ACCURACY) / GPS_ACCURACY);
-
-            String gpsloc = String.format(Locale.ROOT, "%.4f/%.4f", lat, lon);
-
-            countEnvironmentTag(column, "gps." + gpsloc);
-        }
-
-        String netEnvTag = getNetEnvironment(state);
-        countEnvironmentTag(column, netEnvTag);
-
-        Long time = state.getStateTime();
-
-        if ((time != null) && (time > 0))
-        {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(time);
-
-            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-            countEnvironmentTag(column, "wday." + Integer.toString(dayOfWeek));
-
-            int partOfMonth = (calendar.get(Calendar.DAY_OF_MONTH) / 10) + 1;
-            countEnvironmentTag(column, "pmon." + Integer.toString(partOfMonth));
-
-            int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
-            countEnvironmentTag(column, "hour." + String.format(Locale.ROOT, "%02d", hourOfDay));
-
-            if (time >= (System.currentTimeMillis() - RECENT_SECONDS * 1000))
-            {
-                recentEvents.add(load);
-            }
+            recentEvents.add(load);
         }
 
         return null;
@@ -535,6 +508,12 @@ public class GopoorSuggest
         return state.getDeviceUUIDBase64();
     }
 
+    @Nullable
+    private static String getWifiEnvironment(GorillaAtomState state)
+    {
+        return state.getWifiName();
+    }
+
     @NonNull
     private static String getDayOfWeekEnvironment(Calendar calendar)
     {
@@ -553,8 +532,10 @@ public class GopoorSuggest
         return "hour." + String.format(Locale.ROOT, "%02d", calendar.get(Calendar.HOUR_OF_DAY));
     }
 
-    private static void countEnvironmentTag(SparseIntArray column, String envtag)
+    private static void countEnvironmentTag(SparseIntArray column, @Nullable String envtag)
     {
+        if (envtag == null) return;
+
         int row = getRowForEnvtag(envtag);
         column.put(row, column.get(row) + 1);
     }
