@@ -9,6 +9,7 @@ import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
+import com.aura.aosp.gorilla.goatoms.GorillaAtomState;
 import com.aura.aosp.gorilla.service.GorillaState;
 
 import org.json.JSONArray;
@@ -124,11 +125,11 @@ public class GopoorSuggest
 
         addEvent(event);
 
-        return precomputeSuggestions(GorillaState.getState().getLoad());
+        return precomputeSuggestions(GorillaState.getState());
     }
 
     @Nullable
-    public static Err precomputeSuggestionsByState(@NonNull JSONObject state)
+    public static Err precomputeSuggestionsByState(@NonNull GorillaAtomState state)
     {
         if (!fetched)
         {
@@ -140,9 +141,13 @@ public class GopoorSuggest
     }
 
     @Nullable
-    private static Err precomputeSuggestions(@NonNull JSONObject state)
+    private static Err precomputeSuggestions(@NonNull GorillaAtomState state)
     {
-        Long curTime = Json.getLong(state, "time");
+        //
+        // Provide timestamp from state.
+        //
+
+        Long curTime = state.getStateTime();
         if ((curTime == null) || (curTime <= 0))
         {
             //
@@ -152,12 +157,12 @@ public class GopoorSuggest
             return Err.err("time missing in state");
         }
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(curTime);
+
         //
         // Prepare index numbers from environment state.
         //
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(curTime);
 
         Integer curNet = getEnvtag2Index(getNetEnvironment(state));
         Integer curGps = getEnvtag2Index(getGpsEnvironment(state));
@@ -181,12 +186,11 @@ public class GopoorSuggest
             SparseIntArray column = entry.getValue();
 
             JSONObject score = new JSONObject();
-            Json.put(score, "domain", domain);
-
             domScores.put(domain, score);
 
             //
-            // Score total event count.
+            // Score total event count. We use the
+            // device event tag category for now.
             //
 
             double scoreCount = getScoreForEnvcat(column, envcat2rowlist.get("device"));
@@ -215,6 +219,7 @@ public class GopoorSuggest
             Json.put(score, "wday", scoreDayOfWeek);
             Json.put(score, "mpart", scorePartOfMonth);
             Json.put(score, "total", scoreTotal);
+            Json.put(score, "domain", domain);
         }
 
         //
@@ -421,8 +426,11 @@ public class GopoorSuggest
             domain += "." + action;
         }
 
-        JSONObject state = Json.getObject(load, "state");
-        if (state == null) return Err.errp("no state in load");
+        JSONObject stateJson = Json.getObject(load, "state");
+        if (stateJson == null) return Err.errp("no state in load");
+
+        GorillaAtomState state = new GorillaAtomState();
+        state.setLoad(stateJson);
 
         if (!event2column.containsKey(domain))
         {
@@ -431,20 +439,20 @@ public class GopoorSuggest
 
         SparseIntArray column = event2column.get(domain);
 
-        String device = Json.getString(state, "device");
+        String device = state.getDeviceUUIDBase64();
         if (device != null)
         {
             countEnvironmentTag(column, "device." + device);
         }
 
-        String wifi = Json.getString(state, "wifi");
+        String wifi = state.getWifiName();
         if (wifi != null)
         {
             countEnvironmentTag(column, "wifi." + wifi);
         }
 
-        Double lat = Json.getDouble(state, "gps.lat");
-        Double lon = Json.getDouble(state, "gps.lon");
+        Double lat = state.getLat();
+        Double lon = state.getLon();
 
         if ((lat != null) && (lon != null))
         {
@@ -459,7 +467,7 @@ public class GopoorSuggest
         String netEnvTag = getNetEnvironment(state);
         countEnvironmentTag(column, netEnvTag);
 
-        Long time = Json.getLong(state, "time");
+        Long time = state.getStateTime();
 
         if ((time != null) && (time > 0))
         {
@@ -485,16 +493,16 @@ public class GopoorSuggest
     }
 
     @NonNull
-    private static String getNetEnvironment(JSONObject state)
+    private static String getNetEnvironment(GorillaAtomState state)
     {
-        Boolean netWifi = Json.getBoolean(state, "net.wifi");
+        Boolean netWifi = state.getWifiConnected();
 
         if ((netWifi != null) && netWifi)
         {
             return "net.wifi";
         }
 
-        Boolean netMobile = Json.getBoolean(state, "net.mobile");
+        Boolean netMobile = state.getMobileConnected();
 
         if ((netMobile != null) && netMobile)
         {
@@ -505,10 +513,10 @@ public class GopoorSuggest
     }
 
     @Nullable
-    private static String getGpsEnvironment(JSONObject state)
+    private static String getGpsEnvironment(GorillaAtomState state)
     {
-        Double lat = Json.getDouble(state, "lat");
-        Double lon = Json.getDouble(state, "lon");
+        Double lat = state.getLat();
+        Double lon = state.getLon();
 
         if ((lat != null) && (lon != null))
         {
@@ -522,9 +530,9 @@ public class GopoorSuggest
     }
 
     @Nullable
-    private static String getDeviceEnvironment(JSONObject state)
+    private static String getDeviceEnvironment(GorillaAtomState state)
     {
-        return Json.getString(state, "device");
+        return state.getDeviceUUIDBase64();
     }
 
     @NonNull

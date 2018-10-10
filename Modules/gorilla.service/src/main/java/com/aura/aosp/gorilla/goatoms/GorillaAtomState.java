@@ -47,7 +47,7 @@ public class GorillaAtomState extends GorillaAtom
      * @return time of state in milliseconds or null.
      */
     @Nullable
-    public Long setStateTime()
+    public Long getStateTime()
     {
         return getJSONLong(getLoad(), "time");
     }
@@ -82,15 +82,15 @@ public class GorillaAtomState extends GorillaAtom
     }
 
     @Nullable
-    public String getLat()
+    public Double getLat()
     {
-        return getJSONString(getLoad(), "gps.lat");
+        return getJSONDouble(getLoad(), "gps.lat");
     }
 
     @Nullable
-    public String getLon()
+    public Double getLon()
     {
-        return getJSONString(getLoad(), "gps.lon");
+        return getJSONDouble(getLoad(), "gps.lon");
     }
 
     public void setMobileConnected(boolean connected)
@@ -98,9 +98,21 @@ public class GorillaAtomState extends GorillaAtom
         putJSON(getLoad(), "net.mobile", connected);
     }
 
+    @Nullable
+    public Boolean getMobileConnected()
+    {
+        return getJSONBoolean(getLoad(), "net.mobile");
+    }
+
     public void setWifiConnected(boolean connected)
     {
         putJSON(getLoad(), "net.wifi", connected);
+    }
+
+    @Nullable
+    public Boolean getWifiConnected()
+    {
+        return getJSONBoolean(getLoad(), "net.wifi");
     }
 
     public void setWifiName(@Nullable String wifiname)
@@ -108,8 +120,20 @@ public class GorillaAtomState extends GorillaAtom
         putJSON(getLoad(), "wifi", wifiname);
     }
 
+    @Nullable
+    public String getWifiName()
+    {
+        return getJSONString(getLoad(), "wifi");
+    }
+
     public void setDeviceUUIDBase64(@Nullable String deviceUUIDbase64)
     {
         putJSON(getLoad(), "device", deviceUUIDbase64);
+    }
+
+    @Nullable
+    public String getDeviceUUIDBase64()
+    {
+        return getJSONString(getLoad(), "device");
     }
 }

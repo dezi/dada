@@ -328,6 +328,32 @@ public abstract class GorillaAtom
     }
 
     @Nullable
+    Double getJSONDouble(@NonNull JSONObject json, @NonNull String key)
+    {
+        try
+        {
+            return json.getDouble(key);
+        }
+        catch (Exception ignore)
+        {
+            return null;
+        }
+    }
+
+    @Nullable
+    Boolean getJSONBoolean(@NonNull JSONObject json, @NonNull String key)
+    {
+        try
+        {
+            return json.getBoolean(key);
+        }
+        catch (Exception ignore)
+        {
+            return null;
+        }
+    }
+
+    @Nullable
     String getJSONString(@NonNull JSONObject json, @NonNull String key)
     {
         try

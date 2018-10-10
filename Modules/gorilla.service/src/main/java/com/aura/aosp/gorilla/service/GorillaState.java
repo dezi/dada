@@ -66,7 +66,7 @@ public class GorillaState
 
             lastState = thisState;
 
-            Err err = GopoorSuggest.precomputeSuggestionsByState(realState.getLoad());
+            Err err = GopoorSuggest.precomputeSuggestionsByState(realState);
             if (err != null) Log.e("failed! err=%s", err.toString());
         }
     }
