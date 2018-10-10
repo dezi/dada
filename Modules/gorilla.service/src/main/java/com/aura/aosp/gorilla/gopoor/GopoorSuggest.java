@@ -8,7 +8,6 @@ import android.util.SparseIntArray;
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
-import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
 import com.aura.aosp.gorilla.service.GorillaState;
 
@@ -162,10 +161,10 @@ public class GopoorSuggest
 
         Integer curNet = getEnvtag2Index(getNetEnvironment(state));
         Integer curGps = getEnvtag2Index(getGpsEnvironment(state));
-        Integer curDevice = getEnvtag2Index(Json.getString(state, "device"));
-        Integer curDayOfWeek = getEnvtag2Index("wday." + Integer.toString(calendar.get(Calendar.DAY_OF_WEEK)));
-        Integer curPartOfMonth = getEnvtag2Index("mpart." + Integer.toString((calendar.get(Calendar.DAY_OF_MONTH) / 10) + 1));
-        Integer curHourOfDay = getEnvtag2Index("hour." + String.format(Locale.ROOT, "%02d", calendar.get(Calendar.HOUR_OF_DAY)));
+        Integer curDevice = getEnvtag2Index(getDeviceEnvironment(state));
+        Integer curHourOfDay = getEnvtag2Index(getHourOfDayEnvironment(calendar));
+        Integer curDayOfWeek = getEnvtag2Index(getDayOfWeekEnvironment(calendar));
+        Integer curPartOfMonth = getEnvtag2Index(getPartOfMonthEnvironment(calendar));
 
         //
         // Compute score of each known event.
@@ -200,21 +199,21 @@ public class GopoorSuggest
             //
 
             double scoreNet = getScoreForEnvtagIndex(column, envcat2rowlist.get("net"), curNet);
+            double scoreGps = getScoreForEnvtagIndex(column, envcat2rowlist.get("gps"), curGps);
             double scoreDevice = getScoreForEnvtagIndex(column, envcat2rowlist.get("device"), curDevice);
+            double scoreHourOfDay = getScoreForEnvtagIndex(column, envcat2rowlist.get("hour"), curHourOfDay);
             double scoreDayOfWeek = getScoreForEnvtagIndex(column, envcat2rowlist.get("wday"), curDayOfWeek);
             double scorePartOfMonth = getScoreForEnvtagIndex(column, envcat2rowlist.get("mpart"), curPartOfMonth);
-            double scoreHourOfDay = getScoreForEnvtagIndex(column, envcat2rowlist.get("hour"), curHourOfDay);
-            double scoreGps = getScoreForEnvtagIndex(column, envcat2rowlist.get("gps"), curGps);
 
             double scoreTotal = scoreNet + scoreDevice + scoreDayOfWeek + scorePartOfMonth + scoreHourOfDay + scoreGps;
             totalOverall += scoreTotal;
 
             Json.put(score, "net", scoreNet);
+            Json.put(score, "gps", scoreGps);
             Json.put(score, "device", scoreDevice);
+            Json.put(score, "hour", scoreHourOfDay);
             Json.put(score, "wday", scoreDayOfWeek);
             Json.put(score, "mpart", scorePartOfMonth);
-            Json.put(score, "hour", scoreHourOfDay);
-            Json.put(score, "gps", scoreGps);
             Json.put(score, "total", scoreTotal);
         }
 
@@ -246,6 +245,10 @@ public class GopoorSuggest
 
             Json.put(resultScores, scoreJson);
         }
+
+        //
+        // Sort all scores descending.
+        //
 
         resultScores = Json.sortDouble(resultScores, "final", true);
 
@@ -482,23 +485,6 @@ public class GopoorSuggest
     }
 
     @NonNull
-    private static String getGpsEnvironment(JSONObject state)
-    {
-        Double lat = Json.getDouble(state, "lat");
-        Double lon = Json.getDouble(state, "lon");
-
-        if ((lat != null) && (lon != null))
-        {
-            lat = ((double) Math.round(lat * GPS_ACCURACY) / GPS_ACCURACY);
-            lon = ((double) Math.round(lon * GPS_ACCURACY) / GPS_ACCURACY);
-
-            return "gps." + String.format(Locale.ROOT, "%f/%f", lat, lon);
-        }
-
-        return null;
-    }
-
-    @NonNull
     private static String getNetEnvironment(JSONObject state)
     {
         Boolean netWifi = Json.getBoolean(state, "net.wifi");
@@ -516,6 +502,47 @@ public class GopoorSuggest
         }
 
         return "net.offline";
+    }
+
+    @Nullable
+    private static String getGpsEnvironment(JSONObject state)
+    {
+        Double lat = Json.getDouble(state, "lat");
+        Double lon = Json.getDouble(state, "lon");
+
+        if ((lat != null) && (lon != null))
+        {
+            lat = ((double) Math.round(lat * GPS_ACCURACY) / GPS_ACCURACY);
+            lon = ((double) Math.round(lon * GPS_ACCURACY) / GPS_ACCURACY);
+
+            return "gps." + String.format(Locale.ROOT, "%f/%f", lat, lon);
+        }
+
+        return null;
+    }
+
+    @Nullable
+    private static String getDeviceEnvironment(JSONObject state)
+    {
+        return Json.getString(state, "device");
+    }
+
+    @NonNull
+    private static String getDayOfWeekEnvironment(Calendar calendar)
+    {
+        return "wday." + Integer.toString(calendar.get(Calendar.DAY_OF_WEEK));
+    }
+
+    @NonNull
+    private static String getPartOfMonthEnvironment(Calendar calendar)
+    {
+        return "mpart." + Integer.toString((calendar.get(Calendar.DAY_OF_MONTH) / 10) + 1);
+    }
+
+    @NonNull
+    private static String getHourOfDayEnvironment(Calendar calendar)
+    {
+        return "hour." + String.format(Locale.ROOT, "%02d", calendar.get(Calendar.HOUR_OF_DAY));
     }
 
     private static void countEnvironmentTag(SparseIntArray column, String envtag)
