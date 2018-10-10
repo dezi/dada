@@ -8,6 +8,7 @@ import android.util.SparseIntArray;
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
+import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
 import com.aura.aosp.gorilla.service.GorillaState;
 
@@ -26,12 +27,12 @@ public class GopoorSuggest
     /**
      * Number of seconds for recent events.
      */
-    public final static int RECENT_SECONDS = 600;
+    private final static int RECENT_SECONDS = 600;
 
     /**
-     * GPS accuracy for making a different gps location.
+     * GPS accuracy for making a different GPS location.
      */
-    public final static int GPS_ACCURACY = 1000;
+    private final static int GPS_ACCURACY = 1000;
 
     /**
      * Indicates that all stored events have been cached.
@@ -39,26 +40,45 @@ public class GopoorSuggest
     private static boolean fetched;
 
     /**
-     * Map from an enviroment tag (net.mobile, device.xxxx, device.yyyy)
+     * Map from an enviroment tag
+     * <p>
+     * net.mobile
+     * net.wifi
+     * wifi.xxxx
+     * wifi.yyyy
+     * device.xxxx
+     * device.yyyy
+     * ...
+     * <p>
      * to row index in matrix.
      */
-    private final static Map<String, Integer> envtag2index = new HashMap<>();
+    private final static Map<String, Integer> envtag2row = new HashMap<>();
 
     /**
-     * Reverse map from column index to environment tag.
+     * Reverse map from row index to environment tag.
      */
-    private final static SparseArray<String> index2envtag = new SparseArray<>();
+    private final static SparseArray<String> row2envtag = new SparseArray<>();
+
+    /**
+     * Environment categories
+     * <p>
+     * net.*
+     * wifi.*
+     * pmon.*
+     * wday.*
+     * hour.*
+     * gps.*
+     * device.*
+     * ...
+     * <p>
+     * to corresponding row indices in matrix.
+     */
+    private final static Map<String, ArrayList<Integer>> envcat2rowlist = new HashMap<>();
 
     /**
      * Event identifier to column index in matrix.
      */
     private final static Map<String, SparseIntArray> event2column = new HashMap<>();
-
-    /**
-     * Environmet category (net.*, wifi,*, hour.*)
-     * to corresponding row indices in matrix.
-     */
-    private final static Map<String, ArrayList<Integer>> envcat2indexlist = new HashMap<>();
 
     /**
      * Dedicated list with recent events.
@@ -70,6 +90,12 @@ public class GopoorSuggest
      */
     private static JSONArray currentSuggestions;
 
+    /**
+     * Suggest actions of root level. Suggested are domain only action and
+     * action with domain and sub action.
+     *
+     * @return JSON array with suggested action and scores or null.
+     */
     @Nullable
     public static JSONArray suggestActions()
     {
@@ -91,7 +117,7 @@ public class GopoorSuggest
     @Nullable
     public static Err precomputeSuggestionsByEvent(@NonNull JSONObject event)
     {
-        if (! fetched)
+        if (!fetched)
         {
             Err err = fetchEvents();
             if (err != null) return err;
@@ -105,7 +131,7 @@ public class GopoorSuggest
     @Nullable
     public static Err precomputeSuggestionsByState(@NonNull JSONObject state)
     {
-        if (! fetched)
+        if (!fetched)
         {
             Err err = fetchEvents();
             if (err != null) return err;
@@ -146,6 +172,7 @@ public class GopoorSuggest
         //
 
         Map<String, JSONObject> domScores = new HashMap<>();
+
         double totalOverall = 0.0;
         double countOverall = 0.0;
 
@@ -155,13 +182,15 @@ public class GopoorSuggest
             SparseIntArray column = entry.getValue();
 
             JSONObject score = new JSONObject();
+            Json.put(score, "domain", domain);
+
             domScores.put(domain, score);
 
             //
             // Score total event count.
             //
 
-            double scoreCount = getScoreForEnvcat(column, envcat2indexlist.get("device"));
+            double scoreCount = getScoreForEnvcat(column, envcat2rowlist.get("device"));
             countOverall += scoreCount;
 
             Json.put(score, "count", scoreCount);
@@ -170,12 +199,12 @@ public class GopoorSuggest
             // Score individual event categories.
             //
 
-            double scoreNet = getScoreForEnvtagIndex(column, envcat2indexlist.get("net"), curNet);
-            double scoreDevice = getScoreForEnvtagIndex(column, envcat2indexlist.get("device"), curDevice);
-            double scoreDayOfWeek = getScoreForEnvtagIndex(column, envcat2indexlist.get("wday"), curDayOfWeek);
-            double scorePartOfMonth = getScoreForEnvtagIndex(column, envcat2indexlist.get("mpart"), curPartOfMonth);
-            double scoreHourOfDay = getScoreForEnvtagIndex(column, envcat2indexlist.get("hour"), curHourOfDay);
-            double scoreGps = getScoreForEnvtagIndex(column, envcat2indexlist.get("gps"), curGps);
+            double scoreNet = getScoreForEnvtagIndex(column, envcat2rowlist.get("net"), curNet);
+            double scoreDevice = getScoreForEnvtagIndex(column, envcat2rowlist.get("device"), curDevice);
+            double scoreDayOfWeek = getScoreForEnvtagIndex(column, envcat2rowlist.get("wday"), curDayOfWeek);
+            double scorePartOfMonth = getScoreForEnvtagIndex(column, envcat2rowlist.get("mpart"), curPartOfMonth);
+            double scoreHourOfDay = getScoreForEnvtagIndex(column, envcat2rowlist.get("hour"), curHourOfDay);
+            double scoreGps = getScoreForEnvtagIndex(column, envcat2rowlist.get("gps"), curGps);
 
             double scoreTotal = scoreNet + scoreDevice + scoreDayOfWeek + scorePartOfMonth + scoreHourOfDay + scoreGps;
             totalOverall += scoreTotal;
@@ -190,8 +219,11 @@ public class GopoorSuggest
         }
 
         //
-        // Normalize all scores to be between 0.0 .. 1.0.
+        // Normalize all scores to be between 0.0 .. 1.0
+        // and put into JSON array.
         //
+
+        JSONArray resultScores = new JSONArray();
 
         for (String domain : event2column.keySet())
         {
@@ -212,7 +244,20 @@ public class GopoorSuggest
             double finalScore = (countNormalized + scoreNormalized) / 2.0;
             Json.put(scoreJson, "final", finalScore);
 
-            Log.d("%s => net=%.2f dev=%.2f dow=%.2f pom=%.2f hod=%.2f gps=%.2f count=%.2f total=%.2f score=%.2f final=%.2f", domain,
+            Json.put(resultScores, scoreJson);
+        }
+
+        resultScores = Json.sortDouble(resultScores, "final", true);
+
+        //
+        // Log all scores.
+        //
+
+        for (int inx = 0; inx < resultScores.length(); inx++)
+        {
+            JSONObject scoreJson = Json.getObject(resultScores, inx);
+
+            Log.d("net=%.2f dev=%.2f dow=%.2f pom=%.2f hod=%.2f gps=%.2f count=%.2f total=%.2f score=%.2f final=%.2f => %s",
                     Json.getDouble(scoreJson, "net"),
                     Json.getDouble(scoreJson, "device"),
                     Json.getDouble(scoreJson, "wday"),
@@ -222,7 +267,8 @@ public class GopoorSuggest
                     Json.getDouble(scoreJson, "count"),
                     Json.getDouble(scoreJson, "total"),
                     Json.getDouble(scoreJson, "score"),
-                    Json.getDouble(scoreJson, "final")
+                    Json.getDouble(scoreJson, "final"),
+                    Json.getString(scoreJson, "domain")
             );
         }
 
@@ -280,7 +326,7 @@ public class GopoorSuggest
             // Therefore this category yields no score.
             //
 
-            Log.d("envTagIndex=%s deviation=%f average=%f unspecific...", envTagIndex, deviation, average);
+            //Log.d("envTagIndex=%s deviation=%f average=%f unspecific...", envTagIndex, deviation, average);
 
             return 0.0;
         }
@@ -318,7 +364,7 @@ public class GopoorSuggest
     private static Integer getEnvtag2Index(String envtag)
     {
         if (envtag == null) return null;
-        return envtag2index.get(envtag);
+        return envtag2row.get(envtag);
     }
 
     @Nullable
@@ -326,9 +372,11 @@ public class GopoorSuggest
     {
         fetched = true;
 
-        envtag2index.clear();
-        index2envtag.clear();
+        envtag2row.clear();
+        row2envtag.clear();
         event2column.clear();
+
+        long startTime = System.currentTimeMillis();
 
         long timeTo = System.currentTimeMillis();
         long timeFrom = timeTo - (30L * 86400L * 1000L);
@@ -336,7 +384,7 @@ public class GopoorSuggest
         JSONArray events = GoatomStorage.queryAtoms("aura.event.action", timeFrom, timeTo);
         if (events == null) return Err.getLastErr();
 
-        Log.d("events=%s", Json.toPretty(events));
+        long fetchTime = System.currentTimeMillis();
 
         for (int inx = 0; inx < events.length(); inx++)
         {
@@ -345,6 +393,10 @@ public class GopoorSuggest
 
             addEvent(event);
         }
+
+        long totalTime = System.currentTimeMillis();
+
+        Log.d("fetchTime=%d computeTime=%d totalTime=%d", fetchTime - startTime, totalTime - fetchTime, totalTime - startTime);
 
         dumpMatrix();
 
@@ -369,7 +421,7 @@ public class GopoorSuggest
         JSONObject state = Json.getObject(load, "state");
         if (state == null) return Err.errp("no state in load");
 
-        if (! event2column.containsKey(domain))
+        if (!event2column.containsKey(domain))
         {
             event2column.put(domain, new SparseIntArray());
         }
@@ -379,30 +431,30 @@ public class GopoorSuggest
         String device = Json.getString(state, "device");
         if (device != null)
         {
-            countEnvironmentTag(column,"device." + device);
+            countEnvironmentTag(column, "device." + device);
         }
 
         String wifi = Json.getString(state, "wifi");
         if (wifi != null)
         {
-            countEnvironmentTag(column,"wifi." + wifi);
+            countEnvironmentTag(column, "wifi." + wifi);
         }
 
-        Double lat = Json.getDouble(state, "lat");
-        Double lon = Json.getDouble(state, "lon");
+        Double lat = Json.getDouble(state, "gps.lat");
+        Double lon = Json.getDouble(state, "gps.lon");
 
         if ((lat != null) && (lon != null))
         {
             lat = ((double) Math.round(lat * GPS_ACCURACY) / GPS_ACCURACY);
             lon = ((double) Math.round(lon * GPS_ACCURACY) / GPS_ACCURACY);
 
-            String gpsloc = String.format(Locale.ROOT, "%f/%f", lat, lon);
+            String gpsloc = String.format(Locale.ROOT, "%.4f/%.4f", lat, lon);
 
-            countEnvironmentTag(column,"gps." + gpsloc);
+            countEnvironmentTag(column, "gps." + gpsloc);
         }
 
         String netEnvTag = getNetEnvironment(state);
-        countEnvironmentTag(column,netEnvTag);
+        countEnvironmentTag(column, netEnvTag);
 
         Long time = Json.getLong(state, "time");
 
@@ -412,13 +464,13 @@ public class GopoorSuggest
             calendar.setTimeInMillis(time);
 
             int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-            countEnvironmentTag(column,"wday." + Integer.toString(dayOfWeek));
+            countEnvironmentTag(column, "wday." + Integer.toString(dayOfWeek));
 
             int partOfMonth = (calendar.get(Calendar.DAY_OF_MONTH) / 10) + 1;
-            countEnvironmentTag(column,"pmon." + Integer.toString(partOfMonth));
+            countEnvironmentTag(column, "pmon." + Integer.toString(partOfMonth));
 
             int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
-            countEnvironmentTag(column,"hour." + String.format(Locale.ROOT, "%02d", hourOfDay));
+            countEnvironmentTag(column, "hour." + String.format(Locale.ROOT, "%02d", hourOfDay));
 
             if (time >= (System.currentTimeMillis() - RECENT_SECONDS * 1000))
             {
@@ -474,37 +526,37 @@ public class GopoorSuggest
 
     private static int getRowForEnvtag(String envtag)
     {
-        if (! envtag2index.containsKey(envtag))
+        if (!envtag2row.containsKey(envtag))
         {
             //
             // Add a new index for this environment tag.
             //
 
-            int index = envtag2index.size();
-            envtag2index.put(envtag, index);
-            index2envtag.put(index, envtag);
+            int index = envtag2row.size();
+            envtag2row.put(envtag, index);
+            row2envtag.put(index, envtag);
 
             //
             // Derive environment category.
             //
 
             String[] envparts = envtag.split("\\.");
-            String envcat = envparts[ 0 ];
+            String envcat = envparts[0];
 
-            if (! envcat2indexlist.containsKey(envcat))
+            if (!envcat2rowlist.containsKey(envcat))
             {
                 //
                 // Add a new integer list for this environment category.
                 //
 
-                envcat2indexlist.put(envcat, new ArrayList<Integer>());
+                envcat2rowlist.put(envcat, new ArrayList<Integer>());
             }
 
             //
             // Add new environment tag index to category list.
             //
 
-            ArrayList<Integer> envcatlist = envcat2indexlist.get(envcat);
+            ArrayList<Integer> envcatlist = envcat2rowlist.get(envcat);
             envcatlist.add(index);
         }
 
@@ -512,7 +564,7 @@ public class GopoorSuggest
         // Finally return environment tag index.
         //
 
-        return envtag2index.get(envtag);
+        return envtag2row.get(envtag);
     }
 
     private static void dumpMatrix()
@@ -524,12 +576,12 @@ public class GopoorSuggest
 
             StringBuilder colstr = new StringBuilder();
 
-            for (int inx = 0; inx < envtag2index.size(); inx++)
+            for (int inx = 0; inx < envtag2row.size(); inx++)
             {
                 int count = column.get(inx);
                 if (count == 0) continue;
 
-                String item = " " + index2envtag.get(inx) + ":" + count;
+                String item = " " + row2envtag.get(inx) + ":" + count;
 
                 colstr.append(item);
             }

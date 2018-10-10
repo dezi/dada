@@ -521,6 +521,35 @@ public class Json
         return new JSONArray(jsonValues);
     }
 
+    public static JSONArray sortDouble(JSONArray array, String field, boolean descending)
+    {
+        final String sort = field;
+        final boolean desc = descending;
+
+        class comparedat implements Comparator<JSONObject>
+        {
+            public int compare(JSONObject a, JSONObject b)
+            {
+                Double aval = desc ? getDouble(b, sort) : getDouble(a, sort);
+                Double bval = desc ? getDouble(a, sort) : getDouble(b, sort);
+
+                return Simple.compareTo(aval, bval);
+            }
+        }
+
+        List<JSONObject> jsonValues = new ArrayList<>();
+
+        for (int inx = 0; inx < array.length(); inx++)
+        {
+            jsonValues.add(getObject(array, inx));
+        }
+
+        Collections.sort(jsonValues, new comparedat());
+
+        return new JSONArray(jsonValues);
+    }
+
+
     public static void sortJsonKeys(@NonNull JSONObject json)
     {
         //

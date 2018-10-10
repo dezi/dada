@@ -122,6 +122,13 @@ public class Simple
         return 0;
     }
 
+    public static int compareTo(Double double1, Double double2)
+    {
+        if ((double1 != null) && (double2 != null)) return double1.compareTo(double2);
+
+        return 0;
+    }
+
     @Nullable
     public static Err mkdirs(File... dirs)
     {
