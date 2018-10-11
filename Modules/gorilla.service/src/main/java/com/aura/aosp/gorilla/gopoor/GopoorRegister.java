@@ -25,7 +25,7 @@ public class GopoorRegister
         Err err = GoatomStorage.putAtom(event.getAtom());
         if (err != null) return err;
 
-        return GopoorSuggest.precomputeSuggestionsByEvent(event.getAtom());
+        return GopoorSuggest.precomputeSuggestionsByEvent(event);
     }
 
     @Nullable
@@ -43,7 +43,7 @@ public class GopoorRegister
         Err err = GoatomStorage.putAtom(event.getAtom());
         if (err != null) return err;
 
-        return GopoorSuggest.precomputeSuggestionsByEvent(event.getAtom());
+        return GopoorSuggest.precomputeSuggestionsByEvent(event);
     }
 
     @Nullable
@@ -62,6 +62,6 @@ public class GopoorRegister
         Err err = GoatomStorage.putAtom(event.getAtom());
         if (err != null) return err;
 
-        return GopoorSuggest.precomputeSuggestionsByEvent(event.getAtom());
+        return GopoorSuggest.precomputeSuggestionsByEvent(event);
    }
 }

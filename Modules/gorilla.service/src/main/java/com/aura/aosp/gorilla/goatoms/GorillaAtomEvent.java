@@ -11,7 +11,7 @@ import org.json.JSONObject;
  *
  * @author Dennis Zierahn
  */
-public class GorillaAtomEvent extends GorillaAtom
+public class GorillaAtomEvent extends GorillaAtomAction
 {
     /**
      * Create empty state atom.
@@ -54,38 +54,5 @@ public class GorillaAtomEvent extends GorillaAtom
         state.setLoad(stateLoad);
 
         return state;
-    }
-
-    public void setDomain(String domain)
-    {
-        putJSON(getLoad(), "domain", domain);
-    }
-
-    @Nullable
-    public String getDomain()
-    {
-        return getJSONString(getLoad(), "domain");
-    }
-
-    public void setContext(String context)
-    {
-        putJSON(getLoad(), "context", context);
-    }
-
-    @Nullable
-    public String getContext()
-    {
-        return getJSONString(getLoad(), "context");
-    }
-
-    public void setAction(String action)
-    {
-        putJSON(getLoad(), "action", action);
-    }
-
-    @Nullable
-    public String getAction()
-    {
-        return getJSONString(getLoad(), "action");
     }
 }

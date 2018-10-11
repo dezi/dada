@@ -12,8 +12,6 @@ import com.aura.aosp.gorilla.goatom.GoatomStorage;
 import com.aura.aosp.gorilla.goatoms.GorillaAtomState;
 import com.aura.aosp.gorilla.gopoor.GopoorSuggest;
 
-import org.json.JSONObject;
-
 public class GorillaState
 {
     private static String lastState;

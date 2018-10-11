@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity
             Log.d(LOGTAG," UUID=" + UID.randomUUIDBase64());
         }
         */
-        
+
         /*
         Random rand = new Random();
 

@@ -9,6 +9,7 @@ import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
+import com.aura.aosp.gorilla.goatoms.GorillaAtomEvent;
 import com.aura.aosp.gorilla.goatoms.GorillaAtomState;
 import com.aura.aosp.gorilla.service.GorillaState;
 
@@ -83,7 +84,7 @@ public class GopoorSuggest
     /**
      * Dedicated list with recent events.
      */
-    private final static List<JSONObject> recentEvents = new ArrayList<>();
+    private final static List<GorillaAtomEvent> recentEvents = new ArrayList<>();
 
     /**
      * Current suggestion results.
@@ -115,7 +116,7 @@ public class GopoorSuggest
     }
 
     @Nullable
-    public static Err precomputeSuggestionsByEvent(@NonNull JSONObject event)
+    public static Err precomputeSuggestionsByEvent(@NonNull GorillaAtomEvent event)
     {
         if (!fetched)
         {
@@ -123,7 +124,8 @@ public class GopoorSuggest
             if (err != null) return err;
         }
 
-        addEvent(event);
+        Err err = addEvent(event);
+        if (err != null) return err;
 
         return precomputeSuggestions(GorillaState.getState());
     }
@@ -143,6 +145,8 @@ public class GopoorSuggest
     @Nullable
     private static Err precomputeSuggestions(@NonNull GorillaAtomState state)
     {
+        long startTime = System.currentTimeMillis();
+
         //
         // Provide timestamp from state.
         //
@@ -258,16 +262,19 @@ public class GopoorSuggest
         // Sort all scores descending.
         //
 
-        resultScores = Json.sortDouble(resultScores, "final", true);
+        currentSuggestions = Json.sortDouble(resultScores, "final", true);
 
         //
         // Log all scores.
         //
 
-        for (int inx = 0; inx < resultScores.length(); inx++)
-        {
-            JSONObject scoreJson = Json.getObject(resultScores, inx);
+        Log.d("elapsedTime=%d", System.currentTimeMillis() - startTime);
 
+        for (int inx = 0; inx < currentSuggestions.length(); inx++)
+        {
+            JSONObject scoreJson = Json.getObject(currentSuggestions, inx);
+
+            /*
             Log.d("net=%.2f wif=%.2f dev=%.2f dow=%.2f pom=%.2f hod=%.2f gps=%.2f count=%.2f total=%.2f score=%.2f final=%.2f => %s",
                     Json.getDouble(scoreJson, "net"),
                     Json.getDouble(scoreJson, "wifi"),
@@ -282,6 +289,9 @@ public class GopoorSuggest
                     Json.getDouble(scoreJson, "final"),
                     Json.getString(scoreJson, "domain")
             );
+            */
+
+            Log.d("score=%.2f => %s", Json.getDouble(scoreJson, "final"), Json.getString(scoreJson, "domain"));
         }
 
         return null;
@@ -329,7 +339,7 @@ public class GopoorSuggest
 
         float deviation = differs / (float) envCatIndexes.size();
 
-        Log.d("envTagIndex=%s deviation=%f average=%f cats=%d", envTagIndex, deviation, average, envCatIndexes.size());
+        //Log.d("envTagIndex=%s deviation=%f average=%f cats=%d", envTagIndex, deviation, average, envCatIndexes.size());
 
         if (deviation < (average / 10f))
         {
@@ -396,38 +406,26 @@ public class GopoorSuggest
             JSONObject event = Json.getObject(events, inx);
             if (event == null) continue;
 
-            addEvent(event);
+            Err err = addEvent(new GorillaAtomEvent(event));
+            if (err != null) Log.d("fail! err=%s", err.toString());
         }
 
         long totalTime = System.currentTimeMillis();
 
         Log.d("fetchTime=%d computeTime=%d totalTime=%d", fetchTime - startTime, totalTime - fetchTime, totalTime - startTime);
 
-        dumpMatrix();
+        //dumpMatrix();
 
         return null;
     }
 
     @Nullable
-    private static Err addEvent(JSONObject event)
+    private static Err addEvent(GorillaAtomEvent event)
     {
-        JSONObject load = Json.getObject(event, "load");
-        if (load == null) return Err.errp("no load in event");
+        String eventAction = event.getSerializedAction();
 
-        String domain = Json.getString(load, "domain");
-        if (domain == null) return Err.errp("no domain in event");
-
-        String action = Json.getString(load, "action");
-        if (action != null)
-        {
-            domain += "." + action;
-        }
-
-        JSONObject stateJson = Json.getObject(load, "state");
-        if (stateJson == null) return Err.errp("no state in load");
-
-        GorillaAtomState state = new GorillaAtomState();
-        state.setLoad(stateJson);
+        GorillaAtomState state = event.getState();
+        if (state == null) return Err.errp("no state in event");
 
         Long time = state.getStateTime();
         if (time == null) return Err.errp("no time in state");
@@ -435,12 +433,12 @@ public class GopoorSuggest
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(time);
 
-        if (!event2column.containsKey(domain))
+        SparseIntArray column = event2column.get(eventAction);
+        if (column == null)
         {
-            event2column.put(domain, new SparseIntArray());
+            column = new SparseIntArray();
+            event2column.put(eventAction, column);
         }
-
-        SparseIntArray column = event2column.get(domain);
 
         countEnvironmentTag(column, getNetEnvironment(state));
         countEnvironmentTag(column, getGpsEnvironment(state));
@@ -453,7 +451,7 @@ public class GopoorSuggest
 
         if (time >= (System.currentTimeMillis() - RECENT_SECONDS * 1000))
         {
-            recentEvents.add(load);
+            recentEvents.add(event);
         }
 
         return null;
@@ -490,7 +488,7 @@ public class GopoorSuggest
             lat = ((double) Math.round(lat * GPS_ACCURACY) / GPS_ACCURACY);
             lon = ((double) Math.round(lon * GPS_ACCURACY) / GPS_ACCURACY);
 
-            return "gps." + String.format(Locale.ROOT, "%f/%f", lat, lon);
+            return "gps." + String.format(Locale.ROOT, "%.4f/%.4f", lat, lon);
         }
 
         return null;
@@ -575,8 +573,6 @@ public class GopoorSuggest
                 envcat2rowlist.put(envcat, new ArrayList<Integer>());
             }
 
-            Log.d("############### envtag=%s envcat=%s index=%d", envtag, envcat, index);
-
             //
             // Add new environment tag index to category list.
             //
@@ -611,7 +607,7 @@ public class GopoorSuggest
                 colstr.append(item);
             }
 
-            Log.d("%s => %s", domain, colstr.toString());
+            Log.d("%s => %s", colstr.toString().trim(), domain);
         }
     }
 }
