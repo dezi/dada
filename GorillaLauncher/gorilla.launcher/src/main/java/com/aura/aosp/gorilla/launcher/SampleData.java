@@ -38,7 +38,7 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_openCalendar),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_date_range_black_24dp,
-                    0.970f, LauncherActivity.class.getMethod("onOpenSimpleCalendar")
+                    0.970f, StreamActivity.class.getMethod("onOpenSimpleCalendar")
             ));
 
             items.add(new ActionItem(
@@ -60,14 +60,14 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_addNote),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_add_circle_black_24dp,
-                    0.40f, "com.aura.aosp.gorilla.launcher.action.ADD_NOTE"
+                    0.40f, "com.aura.aosp.gorilla.launcher.action.CREATE_NOTE"
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_newtextsharedwith),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_contact_mail_black_24dp,
-                    0.99f, "com.aura.aosp.gorilla.launcher.action.NEW_TEXT_SHARED_WITH"
+                    0.99f, "com.aura.aosp.gorilla.launcher.action.CREATE_NOTE_SHARED_WITH"
             ));
 
             items.add(new ActionItem(
@@ -95,7 +95,7 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_editText),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_mode_edit_black_24dp,
-                    0.60f, "com.aura.aosp.gorilla.launcher.action.EDIT_TEXT"
+                    0.60f, "com.aura.aosp.gorilla.launcher.action.CREATE_NOTE"
             ));
 
             items.add(new ActionItem(
@@ -106,7 +106,7 @@ public class SampleData {
             ));
         } catch (NoSuchMethodException e) {
             Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>, Activiy is <%>",
-                    e.getMessage(), LauncherActivity.class));
+                    e.getMessage(), StreamActivity.class));
         }
 
         return items;
@@ -127,21 +127,21 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_pickDate),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_date_range_black_24dp,
-                    0.80f, LauncherActivity.class.getMethod("onPickDate")
+                    0.80f, StreamActivity.class.getMethod("onPickDate")
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_composeMessage),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_sms_black_24dp,
-                    0.69f, "com.aura.aosp.gorilla.launcher.action.NEW_NOTE"
+                    0.69f, "com.aura.aosp.gorilla.launcher.action.CREATE_NOTE"
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_newtextsharedwith),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_contact_mail_black_24dp,
-                    0.99f, "com.aura.aosp.gorilla.launcher.action.NEW_NOTE_SHARED_WITH"
+                    0.99f, "com.aura.aosp.gorilla.launcher.action.CREATE_NOTE_SHARED_WITH"
             ));
 
             items.add(new ActionItem(
@@ -166,7 +166,7 @@ public class SampleData {
             ));
         } catch (NoSuchMethodException $e) {
             Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>, Activiy is <%>",
-                    $e.getMessage(), LauncherActivity.class));
+                    $e.getMessage(), StreamActivity.class));
         }
 
         return items;
@@ -187,32 +187,32 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_markSelectedTextBold),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_format_bold_black_24dp,
-                    1f, LauncherActivity.class.getMethod("onMarkSelectedTextBold")
+                    1f, StreamActivity.class.getMethod("onMarkSelectedTextBold")
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_markSelectedTextItalic),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_format_italic_black_24dp,
-                    1f, LauncherActivity.class.getMethod("onMarkSelectedTextItalic")
+                    1f, StreamActivity.class.getMethod("onMarkSelectedTextItalic")
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_markSelectedTextUnderlined),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_format_underlined_black_24dp,
-                    1f, LauncherActivity.class.getMethod("onMarkSelectedTextUnderlined")
+                    1f, StreamActivity.class.getMethod("onMarkSelectedTextUnderlined")
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_markSelectedTextAlignJustify),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_format_align_justify_black_24dp,
-                    1f, LauncherActivity.class.getMethod("onMarkSelectedTextAlignJustify")
+                    1f, StreamActivity.class.getMethod("onMarkSelectedTextAlignJustify")
             ));
         } catch (NoSuchMethodException $e) {
             Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>, Activiy is <%>",
-                    $e.getMessage(), LauncherActivity.class));
+                    $e.getMessage(), StreamActivity.class));
         }
 
         return items;

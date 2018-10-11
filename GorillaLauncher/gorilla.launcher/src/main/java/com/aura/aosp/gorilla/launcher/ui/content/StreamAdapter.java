@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aura.aosp.gorilla.launcher.LauncherActivity;
+import com.aura.aosp.gorilla.launcher.StreamActivity;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.StreamItem;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
@@ -29,14 +29,14 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
     private List<StreamItem> streamDataList = Collections.emptyList();
     private Context context;
-    private LauncherActivity activity;
+    private StreamActivity activity;
     private ActionClusterStore actionClusterStore;
 
     /**
      * @param list
      * @param context
      */
-    public StreamAdapter(List<StreamItem> list, Context context, LauncherActivity activity) {
+    public StreamAdapter(List<StreamItem> list, Context context, StreamActivity activity) {
         this.streamDataList = list;
         this.context = context;
         this.activity = activity;
@@ -58,7 +58,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         // Use the provided View Holder on the onCreateViewHolder invokeMethod
         // to populate the current row on the RecyclerView
         // TODO: Probably it makes sense to initialize child views of the
-        // TODO: ContentStreamItemView independently
+        // TODO: StreamItemView independently
         final StreamItem dataSet = streamDataList.get(position);
 //        holder.item.initWithItem(dataSet);
 
@@ -70,30 +70,30 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         switch (dataSet.getType()) {
             case TYPE_STREAMITEM_GENERIC:
             default:
-                useDotButtonRes = R.drawable.contentstream_oval_18dp;
-                useDotButtonColor = R.color.color_contentstream_button;
+                useDotButtonRes = R.drawable.stream_oval_18dp;
+                useDotButtonColor = R.color.color_stream_button;
                 usePreviewImageRes = dataSet.getImageId();
-                usePreviewImageColor[0] = R.color.color_contentstream_image_background_primary;
+                usePreviewImageColor[0] = R.color.color_stream_image_background_primary;
                 break;
 
             case TYPE_STREAMITEM_CONTACT:
-                useDotButtonRes = R.drawable.contentstream_oval_18dp;
-                useDotButtonColor = R.color.color_contentstream_button;
+                useDotButtonRes = R.drawable.stream_oval_18dp;
+                useDotButtonColor = R.color.color_stream_button;
                 usePreviewImageRes = dataSet.getImageId();
-                usePreviewImageColor[0] = R.color.color_contentstream_button;
+                usePreviewImageColor[0] = R.color.color_stream_button;
                 break;
 
             case TYPE_STREAMUTEN_HIGHLIGHT:
-                useDotButtonRes = R.drawable.contentstream_oval_24dp;
-                useDotButtonColor = R.color.color_contentstream_button_highlight;
+                useDotButtonRes = R.drawable.stream_oval_24dp;
+                useDotButtonColor = R.color.color_stream_button_highlight;
                 usePreviewImageRes = R.drawable.ic_bubble_chart_black_24dp;
-                usePreviewImageColor[0] = R.color.color_contentstream_image_background_secondary;
+                usePreviewImageColor[0] = R.color.color_stream_image_background_secondary;
                 break;
 
             case TYPE_STREAMITEM_INVISIBLE:
-                useDotButtonRes = R.drawable.contentstream_oval_transparent_24dp;
+                useDotButtonRes = R.drawable.stream_oval_transparent_24dp;
                 useDotButtonColor = R.color.color_transparent;
-                usePreviewImageRes = R.drawable.contentstream_oval_transparent_24dp;
+                usePreviewImageRes = R.drawable.stream_oval_transparent_24dp;
                 usePreviewImageColor[0] = R.color.color_transparent;
                 break;
         }
@@ -127,7 +127,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                     actionClusterStore = new ActionClusterStore(context);
 
                     ActionCluster itemActionCluster = actionClusterStore.getClusterForSelectedIdentity(
-                            "com.aura.aosp.gorilla.contentstream.contacts", ((ContactStreamItem) dataSet).getIdentity());
+                            "com.aura.aosp.gorilla.stream.contacts", ((ContactStreamItem) dataSet).getIdentity());
 
                     activity.createActionClusterView(itemActionCluster, null, true);
                 }

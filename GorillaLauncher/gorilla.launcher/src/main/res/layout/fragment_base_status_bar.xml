@@ -35,7 +35,7 @@
         android:paddingStart="@dimen/statusbar_statusimage_padding_horizontal"
         android:paddingTop="@dimen/statusbar_statusimage_padding_vertical"
         android:tint="@color/color_statusbar_statusimage_disabled"
-        app:srcCompat="@drawable/contentstream_oval_18dp" />
+        app:srcCompat="@drawable/stream_oval_18dp" />
 
     <ImageView
         android:id="@+id/statusImageOnline"
@@ -47,6 +47,6 @@
         android:paddingStart="@dimen/statusbar_statusimage_padding_horizontal"
         android:paddingTop="@dimen/statusbar_statusimage_padding_vertical"
         android:tint="@color/color_statusbar_statusimage_disabled"
-        app:srcCompat="@drawable/contentstream_oval_18dp" />
+        app:srcCompat="@drawable/stream_oval_18dp" />
 
 </com.aura.aosp.gorilla.launcher.ui.status.StatusBar>

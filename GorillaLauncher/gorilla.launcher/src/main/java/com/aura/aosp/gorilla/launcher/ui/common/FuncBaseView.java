@@ -1,6 +1,8 @@
 package com.aura.aosp.gorilla.launcher.ui.common;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 
@@ -29,13 +31,19 @@ public class FuncBaseView extends ConstraintLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public void fadeIn() {
-        Integer duration = getContext().getResources().getInteger(R.integer.funcview_fadein_transition_duration);
+    public void fadeIn(@Nullable Integer duration) {
+        if (duration == null) {
+            duration = getContext().getResources().getInteger(R.integer.funcview_fadein_transition_duration);
+        }
+
         Effects.fadeInView(this, getContext(), duration);
     }
 
-    public void fadeOut() {
-        Integer duration = getContext().getResources().getInteger(R.integer.funcview_fadeout_transition_duration);
+    public void fadeOut(@Nullable Integer duration) {
+        if (duration == null) {
+            duration = getContext().getResources().getInteger(R.integer.funcview_fadeout_transition_duration);
+        }
+
         Effects.fadeOutView(this, getContext(), duration);
     }
 }

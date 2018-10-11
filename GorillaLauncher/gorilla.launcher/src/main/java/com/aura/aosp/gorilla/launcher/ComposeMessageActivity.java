@@ -8,9 +8,12 @@ import android.widget.EditText;
 import com.aura.aosp.gorilla.launcher.store.StreamStore;
 
 /**
- * TODO: Integrate and/or remove, currently just kept for reference.
+ * Alternative way to open a "func" based on new activity view instead of directly
+ * adding view to funcContainer from StreamActiviy.
+ *
+ * TODO: Integrate and/or remove, currently kept for reference.
  */
-public class ComposeMessageActivity extends BaseActivity {
+public class ComposeMessageActivity extends LauncherActivity {
 
     private final static String LOGTAG = ComposeMessageActivity.class.getSimpleName();
 
@@ -22,14 +25,7 @@ public class ComposeMessageActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         // Set main content view
-        setContentView(R.layout.func_content_composer);
-
-        // Get references to main child view components
-        launcherView = findViewById(R.id.launcher);
-        statusBar = findViewById(R.id.statusBar);
-
-        // Hide status and action bars
-        hideStatusAndActionBar();
+        setMainFuncView(R.layout.func_content_composer);
     }
 
     /** Called when the user taps the Send button */
@@ -40,12 +36,19 @@ public class ComposeMessageActivity extends BaseActivity {
         String message = editText.getText().toString();
         intent.putExtra(StreamStore.EXTRA_CHAT_PARTNER_UUID, message);
         startActivity(intent);
+
+        // Just to remember how to create an Intent with setAction:
+//        Intent intent = new Intent();
+//        intent.setPackage(view.getContext().getPackageName());
+//        intent.setAction("de.matthiaslienau.c3po.action.MESSAGE_COMPOSE");
+//        intent.putExtra("foo", "bar");
+//        view.getContext().sendBroadcast(intent);
     }
 
     /** Called when the user taps the Add button */
     public void openExtraActivity(View view) {
         // Do something in response to button
-        Intent intent = new Intent(this, LauncherActivity.class);
+        Intent intent = new Intent(this, StreamActivity.class);
         startActivity(intent);
     }
 }

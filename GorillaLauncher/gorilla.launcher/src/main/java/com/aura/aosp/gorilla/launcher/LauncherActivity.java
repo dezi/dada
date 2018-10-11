@@ -1,84 +1,121 @@
 package com.aura.aosp.gorilla.launcher;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 
+import com.aura.aosp.aura.common.simple.Json;
+import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
+import com.aura.aosp.gorilla.atoms.GorillaOwner;
+import com.aura.aosp.gorilla.atoms.GorillaPayload;
+import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
+import com.aura.aosp.gorilla.client.GorillaListener;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
+import com.aura.aosp.gorilla.launcher.model.ActionItem;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
-import com.aura.aosp.gorilla.launcher.store.StreamStore;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 import com.aura.aosp.gorilla.launcher.ui.animation.drawable.ExpandingCircleDrawable;
+import com.aura.aosp.gorilla.launcher.ui.common.FuncViewManager;
 import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
-import com.aura.aosp.gorilla.launcher.ui.content.ContentComposerView;
-import com.aura.aosp.gorilla.launcher.ui.content.StreamAdapter;
+import com.aura.aosp.gorilla.launcher.ui.common.BaseView;
 import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
-import com.aura.aosp.gorilla.launcher.ui.content.SimpleCalendarView;
+import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterAdapter;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterView;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ClusterButtonView;
+import com.aura.aosp.gorilla.launcher.ui.navigation.ToggleClusterButton;
+import com.aura.aosp.gorilla.launcher.ui.status.StatusBar;
 
-/**
- * Main activity, i.e. the "launcher" screen
- */
-public class LauncherActivity extends BaseActivity {
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jp.wasabeef.blurry.Blurry;
+
+public class LauncherActivity extends AppCompatActivity {
 
     private final static String LOGTAG = LauncherActivity.class.getSimpleName();
 
     private static final boolean SHOW_STARTUP_ANIMATIONS = false;
 
-    //    public static List<ChatProfile> chatProfiles = new ArrayList<>();
+    protected static Boolean svlink;
+    protected static Boolean uplink;
 
-    private StreamStore contentStreamStore;
-    private ActionClusterStore actionClusterStore;
+    public static Identity ownerIdent;
+
+    protected ActionClusterStore actionClusterStore;
+
+    protected BaseView launcherView;
+    protected StatusBar statusBar;
+    protected ConstraintLayout funcContainer;
+    protected ConstraintLayout funcInnerView;
+    protected FrameLayout actionClusterContainer;
+
+    protected ConstraintLayout actionClusterMask;
+    protected ToggleClusterButton toggleClusterButton;
 
     private static ExpandingCircleDrawable mCircle;
 
-    private RecyclerView contentstreamView;
-    private StreamAdapter contentStreamAdapter;
+    protected Float clusterElevationPerLevel;
+    protected SmartScrollableLayoutManager streamLayoutManager;
+    protected List<ActionClusterView> activeActionClusterViews = new ArrayList<>();
+    protected FuncViewManager funcViewManager = new FuncViewManager();
 
-    private ConstraintLayout actionClusterMask;
+    public static final int MP = ViewGroup.LayoutParams.MATCH_PARENT;
+    public static final int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
+
+    protected static int blurSampliong;
+    protected static int blurRadius;
+    protected static int blurTransisitionDuration;
+
+    @Nullable
+    public static Identity getOwnerIdent() {
+        return ownerIdent;
+    }
+
+    @Nullable
+    public static String getOwnerDeviceBase64() {
+        if (ownerIdent == null) return null;
+        return ownerIdent.getDeviceUUIDBase64();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
         Log.d(LOGTAG, "onCreate: ...");
 
-        // Register generic "launcher opened" event with Gorilla
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                GorillaClient.getInstance().registerActionEvent(getPackageName());
-            }
-        }, 2000);
+        // Check for owner identity and start "Gorilla SysApp" if not given yet
+        // TODO: To be replaced with "Identity Manager" later on.
+        if (getOwnerIdent() == null) {
+            Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp");
+            Simple.startActivity(this, launchIntent);
+        }
 
-        // Set main content view
-//        setContentView(R.layout.func_stream);
-
-        setMainFuncView(R.layout.func_stream);
+        // Set outer base content view
+        setContentView(R.layout.activity_launcher);
 
         // Get references to main child view components
         launcherView = findViewById(R.id.launcher);
         statusBar = findViewById(R.id.statusBar);
-
-        // Hide status and action bars
-        hideStatusAndActionBar();
-
-        contentstreamContainer = launcherView.findViewById(R.id.contentstreamContainer);
-        contentstreamView = launcherView.findViewById(R.id.contentstream);
+        funcContainer = findViewById(R.id.funcContainer);
 
         actionClusterContainer = launcherView.findViewById(R.id.actionClusterContainer);
         toggleClusterButton = launcherView.findViewById(R.id.toggleClusterButton);
@@ -89,29 +126,23 @@ public class LauncherActivity extends BaseActivity {
         // Hide status and action bars
         hideStatusAndActionBar();
 
+        // Initialize Gorilla application
+        Simple.initialize(this.getApplication());
+
+        // Subscribe to Gorilla listener
+        GorillaClient.getInstance().subscribeGorillaListener(listener);
+
+        // Get some generic resource values
+        // TODO: Move to UI components, pass to Effects!
+        blurSampliong = getResources().getInteger(R.integer.launcher_blur_sampling);
+        blurRadius = getResources().getInteger(R.integer.launcher_blur_radius);
+        blurTransisitionDuration = getResources().getInteger(R.integer.launcher_blur_transition_duration);
+        clusterElevationPerLevel = getResources().getDimension(R.dimen.clusterbutton_elevationPerLevel);
+
 //        // Testing drawables:
 //        Drawable ringDrawable = new RingDrawable(getApplicationContext());
 //        mCircle = new ExpandingCircleDrawable(400, R.color.color_ai_circle);
 //        launcherView.setForeground(mCircle);
-
-        //
-        // Create main content stream items
-        //
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-//        contentstreamView.setHasFixedSize(true);
-
-        // use a linear layout manager
-        contentstreamLayoutManager = new SmartScrollableLayoutManager(this);
-        contentstreamView.setLayoutManager(contentstreamLayoutManager);
-
-        // TODO: Replace with aggregated stream items from "Gorilla Content Stream Atoms"
-        // Create initial content stream items and specify adapter
-        contentStreamStore = new StreamStore(getApplicationContext());
-
-//        contentStreamAdapter = new StreamAdapter(SampleData.getDummyStreamData(), this);
-        contentStreamAdapter = new StreamAdapter(contentStreamStore.getItemsForAtomContext("aura.uxtream.launcher", getOwnerIdent()), this, this);
-        contentstreamView.setAdapter(contentStreamAdapter);
 
         // Create action cluster toggle button
         // Programmatically define background colors for states because XML definition leads to obscure error with
@@ -149,6 +180,199 @@ public class LauncherActivity extends BaseActivity {
     }
 
     /**
+     * Set the main content/func view which is added (attached) to the "func" container.
+     *
+     * @param layoutResID
+     */
+    public void setMainFuncView(int layoutResID) {
+
+        // Create "func" view by inflating xml, adding an item adapter
+        // and attach it to launcher (main) view
+        LayoutInflater inflater = LayoutInflater.from(this);
+        FuncBaseView funcView = (FuncBaseView) inflater.inflate(layoutResID, funcContainer, false);
+        funcView.setVisibility(View.INVISIBLE);
+
+        // Add view to container
+        funcContainer.addView(funcView);
+
+        // Register view
+        funcViewManager.addFuncView(FuncBaseView.FuncType.FULLSCREEN, funcView);
+
+        // Get reference to child view components
+        funcInnerView = funcContainer.findViewById(R.id.funcInnerView);
+
+        funcView.fadeIn(null);
+    }
+
+    /**
+     * Go fullscreen: Hide the status and action bar
+     */
+    protected void hideStatusAndActionBar() {
+
+//        this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+//        this.getSupportActionBar().hide();
+
+        // Note that some of these constants are new as of API 16 (Jelly Bean)
+        // and API 19 (KitKat). It is safe to use them, as they are inlined
+        // at compile-time and do nothing on earlier devices.
+
+        launcherView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+    }
+
+    /**
+     * Create action button cluster view by inflating xml, adding an item adapter
+     * and attach it to launcher (main) view
+     *
+     * @param actionCluster
+     * @param invokingActionButtonView
+     * @param instantShow
+     */
+    public void createActionClusterView(ActionCluster actionCluster, @Nullable ClusterButtonView invokingActionButtonView, boolean instantShow) {
+
+        Integer nextLayOrientation = LinearLayoutManager.HORIZONTAL;
+        Integer nextLayout = R.layout.fragment_actioncluster_horizontal;
+
+        float nextXPos;
+        float nextYPos;
+
+        float nextElevation = clusterElevationPerLevel;
+
+        if (invokingActionButtonView != null) {
+
+            // Position new cluster on top of invoking button
+            nextXPos = invokingActionButtonView.getX();
+            nextYPos = invokingActionButtonView.getY();
+
+            ActionClusterView invokingActionClusterView = (ActionClusterView) invokingActionButtonView.getParent();
+
+            nextElevation += invokingActionButtonView.getElevation();
+
+            // Add view as a child to given parent action cluster view or to "actionClusterContainer" which serves as a root
+            LinearLayoutManager layoutManager = (LinearLayoutManager) invokingActionClusterView.getLayoutManager();
+
+            switch (layoutManager.getOrientation()) {
+
+                case LinearLayoutManager.VERTICAL:
+                    nextLayOrientation = LinearLayoutManager.HORIZONTAL;
+                    nextLayout = R.layout.fragment_actioncluster_horizontal;
+                    break;
+
+                case LinearLayoutManager.HORIZONTAL:
+                    nextLayOrientation = LinearLayoutManager.VERTICAL;
+                    nextLayout = R.layout.fragment_actioncluster_vertical;
+                    break;
+            }
+        } else {
+            nextXPos = 0;
+            nextYPos = toggleClusterButton.getY();
+            nextElevation += clusterElevationPerLevel;
+        }
+
+        // Inflate action cluster layout
+        LayoutInflater inflater = LayoutInflater.from(this);
+        FrameLayout actionClusterFrame = (FrameLayout) inflater.inflate(nextLayout, actionClusterContainer, false);
+        ActionClusterView actionClusterView = actionClusterFrame.findViewById(R.id.actionCluster);
+        actionClusterView.setInvokingActionButtonView(invokingActionButtonView);
+        actionClusterView.setVisibility(View.INVISIBLE);
+
+        // use a linear layout manager
+        SmartScrollableLayoutManager layoutManager = new SmartScrollableLayoutManager(actionClusterContainer.getContext(), nextLayOrientation, true);
+        actionClusterView.setLayoutManager(layoutManager);
+
+        // specify adapter
+        ActionClusterAdapter actionClusterAdapter = new ActionClusterAdapter(actionCluster.getItemsByRelevance(), this, this);
+        actionClusterView.setAdapter(actionClusterAdapter);
+
+        Log.d(LOGTAG, String.format("nextElevation <%f>", nextElevation));
+        Log.d(LOGTAG, String.format("nextXPos <%f>", nextXPos));
+        Log.d(LOGTAG, String.format("nextYPos <%f>", nextYPos));
+
+        actionClusterView.setX(nextXPos);
+        actionClusterView.setY(nextYPos);
+
+        actionClusterFrame.setElevation(nextElevation);
+
+        // Add view to root container
+        actionClusterContainer.addView(actionClusterFrame);
+
+        if (instantShow) {
+            activateActionClusterView(actionClusterView);
+        }
+
+        Log.d(LOGTAG, String.format("Added action cluster <%s>", actionCluster.getName()));
+    }
+
+    /**
+     * Show action cluster
+     *
+     * @param actionClusterView
+     */
+    public void activateActionClusterView(final ActionClusterView actionClusterView) {
+
+        ClusterButtonView invokingActionClusterView = actionClusterView.getInvokingActionButtonView();
+
+        if (invokingActionClusterView != null) {
+
+            // Wait for layout before initializing top level action cluster. Otherwise getting
+            // current coordinates of toggle cluster button will fail!
+            actionClusterView.getViewTreeObserver().addOnGlobalLayoutListener(
+                    new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            // Create initial action button cluster (attach it to "root" container)
+                            List<ActionItem> initialActionItems = SampleData.getLauncherActionItems(actionClusterView.getContext());
+
+                            LinearLayoutManager layoutManager = (LinearLayoutManager) actionClusterView.getLayoutManager();
+                            Float addX = actionClusterView.getWidth() / 2.0f;
+                            Float addY = actionClusterView.getHeight() / 2.0f;
+
+                            Log.d(LOGTAG, String.format("actionClusterWidth <%d>", actionClusterView.getWidth()));
+                            Log.d(LOGTAG, String.format("actionClusterHeight <%d>", actionClusterView.getHeight()));
+
+                            switch (layoutManager.getOrientation()) {
+
+                                case LinearLayoutManager.VERTICAL:
+                                    Log.d(LOGTAG, String.format("VERTICAL addY <%f>", addY));
+//                                    actionClusterView.setX(actionClusterView.getX() + addX);
+                                    break;
+
+                                case LinearLayoutManager.HORIZONTAL:
+                                    Log.d(LOGTAG, String.format("HORIZONTAL addX <%f>", addX));
+//                                    actionClusterView.setY(actionClusterView.getY() + addY);
+                                    break;
+                            }
+
+                            // Remove listener when done
+                            actionClusterView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
+                    }
+            );
+
+            deactivateView((ViewGroup) invokingActionClusterView.getParent());
+        } else {
+            deactivateBackgroundView();
+            toggleClusterButton.minimize();
+//            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_forward_black_24dp, getTheme()));
+        }
+
+        actionClusterView.fadeIn();
+
+        // Put View into list of active Action Cluster Views
+        activeActionClusterViews.add(actionClusterView);
+    }
+
+    /**
      * Do first time startup animations to gain user's focus on available controls
      *
      * @param hasFocus
@@ -156,7 +380,6 @@ public class LauncherActivity extends BaseActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         if (SHOW_STARTUP_ANIMATIONS && hasFocus) {
-
 //            doTestAnimation();
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -254,10 +477,11 @@ public class LauncherActivity extends BaseActivity {
                     View innerView = funcView.findViewById(R.id.funcInnerView);
                     innerView.getGlobalVisibleRect(viewRect);
 
+                    // TODO Fix func view management (add/remove)
                     if (!viewRect.contains(rawX, rawY)) {
-                        funcView.fadeOut();
+                        funcView.fadeOut(null);
                         // Completely remove view
-//                        launcherView.removeView(funcView);
+                        funcContainer.removeView(funcView);
                         funcViewManager.removeFuncView(funcView);
                     }
                 }
@@ -269,89 +493,55 @@ public class LauncherActivity extends BaseActivity {
     }
 
     /**
-     * ACTION: "Open Content Composer"
+     * Activate background view
      */
-    public void onOpenContentComposer(@Nullable Identity identity) {
+    public void activateBackgroundView() {
 
-        Log.d(LOGTAG, "onOpenContentComposer user nick is " + identity.getNick());
-
-        // Create calendar view by inflating xml, adding an item adapter
-        // and attach it to launcher (main) view
-        LayoutInflater inflater = LayoutInflater.from(this);
-        ContentComposerView contentComposerView = (ContentComposerView) inflater.inflate(R.layout.func_content_composer, launcherView, false);
-        contentComposerView.setVisibility(View.INVISIBLE);
-        Effects.fadeInView(contentComposerView, this, null);
-
-        // Add view to launcher
-        launcherView.addView(contentComposerView);
-        funcViewManager.addFuncView(FuncBaseView.FuncType.OVERLAY, contentComposerView);
-
-        // Just to remember how to create an Intent with putExtra:
-//        Intent intent = new Intent();
-//        intent.setPackage(view.getContext().getPackageName());
-//        intent.setAction("de.matthiaslienau.c3po.action.MESSAGE_COMPOSE");
-//        intent.putExtra("foo", "bar");
-//        view.getContext().sendBroadcast(intent);
+        funcInnerView.setEnabled(true);
+        streamLayoutManager.setScrollEnabled(true);
+        Blurry.delete(funcInnerView);
     }
 
     /**
-     * ACTION: "Open Calendar"
+     * Deactivate background view
      */
-    public void onOpenSimpleCalendar() {
+    public void deactivateBackgroundView() {
 
-//        ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
-//        deactivateActionClusterView(actionClusterView, null);
+        streamLayoutManager.setScrollEnabled(false);
+        funcInnerView.setEnabled(false);
 
-        // Create calendar view by inflating xml, adding an item adapter
-        // and attach it to launcher (main) view
-        LayoutInflater inflater = LayoutInflater.from(this);
-        SimpleCalendarView simpleCalendarView = (SimpleCalendarView) inflater.inflate(R.layout.func_simple_calendar, launcherView, false);
-        simpleCalendarView.setVisibility(View.INVISIBLE);
-        simpleCalendarView.fadeIn();
-
-        // Add view to launcher
-        launcherView.addView(simpleCalendarView);
-        funcViewManager.addFuncView(FuncBaseView.FuncType.OVERLAY, simpleCalendarView);
+        Blurry.with(this)
+                .radius(blurRadius)
+                .sampling(blurSampliong)
+//                .color(R.color.color_transparent)
+                .animate(blurTransisitionDuration)
+                .onto(funcInnerView);
     }
 
     /**
-     * ACTION: "Pick Date"
+     * Activate view
      */
-    public void onPickDate() {
+    public void activateView(ViewGroup viewGroup) {
 
-        onOpenSimpleCalendar();
+        viewGroup.setEnabled(true);
+        viewGroup.setAlpha(1f);
+        Blurry.delete(viewGroup);
     }
 
     /**
-     * ACTION: "Mark Selected Text Bold"
+     * Deactivate view
      */
-    public void onMarkSelectedTextBold() {
+    public void deactivateView(ViewGroup viewGroup) {
 
-        onOpenSimpleCalendar();
-    }
+        viewGroup.setEnabled(false);
+        viewGroup.setAlpha(0.3f);
 
-    /**
-     * ACTION: "Mark Selected Text Italic"
-     */
-    public void onMarkSelectedTextItalic() {
-
-        onOpenSimpleCalendar();
-    }
-
-    /**
-     * ACTION: "Mark Selected Text Underlined"
-     */
-    public void onMarkSelectedTextUnderlined() {
-
-        onOpenSimpleCalendar();
-    }
-
-    /**
-     * ACTION: "Align Justify Selected Text"
-     */
-    public void onMarkSelectedTextAlignJustify() {
-
-        onOpenSimpleCalendar();
+//        Blurry.with(this)
+//                .radius(blurRadius)
+//                .sampling(blurSampliong)
+////                .color(R.color.color_transparent)
+//                .animate(blurTransisitionDuration)
+//                .onto(viewGroup);
     }
 
     @Override
@@ -369,4 +559,127 @@ public class LauncherActivity extends BaseActivity {
 //        mCircle.stop();
         super.onPause();
     }
+
+    /**
+     * Gorilla Listener for receiving/sending actions and atoms
+     */
+    private final GorillaListener listener = new GorillaListener() {
+        @Override
+        public void onServiceChange(boolean connected) {
+            Log.d(LOGTAG, "onServiceChange: connected=" + connected);
+
+            if (statusBar != null) {
+                statusBar.setSvLink(connected);
+            }
+
+//            updateTitle();
+//
+//            for (ChatProfile chatProfile : chatProfiles)
+//            {
+//                chatProfile.activity.setStatus(svlink, uplink);
+//                chatProfile.activity.updateTitle();
+//            }
+        }
+
+        @Override
+        public void onUplinkChange(boolean connected) {
+            Log.d(LOGTAG, "onUplinkChange: connected=" + connected);
+
+            if (statusBar != null) {
+                statusBar.setUplink(connected);
+            }
+
+//            updateTitle();
+//
+//            for (ChatProfile chatProfile : chatProfiles)
+//            {
+//                chatProfile.activity.setStatus(svlink, uplink);
+//                chatProfile.activity.updateTitle();
+//            }
+        }
+
+        @Override
+        public void onOwnerReceived(GorillaOwner owner) {
+            Log.d(LOGTAG, "onOwnerReceived: +++++ CURRENT +++++ owner=" + owner.toString());
+
+            String ownerUUID = owner.getOwnerUUIDBase64();
+
+            ownerIdent = Contacts.getContact(ownerUUID);
+
+            if (ownerIdent != null) {
+
+                Log.d(LOGTAG, "onOwnerReceived: +++++ CONTACT +++++ nick=" + ownerIdent.getNick());
+
+                String nick = ownerIdent.getNick();
+
+                if (statusBar != null) {
+                    statusBar.setProfileInfo(nick);
+                }
+            }
+
+//            updateTitle();
+//
+//            for (ChatProfile chatProfile : chatProfiles)
+//            {
+//                chatProfile.activity.finish();
+//            }
+        }
+
+        @Override
+        public void onPayloadReceived(GorillaPayload payload) {
+            Log.d(LOGTAG, "onPayloadReceived: payload=" + payload.toString());
+
+//            displayMessageInList(payload);
+
+            JSONObject atom = convertMessageToAtomAndPersists(payload);
+
+            String remoteUserUUID = payload.getSenderUUIDBase64();
+            String remoteDeviceUUID = payload.getDeviceUUIDBase64();
+
+//            for (ChatProfile chatProfile : chatProfiles)
+//            {
+//                if (! chatProfile.remoteUserUUID.equals(remoteUserUUID)) continue;
+//                if (! chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
+//
+//                chatProfile.activity.dispatchMessage(atom);
+//
+//                break;
+//            }
+        }
+
+        private JSONObject convertMessageToAtomAndPersists(GorillaPayload payload) {
+            Long time = payload.getTime();
+            String uuid = payload.getUUIDBase64();
+            String text = payload.getPayload();
+            String remoteUserUUID = payload.getSenderUUIDBase64();
+
+            JSONObject atomLoad = new JSONObject();
+            Json.put(atomLoad, "message", text);
+
+            JSONObject received = new JSONObject();
+            Json.put(received, StreamActivity.getOwnerDeviceBase64(), System.currentTimeMillis());
+            Json.put(atomLoad, "received", received);
+
+            JSONObject atom = new JSONObject();
+
+            Json.put(atom, "uuid", uuid);
+            Json.put(atom, "time", time);
+            Json.put(atom, "type", "aura.chat.message");
+            Json.put(atom, "load", atomLoad);
+
+            GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, atom);
+
+            return atom;
+        }
+
+        @Override
+        public void onPayloadResultReceived(GorillaPayloadResult result) {
+            Log.d(LOGTAG, "onPayloadResultReceived: result=" + result.toString());
+
+//            for (ChatProfile chatProfile : chatProfiles)
+//            {
+//                chatProfile.activity.dispatchResult(result);
+//            }
+        }
+    };
 }

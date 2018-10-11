@@ -9,6 +9,6 @@ import com.aura.aosp.gorilla.launcher.R;
 public class InvisibleStreamItem extends StreamItem {
 
     public InvisibleStreamItem() {
-        super(ItemType.TYPE_STREAMITEM_INVISIBLE, "", R.drawable.contentstream_oval_transparent_24dp);
+        super(ItemType.TYPE_STREAMITEM_INVISIBLE, "", R.drawable.stream_oval_transparent_24dp);
     }
 }

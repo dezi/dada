@@ -60,7 +60,7 @@ public class EventManager extends GorillaListener
     {
         Log.d(LOGTAG, "startMainActivity: ...");
 
-        Intent startIntent = new Intent(context, LauncherActivity.class);
+        Intent startIntent = new Intent(context, StreamActivity.class);
 
         try
         {

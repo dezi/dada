@@ -16,6 +16,10 @@
     <integer name="funcview_fadein_transition_duration">120</integer>
     <integer name="funcview_fadeout_transition_duration">120</integer>
 
+    <!-- Stream View -->
+    <integer name="streamview_fadein_transition_duration">500</integer>
+    <integer name="streamview_fadeout_transition_duration">350</integer>
+
     <!-- Effect lib defaults -->
     <integer name="effects_default_view_fadein_transition_duration">120</integer>
     <integer name="effects_default_view_fadeout_transition_duration">120</integer>

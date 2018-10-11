@@ -10,6 +10,9 @@ import android.widget.TextView;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.ContactStreamItem;
 
+/**
+ * View representing an item of a stream.
+ */
 public class StreamItemView extends ConstraintLayout {
 
     private static final String LOGTAG = StreamItemView.class.getSimpleName();

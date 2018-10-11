@@ -26,11 +26,11 @@
     <color name="color_statusbar_profileinfo">#535353</color>
 
     <!-- Content Stream -->
-    <color name="color_contentstream_button">#c0c0c0</color>
-    <color name="color_contentstream_button_highlight">#6b3efc</color>
-    <color name="color_contentstream_hint">#8e6bff</color>
-    <color name="color_contentstream_image_background_primary">#f76dee</color>
-    <color name="color_contentstream_image_background_secondary">#f9a6f3</color>
+    <color name="color_stream_button">#c0c0c0</color>
+    <color name="color_stream_button_highlight">#6b3efc</color>
+    <color name="color_stream_hint">#8e6bff</color>
+    <color name="color_stream_image_background_primary">#f76dee</color>
+    <color name="color_stream_image_background_secondary">#f9a6f3</color>
 
     <!-- Action Cluster Container / Mask -->
     <color name="color_actioncluster_container_mask_background">#000000</color>

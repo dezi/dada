@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.aura.aosp.gorilla.launcher.ui.common.BaseView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/launcher"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_launcher_background_debug"
+    android:keepScreenOn="true"
+    tools:context=".LauncherActivity">
+
+    <TextView
+        android:id="@+id/overlayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/launcher_overlay_text"
+        android:textColor="@color/color_launcher_overlay_text"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include layout="@layout/fragment_base_status_bar" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/funcContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statusBar" />
+    
+    <FrameLayout
+        android:id="@+id/actionClusterContainer"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_marginBottom="@dimen/actioncluster_container_lay_marginVertical"
+        android:layout_marginEnd="@dimen/actioncluster_container_lay_marginHorizontal"
+        android:layout_marginStart="@dimen/actioncluster_container_lay_marginHorizontal"
+        android:layout_marginTop="@dimen/actioncluster_container_lay_marginVertical"
+        android:paddingBottom="@dimen/actioncluster_container_paddingVertical"
+        android:paddingEnd="@dimen/actioncluster_container_paddingHorizontal"
+        android:paddingStart="@dimen/actioncluster_container_paddingHorizontal"
+        android:paddingTop="@dimen/actioncluster_container_paddingVertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <include layout="@layout/fragment_actioncluster_togglebutton" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/actionClusterMask"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.2"
+            android:background="@color/color_actioncluster_container_mask_background_debug" />
+
+    </FrameLayout>
+
+</com.aura.aosp.gorilla.launcher.ui.common.BaseView>

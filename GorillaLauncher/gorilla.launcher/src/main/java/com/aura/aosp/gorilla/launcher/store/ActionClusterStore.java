@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.aura.aosp.aura.common.univid.Identity;
-import com.aura.aosp.gorilla.launcher.LauncherActivity;
+import com.aura.aosp.gorilla.launcher.StreamActivity;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.SampleData;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
@@ -36,7 +36,7 @@ public class ActionClusterStore {
         List<ActionItem> items = new ArrayList<>();
 
         switch (actionDomain) {
-            case "com.aura.aosp.gorilla.contentstream.contacts":
+            case "com.aura.aosp.gorilla.stream.contacts":
 
                 try {
                     items.add(new ActionItem(
@@ -45,7 +45,7 @@ public class ActionClusterStore {
                             R.drawable.ic_message_black_24dp,
                             1f,
                             getContext(),
-                            LauncherActivity.class.getMethod("onOpenContentComposer", Identity.class),
+                            StreamActivity.class.getMethod("onOpenContentComposer", Identity.class),
                             identity));
 
                     items.add(new ActionItem(
@@ -93,7 +93,7 @@ public class ActionClusterStore {
                             FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_add_a_photo_black_24dp,
                             0.870f,
-                            LauncherActivity.class.getMethod("onOpenSimpleCalendar")
+                            StreamActivity.class.getMethod("onOpenSimpleCalendar")
                     ));
 
                     items.add(new ActionItem(
@@ -117,7 +117,7 @@ public class ActionClusterStore {
                             FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_message_black_24dp,
                             0.98f,
-                            actionDomain + ".action.EDIT_TEXT"
+                            actionDomain + ".action.CREATE_NOTE"
                     ));
 
                     ActionItem switchProfileActionItem = new ActionItem(
@@ -132,19 +132,19 @@ public class ActionClusterStore {
                     items.add(switchProfileActionItem);
 
                     items.add(new ActionItem(
-                            context.getResources().getString(R.string.actions_openCalendar),
+                            context.getResources().getString(R.string.actions_addAlarm),
                             FuncBaseView.FuncType.OVERLAY,
-                            R.drawable.ic_add_a_photo_black_24dp,
-                            0.880f,
-                            LauncherActivity.class.getMethod("onOpenSimpleCalendar")
+                            R.drawable.ic_add_alarm_black_24dp,
+                            0.88f,
+                            StreamActivity.class.getMethod("onOpenAlarmClock")
                     ));
 
                     items.add(new ActionItem(
-                            context.getResources().getString(R.string.actions_startPhoneCall),
-                            FuncBaseView.FuncType.OVERLAY,
-                            R.drawable.ic_call_black_24dp,
-                            0.65f,
-                            actionDomain + ".action.START_PHONE_CALL"
+                            context.getResources().getString(R.string.actions_openStream),
+                            FuncBaseView.FuncType.FULLSCREEN,
+                            R.drawable.stream_oval_24dp,
+                            0.93f,
+                            StreamActivity.class.getMethod("onOpenStream")
                     ));
 
                 } catch (NoSuchMethodException e) {
@@ -154,7 +154,7 @@ public class ActionClusterStore {
 
                 break;
 
-            case "com.aura.aosp.gorilla.contentstream.contacts":
+            case "com.aura.aosp.gorilla.stream.contacts":
 
                 try {
                     items.add(new ActionItem(
@@ -163,7 +163,7 @@ public class ActionClusterStore {
                             R.drawable.ic_message_black_24dp,
                             1f,
                             getContext(),
-                            LauncherActivity.class.getMethod("onOpenContentComposer", Identity.class),
+                            StreamActivity.class.getMethod("onOpenContentComposer", Identity.class),
                             null));
 
                     items.add(new ActionItem(

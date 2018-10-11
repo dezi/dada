@@ -47,7 +47,5 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <include layout="@layout/fragment_base_status_bar" />
-
 </com.aura.aosp.gorilla.launcher.ui.content.ContentComposerView>
 
