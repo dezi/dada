@@ -9,6 +9,7 @@ import android.view.View;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.rights.Perms;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
@@ -200,6 +201,11 @@ public class MainActivity extends AppCompatActivity
         });
 
         buttonFrame.addView(clearButton);
+
+        for (int inx = 0; inx < 100; inx++)
+        {
+            Log.d(LOGTAG," UUID=" + UID.randomUUIDBase64());
+        }
 
         /*
         Random rand = new Random();
