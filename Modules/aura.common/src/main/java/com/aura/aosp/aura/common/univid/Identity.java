@@ -12,6 +12,7 @@ import java.security.interfaces.RSAPrivateKey;
 public class Identity
 {
     private String nick;
+    private String full;
     private String country;
 
     private byte[] userUUID;
@@ -19,9 +20,10 @@ public class Identity
     private byte[] pubkey;
     private byte[] privKey;
 
-    public Identity(String nick, String country, byte[] userUUID, byte[] deviceUUID, byte[] pubkey, byte[] privKey)
+    public Identity(String nick, String full, String country, byte[] userUUID, byte[] deviceUUID, byte[] pubkey, byte[] privKey)
     {
         this.nick = nick;
+        this.full = full;
         this.country = country;
         this.userUUID = userUUID;
         this.deviceUUID = deviceUUID;
@@ -29,9 +31,9 @@ public class Identity
         this.pubkey = pubkey;
     }
 
-    public Identity(String nick, String country, String userUUID, String deviceUUID, String pubkey, String privKey)
+    public Identity(String nick, String full, String country, String userUUID, String deviceUUID, String pubkey, String privKey)
     {
-        this(nick, country,
+        this(nick, country, full,
                 Simple.decodeBase64(userUUID),
                 Simple.decodeBase64(deviceUUID),
                 Simple.decodeBase64(pubkey),
@@ -42,6 +44,12 @@ public class Identity
     public String getNick()
     {
         return nick;
+    }
+
+    @NonNull
+    public String getFull()
+    {
+        return full;
     }
 
     @NonNull
@@ -107,6 +115,7 @@ public class Identity
     {
         return "nick=" + getNick()
                 + " country=" + getCountry()
+                + " fullname=" + getCountry()
                 + " userUUID=" + getUserUUIDBase64()
                 + " deviceUUID=" + getDeviceUUIDBase64();
     }

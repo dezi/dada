@@ -939,6 +939,8 @@ public class GorillaClient
     @Nullable
     public List<GorillaSuggestion> requestSuggestions(String actionDomain)
     {
+        long startTime = System.currentTimeMillis();
+
         IGorillaSystemService gr = GorillaConnect.getSystemService();
         if (gr == null) return null;
 
@@ -963,6 +965,8 @@ public class GorillaClient
 
                 suggestions.add(suggestion);
             }
+
+            Log.d(LOGTAG, "requestSuggestions: elapsedTime=" + (System.currentTimeMillis() - startTime));
 
             return suggestions;
         }
