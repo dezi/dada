@@ -12,14 +12,14 @@ import com.aura.aosp.gorilla.launcher.R;
  * Complex data items may need more than one view per item, and
  * you provide access to all the views for a data item in a view holder
  */
-public class ContentStreamViewHolder extends RecyclerView.ViewHolder {
-    public View item;
+public class StreamViewHolder extends RecyclerView.ViewHolder {
+    public StreamItemView item;
 //    public TextView title;
     public TextView previewText;
     public ImageView previewImage;
     public ImageView dotButton;
 
-    public ContentStreamViewHolder(View itemView) {
+    public StreamViewHolder(View itemView) {
         super(itemView);
         item = itemView.findViewById(R.id.item);
 //        title = itemView.findViewById(R.id.title);

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -94,7 +93,7 @@ public class ClusterButtonView extends FloatingActionButton {
                         }
                     });
                 } else if (actionItem.getIntent() != null) {
-                    // Invoke action based on method of current activity
+                    // Invoke action based on invokeMethod of current activity
                     setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -107,20 +106,41 @@ public class ClusterButtonView extends FloatingActionButton {
                             }
                         }
                     });
-                } else if (actionItem.getMethod() != null) {
-                    // Invoke action based on method of current activity
-                    setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Log.d(LOGTAG, String.format("Executing onClick for METHOD <%s>", actionItem.getMethod().toString()));
-                            try {
-                                actionItem.getMethod().invoke(activity);
-                            } catch (Exception e) {
-                                Log.e(LOGTAG, String.format("Could not invoke METHOD <%s>", actionItem.getMethod().toString()));
-                                e.printStackTrace();
+                } else if (actionItem.getInvokeMethod() != null) {
+                    if (actionItem.getInvokeObject() == null) {
+                        // Invoke action based on current context and without any arguments
+                        setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Log.d(LOGTAG, String.format("Executing onClick for OBJECT <%s> and METHOD <%s>",
+                                        getContext().toString(),
+                                        actionItem.getInvokeMethod().toString()));
+                                try {
+                                    actionItem.getInvokeMethod().invoke(getContext());
+                                } catch (Exception e) {
+                                    Log.e(LOGTAG, String.format("Could not invoke METHOD <%s>", actionItem.getInvokeMethod().toString()));
+                                    e.printStackTrace();
+                                }
                             }
-                        }
-                    });
+                        });
+                    } else {
+                        // Invoke action based on given object, method and arguments
+                        setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Log.d(LOGTAG, String.format("Executing onClick for OBJECT <%s>, METHOD <%s> AND ARGS <%s>",
+                                        actionItem.getInvokeObject().toString(),
+                                        actionItem.getInvokeMethod().toString(),
+                                        actionItem.getInvokePayload() != null ? actionItem.getInvokePayload().toString() : "(null)"));
+                                try {
+                                    actionItem.getInvokeMethod().invoke(actionItem.getInvokeObject(), actionItem.getInvokePayload());
+                                } catch (Exception e) {
+                                    Log.e(LOGTAG, String.format("Could not invoke METHOD <%s>", actionItem.getInvokeMethod().toString()));
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
                 }
 
                 break;

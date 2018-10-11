@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.aura.aosp.gorilla.launcher.ui.content.LauncherView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.aura.aosp.gorilla.launcher.ui.common.BaseView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/launcher"
@@ -7,66 +7,22 @@
     android:layout_height="match_parent"
     android:background="@color/color_launcher_background_debug"
     android:keepScreenOn="true"
-    tools:context=".LauncherActivity">
+    tools:context=".BaseActivity">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/contentstreamContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible">
-
-        <TextView
-            android:id="@+id/overlayText"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/launcher_overlay_text"
-            android:textColor="@color/color_launcher_overlay_text"
-            android:textSize="50sp"
-            android:textStyle="bold" />
-
-        <com.aura.aosp.gorilla.launcher.ui.content.ContentSteamView
-            android:id="@+id/contentstream"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fadingEdge="horizontal"
-            android:fadingEdgeLength="@dimen/contentstream_fading_edge_length"
-            android:requiresFadingEdge="vertical"
-            android:scrollbars="none"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </android.support.constraint.ConstraintLayout>
-
-    <FrameLayout
-        android:id="@+id/actionClusterContainer"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_marginBottom="@dimen/actioncluster_container_lay_marginVertical"
-        android:layout_marginEnd="@dimen/actioncluster_container_lay_marginHorizontal"
-        android:layout_marginStart="@dimen/actioncluster_container_lay_marginHorizontal"
-        android:layout_marginTop="@dimen/actioncluster_container_lay_marginVertical"
-        android:paddingBottom="@dimen/actioncluster_container_paddingVertical"
-        android:paddingEnd="@dimen/actioncluster_container_paddingHorizontal"
-        android:paddingStart="@dimen/actioncluster_container_paddingHorizontal"
-        android:paddingTop="@dimen/actioncluster_container_paddingVertical"
+    <TextView
+        android:id="@+id/overlayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/launcher_overlay_text"
+        android:textColor="@color/color_launcher_overlay_text"
+        android:textSize="50sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <include layout="@layout/toggle_cluster_button" />
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/actionClusterMask"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:alpha="0.2"
-            android:background="@color/color_actioncluster_container_mask_background_debug" />
-
-    </FrameLayout>
-
-    <com.aura.aosp.gorilla.launcher.ui.status.LauncherStatusBar
+    <com.aura.aosp.gorilla.launcher.ui.status.StatusBar
         android:id="@+id/statusBar"
         android:layout_width="match_parent"
         android:layout_height="30dp"
@@ -115,7 +71,16 @@
             android:tint="@color/color_statusbar_statusimage_disabled"
             app:srcCompat="@drawable/contentstream_oval_18dp" />
 
-    </com.aura.aosp.gorilla.launcher.ui.status.LauncherStatusBar>
+    </com.aura.aosp.gorilla.launcher.ui.status.StatusBar>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/funcContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statusBar" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
@@ -124,4 +89,4 @@
         android:orientation="vertical"
         app:layout_constraintGuide_begin="285dp" />
 
-</com.aura.aosp.gorilla.launcher.ui.content.LauncherView>
+</com.aura.aosp.gorilla.launcher.ui.common.BaseView>

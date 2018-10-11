@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.aura.aosp.gorilla.launcher.ui.status.StatusBar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/statusBar"
+    android:layout_height="30dp"
+    android:layout_width="match_parent"
+    android:paddingBottom="@dimen/statusbar_padding_vertical"
+    android:paddingEnd="@dimen/statusbar_padding_horizontal"
+    android:paddingStart="@dimen/statusbar_padding_horizontal"
+    android:paddingTop="@dimen/statusbar_padding_vertical"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <TextView
+        android:id="@+id/statusProfileInfo"
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:text="@string/_dotdotdot"
+        android:textColor="@color/color_statusbar_profileinfo"
+        android:textSize="16sp"
+        android:textStyle="normal" />
+
+    <View
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_width="wrap_content" />
+
+    <ImageView
+        android:id="@+id/statusImageSystem"
+        android:layout_gravity="end|center_vertical"
+        android:layout_height="13dp"
+        android:layout_width="wrap_content"
+        android:paddingBottom="@dimen/statusbar_statusimage_padding_vertical"
+        android:paddingEnd="@dimen/statusbar_statusimage_padding_horizontal"
+        android:paddingStart="@dimen/statusbar_statusimage_padding_horizontal"
+        android:paddingTop="@dimen/statusbar_statusimage_padding_vertical"
+        android:tint="@color/color_statusbar_statusimage_disabled"
+        app:srcCompat="@drawable/contentstream_oval_18dp" />
+
+    <ImageView
+        android:id="@+id/statusImageOnline"
+        android:layout_gravity="end|center_vertical"
+        android:layout_height="13dp"
+        android:layout_width="wrap_content"
+        android:paddingBottom="@dimen/statusbar_statusimage_padding_vertical"
+        android:paddingEnd="@dimen/statusbar_statusimage_padding_horizontal"
+        android:paddingStart="@dimen/statusbar_statusimage_padding_horizontal"
+        android:paddingTop="@dimen/statusbar_statusimage_padding_vertical"
+        android:tint="@color/color_statusbar_statusimage_disabled"
+        app:srcCompat="@drawable/contentstream_oval_18dp" />
+
+</com.aura.aosp.gorilla.launcher.ui.status.StatusBar>

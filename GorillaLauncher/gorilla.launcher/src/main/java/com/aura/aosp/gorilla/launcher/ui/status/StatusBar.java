@@ -15,7 +15,7 @@ import com.aura.aosp.gorilla.launcher.R;
 /**
  * Main Launcher Status Bar visualizing basic connectivity information
  */
-public class LauncherStatusBar extends LinearLayout {
+public class StatusBar extends LinearLayout {
 
     protected String profileInfo = "...";
 
@@ -26,19 +26,19 @@ public class LauncherStatusBar extends LinearLayout {
     protected ImageView statusImageSystem;
     protected ImageView statusImageOnline;
 
-    public LauncherStatusBar(Context context) {
+    public StatusBar(Context context) {
         super(context);
     }
 
-    public LauncherStatusBar(Context context, @Nullable AttributeSet attrs) {
+    public StatusBar(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public LauncherStatusBar(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public StatusBar(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public LauncherStatusBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public StatusBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 

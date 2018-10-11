@@ -1,4 +1,4 @@
-package com.aura.aosp.gorilla.launcher.ui.content;
+package com.aura.aosp.gorilla.launcher.ui.common;
 
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
@@ -10,7 +10,7 @@ import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 /**
  * Base View Class for "Func Views"
  */
-public abstract class FuncBaseView extends ConstraintLayout {
+public class FuncBaseView extends ConstraintLayout {
 
     public enum FuncType {
         FULLSCREEN,

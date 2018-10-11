@@ -3,6 +3,8 @@ package com.aura.aosp.gorilla.launcher.ui.content;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
+
 /**
  * Dummy "func" view
  */

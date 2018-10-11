@@ -28,4 +28,5 @@
     <string name="actions.markSelectedTextItalic">Auswahl kursiv setzen</string>
     <string name="actions.markSelectedTextAlignJustify">Auswahl zentrieren</string>
     <string name="actions.switchProfile">Profil wechseln</string>
+    <string name="actions_addPerson">Add Person</string>
 </resources>

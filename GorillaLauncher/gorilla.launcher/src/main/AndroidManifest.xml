@@ -27,19 +27,20 @@
             <!--android:name=".ComposeMessageActivity"-->
             <!--android:parentActivityName=".LauncherActivity">-->
             <!--<intent-filter>-->
-                <!--<action android:name="com.aura.aosp.gorilla.launcher.action.COMPOSE_MESSAGE" />-->
-                <!--<action android:name="com.aura.aosp.gorilla.launcher.action.NEW_TEXT_SHARED_WITH" />-->
+                <!--<action android:name="com.aura.aosp.gorilla.launcher.action.NEW_NOTE" />-->
+                <!--<action android:name="com.aura.aosp.gorilla.launcher.action.NEW_NOTE_SHARED_WITH" />-->
+                <!--<action android:name="com.aura.aosp.gorilla.contentstream.contacts.action.COMPOSE_MESSAGE" />-->
 
                 <!--<category android:name="android.intent.category.DEFAULT" />-->
             <!--</intent-filter>-->
         <!--</activity>-->
         <!--<activity-->
-            <!--android:name=".DisplayMessageActivity"-->
-            <!--android:parentActivityName=".ComposeMessageActivity">-->
-            <!--&lt;!&ndash; The meta-data tag is required if you support API level 15 and lower &ndash;&gt;-->
-            <!--<meta-data-->
-                <!--android:name="android.support.PARENT_ACTIVITY"-->
-                <!--android:value=".ComposeMessageActivity" />-->
+        <!--android:name=".DisplayMessageActivity"-->
+        <!--android:parentActivityName=".ComposeMessageActivity">-->
+        <!--&lt;!&ndash; The meta-data tag is required if you support API level 15 and lower &ndash;&gt;-->
+        <!--<meta-data-->
+        <!--android:name="android.support.PARENT_ACTIVITY"-->
+        <!--android:value=".ComposeMessageActivity" />-->
         <!--</activity>-->
 
     </application>

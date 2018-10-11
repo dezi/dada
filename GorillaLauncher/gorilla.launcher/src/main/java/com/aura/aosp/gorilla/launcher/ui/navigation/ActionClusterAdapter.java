@@ -36,7 +36,7 @@ public class ActionClusterAdapter extends RecyclerView.Adapter<ActionClusterView
     public ActionClusterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Create new views (invoked by the layout manager)
         ClusterButtonView clusterButtonView = (ClusterButtonView) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.cluster_button, parent, false);
+                .inflate(R.layout.fragment_cluster_button, parent, false);
 
         ActionClusterViewHolder viewHolder = new ActionClusterViewHolder(clusterButtonView);
         return viewHolder;
@@ -45,10 +45,9 @@ public class ActionClusterAdapter extends RecyclerView.Adapter<ActionClusterView
     @Override
     public void onBindViewHolder(ActionClusterViewHolder holder, int position) {
         // Replace the contents of a view (invoked by the layout manager)
-        // Use the provided View Holder on the onCreateViewHolder method
+        // Use the provided View Holder on the onCreateViewHolder invokeMethod
         // to populate the current row on the RecyclerView
         ActionItem dataSet = actionItems.get(position);
-
         holder.actionButton.initWithAction(dataSet, activity);
     }
 

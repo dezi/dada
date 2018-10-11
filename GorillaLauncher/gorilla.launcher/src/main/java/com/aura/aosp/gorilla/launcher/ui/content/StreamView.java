@@ -10,19 +10,19 @@ import android.view.MotionEvent;
 /**
  * "Content Stream" view (child of "Launcher" view)
  */
-public class ContentSteamView extends RecyclerView {
+public class StreamView extends RecyclerView {
 
-    private static final String LOGTAG = ContentSteamView.class.getSimpleName();
+    private static final String LOGTAG = StreamView.class.getSimpleName();
 
-    public ContentSteamView(Context context) {
+    public StreamView(Context context) {
         super(context);
     }
 
-    public ContentSteamView(Context context, @Nullable AttributeSet attrs) {
+    public StreamView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ContentSteamView(Context context, @Nullable AttributeSet attrs, int defStyle) {
+    public StreamView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 

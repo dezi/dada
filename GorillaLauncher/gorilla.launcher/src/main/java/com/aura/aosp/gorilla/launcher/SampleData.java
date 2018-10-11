@@ -5,8 +5,7 @@ import android.util.Log;
 
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.ActionItem;
-import com.aura.aosp.gorilla.launcher.model.ContentStreamItem;
-import com.aura.aosp.gorilla.launcher.ui.content.FuncBaseView;
+import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,83 +38,74 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_openCalendar),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_date_range_black_24dp,
-                    LauncherActivity.class.getMethod("onOpenSimpleCalendar"),
-                    0.970f
+                    0.970f, LauncherActivity.class.getMethod("onOpenSimpleCalendar")
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_composeMessage),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_sms_black_24dp,
-                    new ActionCluster("AC-COMPOSE-MESSAGE", getMessengerActionItems(context)),
-                    0.92f
+                    0.92f, new ActionCluster("AC-COMPOSE-MESSAGE", getMessengerActionItems(context))
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_startPhoneCall),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_call_black_24dp,
-                    "com.aura.aosp.gorilla.launcher.action.START_PHONE_CALL",
-                    0.95f
+                    0.95f,
+                    "com.aura.aosp.gorilla.launcher.action.START_PHONE_CALL"
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_addNote),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_add_circle_black_24dp,
-                    "com.aura.aosp.gorilla.launcher.action.ADD_NOTE",
-                    0.40f
+                    0.40f, "com.aura.aosp.gorilla.launcher.action.ADD_NOTE"
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_newtextsharedwith),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_contact_mail_black_24dp,
-                    "com.aura.aosp.gorilla.launcher.action.NEW_TEXT_SHARED_WITH",
-                    0.99f
+                    0.99f, "com.aura.aosp.gorilla.launcher.action.NEW_TEXT_SHARED_WITH"
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_lookupContact),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_account_circle_black_24dp,
-                    context.getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp"),
-                    0.95f
+                    0.95f, context.getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp")
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_lookupContact),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_person_black_24dp,
-                    "com.aura.aosp.gorilla.launcher.action.LOOKUP_CONTENT",
-                    0.75f
+                    0.75f, "com.aura.aosp.gorilla.launcher.action.LOOKUP_CONTENT"
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_viewMovie),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_local_movies_black_24dp,
-                    "com.aura.aosp.gorilla.launcher.action.VIEW_MOVIE",
-                    0.70f
+                    0.70f, "com.aura.aosp.gorilla.launcher.action.VIEW_MOVIE"
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_editText),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_mode_edit_black_24dp,
-                    "com.aura.aosp.gorilla.launcher.action.EDIT_TEXT",
-                    0.60f
+                    0.60f, "com.aura.aosp.gorilla.launcher.action.EDIT_TEXT"
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_share),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_share_black_24dp,
-                    "com.aura.aosp.gorilla.launcher.action.SHARE",
-                    0.98f
+                    0.98f, "com.aura.aosp.gorilla.launcher.action.SHARE"
             ));
         } catch (NoSuchMethodException e) {
-            Log.e(LOGTAG, String.format("No such action invocation method found: <%s>, Activiy is <%>",
+            Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>, Activiy is <%>",
                     e.getMessage(), LauncherActivity.class));
         }
 
@@ -137,51 +127,45 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_pickDate),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_date_range_black_24dp,
-                    LauncherActivity.class.getMethod("onPickDate"),
-                    0.80f
+                    0.80f, LauncherActivity.class.getMethod("onPickDate")
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_composeMessage),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_sms_black_24dp,
-                    "com.aura.aosp.gorilla.launcher.action.COMPOSE_MESSAGE",
-                    0.69f
+                    0.69f, "com.aura.aosp.gorilla.launcher.action.NEW_NOTE"
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_newtextsharedwith),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_contact_mail_black_24dp,
-                    "com.aura.aosp.gorilla.launcher.action.NEW_TEXT_SHARED_WITH",
-                    0.99f
+                    0.99f, "com.aura.aosp.gorilla.launcher.action.NEW_NOTE_SHARED_WITH"
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_lookupContact),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_person_black_24dp,
-                    "com.aura.aosp.gorilla.launcher.action.LOOKUP_CONTENT",
-                    0.75f
+                    0.75f, "com.aura.aosp.gorilla.launcher.action.LOOKUP_CONTENT"
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_editText),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_mode_edit_black_24dp,
-                    new ActionCluster("AC-EDIT-TEXT", getEditorActionItems(context)),
-                    0.80f
+                    0.80f, new ActionCluster("AC-EDIT-TEXT", getEditorActionItems(context))
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_share),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_share_black_24dp,
-                    "com.aura.aosp.gorilla.launcher.action.SHARE",
-                    0.98f
+                    0.98f, "com.aura.aosp.gorilla.launcher.action.SHARE"
             ));
         } catch (NoSuchMethodException $e) {
-            Log.e(LOGTAG, String.format("No such action invocation method found: <%s>, Activiy is <%>",
+            Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>, Activiy is <%>",
                     $e.getMessage(), LauncherActivity.class));
         }
 
@@ -203,313 +187,33 @@ public class SampleData {
                     context.getResources().getString(R.string.actions_markSelectedTextBold),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_format_bold_black_24dp,
-                    LauncherActivity.class.getMethod("onMarkSelectedTextBold"),
-                    1f
+                    1f, LauncherActivity.class.getMethod("onMarkSelectedTextBold")
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_markSelectedTextItalic),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_format_italic_black_24dp,
-                    LauncherActivity.class.getMethod("onMarkSelectedTextItalic"),
-                    1f
+                    1f, LauncherActivity.class.getMethod("onMarkSelectedTextItalic")
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_markSelectedTextUnderlined),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_format_underlined_black_24dp,
-                    LauncherActivity.class.getMethod("onMarkSelectedTextUnderlined"),
-                    1f
+                    1f, LauncherActivity.class.getMethod("onMarkSelectedTextUnderlined")
             ));
 
             items.add(new ActionItem(
                     context.getResources().getString(R.string.actions_markSelectedTextAlignJustify),
                     FuncBaseView.FuncType.OVERLAY,
                     R.drawable.ic_format_align_justify_black_24dp,
-                    LauncherActivity.class.getMethod("onMarkSelectedTextAlignJustify"),
-                    1f
+                    1f, LauncherActivity.class.getMethod("onMarkSelectedTextAlignJustify")
             ));
         } catch (NoSuchMethodException $e) {
-            Log.e(LOGTAG, String.format("No such action invocation method found: <%s>, Activiy is <%>",
+            Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>, Activiy is <%>",
                     $e.getMessage(), LauncherActivity.class));
         }
-
-        return items;
-    }
-
-    /**
-     * Sample data for content stream interface
-     * TODO: To be replaced with data provider(s)
-     *
-     * @return
-     */
-    public final static List<ContentStreamItem> getDummyStreamData() {
-        List<ContentStreamItem> items = new ArrayList<>();
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Malte",
-                "Howdy, here are the files...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "",
-                "",
-                0));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Abi",
-                "I need some really holistic...",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Andreas",
-                "Hello everybody, greetings from Hanoi!",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "dezi",
-                "Wie wäre es mit einem Kaffee?",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Matthias",
-                "Ich schreibe mir am liebsten selbst.",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Laurie",
-                "Here's your account data...",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Nixie",
-                "Hello, everything okay?",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Malte",
-                "Howdy, here are the files...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Caroline",
-                "I need some really holistic...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Mr. Hoi",
-                "Hello everybody, greetings from Hanoi!",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "dezi",
-                "Wie wäre es mit einem Kaffee?",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Matthias",
-                "Ich schreibe mir am liebsten selbst.",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Nilie",
-                "Here's your account data...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Laurie",
-                "How are you. Please send me some...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Nixie",
-                "Hello, everything okay?",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Ola",
-                "Howdy, here are the files...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Abi",
-                "I need some really universal...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "dezi",
-                "Wie wäre es mit einem Kaffee?",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Matthias",
-                "Was?",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Laurie",
-                "Here's your license accoutn data...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Nixie",
-                "Hello, everything okay?",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Malte",
-                "Howdy, here are the files...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "",
-                "",
-                0));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Abi",
-                "I need some really holistic...",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Andreas",
-                "Hello everybody, greetings from Hanoi!",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "dezi",
-                "Wie wäre es mit einem Kaffee?",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Matthias",
-                "Ich schreibe mir am liebsten selbst.",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Laurie",
-                "Here's your account data...",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Nixie",
-                "Hello, everything okay?",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Malte",
-                "Howdy, here are the files...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Caroline",
-                "I need some really holistic...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Mr. Hoi",
-                "Hello everybody, greetings from Hanoi!",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "dezi",
-                "Wie wäre es mit einem Kaffee?",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Matthias",
-                "Ich schreibe mir am liebsten selbst.",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Nilie",
-                "Here's your account data...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Laurie",
-                "How are you. Please send me some...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Nixie",
-                "Hello, everything okay?",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Ola",
-                "Howdy, here are the files...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Abi",
-                "I need some really universal...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "dezi",
-                "Wie wäre es mit einem Kaffee?",
-                R.drawable.ic_blur_on_black_24dp));
-
-        items.add(new ContentStreamItem(
-                "highlight",
-                "Matthias",
-                "Was?",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Laurie",
-                "Here's your license accoutn data...",
-                R.drawable.contentstream_oval_24dp));
-
-        items.add(new ContentStreamItem(
-                "default",
-                "Nixie",
-                "Hello, everything okay?",
-                R.drawable.ic_blur_on_black_24dp));
 
         return items;
     }

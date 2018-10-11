@@ -1,25 +1,34 @@
 package com.aura.aosp.gorilla.launcher.model;
 
 /**
- * The ContentStreamItem model is the topmost container for every kind of data items that might
- * be displayed within the main user content streams.
+ * Generic Stream Item: the topmost container for every kind of data items that might
+ * be displayed within the UI stream component.
  */
-public class ContentStreamItem extends AbstractStreamDataItem {
+public class StreamItem {
 
     public String title;
     public String text;
     public int imageId;
+    private ItemType type;
 
-    public ContentStreamItem(String type, String title, String text, int imageId) {
+    public static enum ItemType {
+        TYPE_STREAMITEM_GENERIC,
+        TYPE_STREAMITEM_CONTACT,
+        TYPE_STREAMITEM_NOTE,
+        TYPE_STREAMUTEN_MESSAGE,
+        TYPE_STREAMUTEN_HIGHLIGHT,
+        TYPE_STREAMITEM_INVISIBLE
+    };
+
+    public StreamItem(ItemType type, String title, String text, int imageId) {
         setType(type);
         setTitle(title);
         setText(text);
         setImageId(imageId);
     }
 
-    public ContentStreamItem(String type, String text, int imageId) {
+    public StreamItem(ItemType type, String text, int imageId) {
         setType(type);
-        setTitle(title);
         setText(text);
         setImageId(imageId);
     }
@@ -40,11 +49,20 @@ public class ContentStreamItem extends AbstractStreamDataItem {
         this.text = text;
     }
 
+
     public int getImageId() {
         return imageId;
     }
 
     public void setImageId(int imageId) {
         this.imageId = imageId;
+    }
+
+    public ItemType getType() {
+        return type;
+    }
+
+    public void setType(ItemType type) {
+        this.type = type;
     }
 }

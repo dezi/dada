@@ -3,12 +3,13 @@ package com.aura.aosp.gorilla.launcher.store;
 import android.content.Context;
 import android.util.Log;
 
+import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.launcher.LauncherActivity;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.SampleData;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.ActionItem;
-import com.aura.aosp.gorilla.launcher.ui.content.FuncBaseView;
+import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +21,58 @@ public class ActionClusterStore {
 
     private static final String LOGTAG = ActionClusterStore.class.getSimpleName();
 
-    private ActionCluster actionCluster;
     private Context context;
 
     public ActionClusterStore(Context context) {
         this.setContext(context);
     }
+
+    /**
+     * @param identity
+     * @return
+     */
+    public ActionCluster getClusterForSelectedIdentity(String actionDomain, Identity identity) {
+
+        List<ActionItem> items = new ArrayList<>();
+
+        switch (actionDomain) {
+            case "com.aura.aosp.gorilla.contentstream.contacts":
+
+                try {
+                    items.add(new ActionItem(
+                            context.getResources().getString(R.string.actions_composeMessage),
+                            FuncBaseView.FuncType.OVERLAY,
+                            R.drawable.ic_message_black_24dp,
+                            1f,
+                            getContext(),
+                            LauncherActivity.class.getMethod("onOpenContentComposer", Identity.class),
+                            identity));
+
+                    items.add(new ActionItem(
+                            context.getResources().getString(R.string.actions_startPhoneCall),
+                            FuncBaseView.FuncType.OVERLAY,
+                            R.drawable.ic_call_black_24dp,
+                            0.95f,
+                            actionDomain + ".action.START_PHONE_CALL"
+                    ));
+
+                    items.add(new ActionItem(
+                            context.getResources().getString(R.string.actions_addPerson),
+                            FuncBaseView.FuncType.OVERLAY,
+                            R.drawable.ic_person_add_black_24dp,
+                            0.95f, actionDomain + ".action.ADD_PERSON"
+                    ));
+                } catch (NoSuchMethodException e) {
+                    Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>",
+                            e.getMessage()));
+                }
+
+                break;
+        }
+
+        return new ActionCluster(actionDomain, items);
+    }
+
 
     /**
      * Get action cluster for given URI
@@ -45,60 +92,103 @@ public class ActionClusterStore {
                             context.getResources().getString(R.string.actions_openCalendar),
                             FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_add_a_photo_black_24dp,
-                            LauncherActivity.class.getMethod("onOpenSimpleCalendar"),
-                            0.870f
+                            0.870f,
+                            LauncherActivity.class.getMethod("onOpenSimpleCalendar")
                     ));
 
                     items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_startPhoneCall),
                             FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_call_black_24dp,
-                            "com.aura.aosp.gorilla.launcher.action.START_PHONE_CALL",
-                            0.95f
+                            0.95f,
+                            actionDomain + ".action.START_PHONE_CALL"
                     ));
 
                     items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_composeMessage),
                             FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_sms_black_24dp,
-                            new ActionCluster("AC-COMPOSE-MESSAGE", SampleData.getMessengerActionItems(context)),
-                            0.92f
+                            0.92f,
+                            new ActionCluster(actionDomain + ".cluster.COMPOSE_MESSAGE", SampleData.getMessengerActionItems(context))
                     ));
 
                     items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_composeMessage),
                             FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_message_black_24dp,
-                            "com.aura.aosp.gorilla.launcher.action.EDIT_TEXT",
-                            0.98f
+                            0.98f,
+                            actionDomain + ".action.EDIT_TEXT"
                     ));
 
                     ActionItem switchProfileActionItem = new ActionItem(
                             context.getResources().getString(R.string.actions_switchProfile),
                             FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_account_circle_black_24dp,
-                            context.getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp"),
-                            0.97f
+                            0.97f,
+                            context.getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp")
                     );
 
                     switchProfileActionItem.setType(ActionItem.ItemType.TYPE_ACTION_EXTERN);
                     items.add(switchProfileActionItem);
 
+                    items.add(new ActionItem(
+                            context.getResources().getString(R.string.actions_openCalendar),
+                            FuncBaseView.FuncType.OVERLAY,
+                            R.drawable.ic_add_a_photo_black_24dp,
+                            0.880f,
+                            LauncherActivity.class.getMethod("onOpenSimpleCalendar")
+                    ));
+
+                    items.add(new ActionItem(
+                            context.getResources().getString(R.string.actions_startPhoneCall),
+                            FuncBaseView.FuncType.OVERLAY,
+                            R.drawable.ic_call_black_24dp,
+                            0.65f,
+                            actionDomain + ".action.START_PHONE_CALL"
+                    ));
+
                 } catch (NoSuchMethodException e) {
-                    Log.e(LOGTAG, String.format("No such action invocation method found: <%s>, Activiy is <%>",
-                            e.getMessage(), LauncherActivity.class));
+                    Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>",
+                            e.getMessage()));
                 }
+
+                break;
+
+            case "com.aura.aosp.gorilla.contentstream.contacts":
+
+                try {
+                    items.add(new ActionItem(
+                            context.getResources().getString(R.string.actions_composeMessage),
+                            FuncBaseView.FuncType.OVERLAY,
+                            R.drawable.ic_message_black_24dp,
+                            1f,
+                            getContext(),
+                            LauncherActivity.class.getMethod("onOpenContentComposer", Identity.class),
+                            null));
+
+                    items.add(new ActionItem(
+                            context.getResources().getString(R.string.actions_startPhoneCall),
+                            FuncBaseView.FuncType.OVERLAY,
+                            R.drawable.ic_call_black_24dp,
+                            0.95f,
+                            actionDomain + ".action.START_PHONE_CALL"
+                    ));
+
+                    items.add(new ActionItem(
+                            context.getResources().getString(R.string.actions_addPerson),
+                            FuncBaseView.FuncType.OVERLAY,
+                            R.drawable.ic_person_add_black_24dp,
+                            0.95f, actionDomain + ".action.ADD_PERSON"
+                    ));
+                } catch (NoSuchMethodException e) {
+                    Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>",
+                            e.getMessage()));
+                }
+
+                break;
         }
 
         return new ActionCluster(actionDomain, items);
-    }
-
-    public ActionCluster getActionCluster() {
-        return actionCluster;
-    }
-
-    public void setActionCluster(ActionCluster actionCluster) {
-        this.actionCluster = actionCluster;
     }
 
     public Context getContext() {

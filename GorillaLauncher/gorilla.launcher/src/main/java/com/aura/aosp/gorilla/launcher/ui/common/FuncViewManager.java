@@ -2,8 +2,6 @@ package com.aura.aosp.gorilla.launcher.ui.common;
 
 import android.view.View;
 
-import com.aura.aosp.gorilla.launcher.ui.content.FuncBaseView;
-
 import java.util.HashMap;
 import java.util.Map;
 

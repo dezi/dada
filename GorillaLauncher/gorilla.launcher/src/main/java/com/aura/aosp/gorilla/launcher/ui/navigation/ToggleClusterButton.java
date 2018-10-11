@@ -1,15 +1,11 @@
 package com.aura.aosp.gorilla.launcher.ui.navigation;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
-import android.view.View;
 
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
-
-import jp.wasabeef.blurry.Blurry;
 
 /**
  * Launcher button for toggling main action button cluster
