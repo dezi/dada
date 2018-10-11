@@ -2,6 +2,7 @@ package com.aura.aosp.gorilla.sysapp;
 
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.view.Gravity;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.aura.aosp.aura.gui.base.GUIDefs;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -198,5 +200,25 @@ public class MainActivity extends AppCompatActivity
         });
 
         buttonFrame.addView(clearButton);
+
+        /*
+        Random rand = new Random();
+
+        DrawView.numshapes = 100;
+        DrawView.showcount.run();
+
+        for (int inx = 0; inx < DrawView.numshapes; inx++)
+        {
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(400, 400);
+
+            lp.leftMargin = rand.nextInt(500);
+            lp.topMargin = rand.nextInt(800);
+
+            DrawView dv = new DrawView(this);
+            dv.setLayoutParams(lp);
+
+            topFrame.addView(dv);
+        }
+        */
     }
 }

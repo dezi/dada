@@ -290,7 +290,7 @@ public class GopoorSuggest
     @NonNull
     private static Double getScoreForEnvtagIndex(SparseIntArray column, ArrayList<Integer> envCatIndexes, Integer envTagIndex)
     {
-        if ((envCatIndexes == null) || (envCatIndexes.size() == 0))
+        if ((envTagIndex == null) || (envCatIndexes == null) || (envCatIndexes.size() == 0))
         {
             //
             // Environment tag not present or no category data.
@@ -373,13 +373,6 @@ public class GopoorSuggest
     }
 
     @Nullable
-    private static Integer getEnvtag2Index(String envtag)
-    {
-        if (envtag == null) return null;
-        return envtag2row.get(envtag);
-    }
-
-    @Nullable
     private static Err fetchEvents()
     {
         fetched = true;
@@ -453,6 +446,7 @@ public class GopoorSuggest
         countEnvironmentTag(column, getGpsEnvironment(state));
         countEnvironmentTag(column, getWifiEnvironment(state));
         countEnvironmentTag(column, getDeviceEnvironment(state));
+
         countEnvironmentTag(column, getHourOfDayEnvironment(calendar));
         countEnvironmentTag(column, getDayOfWeekEnvironment(calendar));
         countEnvironmentTag(column, getPartOfMonthEnvironment(calendar));
@@ -505,13 +499,19 @@ public class GopoorSuggest
     @Nullable
     private static String getDeviceEnvironment(GorillaAtomState state)
     {
-        return state.getDeviceUUIDBase64();
+        String device = state.getDeviceUUIDBase64();
+        if (device == null) return null;
+
+        return "device." + device;
     }
 
     @Nullable
     private static String getWifiEnvironment(GorillaAtomState state)
     {
-        return state.getWifiName();
+        String wifiname = state.getWifiName();
+        if (wifiname == null) return null;
+
+        return "wifi." + wifiname;
     }
 
     @NonNull
@@ -538,6 +538,13 @@ public class GopoorSuggest
 
         int row = getRowForEnvtag(envtag);
         column.put(row, column.get(row) + 1);
+    }
+
+    @Nullable
+    private static Integer getEnvtag2Index(String envtag)
+    {
+        if (envtag == null) return null;
+        return envtag2row.get(envtag);
     }
 
     private static int getRowForEnvtag(String envtag)
@@ -567,6 +574,8 @@ public class GopoorSuggest
 
                 envcat2rowlist.put(envcat, new ArrayList<Integer>());
             }
+
+            Log.d("############### envtag=%s envcat=%s index=%d", envtag, envcat, index);
 
             //
             // Add new environment tag index to category list.
