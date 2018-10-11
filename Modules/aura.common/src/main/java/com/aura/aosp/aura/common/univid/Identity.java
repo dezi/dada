@@ -33,7 +33,7 @@ public class Identity
 
     public Identity(String nick, String full, String country, String userUUID, String deviceUUID, String pubkey, String privKey)
     {
-        this(nick, country, full,
+        this(nick, full, country,
                 Simple.decodeBase64(userUUID),
                 Simple.decodeBase64(deviceUUID),
                 Simple.decodeBase64(pubkey),
@@ -114,8 +114,8 @@ public class Identity
     public String toString()
     {
         return "nick=" + getNick()
+                + " fullname=" + getFull()
                 + " country=" + getCountry()
-                + " fullname=" + getCountry()
                 + " userUUID=" + getUserUUIDBase64()
                 + " deviceUUID=" + getDeviceUUIDBase64();
     }
