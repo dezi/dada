@@ -1,4 +1,11 @@
-package com.aura.aosp.gorilla.goatoms;
+/*
+ * Copyright (C) 2018 Aura Software Inc.
+ *
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ */
+
+package com.aura.aosp.gorilla.atoms;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -6,17 +13,17 @@ import android.support.annotation.Nullable;
 import org.json.JSONObject;
 
 /**
- * The class {@code GorillaAtomAction} extends to basic
- * {@code GorillaAtom} by status values.
+ * The class {@code GorillaOwner} extends to basic
+ * {@code GorillaAtom} by owner values.
  *
  * @author Dennis Zierahn
  */
-public class GorillaAtomAction extends GorillaAtom
+public class GorillaSuggestion extends GorillaAtom
 {
     /**
-     * Create empty state atom.
+     * Create empty payload atom.
      */
-    public GorillaAtomAction()
+    public GorillaSuggestion()
     {
         super();
     }
@@ -24,11 +31,11 @@ public class GorillaAtomAction extends GorillaAtom
     /**
      * Create payload atom from JSONObject.
      *
-     * @param status JSON status atom object.
+     * @param owner JSON owner atom object.
      */
-    public GorillaAtomAction(JSONObject status)
+    public GorillaSuggestion(JSONObject owner)
     {
-        super(status);
+        super(owner);
     }
 
     public void setDomain(String domain)
@@ -64,32 +71,12 @@ public class GorillaAtomAction extends GorillaAtom
         return getJSONString(getLoad(), "action");
     }
 
-    public String getSerializedAction()
-    {
-        JSONObject serialized = new JSONObject();
-
-        putJSON(serialized, "domain", getDomain());
-        putJSON(serialized, "context", getContext());
-        putJSON(serialized, "action", getAction());
-
-        return serialized.toString();
-    }
-
-    public void setSerializedAction(String serialized)
-    {
-        JSONObject deserialized = fromStringJSONOBject(serialized);
-        if (deserialized == null) return;
-
-        setDomain(getJSONString(deserialized, "domain"));
-        setContext(getJSONString(deserialized, "context"));
-        setAction(getJSONString(deserialized, "action"));
-    }
-
     public void setScore(Double score)
     {
         putJSON(getLoad(), "score", score);
     }
 
+    @Nullable
     public Double getScore()
     {
         return getJSONDouble(getLoad(), "score");

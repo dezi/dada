@@ -1,7 +1,6 @@
 package com.aura.aosp.gorilla.messenger;
 
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -26,9 +25,11 @@ import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
+import com.aura.aosp.gorilla.atoms.GorillaSuggestion;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -87,7 +88,33 @@ public class MainActivity extends AppCompatActivity
         }, 2000);
 
         currentMainActivity = this;
+
+        new Handler().postDelayed(getSuggest, 2000);
     }
+
+    private final Runnable getSuggest = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            List<GorillaSuggestion> suggestions = GorillaClient.getInstance().requestSuggestions("com.aura.aosp.gorilla.messenger");
+
+            Log.d(LOGTAG, "########################## suggestion");
+
+            if (suggestions != null)
+            {
+                for (int inx = 0; inx < suggestions.size(); inx++)
+                {
+                    GorillaSuggestion suggestion = suggestions.get(inx);
+                    if (suggestion == null) continue;
+
+                    Log.d(LOGTAG, "########################## suggestion=" + suggestion.toString());
+                }
+            }
+
+            new Handler().postDelayed(getSuggest, 10000);
+        }
+    };
 
     @Override
     protected void onDestroy()

@@ -9,6 +9,7 @@ import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
+import com.aura.aosp.gorilla.goatoms.GorillaAtomAction;
 import com.aura.aosp.gorilla.goatoms.GorillaAtomEvent;
 import com.aura.aosp.gorilla.goatoms.GorillaAtomState;
 import com.aura.aosp.gorilla.service.GorillaState;
@@ -100,19 +101,58 @@ public class GopoorSuggest
     @Nullable
     public static JSONArray suggestActions()
     {
-        return null;
+        return filterSuggestions(null, null);
     }
 
     @Nullable
     public static JSONArray suggestActions(@NonNull String actionDomain)
     {
-        return null;
+        return filterSuggestions(actionDomain, null);
     }
 
     @Nullable
     public static JSONArray suggestContextActions(@NonNull String actionDomain, @NonNull String subContext)
     {
-        return null;
+        return filterSuggestions(actionDomain, subContext);
+    }
+
+    @Nullable
+    private static JSONArray filterSuggestions(String actionDomain, String subContext)
+    {
+        JSONArray current = currentSuggestions;
+        JSONArray filtered = new JSONArray();
+
+        for (int inx = 0; inx < current.length(); inx++)
+        {
+            JSONObject suggestion = Json.getObject(current, inx);
+            if (suggestion == null) continue;
+
+            String domain = Json.getString(suggestion,"domain");
+            if (domain == null) continue;
+
+            Double finals = Json.getDouble(suggestion,"finals");
+            if (finals == null) continue;
+
+            GorillaAtomAction action = new GorillaAtomAction();
+            action.setSerializedAction(domain);
+            action.setScore(finals);
+
+            if (actionDomain != null)
+            {
+                if (action.getAction() == null) continue;
+
+                if (! actionDomain.equals(action.getDomain())) continue;
+            }
+
+            if (subContext != null)
+            {
+                if (! subContext.equals(action.getContext())) continue;
+            }
+
+            filtered.put(action.getLoad());
+        }
+
+        return (filtered.length() > 0) ? filtered : null;
     }
 
     /**
@@ -272,7 +312,7 @@ public class GopoorSuggest
             Json.put(scoreJson, "score", scoreNormalized);
 
             double finalScore = (countNormalized + scoreNormalized) / 2.0;
-            Json.put(scoreJson, "final", finalScore);
+            Json.put(scoreJson, "finals", finalScore);
 
             Json.put(resultScores, scoreJson);
         }
@@ -281,7 +321,7 @@ public class GopoorSuggest
         // Sort all scores descending.
         //
 
-        currentSuggestions = Json.sortDouble(resultScores, "final", true);
+        currentSuggestions = Json.sortDouble(resultScores, "finals", true);
 
         //
         // Log all scores.
@@ -305,12 +345,12 @@ public class GopoorSuggest
                     Json.getDouble(scoreJson, "count"),
                     Json.getDouble(scoreJson, "total"),
                     Json.getDouble(scoreJson, "score"),
-                    Json.getDouble(scoreJson, "final"),
+                    Json.getDouble(scoreJson, "finals"),
                     Json.getString(scoreJson, "domain")
             );
             */
 
-            Log.d("score=%.2f => %s", Json.getDouble(scoreJson, "final"), Json.getString(scoreJson, "domain"));
+            Log.d("score=%.2f => %s", Json.getDouble(scoreJson, "finals"), Json.getString(scoreJson, "domain"));
         }
 
         return null;

@@ -212,7 +212,7 @@ public abstract class GorillaAtom
      * @return load part of atom as JSON object.
      */
     @NonNull
-    JSONObject getLoad()
+    public JSONObject getLoad()
     {
         JSONObject load = getJSONObject(atom, "load");
 
@@ -223,6 +223,11 @@ public abstract class GorillaAtom
         }
 
         return load;
+    }
+
+    public void setLoad(JSONObject load)
+    {
+        putJSON(atom, "load", load);
     }
 
     /**
@@ -312,6 +317,19 @@ public abstract class GorillaAtom
         try
         {
             return json.getLong(key);
+        }
+        catch (Exception ignore)
+        {
+            return null;
+        }
+    }
+
+    @Nullable
+    Double getJSONDouble(@NonNull JSONObject json, @NonNull String key)
+    {
+        try
+        {
+            return json.getDouble(key);
         }
         catch (Exception ignore)
         {

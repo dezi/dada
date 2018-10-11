@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 
 import android.util.Base64;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -78,6 +79,19 @@ class GorillaUtils
         try
         {
             return json.getJSONObject(key);
+        }
+        catch (Exception ignore)
+        {
+            return null;
+        }
+    }
+
+    @Nullable
+    static JSONObject getJSONObject(@NonNull JSONArray json, int index)
+    {
+        try
+        {
+            return json.getJSONObject(index);
         }
         catch (Exception ignore)
         {
@@ -160,6 +174,27 @@ class GorillaUtils
         try
         {
             return new JSONObject(jsonstr);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+
+            return null;
+        }
+    }
+
+    /**
+     * Convert JSON string to JSON array w/o fucking an exception.
+     *
+     * @param jsonstr JSON string.
+     * @return JSON array from string or null.
+     */
+    @Nullable
+    static JSONArray fromStringJSONArray(@NonNull String jsonstr)
+    {
+        try
+        {
+            return new JSONArray(jsonstr);
         }
         catch (Exception ex)
         {

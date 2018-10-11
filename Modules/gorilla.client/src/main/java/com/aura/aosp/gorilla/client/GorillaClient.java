@@ -21,6 +21,7 @@ import android.util.Log;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
+import com.aura.aosp.gorilla.atoms.GorillaSuggestion;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -934,6 +935,44 @@ public class GorillaClient
             return false;
         }
     }
+
+    @Nullable
+    public List<GorillaSuggestion> requestSuggestions(String actionDomain)
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return null;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, actionDomain);
+
+            String resultStr = gr.suggestActionsDomain(apkname, actionDomain, checksum);
+
+            JSONArray results = GorillaUtils.fromStringJSONArray(resultStr);
+            if (results == null) return null;
+
+            List<GorillaSuggestion> suggestions = new ArrayList<>();
+
+            for (int inx = 0; inx < results.length(); inx++)
+            {
+                JSONObject result = GorillaUtils.getJSONObject(results, inx);
+                if (result == null) continue;
+
+                GorillaSuggestion suggestion = new GorillaSuggestion();
+                suggestion.setLoad(result);
+
+                suggestions.add(suggestion);
+            }
+
+            return suggestions;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
 
     /**
      * Subscribe a {@code GorillaListener} for service connection.
