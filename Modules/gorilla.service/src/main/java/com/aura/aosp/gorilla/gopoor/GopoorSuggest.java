@@ -115,6 +115,12 @@ public class GopoorSuggest
         return null;
     }
 
+    /**
+     * Precompute suggestions triggered by a new event.
+     *
+     * @param event a new event.
+     * @return error or null.
+     */
     @Nullable
     public static Err precomputeSuggestionsByEvent(@NonNull GorillaAtomEvent event)
     {
@@ -130,6 +136,12 @@ public class GopoorSuggest
         return precomputeSuggestions(GorillaState.getState());
     }
 
+    /**
+     * Precompute suggestions triggered by a new state.
+     *
+     * @param state a new state.
+     * @return error or null.
+     */
     @Nullable
     public static Err precomputeSuggestionsByState(@NonNull GorillaAtomState state)
     {
@@ -142,6 +154,12 @@ public class GopoorSuggest
         return precomputeSuggestions(state);
     }
 
+    /**
+     * Precompute suggestions for a given state.
+     *
+     * @param state given state.
+     * @return error or null.
+     */
     @Nullable
     private static Err precomputeSuggestions(@NonNull GorillaAtomState state)
     {
@@ -193,6 +211,8 @@ public class GopoorSuggest
             JSONObject score = new JSONObject();
             domScores.put(domain, score);
 
+            Json.put(score, "domain", domain);
+
             //
             // Score total event count. We use the
             // device event tag category for now.
@@ -215,7 +235,7 @@ public class GopoorSuggest
             double scoreDayOfWeek = getScoreForEnvtagIndex(column, envcat2rowlist.get("wday"), curDayOfWeek);
             double scorePartOfMonth = getScoreForEnvtagIndex(column, envcat2rowlist.get("mpart"), curPartOfMonth);
 
-            double scoreTotal = scoreNet + scoreDevice + scoreDayOfWeek + scorePartOfMonth + scoreHourOfDay + scoreGps;
+            double scoreTotal = scoreNet + scoreGps + scoreWifi + scoreDevice + scoreHourOfDay + scoreDayOfWeek + scorePartOfMonth;
             totalOverall += scoreTotal;
 
             Json.put(score, "net", scoreNet);
@@ -226,7 +246,6 @@ public class GopoorSuggest
             Json.put(score, "wday", scoreDayOfWeek);
             Json.put(score, "mpart", scorePartOfMonth);
             Json.put(score, "total", scoreTotal);
-            Json.put(score, "domain", domain);
         }
 
         //

@@ -60,8 +60,6 @@ public class GorillaState
             realState.setType("aura.event.state");
             GoatomStorage.putAtom(realState.getAtom());
 
-            Log.d("state=%s", realState.toPretty());
-
             lastState = thisState;
 
             Err err = GopoorSuggest.precomputeSuggestionsByState(realState);
