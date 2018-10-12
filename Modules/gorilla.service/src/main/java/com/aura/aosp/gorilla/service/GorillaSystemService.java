@@ -2,12 +2,15 @@ package com.aura.aosp.gorilla.service;
 
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
+import com.aura.aosp.aura.common.univid.Contacts;
+import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Log;
 
 import com.aura.aosp.gorilla.client.IGorillaSystemService;
 
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
+import com.aura.aosp.gorilla.goatoms.GorillaAtomContact;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 import com.aura.aosp.gorilla.gopoor.GopoorRegister;
 import com.aura.aosp.gorilla.gopoor.GopoorSuggest;
@@ -15,6 +18,8 @@ import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.List;
 
 public class GorillaSystemService extends IGorillaSystemService.Stub
 {
@@ -285,5 +290,48 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
         if (results == null) return null;
 
         return results.toString();
+    }
+
+    /**
+     * Request all contacts of device owner.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param checksum parameters checksum.
+     * @return JSON array string with contacts UUIDs or null.
+     */
+    @Override
+    public String requestContacts(String apkname, String checksum)
+    {
+        JSONArray uuidList = new JSONArray();
+        List<Identity> contacts = Contacts.getAllContacts();
+
+        for (Identity contact : contacts)
+        {
+            Json.put(uuidList, contact.getUserUUIDBase64());
+        }
+
+        return uuidList.toString();
+    }
+
+    /**
+     * @param apkname     the apk name of requesting app.
+     * @param contactUUID the contacts UUID.
+     * @param checksum    parameters checksum.
+     * @return JSON object string of type GorillaContact or null.
+     */
+    @Override
+    public String requestContactData(String apkname, String contactUUID, String checksum)
+    {
+        Identity contact = Contacts.getContact(contactUUID);
+        if (contact == null) return null;
+
+        GorillaAtomContact contactAtom = new GorillaAtomContact();
+
+        contactAtom.setUserUUIDBase64(contact.getUserUUIDBase64());
+        contactAtom.setNick(contact.getNick());
+        contactAtom.setFull(contact.getFull());
+        contactAtom.setCountry(contact.getCountry());
+
+        return contactAtom.toString();
     }
 }

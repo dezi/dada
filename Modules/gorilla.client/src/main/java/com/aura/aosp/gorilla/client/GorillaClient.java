@@ -7,6 +7,7 @@
 
 package com.aura.aosp.gorilla.client;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.annotation.SuppressLint;
 
@@ -18,6 +19,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.aura.aosp.gorilla.atoms.GorillaContact;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
@@ -1037,6 +1039,76 @@ public class GorillaClient
             ex.printStackTrace();
 
             return false;
+        }
+    }
+
+    /**
+     * Request all contacts user UUIDs from Gorilla system app.
+     *
+     * @return list with all contacts user UUIDs in base64 encoding or null.
+     */
+    @Nullable
+    public List<String> requestContacts()
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return null;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname);
+
+            String listJSONStr = gr.requestContacts(apkname, checksum);
+            if (listJSONStr == null) return null;
+
+            JSONArray listJSON = GorillaUtils.fromStringJSONArray(listJSONStr);
+            if (listJSON == null) return null;
+
+            List<String> list = new ArrayList<>();
+
+            for (int inx = 0; inx < listJSON.length(); inx++)
+            {
+                list.add(GorillaUtils.getJSONString(listJSON, inx));
+            }
+
+            return list;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+
+            return null;
+        }
+    }
+
+    /**
+     * Request contact data.
+     *
+     * @param contactUUID contact user UUID in base64 encoding.
+     * @return GorillaContact or null.
+     */
+    @Nullable
+    public GorillaContact requestContactData(@NonNull String contactUUID)
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return null;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, contactUUID);
+
+            String dataJsonStr = gr.requestContactData(apkname, contactUUID, checksum);
+            if (dataJsonStr == null) return null;
+
+            JSONObject dataJsonObj = GorillaUtils.fromStringJSONOBject(dataJsonStr);
+            if (dataJsonObj == null) return null;
+
+            return new GorillaContact(dataJsonObj);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+
+            return null;
         }
     }
 }

@@ -120,7 +120,7 @@ class GorillaUtils
     }
 
     /**
-     * Get key value from JSON as String object.
+     * Get key value from JSON object as String object.
      *
      * @param json JSON object.
      * @param key  key to getAtom.
@@ -132,6 +132,27 @@ class GorillaUtils
         try
         {
             return json.getString(key);
+        }
+        catch (Exception ignore)
+        {
+            return null;
+        }
+    }
+
+    /**
+     * Get index value from JSON array as String object.
+     *
+     * @param json  JSON object.
+     * @param index index to getAtom.
+     * @return string object or null.
+     */
+
+    @Nullable
+    static String getJSONString(@NonNull JSONArray json, int index)
+    {
+        try
+        {
+            return json.getString(index);
         }
         catch (Exception ignore)
         {

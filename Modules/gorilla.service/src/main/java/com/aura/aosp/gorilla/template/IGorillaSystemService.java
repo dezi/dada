@@ -4,7 +4,8 @@
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  */
-package com.aura.aosp.gorilla.client;
+
+package com.aura.aosp.gorilla.template;
 
 /**
  * The interface {@code IGorillaSystemService} is base of

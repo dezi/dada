@@ -21,6 +21,7 @@ import com.aura.aosp.aura.gui.views.GUIListEntry;
 import com.aura.aosp.aura.gui.views.GUIListView;
 import com.aura.aosp.aura.gui.views.GUIScrollView;
 
+import com.aura.aosp.gorilla.atoms.GorillaContact;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
@@ -90,7 +91,26 @@ public class MainActivity extends AppCompatActivity
         currentMainActivity = this;
 
         new Handler().postDelayed(getSuggest, 2000);
+        new Handler().postDelayed(getContacts, 2000);
     }
+
+    private final Runnable getContacts = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            List<String> contacts = GorillaClient.getInstance().requestContacts();
+            if (contacts == null) return;
+
+            for (String contactUUID : contacts)
+            {
+                GorillaContact gorillaContact = GorillaClient.getInstance().requestContactData(contactUUID);
+                if (gorillaContact == null) continue;
+
+                Log.d(LOGTAG, "getContacts: contact=" + gorillaContact.toString());
+            }
+        }
+    };
 
     private final Runnable getSuggest = new Runnable()
     {
