@@ -46,7 +46,7 @@ class GorillaConnect
     private static byte[] clientSignature = newSignature();
 
     /**
-     * The currently active device owner UUID in base 64 encoding.
+     * The currently active device owner UUID in base64 encoding.
      */
     private static String ownerUUIDBase64;
 
@@ -176,9 +176,9 @@ class GorillaConnect
     }
 
     /**
-     * Register or de-register current device owner UUID in base 64 encoding.
+     * Register or de-register current device owner UUID in base64 encoding.
      *
-     * @param ownerUUIDBase64New device owner UUID in base 64 encoding or null of not connected.
+     * @param ownerUUIDBase64New device owner UUID in base64 encoding or null of not connected.
      */
     static boolean setOwnerUUID(@Nullable String ownerUUIDBase64New)
     {
@@ -188,12 +188,12 @@ class GorillaConnect
     }
 
     /**
-     * Get current device owner UUID in base 64 encoding.
+     * Get current device owner UUID in base64 encoding.
      *
-     * @return the current device owner UUID in base 64 encoding or null.
+     * @return the current device owner UUID in base64 encoding or null.
      */
     @Nullable
-    static String getownerUUIDBase64()
+    static String getOwnerUUIDBase64()
     {
         return ownerUUIDBase64;
     }
@@ -231,5 +231,20 @@ class GorillaConnect
 
             return null;
         }
+    }
+
+    /**
+     * Validate a checksum against a SHA-256 signature prefixed
+     * with server and client signatures over the string representation
+     * of all given params
+     *
+     * @param checksum target checksum.
+     * @param params variable object parameter list.
+     * @return true if checksum validated.
+     */
+    static boolean validateSHASignatureBase64(String checksum, Object... params)
+    {
+        String solution = createSHASignatureBase64(params);
+        return (checksum != null) && checksum.equals(solution);
     }
 }

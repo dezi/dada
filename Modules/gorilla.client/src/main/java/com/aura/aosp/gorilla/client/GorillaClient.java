@@ -408,7 +408,7 @@ public class GorillaClient
      */
     void dispatchOwnerUUID()
     {
-        String ownerUUID = GorillaConnect.getownerUUIDBase64();
+        String ownerUUID = GorillaConnect.getOwnerUUIDBase64();
         if (ownerUUID == null) return;
 
         Log.d(LOGTAG, "dispatchOwnerUUID: ownerUUID=" + ownerUUID);
@@ -439,7 +439,7 @@ public class GorillaClient
      */
     void dispatchOwnerUUID(final GorillaListener newlistener)
     {
-        String ownerUUID = GorillaConnect.getownerUUIDBase64();
+        String ownerUUID = GorillaConnect.getOwnerUUIDBase64();
         if (ownerUUID == null) return;
 
         final GorillaOwner owner = new GorillaOwner();
