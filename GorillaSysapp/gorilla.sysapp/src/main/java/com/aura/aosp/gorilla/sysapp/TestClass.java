@@ -3,14 +3,14 @@ package com.aura.aosp.gorilla.sysapp;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.aura.aosp.aura.common.simple.Log;
+import android.util.Log;
 
 public class TestClass
 {
-    public String funzNull = null;
+    private String instanceNull = null;
 
     @Nullable
-    public String dochNull(@NonNull String nixnull)
+    private String dochNull(@NonNull String nixnull)
     {
         Log.d("TestClass","nixnull=" + nixnull.length());
         return nixnull;
@@ -18,13 +18,8 @@ public class TestClass
 
     public void dodat()
     {
-        String wasnull = dochNull(funzNull);
-
-        Log.d("TestClass", "dodat: 1");
-
-        String nextnull = dochNull(wasnull);
-
-        Log.d("TestClass", "dodat: 2");
-
+        String null1 = dochNull(null);
+        String null2 = dochNull(instanceNull);
+        String null3 = dochNull(null2);
     }
 }
