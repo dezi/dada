@@ -1,9 +1,12 @@
 package com.aura.aosp.aura.common.crypter;
 
+import android.support.annotation.NonNull;
+
 import java.security.SecureRandom;
 
 public class RND
 {
+    @NonNull
     public static byte[] randomBytes(int size)
     {
         SecureRandom random = new SecureRandom();

@@ -111,7 +111,12 @@ public class UID
 
         if (uuidstr.contains("-"))
         {
-            if (uuidstr.length() != 16)
+            //
+            // 2aeb514f-0bf1-4ade-ac03-c9c3a2a56b3a
+            // 123456789012345678901234567890123456
+            //
+
+            if (uuidstr.length() != 36)
             {
                 Err.errp("uuid wrong format=%s!", uuidstr);
                 return null;

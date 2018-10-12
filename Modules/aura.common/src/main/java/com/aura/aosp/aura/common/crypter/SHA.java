@@ -1,6 +1,7 @@
 package com.aura.aosp.aura.common.crypter;
 
 import android.support.annotation.Nullable;
+
 import android.util.Base64;
 
 import java.security.MessageDigest;

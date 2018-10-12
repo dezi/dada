@@ -9,7 +9,7 @@ import java.io.InputStream;
 
 import java.math.BigInteger;
 
-public class Utils
+class Utils
 {
     static RSAPublicKeySpec newRSAPublicKeySpec(byte[] keyInPkcs1) throws IOException
     {
