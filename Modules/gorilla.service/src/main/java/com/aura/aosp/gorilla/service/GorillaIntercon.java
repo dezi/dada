@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import android.util.Base64;
 
+import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.gorilla.client.IGorillaClientService;
 import com.aura.aosp.gorilla.client.IGorillaSystemService;
 
@@ -188,5 +189,41 @@ public class GorillaIntercon
 
             return null;
         }
+    }
+
+    /**
+     * Validate a checksum against a SHA-256 signature prefixed
+     * with server and client signatures over the string representation
+     * of all given params.
+     *
+     * @param checksum target checksum.
+     * @param apkname  name of sending app.
+     * @param params   variable object parameter list.
+     * @return true if checksum validated.
+     */
+    static boolean validateSHASignatureBase64(String checksum, String apkname, Object... params)
+    {
+        String solution = createSHASignatureBase64(apkname, params);
+        return (checksum != null) && checksum.equals(solution);
+    }
+
+    /**
+     * Validate a checksum against a SHA-256 signature prefixed
+     * with server and client signatures over the string representation
+     * of all given params.
+     * <p>
+     * Register and print an error if invalid.
+     *
+     * @param checksum target checksum.
+     * @param apkname  name of sending app.
+     * @param params   variable object parameter list.
+     * @return true if checksum validated.
+     */
+    static boolean validateSHASignatureBase64WE(String checksum, String apkname, Object... params)
+    {
+        boolean valid = validateSHASignatureBase64(checksum, apkname, params);
+        if (! valid) Err.errp("checksum failed!");
+
+        return valid;
     }
 }

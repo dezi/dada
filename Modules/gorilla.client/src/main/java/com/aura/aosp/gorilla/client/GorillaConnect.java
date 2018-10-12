@@ -17,7 +17,7 @@ import java.security.SecureRandom;
 
 /**
  * The class {@code GorillaConnect} is a package local static singleton.
- * It includes methods or keeping the state of a {@code Gorilla}
+ * It includes methods for keeping the state of a {@code Gorilla}
  * bi-directional service connection.
  *
  * @author Dennis Zierahn
@@ -31,7 +31,7 @@ class GorillaConnect
     private static IGorillaSystemService systemService;
 
     /**
-     * Server and client secrect for signing and validating
+     * Server and client signatures for validating
      * params of system service calls.
      * <p>
      * Both signatures are initialized to random values.

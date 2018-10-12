@@ -1,5 +1,8 @@
 package com.aura.aosp.gorilla.service;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.univid.Contacts;
@@ -34,11 +37,9 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public boolean validateConnect(String apkname, String checksum)
+    public boolean validateConnect(@NonNull String apkname, @NonNull String checksum)
     {
-        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname);
-
-        boolean svlink = ((checksum != null) && checksum.equals(solution));
+        boolean svlink = GorillaIntercon.validateSHASignatureBase64(checksum, apkname, apkname);
 
         Log.d("impl apkname=%s serverSignature=%s clientSignature=%s svlink=%b",
                 apkname,
@@ -54,13 +55,10 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public boolean getUplinkStatus(String apkname, String checksum)
+    public boolean getUplinkStatus(@NonNull String apkname, @NonNull String checksum)
     {
-        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname);
-
-        if ((checksum == null) || !checksum.equals(solution))
+        if (!GorillaIntercon.validateSHASignatureBase64(checksum,apkname, apkname))
         {
-            Log.e("checksum failed!");
             return false;
         }
 
@@ -72,13 +70,10 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public String getOwnerUUID(String apkname, String checksum)
+    public String getOwnerUUID(@NonNull String apkname, @NonNull String checksum)
     {
-        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname);
-
-        if ((checksum == null) || !checksum.equals(solution))
+        if (!GorillaIntercon.validateSHASignatureBase64(checksum,apkname, apkname))
         {
-            Log.e("checksum failed!");
             return null;
         }
 
@@ -86,13 +81,11 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public String sendPayload(String apkname, String userUUID, String deviceUUID, String payload, String checksum)
+    @Nullable
+    public String sendPayload(@NonNull String apkname, @NonNull String userUUID, @NonNull String deviceUUID, @NonNull String payload, @NonNull String checksum)
     {
-        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, userUUID, deviceUUID, payload);
-
-        if ((checksum == null) || !checksum.equals(solution))
+        if (!GorillaIntercon.validateSHASignatureBase64(checksum, apkname, apkname, userUUID, deviceUUID, payload))
         {
-            Log.e("checksum failed!");
             return null;
         }
 
@@ -102,15 +95,10 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public boolean sendPayloadRead(String apkname, String userUUID, String deviceUUID, String messageUUID, String checksum)
+    public boolean sendPayloadRead(@NonNull String apkname, @NonNull String userUUID, @NonNull String deviceUUID, @NonNull String messageUUID, @NonNull String checksum)
     {
-        Log.d("...");
-
-        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, userUUID, deviceUUID, messageUUID);
-
-        if ((checksum == null) || !checksum.equals(solution))
+        if (!GorillaIntercon.validateSHASignatureBase64(checksum, apkname, apkname, userUUID, deviceUUID, messageUUID))
         {
-            Log.e("checksum failed!");
             return false;
         }
 
@@ -118,8 +106,13 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public boolean putAtom(String apkname, String atomJSON, String checksum)
+    public boolean putAtom(@NonNull String apkname, @NonNull String atomJSON, @NonNull String checksum)
     {
+        if (!GorillaIntercon.validateSHASignatureBase64(checksum, apkname, apkname, atomJSON))
+        {
+            return false;
+        }
+
         JSONObject atom = Json.fromStringObject(atomJSON);
         if (atom == null) return false;
 
@@ -128,8 +121,13 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public boolean putAtomSharedBy(String apkname, String userUUID, String atomJSON, String checksum)
+    public boolean putAtomSharedBy(@NonNull String apkname, @NonNull String userUUID, @NonNull String atomJSON, @NonNull String checksum)
     {
+        if (!GorillaIntercon.validateSHASignatureBase64(checksum, apkname, apkname, userUUID, atomJSON))
+        {
+            return false;
+        }
+
         JSONObject atom = Json.fromStringObject(atomJSON);
         if (atom == null) return false;
 
@@ -138,8 +136,13 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public boolean putAtomSharedWith(String apkname, String userUUID, String atomJSON, String checksum)
+    public boolean putAtomSharedWith(@NonNull String apkname, @NonNull String userUUID, @NonNull String atomJSON, @NonNull String checksum)
     {
+        if (!GorillaIntercon.validateSHASignatureBase64(checksum, apkname, apkname, userUUID, atomJSON))
+        {
+            return false;
+        }
+
         JSONObject atom = Json.fromStringObject(atomJSON);
         if (atom == null) return false;
 
@@ -148,7 +151,8 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public String getAtom(String apkname, String atomUUID, String checksum)
+    @Nullable
+    public String getAtom(@NonNull String apkname, @NonNull String atomUUID, @NonNull String checksum)
     {
         JSONObject atom = GoatomStorage.getAtom(atomUUID);
         if (atom == null) return null;
@@ -157,6 +161,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
+    @Nullable
     public String getAtomSharedBy(String apkname, String userUUID, String atomUUID, String checksum)
     {
         JSONObject atom = GoatomStorage.getAtomSharedBy(userUUID, atomUUID);
@@ -166,6 +171,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
+    @Nullable
     public String getAtomSharedWith(String apkname, String userUUID, String atomUUID, String checksum)
     {
         JSONObject atom = GoatomStorage.getAtomSharedWith(userUUID, atomUUID);
@@ -175,6 +181,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
+    @Nullable
     public String queryAtoms(String apkname, String atomType, long timeFrom, long timeTo, String checksum)
     {
         JSONArray results = GoatomStorage.queryAtoms(atomType, timeFrom, timeTo);
@@ -184,6 +191,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
+    @Nullable
     public String queryAtomsSharedBy(String apkname, String userUUID, String atomType, long timeFrom, long timeTo, String checksum)
     {
         JSONArray results = GoatomStorage.queryAtomsSharedBy(userUUID, atomType, timeFrom, timeTo);
@@ -193,6 +201,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
+    @Nullable
     public String queryAtomsSharedWith(String apkname, String userUUID, String atomType, long timeFrom, long timeTo, String checksum)
     {
         JSONArray results = GoatomStorage.queryAtomsSharedWith(userUUID, atomType, timeFrom, timeTo);

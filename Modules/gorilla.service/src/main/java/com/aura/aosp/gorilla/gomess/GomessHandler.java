@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.gomess;
 
 import android.os.Handler;
+import android.support.annotation.NonNull;
 
 import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.simple.Err;
@@ -66,6 +67,7 @@ public class GomessHandler
         writerThread.start();
     }
 
+    @NonNull
     public JSONObject sendPayload(String apkname, String userUUID, String deviceUUID, String payload)
     {
         Log.d("user=" + userUUID + " dev=" + deviceUUID);
