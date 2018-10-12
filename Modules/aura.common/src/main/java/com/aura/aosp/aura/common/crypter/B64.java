@@ -29,10 +29,24 @@ public class B64
      * @param bytes bytes to be encoded.
      * @return base64 encoded string or null.
      */
-    @NonNull
-    public static String encode(@NonNull byte[] bytes)
+    @Nullable
+    public static String encode(byte[] bytes)
     {
-        return new String(Base64.encode(bytes, Base64.NO_WRAP));
+        if (bytes == null)
+        {
+            Err.err();
+            return null;
+        }
+
+        try
+        {
+            return new String(Base64.encode(bytes, Base64.NO_WRAP));
+        }
+        catch (Exception ex)
+        {
+            Err.errp(ex);
+            return null;
+        }
     }
 
     /**
@@ -42,8 +56,14 @@ public class B64
      * @return decoded bytes or null.
      */
     @Nullable
-    public static byte[] decode(@NonNull String base64)
+    public static byte[] decode(String base64)
     {
+        if (base64 == null)
+        {
+            Err.err();
+            return null;
+        }
+
         try
         {
             return Base64.decode(base64, Base64.DEFAULT);

@@ -53,6 +53,11 @@ public class UID
     @NonNull
     public static String randomUUIDBase64()
     {
+        //
+        // Under these circumstances B64.encode is always NonNull.
+        //
+        // noinspection ConstantConditions
+
         return B64.encode(randomUUID());
     }
 
@@ -82,19 +87,26 @@ public class UID
     /**
      * Convert UUID in bytes to UUID as traditional string.
      *
-     * @param uuidbytes UUID in 16 bytes.
+     * @param uuidBytes UUID in 16 bytes.
      * @return UUID as traditional string or null.
      */
     @Nullable
-    public static String convertUUIDToString(@NonNull byte[] uuidbytes)
+    public static String convertUUIDToString(byte[] uuidBytes)
     {
-        if (uuidbytes.length != 16)
+        if (uuidBytes == null)
         {
-            Err.errp("uuid wrong size=%d!", uuidbytes.length);
+            Err.errp();
             return null;
         }
 
-        ByteBuffer bb = ByteBuffer.wrap(uuidbytes);
+        if (uuidBytes.length != 16)
+        {
+            Err.errp("uuid wrong size=%d!", uuidBytes.length);
+            return null;
+        }
+
+        ByteBuffer bb = ByteBuffer.wrap(uuidBytes);
+
         long firstLong = bb.getLong();
         long secondLong = bb.getLong();
 
@@ -104,18 +116,20 @@ public class UID
     /**
      * Convert UUID as base64 encoded string to UUID as traditional string.
      *
-     * @param uuidbase64 UUID as base64 encoded string.
+     * @param uuidBase64 UUID as base64 encoded string.
      * @return UUID as traditional string or null.
      */
     @Nullable
-    public static String convertUUIDToString(@NonNull String uuidbase64)
+    public static String convertUUIDToString(String uuidBase64)
     {
-        byte[] uuidbytes = convertUUIDToBytes(uuidbase64);
-        if (uuidbytes == null)
+        if (uuidBase64 == null)
         {
             Err.errp();
             return null;
         }
+
+        byte[] uuidbytes = convertUUIDToBytes(uuidBase64);
+        if (uuidbytes == null) return null;
 
         if (uuidbytes.length != 16)
         {
@@ -129,59 +143,59 @@ public class UID
     /**
      * Convert UUID in bytes to UUID as base64 encoded string.
      *
-     * @param uuidbytes UUID in 16 bytes.
+     * @param uuidBytes UUID in 16 bytes.
      * @return UUID as base64 encoded string or null.
      */
     @Nullable
-    public static String convertUUIDToStringBase64(byte[] uuidbytes)
+    public static String convertUUIDToStringBase64(byte[] uuidBytes)
     {
-        if (uuidbytes == null)
+        if (uuidBytes == null)
         {
             Err.errp();
             return null;
         }
 
-        if (uuidbytes.length != 16)
+        if (uuidBytes.length != 16)
         {
-            Err.errp("uuid wrong size=%d!", uuidbytes.length);
+            Err.errp("uuid wrong size=%d!", uuidBytes.length);
             return null;
         }
 
-        return B64.encode(uuidbytes);
+        return B64.encode(uuidBytes);
     }
 
     /**
      * Convert UUID in either base64 encoded string or as traditional string
      * into UUID in bytes.
      *
-     * @param uuidstr base64 or traditional UUID string.
-     * @return UUID in bytes.
+     * @param uuidAnyStr base64 or traditional UUID string.
+     * @return UUID in bytes or null.
      */
     @Nullable
-    public static byte[] convertUUIDToBytes(String uuidstr)
+    public static byte[] convertUUIDToBytes(String uuidAnyStr)
     {
-        if (uuidstr == null)
+        if (uuidAnyStr == null)
         {
             Err.errp();
             return null;
         }
 
-        if (uuidstr.contains("-"))
+        if (uuidAnyStr.contains("-"))
         {
             //
             // 2aeb514f-0bf1-4ade-ac03-c9c3a2a56b3a
             // 123456789012345678901234567890123456
             //
 
-            if (uuidstr.length() != 36)
+            if (uuidAnyStr.length() != 36)
             {
-                Err.errp("uuid wrong format=%s!", uuidstr);
+                Err.errp("uuid wrong format=%s!", uuidAnyStr);
                 return null;
             }
 
             try
             {
-                UUID uuid = UUID.fromString(uuidstr);
+                UUID uuid = UUID.fromString(uuidAnyStr);
 
                 ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
                 bb.putLong(uuid.getMostSignificantBits());
@@ -196,14 +210,14 @@ public class UID
             }
         }
 
-        byte[] uuidbytes = B64.decode(uuidstr);
+        byte[] uuidBytes = B64.decode(uuidAnyStr);
 
-        if ((uuidbytes == null) || (uuidbytes.length != 16))
+        if ((uuidBytes == null) || (uuidBytes.length != 16))
         {
-            Err.errp("uuid wrong format=%s!", uuidstr);
+            Err.errp("uuid wrong format=%s!", uuidAnyStr);
             return null;
         }
 
-        return uuidbytes;
+        return uuidBytes;
     }
 }

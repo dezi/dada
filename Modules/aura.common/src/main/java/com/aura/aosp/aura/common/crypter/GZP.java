@@ -1,5 +1,6 @@
 package com.aura.aosp.aura.common.crypter;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.common.simple.Err;
@@ -12,7 +13,7 @@ import java.io.ByteArrayInputStream;
 public class GZP
 {
     @Nullable
-    public static byte[] enGzip(byte[] data)
+    public static byte[] enGzip(@NonNull byte[] data)
     {
         try
         {
@@ -35,7 +36,7 @@ public class GZP
     }
 
     @Nullable
-    public static byte[] unGzip(byte[] gzip)
+    public static byte[] unGzip(@NonNull byte[] gzip)
     {
         try
         {
