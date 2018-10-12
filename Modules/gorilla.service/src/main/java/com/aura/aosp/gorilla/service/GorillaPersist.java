@@ -29,8 +29,8 @@ public class GorillaPersist
         if (apkdir == null) return Err.getLastErr();
 
         String saveFilename = Dates.getUniversalDateAndTimeMillis(timeStamp)
-                + "." + UID.getUUIDString(keyUUID)
-                + "." + UID.getUUIDString(nonceUUID)
+                + "." + UID.convertUUIDToString(keyUUID)
+                + "." + UID.convertUUIDToString(nonceUUID)
                 + ".json";
 
         File saveFile = new File(apkdir, saveFilename);

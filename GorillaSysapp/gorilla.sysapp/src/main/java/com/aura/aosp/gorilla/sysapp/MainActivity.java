@@ -9,6 +9,8 @@ import android.view.View;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.aura.aosp.aura.common.crypter.B64;
+import com.aura.aosp.aura.common.crypter.RND;
 import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.rights.Perms;
 import com.aura.aosp.aura.common.simple.Simple;

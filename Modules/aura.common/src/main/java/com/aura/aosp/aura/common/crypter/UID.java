@@ -1,17 +1,35 @@
+/*
+ * Copyright (C) 2018 Aura Software Inc.
+ *
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ */
+
 package com.aura.aosp.aura.common.crypter;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
-import android.util.Base64;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import com.aura.aosp.aura.common.simple.Err;
 
+/**
+ * Exception safe, annotated and simplified
+ * UUID methods.
+ *
+ * @author Dennis Zierahn
+ */
+@SuppressWarnings("WeakerAccess")
 public class UID
 {
+    /**
+     * Generate a 128 bit UUID from secure random.
+     *
+     * @return 128 bit UUID from secure random.
+     */
+    @NonNull
     public static byte[] randomUUID()
     {
         byte[] uuid = RND.randomBytes(16);
@@ -27,29 +45,49 @@ public class UID
         return uuid;
     }
 
+    /**
+     * Generate a 128 bit UUID from secure random base64 encoded.
+     *
+     * @return 128 bit UUID from secure random base64 encoded.
+     */
+    @NonNull
     public static String randomUUIDBase64()
     {
-        return Base64.encodeToString(randomUUID(), android.util.Base64.NO_WRAP);
+        return B64.encode(randomUUID());
     }
 
+    /**
+     * Generate a 128 bit UUID from secure random as traditional UUID string.
+     *
+     * @return 128 bit UUID from secure random as traditional UUID string.
+     */
+    @NonNull
     public static String randomUUIDString()
     {
         ByteBuffer bb = ByteBuffer.wrap(randomUUID());
+
+        //
+        // ByteBuffer.getLong is a potential source of exceptions.
+        //
+        // Since randomUUID delivers always 16 byte, were a sure
+        // that no exeception is virtual possible.
+        //
+
         long firstLong = bb.getLong();
         long secondLong = bb.getLong();
 
         return new UUID(firstLong, secondLong).toString();
     }
 
+    /**
+     * Convert UUID in bytes to UUID as traditional string.
+     *
+     * @param uuidbytes UUID in 16 bytes.
+     * @return UUID as traditional string or null.
+     */
     @Nullable
-    public static String getUUIDString(byte[] uuidbytes)
+    public static String convertUUIDToString(@NonNull byte[] uuidbytes)
     {
-        if (uuidbytes == null)
-        {
-            Err.errp();
-            return null;
-        }
-
         if (uuidbytes.length != 16)
         {
             Err.errp("uuid wrong size=%d!", uuidbytes.length);
@@ -63,10 +101,16 @@ public class UID
         return new UUID(firstLong, secondLong).toString();
     }
 
+    /**
+     * Convert UUID as base64 encoded string to UUID as traditional string.
+     *
+     * @param uuidbase64 UUID as base64 encoded string.
+     * @return UUID as traditional string or null.
+     */
     @Nullable
-    public static String getUUIDString(@NonNull String uuidbase64)
+    public static String convertUUIDToString(@NonNull String uuidbase64)
     {
-        byte[] uuidbytes = getUUIDBytes(uuidbase64);
+        byte[] uuidbytes = convertUUIDToBytes(uuidbase64);
         if (uuidbytes == null)
         {
             Err.errp();
@@ -79,11 +123,17 @@ public class UID
             return null;
         }
 
-        return getUUIDString(uuidbytes);
+        return convertUUIDToString(uuidbytes);
     }
 
+    /**
+     * Convert UUID in bytes to UUID as base64 encoded string.
+     *
+     * @param uuidbytes UUID in 16 bytes.
+     * @return UUID as base64 encoded string or null.
+     */
     @Nullable
-    public static String getUUIDBase64(byte[] uuidbytes)
+    public static String convertUUIDToStringBase64(byte[] uuidbytes)
     {
         if (uuidbytes == null)
         {
@@ -97,11 +147,18 @@ public class UID
             return null;
         }
 
-        return Base64.encodeToString(uuidbytes, android.util.Base64.NO_WRAP);
+        return B64.encode(uuidbytes);
     }
 
+    /**
+     * Convert UUID in either base64 encoded string or as traditional string
+     * into UUID in bytes.
+     *
+     * @param uuidstr base64 or traditional UUID string.
+     * @return UUID in bytes.
+     */
     @Nullable
-    public static byte[] getUUIDBytes(String uuidstr)
+    public static byte[] convertUUIDToBytes(String uuidstr)
     {
         if (uuidstr == null)
         {
@@ -139,9 +196,9 @@ public class UID
             }
         }
 
-        byte[] uuidbytes = Base64.decode(uuidstr, Base64.DEFAULT);
+        byte[] uuidbytes = B64.decode(uuidstr);
 
-        if (uuidbytes.length != 16)
+        if ((uuidbytes == null) || (uuidbytes.length != 16))
         {
             Err.errp("uuid wrong format=%s!", uuidstr);
             return null;

@@ -123,7 +123,7 @@ public class GoatomStorage
     @Nullable
     private static JSONObject getAtom(@NonNull String ownerUUID, @NonNull String userUUID, @NonNull String atomUUID)
     {
-        String atomUUIDStr = UID.getUUIDString(atomUUID);
+        String atomUUIDStr = UID.convertUUIDToString(atomUUID);
         if (atomUUIDStr == null) return null;
 
         String atomSuffix = atomUUIDStr + ".json";
@@ -269,10 +269,10 @@ public class GoatomStorage
     @Nullable
     private static File getStorageDir(@NonNull String ownerUUID, @NonNull String userUUID, boolean create)
     {
-        String ownerUUIDStr = UID.getUUIDString(ownerUUID);
+        String ownerUUIDStr = UID.convertUUIDToString(ownerUUID);
         if (ownerUUIDStr == null) return null;
 
-        String userUUIDStr = UID.getUUIDString(userUUID);
+        String userUUIDStr = UID.convertUUIDToString(userUUID);
         if (userUUIDStr == null) return null;
 
         File appfilesdir = Environment.getExternalStorageDirectory();
@@ -371,7 +371,7 @@ public class GoatomStorage
 
         String timeStr = dateStr.substring(8);
 
-        String atomUUIDStr = UID.getUUIDString(atomUUID);
+        String atomUUIDStr = UID.convertUUIDToString(atomUUID);
         if (atomUUIDStr == null) return null;
 
         String atomname = timeStr + "." + atomUUIDStr + ".json";

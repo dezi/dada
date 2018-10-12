@@ -20,6 +20,7 @@ import com.aura.aosp.aura.common.simple.Err;
  *
  * @author Dennis Zierahn
  */
+@SuppressWarnings("WeakerAccess")
 public class B64
 {
     /**
@@ -28,18 +29,10 @@ public class B64
      * @param bytes bytes to be encoded.
      * @return base64 encoded string or null.
      */
-    @Nullable
+    @NonNull
     public static String encode(@NonNull byte[] bytes)
     {
-        try
-        {
-            return Base64.encodeToString(bytes, Base64.NO_WRAP);
-        }
-        catch (Exception ex)
-        {
-            Err.errp(ex);
-            return null;
-        }
+        return new String(Base64.encode(bytes, Base64.NO_WRAP));
     }
 
     /**
