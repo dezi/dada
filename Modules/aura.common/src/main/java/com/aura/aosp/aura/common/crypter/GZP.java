@@ -1,6 +1,12 @@
+/*
+ * Copyright (C) 2018 Aura Software Inc.
+ *
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ */
+
 package com.aura.aosp.aura.common.crypter;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.common.simple.Err;
@@ -10,11 +16,30 @@ import java.util.zip.GZIPInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 
+/**
+ * Exception safe, annotated and simplified
+ * versions of gzip encode and decode.
+ *
+ * @author Dennis Zierahn
+ */
+@SuppressWarnings("WeakerAccess")
 public class GZP
 {
+    /**
+     * GZIP encode binary raw data.
+     *
+     * @param data binary raw data.
+     * @return GZIP encoded data or null on failure.
+     */
     @Nullable
-    public static byte[] enGzip(@NonNull byte[] data)
+    public static byte[] enGzip(byte[] data)
     {
+        if (data == null)
+        {
+            Err.err();
+            return null;
+        }
+
         try
         {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -35,9 +60,21 @@ public class GZP
         }
     }
 
+    /**
+     * GZIP decode GZIP encoded data.
+     *
+     * @param gzip GZIP encoded data.
+     * @return binary raw data or null on failure.
+     */
     @Nullable
-    public static byte[] unGzip(@NonNull byte[] gzip)
+    public static byte[] unGzip(byte[] gzip)
     {
+        if (gzip == null)
+        {
+            Err.err();
+            return null;
+        }
+
         try
         {
             ByteArrayInputStream is = new ByteArrayInputStream(gzip);

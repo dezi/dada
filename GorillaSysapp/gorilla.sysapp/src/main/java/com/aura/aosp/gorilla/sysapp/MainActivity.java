@@ -204,8 +204,8 @@ public class MainActivity extends AppCompatActivity
 
         buttonFrame.addView(clearButton);
 
-        TestClass tc = new TestClass();
-        tc.dodat();
+        //TestClass tc = new TestClass();
+        //tc.dodat();
 
         /*
         for (int inx = 0; inx < 100; inx++)

@@ -7,7 +7,6 @@
 
 package com.aura.aosp.aura.common.crypter;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import android.util.Base64;
