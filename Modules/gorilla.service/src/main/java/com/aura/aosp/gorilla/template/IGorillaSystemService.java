@@ -73,18 +73,6 @@ interface IGorillaSystemService
      */
     String getOwnerUUID(String apkname, String checksum);
 
-    /**
-     * Request from client service to indicate, that is is
-     * now ready to receive any persisted payload. The server
-     * will push all outstanding payloads via the client service
-     * interface.
-     *
-     * @param apkname  the apk name of requesting app.
-     * @param checksum parameters checksum.
-     * @return true if request valid.
-     */
-    boolean requestPersisted(String apkname, String checksum);
-
     String sendPayload(String apkname, String userUUID, String deviceUUID, String payload, String checksum);
 
     boolean sendPayloadRead(String apkname, String userUUID, String deviceUUID, String messageUUID, String checksum);
@@ -107,17 +95,80 @@ interface IGorillaSystemService
 
     String queryAtomsSharedWith(String apkname, String userUUID, String atomType, long timeFrom, long timeUpto, String checksum);
 
+    /**
+     * Request suggestions for possible actions on root level.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param checksum parameters checksum.
+     * @return JSON array string with GorillaAtomAction JSON objects.
+     */
     String suggestActions(String apkname, String checksum);
 
+    /**
+     * Request suggestions for possible actions on action domain level.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param actionDomain action domain in reversed order.
+     * @param checksum parameters checksum.
+     * @return JSON array string with GorillaAtomAction JSON objects.
+     */
     String suggestActionsDomain(String apkname, String actionDomain, String checksum);
 
+    /**
+     * Request suggestions for possible actions on action domain with context level.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param actionDomain action domain in reversed order.
+     * @param subContext sub context in action domain.
+     * @param checksum parameters checksum.
+     * @return JSON array string with GorillaAtomAction JSON objects.
+     */
     String suggestActionsDomainContext(String apkname, String actionDomain, String subContext, String checksum);
 
+    /**
+     * Register event on an action domain.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param actionDomain action domain in reversed order.
+     * @param checksum parameters checksum.
+     * @return true on success.
+     */
     boolean registerActionEvent(String apkname, String actionDomain, String checksum);
 
+    /**
+     * Register event on a sub action in an action domain.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param actionDomain action domain in reversed order.
+     * @param subAction sub action executed.
+     * @param checksum parameters checksum.
+     * @return true on success.
+     */
     boolean registerActionEventDomain(String apkname, String actionDomain, String subAction, String checksum);
 
+    /**
+     * Register event on a sub action in a sub context of an action domain.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param actionDomain action domain in reversed order.
+     * @param subContext sub context of action domain.
+     * @param subAction sub action executed.
+     * @param checksum parameters checksum.
+     * @return true on success.
+     */
     boolean registerActionEventDomainContext(String apkname, String actionDomain, String subContext, String subAction, String checksum);
+
+    /**
+     * Request from client service to indicate, that is is
+     * now ready to receive any persisted payload. The server
+     * will push all outstanding payloads via the client service
+     * interface.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param checksum parameters checksum.
+     * @return true if request valid.
+     */
+    boolean requestPersisted(String apkname, String checksum);
 
     /**
      * Request all contacts of device owner.

@@ -11,6 +11,12 @@ import com.aura.aosp.gorilla.goatoms.GorillaAtomEvent;
 
 public class GopoorRegister
 {
+    /**
+     * Register event on an action domain.
+     *
+     * @param actionDomain action domain in reversed order.
+     * @return error or null.
+     */
     @Nullable
     public static Err registerActionEvent(String actionDomain)
     {
@@ -28,6 +34,13 @@ public class GopoorRegister
         return GopoorSuggest.precomputeSuggestionsByEvent(event);
     }
 
+    /**
+     * Register event on a sub action in an action domain.
+     *
+     * @param actionDomain action domain in reversed order.
+     * @param subAction sub action executed.
+     * @return error or null.
+     */
     @Nullable
     public static Err registerActionEvent(String actionDomain, String subAction)
     {
@@ -46,6 +59,14 @@ public class GopoorRegister
         return GopoorSuggest.precomputeSuggestionsByEvent(event);
     }
 
+    /**
+     * Register event on a sub action in a sub context of an action domain.
+     *
+     * @param actionDomain action domain in reversed order.
+     * @param subContext sub context of action domain.
+     * @param subAction sub action executed.
+     * @return error or null.
+     */
     @Nullable
     public static Err registerContextEvent(String actionDomain, String subContext, String subAction)
     {

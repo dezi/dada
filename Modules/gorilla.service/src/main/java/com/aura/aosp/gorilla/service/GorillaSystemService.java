@@ -86,49 +86,6 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
-    public boolean requestPersisted(String apkname, String checksum)
-    {
-        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname);
-
-        if ((checksum == null) || !checksum.equals(solution))
-        {
-            Log.e("checksum failed!");
-            return false;
-        }
-
-        Log.d("sending all persisted tickets.");
-
-        while (true)
-        {
-            JSONObject json = GorillaPersist.unpersistNextTicketForLocalClientApp(apkname);
-            if (json == null) break;
-
-            Log.d("########ticket=%s", json.toString());
-
-            GoprotoTicket ticket = new GoprotoTicket();
-            Err err = ticket.unmarshalJSON(json);
-            if (err != null) break;
-
-            Log.d("##################STATTTTTTTTTTTUS=%d", ticket.getStatus());
-            Log.d("##########################");
-            ticket.dumpTicket();
-            Log.d("##########################");
-
-            err = GorillaSender.sendPayload(ticket);
-
-            if (err != null)
-            {
-                Log.e("huhu err=%s", err.err);
-                break;
-            }
-
-            Log.e("send no err");
-        }
-
-        return true;
-    }
-
-    @Override
     public String sendPayload(String apkname, String userUUID, String deviceUUID, String payload, String checksum)
     {
         String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname, userUUID, deviceUUID, payload);
@@ -265,6 +222,13 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
         return (err == null);
     }
 
+    /**
+     * Request suggestions for possible actions on root level.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param checksum parameters checksum.
+     * @return JSON array string with GorillaAtomAction JSON objects.
+     */
     @Override
     public String suggestActions(String apkname, String checksum)
     {
@@ -274,6 +238,14 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
         return results.toString();
     }
 
+    /**
+     * Request suggestions for possible actions on action domain level.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param actionDomain action domain in reversed order.
+     * @param checksum parameters checksum.
+     * @return JSON array string with GorillaAtomAction JSON objects.
+     */
     @Override
     public String suggestActionsDomain(String apkname, String actionDomain, String checksum)
     {
@@ -283,6 +255,15 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
         return results.toString();
     }
 
+    /**
+     * Request suggestions for possible actions on action domain with context level.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param actionDomain action domain in reversed order.
+     * @param subContext sub context in action domain.
+     * @param checksum parameters checksum.
+     * @return JSON array string with GorillaAtomAction JSON objects.
+     */
     @Override
     public String suggestActionsDomainContext(String apkname, String actionDomain, String subContext, String checksum)
     {
@@ -290,6 +271,59 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
         if (results == null) return null;
 
         return results.toString();
+    }
+
+    /**
+     * Request from client service to indicate, that is is
+     * now ready to receive any persisted payload. The server
+     * will push all outstanding payloads via the client service
+     * interface.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param checksum parameters checksum.
+     * @return true if request valid.
+     */
+    @Override
+    public boolean requestPersisted(String apkname, String checksum)
+    {
+        String solution = GorillaIntercon.createSHASignatureBase64(apkname, apkname);
+
+        if ((checksum == null) || !checksum.equals(solution))
+        {
+            Log.e("checksum failed!");
+            return false;
+        }
+
+        Log.d("sending all persisted tickets.");
+
+        while (true)
+        {
+            JSONObject json = GorillaPersist.unpersistNextTicketForLocalClientApp(apkname);
+            if (json == null) break;
+
+            Log.d("########ticket=%s", json.toString());
+
+            GoprotoTicket ticket = new GoprotoTicket();
+            Err err = ticket.unmarshalJSON(json);
+            if (err != null) break;
+
+            Log.d("##################STATTTTTTTTTTTUS=%d", ticket.getStatus());
+            Log.d("##########################");
+            ticket.dumpTicket();
+            Log.d("##########################");
+
+            err = GorillaSender.sendPayload(ticket);
+
+            if (err != null)
+            {
+                Log.e("huhu err=%s", err.err);
+                break;
+            }
+
+            Log.e("send no err");
+        }
+
+        return true;
     }
 
     /**
