@@ -37,14 +37,25 @@ public class SHA
     @Nullable
     public static String createSHASignatureBase64(byte[] secret, byte[]... buffers)
     {
-        return Base64.encodeToString(createSHASignature(secret, buffers), Base64.NO_WRAP);
+        try
+        {
+            return Base64.encodeToString(createSHASignature(secret, buffers), Base64.NO_WRAP);
+        }
+        catch (Exception ex)
+        {
+            Err.errp(ex);
+            return null;
+        }
     }
 
-    public static Err verifySHASignature(byte[] secret, byte[] signature, byte[]... buffers)
+    @Nullable
+    public static Err verifySHASignature(byte[] secret, byte[] theirsignature, byte[]... buffers)
     {
-        byte[] remotesign = createSHASignature(secret, buffers);
-        if (remotesign == null) return Err.getLastErr();
+        if (theirsignature == null) return Err.err();
 
-        return Arrays.equals(signature, remotesign) ? null : Err.errp("signature fail!");
+        byte[] selfsignature = createSHASignature(secret, buffers);
+        if (selfsignature == null) return Err.getLastErr();
+
+        return Arrays.equals(selfsignature, theirsignature) ? null : Err.errp("signature fail!");
     }
 }

@@ -67,6 +67,7 @@ class GorillaConnect
      *
      * @return signature bytes.
      */
+    @NonNull
     private static byte[] newSignature()
     {
         byte[] signature = new byte[16];
