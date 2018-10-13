@@ -1,7 +1,6 @@
 package com.aura.aosp.aura.common.simple;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
@@ -10,76 +9,46 @@ import java.util.Date;
 
 public class Dates
 {
-    @Nullable
-    public static String getLocalDateAndTime(@NonNull Long timeStamp)
+    @NonNull
+    public static String getLocalDateAndTime(long timeStamp)
     {
-        try
-        {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
-            Date netDate = new Date(timeStamp);
-            return sdf.format(netDate);
-        }
-        catch(Exception ex)
-        {
-            Err.errp(ex);
-            return null;
-        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
+        Date netDate = new Date(timeStamp);
+        return sdf.format(netDate);
     }
 
-    @Nullable
-    public static String getUniversalDate(@NonNull Long timeStamp)
+    @NonNull
+    public static String getLocalDateAndTimeMillis(long timeStamp)
     {
-        try
-        {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-            Date netDate = new Date(timeStamp);
-            return sdf.format(netDate);
-        }
-        catch(Exception ex)
-        {
-            Err.errp(ex);
-            return null;
-        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.getDefault());
+        Date netDate = new Date(timeStamp);
+        return sdf.format(netDate);
     }
 
-    @Nullable
-    public static String getUniversalDateAndTime(@NonNull Long timeStamp)
+    @NonNull
+    public static String getUniversalDate(long timeStamp)
     {
-        try
-        {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-            Date netDate = new Date(timeStamp);
-            return sdf.format(netDate);
-        }
-        catch(Exception ex)
-        {
-            Err.errp(ex);
-            return null;
-        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date netDate = new Date(timeStamp);
+        return sdf.format(netDate);
     }
 
-    @Nullable
-    public static String getUniversalDateAndTimeMillis(@NonNull Long timeStamp)
+    @NonNull
+    public static String getUniversalDateAndTime(long timeStamp)
     {
-        try
-        {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.getDefault());
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-            Date netDate = new Date(timeStamp);
-
-            return sdf.format(netDate);
-        }
-        catch(Exception ex)
-        {
-            Err.errp(ex);
-            return null;
-        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date netDate = new Date(timeStamp);
+        return sdf.format(netDate);
     }
 
-    public static long getAgeInSeconds(long timestamp)
+    @NonNull
+    public static String getUniversalDateAndTimeMillis(long timeStamp)
     {
-        return (System.currentTimeMillis() - timestamp) / 1000;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date netDate = new Date(timeStamp);
+        return sdf.format(netDate);
     }
 }

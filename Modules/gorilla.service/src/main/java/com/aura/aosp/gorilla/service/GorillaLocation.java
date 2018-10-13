@@ -173,12 +173,17 @@ public class GorillaLocation implements LocationListener
             return Err.err("no known location.");
         }
 
-        if (Dates.getAgeInSeconds(time) > MAXAGEINMILLIS)
+        if (getAgeInSeconds(time) > MAXAGEINMILLIS)
         {
-            return Err.err("location expired age=%d", Dates.getAgeInSeconds(time));
+            return Err.err("location expired age=%d", getAgeInSeconds(time));
         }
 
         return null;
+    }
+
+    private long getAgeInSeconds(long timestamp)
+    {
+        return (System.currentTimeMillis() - timestamp) / 1000;
     }
 
     private void storeLocation(Location location)
@@ -203,7 +208,7 @@ public class GorillaLocation implements LocationListener
                 location.getAltitude(),
                 location.getAccuracy(),
                 location.getProvider(),
-                Dates.getAgeInSeconds(location.getTime())
+                getAgeInSeconds(location.getTime())
         );
 
         if (Simple.nequals(lastLat, lat, 1000)

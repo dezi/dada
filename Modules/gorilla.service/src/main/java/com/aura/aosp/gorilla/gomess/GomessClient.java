@@ -8,7 +8,9 @@ import com.aura.aosp.aura.common.crypter.RND;
 import com.aura.aosp.aura.common.crypter.RSA;
 import com.aura.aosp.aura.common.crypter.SHA;
 
+import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Marshal;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
@@ -142,6 +144,10 @@ public class GomessClient
 
             case GoprotoDefs.MsgPong:
                 err = chPong(message);
+                break;
+
+            case GoprotoDefs.MsgTimeResponse:
+                err = chTimeResponse(message);
                 break;
 
             case GoprotoDefs.MsgMessageDownload:
@@ -349,6 +355,13 @@ public class GomessClient
         GorillaSender.sendBroadCastOnlineStatus(true);
 
         //
+        // Request server time.
+        //
+
+        err = sendTimeRequest();
+        if (err != null) return err;
+
+        //
         // Request replay of persisted messages.
         //
 
@@ -414,6 +427,35 @@ public class GomessClient
         }
 
         Log.d("uuid=%s", Simple.encodeBase64(message.Base));
+
+        return null;
+    }
+
+    private Err sendTimeRequest()
+    {
+        byte[] clientTime = Marshal.marshalLong(System.currentTimeMillis());
+        byte[] serverTime = Marshal.marshalLong(0);
+
+        byte[] head = new GoprotoMessage(GoprotoDefs.MsgTimeRequest, 0, 0, GoprotoDefs.GorillaUUIDSize).marshall();
+        byte[] packet = Simple.concatBuffers(head, clientTime, serverTime);
+
+        return session.writeSession(packet);
+    }
+
+    private Err chTimeResponse(GoprotoMessage message)
+    {
+        if ((message.Base == null) || (message.Base.length != GoprotoDefs.GorillaUUIDSize))
+        {
+            return Err.errp("wrong size=%d fail!", message.Size);
+        }
+
+        long clientTime = Marshal.unMarshalLong(Simple.sliceBytes(message.Base, 0, 8));
+        long serverTime = Marshal.unMarshalLong(Simple.sliceBytes(message.Base, 8, 16));
+        long responseMillis = System.currentTimeMillis() - clientTime;
+
+        Log.d("clientTime=%s", Dates.getLocalDateAndTimeMillis(clientTime));
+        Log.d("serverTime=%s", Dates.getLocalDateAndTimeMillis(serverTime));
+        Log.d("responseMillis=%s", responseMillis);
 
         return null;
     }

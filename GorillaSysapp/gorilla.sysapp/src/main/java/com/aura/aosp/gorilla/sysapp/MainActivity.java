@@ -13,6 +13,7 @@ import com.aura.aosp.aura.common.crypter.B64;
 import com.aura.aosp.aura.common.crypter.RND;
 import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.rights.Perms;
+import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
@@ -204,34 +205,6 @@ public class MainActivity extends AppCompatActivity
 
         buttonFrame.addView(clearButton);
 
-        //TestClass tc = new TestClass();
-        //tc.dodat();
-
-        /*
-        for (int inx = 0; inx < 100; inx++)
-        {
-            Log.d(LOGTAG," UUID=" + UID.randomUUIDBase64());
-        }
-        */
-
-        /*
-        Random rand = new Random();
-
-        DrawView.numshapes = 100;
-        DrawView.showcount.run();
-
-        for (int inx = 0; inx < DrawView.numshapes; inx++)
-        {
-            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(400, 400);
-
-            lp.leftMargin = rand.nextInt(500);
-            lp.topMargin = rand.nextInt(800);
-
-            DrawView dv = new DrawView(this);
-            dv.setLayoutParams(lp);
-
-            topFrame.addView(dv);
-        }
-        */
+        Log.d(LOGTAG, "###############date=" + Dates.getUniversalDate(0));
     }
 }

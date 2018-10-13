@@ -33,6 +33,8 @@ public class GoprotoDefs
 
     public final static int MsgPing            = 0x0100;
     public final static int MsgPong            = 0x0101;
+    public final static int MsgTimeRequest     = 0x0102;
+    public final static int MsgTimeResponse    = 0x0103;
 
     public final static int MsgMessageUpload   = 0x1000;
     public final static int MsgMessageDownload = 0x1001;
