@@ -22,7 +22,7 @@ import java.io.ByteArrayInputStream;
  *
  * @author Dennis Zierahn
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class GZP
 {
     /**

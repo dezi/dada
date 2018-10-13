@@ -1,4 +1,15 @@
+/*
+ * Copyright (C) 2018 Aura Software Inc.
+ *
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ */
+
 package com.aura.aosp.aura.common.crypter;
+
+import android.support.annotation.Nullable;
+
+import com.aura.aosp.aura.common.simple.Err;
 
 import java.security.spec.RSAPrivateCrtKeySpec;
 import java.security.spec.RSAPublicKeySpec;
@@ -9,62 +20,101 @@ import java.io.InputStream;
 
 import java.math.BigInteger;
 
+/**
+ * Package private utility methods for PCKS1 format deconstruction.
+ *
+ * @author Dennis Zierahn
+ */
 class Utils
 {
-    static RSAPublicKeySpec newRSAPublicKeySpec(byte[] keyInPkcs1) throws IOException
+    /**
+     * Create a RSA public key spec from PKCS1 binary data.
+     *
+     * @param keyInPkcs1 PKCS1 binary data.
+     * @return RSAPublicKeySpec
+     */
+    @Nullable
+    static RSAPublicKeySpec newRSAPublicKeySpec(byte[] keyInPkcs1)
     {
-        DER parser = new DER(keyInPkcs1);
-
-        ASN sequence = parser.read();
-
-        if (sequence.getType() != DER.SEQUENCE)
+        try
         {
-            throw new IllegalArgumentException("Invalid DER: not a sequence");
+            DER parser = new DER(keyInPkcs1);
+            ASN sequence = parser.read();
+
+            if (sequence.getType() != ASN.SEQUENCE)
+            {
+                throw new IllegalArgumentException("Invalid DER: not a sequence");
+            }
+
+            //
+            // Parse inside the sequence
+            //
+
+            parser = sequence.getParser();
+
+            BigInteger modulus = parser.read().getBigInteger();
+            BigInteger publicExp = parser.read().getBigInteger();
+
+            return new RSAPublicKeySpec(modulus, publicExp);
         }
-
-        // Parse inside the sequence
-        parser = sequence.getParser();
-
-        BigInteger modulus = parser.read().getBigInteger();
-        BigInteger publicExp = parser.read().getBigInteger();
-
-        return new RSAPublicKeySpec(modulus, publicExp);
+        catch (Exception ex)
+        {
+            Err.errp(ex);
+            return null;
+        }
     }
 
-    static RSAPrivateCrtKeySpec newRSAPrivateCrtKeySpec(byte[] keyInPkcs1) throws IOException
+    /**
+     * Create a RSA private key spec from PKCS1 binary data.
+     *
+     * @param keyInPkcs1 PKCS1 binary data.
+     * @return RSAPrivateCrtKeySpec
+     */
+    @Nullable
+    static RSAPrivateCrtKeySpec newRSAPrivateCrtKeySpec(byte[] keyInPkcs1)
     {
-        DER parser = new DER(keyInPkcs1);
-
-        ASN sequence = parser.read();
-
-        if (sequence.getType() != DER.SEQUENCE)
+        try
         {
-            throw new IllegalArgumentException("Invalid DER: not a sequence");
+            DER parser = new DER(keyInPkcs1);
+
+            ASN sequence = parser.read();
+
+            if (sequence.getType() != ASN.SEQUENCE)
+            {
+                throw new IllegalArgumentException("Invalid DER: not a sequence");
+            }
+
+            parser = sequence.getParser();
+
+            //noinspection unused
+            ASN version = parser.read();
+
+            BigInteger modulus = parser.read().getBigInteger();
+            BigInteger publicExp = parser.read().getBigInteger();
+            BigInteger privateExp = parser.read().getBigInteger();
+            BigInteger prime1 = parser.read().getBigInteger();
+            BigInteger prime2 = parser.read().getBigInteger();
+            BigInteger exp1 = parser.read().getBigInteger();
+            BigInteger exp2 = parser.read().getBigInteger();
+            BigInteger crtCoef = parser.read().getBigInteger();
+
+            return new RSAPrivateCrtKeySpec(
+                    modulus, publicExp, privateExp, prime1, prime2,
+                    exp1, exp2, crtCoef);
         }
-
-        parser = sequence.getParser();
-
-        ASN version = parser.read();
-        BigInteger modulus = parser.read().getBigInteger();
-        BigInteger publicExp = parser.read().getBigInteger();
-        BigInteger privateExp = parser.read().getBigInteger();
-        BigInteger prime1 = parser.read().getBigInteger();
-        BigInteger prime2 = parser.read().getBigInteger();
-        BigInteger exp1 = parser.read().getBigInteger();
-        BigInteger exp2 = parser.read().getBigInteger();
-        BigInteger crtCoef = parser.read().getBigInteger();
-
-        return new RSAPrivateCrtKeySpec(
-                modulus, publicExp, privateExp, prime1, prime2,
-                exp1, exp2, crtCoef);
+        catch (Exception ex)
+        {
+            Err.errp(ex);
+            return null;
+        }
     }
 
+    /**
+     * Private minimal DER parser class used for
+     * unmarshalling a PKCS1 key format.
+     */
     private static class DER
     {
-        static final int INTEGER = 0x02;
-        static final int SEQUENCE = 0x10;
-        static final int CONSTRUCTED = 0x20;
-
         private static final byte LOWER_7_BITS = 0x7F;
         private static final int MAX_NUMBER_OF_BYTES = 4;
 
@@ -131,8 +181,16 @@ class Utils
         }
     }
 
+    /**
+     * Private minimal ASN parser class used for
+     * unmarshalling a PKCS1 key format.
+     */
     private static class ASN
     {
+        static final int INTEGER = 0x02;
+        static final int SEQUENCE = 0x10;
+        static final int CONSTRUCTED = 0x20;
+
         private final int tag;
         private final int type;
         private final byte[] value;
@@ -151,7 +209,7 @@ class Utils
 
         private DER getParser() throws IOException
         {
-            if ((tag & DER.CONSTRUCTED) != DER.CONSTRUCTED)
+            if ((tag & CONSTRUCTED) !=CONSTRUCTED)
             {
                 throw new IOException("Invalid DER: can't parse primitive entity"); 
             }
@@ -161,7 +219,7 @@ class Utils
 
         private BigInteger getBigInteger() throws IOException
         {
-            if (type != DER.INTEGER)
+            if (type != INTEGER)
             {
                 throw new IOException("Invalid DER: object is not integer"); 
             }

@@ -20,7 +20,7 @@ import com.aura.aosp.aura.common.simple.Err;
  *
  * @author Dennis Zierahn
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class SHA
 {
     /**

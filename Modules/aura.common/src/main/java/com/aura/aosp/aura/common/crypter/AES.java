@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2018 Aura Software Inc.
+ *
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ */
+
 package com.aura.aosp.aura.common.crypter;
 
 import android.support.annotation.Nullable;
@@ -8,17 +15,41 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+/**
+ * Exception safe, annotated and simplified
+ * AES encryption methods.
+ *
+ * @author Dennis Zierahn
+ */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class AES
 {
+    /**
+     * AES common block size.
+     */
     public final static int AESBlockSize = 16;
 
+    /**
+     * Test flag for disabling all AES encryption.
+     */
     private static boolean dryrunAES = false;
 
+    /**
+     * Set dry run flag.
+     *
+     * @param dryrun dryrun enable flag.
+     */
     public static void setAESDryRun(boolean dryrun)
     {
         dryrunAES = dryrun;
     }
 
+    /**
+     * Create a new cypher from binary AES key.
+     *
+     * @param aeskey binary AES key.
+     * @return AES cypher block.
+     */
     @Nullable
     public static AESBlock newAESCipher(byte[] aeskey)
     {
@@ -31,17 +62,32 @@ public class AES
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Err.errp(ex);
+            return null;
         }
-
-        return null;
     }
 
+    /**
+     * AES block holding sub class.
+     */
     public static class AESBlock
     {
+        /**
+         * Secret key spec.
+         */
         private SecretKeySpec skeySpec;
+
+        /**
+         * Cipher worker.
+         */
         private Cipher cipher;
 
+        /**
+         * Construct AES cypher block.
+         *
+         * @param skeySpec secret key spec.
+         * @param cipher cipher worker.
+         */
         private AESBlock(SecretKeySpec skeySpec, Cipher cipher)
         {
             this.skeySpec = skeySpec;
@@ -49,6 +95,14 @@ public class AES
         }
     }
 
+    /**
+     * Encrypt data buffers and deliver encrypted data in
+     * one buffer using a pre-allocated cypher block.
+     *
+     * @param block AES cypher block.
+     * @param buffers Arbitrary number of binary buffers.
+     * @return One block of encrypted data or null on failure.
+     */
     @Nullable
     public static byte[] encryptAESBlock(AESBlock block, byte[]... buffers)
     {
@@ -64,6 +118,10 @@ public class AES
             Err.errp("wrong block size");
             return null;
         }
+
+        //
+        // We use random IV.
+        //
 
         byte[] iv = RND.randomBytes(AESBlockSize);
         byte[] ms = new byte[total];
@@ -92,6 +150,10 @@ public class AES
             }
         }
 
+        //
+        // Construct final cypher message including IV and data.
+        //
+
         byte[] ciphertext = new byte[ AESBlockSize + ms.length ];
 
         System.arraycopy(iv, 0, ciphertext, 0, iv.length);
@@ -100,6 +162,14 @@ public class AES
         return ciphertext;
     }
 
+    /**
+     * Encrypt data buffers and deliver encrypted data in
+     * one buffer using only a binary AES key.
+     *
+     * @param aeskey binary AES key.
+     * @param buffers Arbitrary number of binary buffers.
+     * @return One block of encrypted data or null on failure.
+     */
     @Nullable
     public static byte[] encryptAES(byte[] aeskey, byte[]... buffers)
     {
@@ -108,6 +178,13 @@ public class AES
         return encryptAESBlock(block, buffers);
     }
 
+    /**
+     * Decrypt an AES encrypted message using a pre-allocated AES cypher block.
+     *
+     * @param block AES cypher block.
+     * @param ciphertext encrypted data.
+     * @return decrypted binary data or null on failure.
+     */
     @Nullable
     public static byte[] decryptAESBlock(AESBlock block, byte[] ciphertext)
     {
@@ -142,6 +219,13 @@ public class AES
         return ms;
     }
 
+    /**
+     * Decrypt an AES encrypted message using a binary AES key.
+     *
+     * @param aeskey binary AES key.
+     * @param ciphertext encrypted data.
+     * @return decrypted binary data or null on failure.
+     */
     @Nullable
     public static byte[] decryptAES(byte[] aeskey, byte[] ciphertext)
     {
