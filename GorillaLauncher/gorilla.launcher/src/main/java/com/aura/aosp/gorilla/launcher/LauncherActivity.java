@@ -106,13 +106,6 @@ public class LauncherActivity extends AppCompatActivity {
 
         Log.d(LOGTAG, "onCreate: ...");
 
-        // Check for owner identity and start "Gorilla SysApp" if not given yet
-        // TODO: To be replaced with "Identity Manager" later on.
-        if (getOwnerIdent() == null) {
-            Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp");
-            Simple.startActivity(this, launchIntent);
-        }
-
         // Set outer base content view
         setContentView(R.layout.activity_launcher);
 
@@ -539,7 +532,6 @@ public class LauncherActivity extends AppCompatActivity {
 
         // Hide status and action bars
         hideStatusAndActionBar();
-
 //        mCircle.start();
     }
 
@@ -547,6 +539,18 @@ public class LauncherActivity extends AppCompatActivity {
     protected void onPause() {
 //        mCircle.stop();
         super.onPause();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Check for owner identity and start "Gorilla SysApp" if not given yet
+        // TODO: To be replaced by discovering UID from "Identity Manager" later on.
+        if (getOwnerIdent() == null) {
+            Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp");
+            Simple.startActivity(this, launchIntent);
+        }
     }
 
     /**
