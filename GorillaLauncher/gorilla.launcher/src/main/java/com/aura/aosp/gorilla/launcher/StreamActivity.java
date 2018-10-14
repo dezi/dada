@@ -15,6 +15,7 @@ import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
 import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
 import com.aura.aosp.gorilla.launcher.ui.content.SimpleCalendarView;
 import com.aura.aosp.gorilla.launcher.ui.content.StreamAdapter;
+import com.aura.aosp.gorilla.launcher.ui.content.StreamView;
 
 /**
  * Main activity, i.e. the "launcher" screen
@@ -27,8 +28,10 @@ public class StreamActivity extends LauncherActivity {
 
     private StreamStore streamStore;
 
-    private RecyclerView streamView;
+    private StreamView streamView;
+    private RecyclerView streamRecyclerView;
     private StreamAdapter streamAdapter;
+    private SmartScrollableLayoutManager streamLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +48,23 @@ public class StreamActivity extends LauncherActivity {
             }
         }, 2000);
 
+
         // Set main func view to "stream":
-        setMainFuncView(R.layout.func_stream);
+//        setMainFuncView(R.layout.func_stream);
+
+        // Create "func" view by inflating xml, adding an item adapter
+        // and attach it to launcher (main) view
+        LayoutInflater inflater = LayoutInflater.from(this);
+        streamView = (StreamView) inflater.inflate(R.layout.func_stream, mainContentContainer, false);
+        streamView.setVisibility(View.INVISIBLE);
+
+        // Add view to container
+        mainContentContainer.addView(streamView);
+
+        streamView.fadeIn(null);
 
         // Get references to main child view components
-        streamView = launcherView.findViewById(R.id.innerstream);
+        streamRecyclerView = launcherView.findViewById(R.id.innerstream);
 
         // Create and display stream items
         createStream();
@@ -66,7 +81,10 @@ public class StreamActivity extends LauncherActivity {
 
         // use a linear layout manager
         streamLayoutManager = new SmartScrollableLayoutManager(this);
-        streamView.setLayoutManager(streamLayoutManager);
+        streamRecyclerView.setLayoutManager(streamLayoutManager);
+
+        // Register layout manger with "main content smart scrollable layout managers"
+        mcSmartScrollableLayoutManagers.add(streamLayoutManager);
 
         // TODO: Replace with aggregated stream items from "Gorilla Content Stream Atoms"
         // Create initial content stream items and specify adapter
@@ -74,7 +92,7 @@ public class StreamActivity extends LauncherActivity {
 
 //        streamAdapter = new StreamAdapter(SampleData.getDummyStreamData(), this);
         streamAdapter = new StreamAdapter(streamStore.getItemsForAtomContext("aura.uxtream.launcher", getOwnerIdent()), this, this);
-        streamView.setAdapter(streamAdapter);
+        streamRecyclerView.setAdapter(streamAdapter);
     }
 
     /**

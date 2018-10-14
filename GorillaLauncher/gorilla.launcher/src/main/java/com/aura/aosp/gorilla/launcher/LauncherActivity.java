@@ -64,17 +64,21 @@ public class LauncherActivity extends AppCompatActivity {
 
     protected BaseView launcherView;
     protected StatusBar statusBar;
+    protected ConstraintLayout mainContentContainer;
+
     protected ConstraintLayout funcContainer;
     protected ConstraintLayout funcInnerView;
-    protected FrameLayout actionClusterContainer;
 
+    protected FrameLayout actionClusterContainer;
     protected ConstraintLayout actionClusterMask;
     protected ToggleClusterButton toggleClusterButton;
 
     private static ExpandingCircleDrawable mCircle;
 
     protected Float clusterElevationPerLevel;
-    protected SmartScrollableLayoutManager streamLayoutManager;
+
+    protected List<SmartScrollableLayoutManager> mcSmartScrollableLayoutManagers = new ArrayList<>();
+
     protected List<ActionClusterView> activeActionClusterViews = new ArrayList<>();
     protected FuncViewManager funcViewManager = new FuncViewManager();
 
@@ -115,6 +119,7 @@ public class LauncherActivity extends AppCompatActivity {
         // Get references to main child view components
         launcherView = findViewById(R.id.launcher);
         statusBar = findViewById(R.id.statusBar);
+        mainContentContainer = findViewById(R.id.mainContentContainer);
         funcContainer = findViewById(R.id.funcContainer);
 
         actionClusterContainer = launcherView.findViewById(R.id.actionClusterContainer);
@@ -364,7 +369,7 @@ public class LauncherActivity extends AppCompatActivity {
 
             deactivateView((ViewGroup) invokingActionClusterView.getParent());
         } else {
-            deactivateBackgroundView();
+            deactivateMainContentView();
             toggleClusterButton.minimize();
 //            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_forward_black_24dp, getTheme()));
         }
@@ -420,7 +425,7 @@ public class LauncherActivity extends AppCompatActivity {
 //            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_24dp, getTheme()));
             toggleClusterButton.maximize();
             actionClusterView.fadeOut();
-            activateBackgroundView();
+            activateMainContentView();
             actionClusterContainer.removeView(actionClusterView);
             Log.d(LOGTAG, String.format("Removed Action Cluster <%s>", actionClusterView.getId()));
         }
@@ -502,27 +507,30 @@ public class LauncherActivity extends AppCompatActivity {
     /**
      * Activate background view
      */
-    public void activateBackgroundView() {
+    public void activateMainContentView() {
 
-        funcInnerView.setEnabled(true);
-        streamLayoutManager.setScrollEnabled(true);
-        Blurry.delete(funcInnerView);
+        for (SmartScrollableLayoutManager mcSmartScrollableLayoutManager : mcSmartScrollableLayoutManagers) {
+            mcSmartScrollableLayoutManager.setScrollEnabled(true);
+        }
+
+        Blurry.delete(mainContentContainer);
     }
 
     /**
      * Deactivate background view
      */
-    public void deactivateBackgroundView() {
+    public void deactivateMainContentView() {
 
-        streamLayoutManager.setScrollEnabled(false);
-        funcInnerView.setEnabled(false);
+        for (SmartScrollableLayoutManager mcSmartScrollableLayoutManager : mcSmartScrollableLayoutManagers) {
+            mcSmartScrollableLayoutManager.setScrollEnabled(false);
+        }
 
         Blurry.with(this)
                 .radius(blurRadius)
                 .sampling(blurSampliong)
 //                .color(R.color.color_transparent)
                 .animate(blurTransisitionDuration)
-                .onto(funcInnerView);
+                .onto(mainContentContainer);
     }
 
     /**
