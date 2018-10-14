@@ -367,7 +367,7 @@ public class LauncherActivity extends AppCompatActivity {
                     }
             );
 
-            deactivateView((ViewGroup) invokingActionClusterView.getParent());
+            ((ActionClusterView) invokingActionClusterView.getParent()).fadeToBack();
         } else {
             deactivateMainContentView();
             toggleClusterButton.minimize();
@@ -418,7 +418,7 @@ public class LauncherActivity extends AppCompatActivity {
 
         if (invokingActionButtonView != null) {
             actionClusterView.fadeOut();
-            activateView((ViewGroup) invokingActionButtonView.getParent());
+            ((ActionClusterView) invokingActionButtonView.getParent()).restore();
             actionClusterContainer.removeView(actionClusterView);
             Log.d(LOGTAG, String.format("Removed Action Cluster <%s>", actionClusterView.getId()));
         } else {
@@ -531,32 +531,6 @@ public class LauncherActivity extends AppCompatActivity {
 //                .color(R.color.color_transparent)
                 .animate(blurTransisitionDuration)
                 .onto(mainContentContainer);
-    }
-
-    /**
-     * Activate view
-     */
-    public void activateView(ViewGroup viewGroup) {
-
-        viewGroup.setEnabled(true);
-        viewGroup.setAlpha(1f);
-        Blurry.delete(viewGroup);
-    }
-
-    /**
-     * Deactivate view
-     */
-    public void deactivateView(ViewGroup viewGroup) {
-
-        viewGroup.setEnabled(false);
-        viewGroup.setAlpha(0.3f);
-
-//        Blurry.with(this)
-//                .radius(blurRadius)
-//                .sampling(blurSampliong)
-////                .color(R.color.color_transparent)
-//                .animate(blurTransisitionDuration)
-//                .onto(viewGroup);
     }
 
     @Override
