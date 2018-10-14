@@ -560,14 +560,6 @@ public class LauncherActivity extends AppCompatActivity {
             if (statusBar != null) {
                 statusBar.setSvLink(connected);
             }
-
-//            updateTitle();
-//
-//            for (ChatProfile chatProfile : chatProfiles)
-//            {
-//                chatProfile.activity.setStatus(svlink, uplink);
-//                chatProfile.activity.updateTitle();
-//            }
         }
 
         @Override
@@ -577,14 +569,6 @@ public class LauncherActivity extends AppCompatActivity {
             if (statusBar != null) {
                 statusBar.setUplink(connected);
             }
-
-//            updateTitle();
-//
-//            for (ChatProfile chatProfile : chatProfiles)
-//            {
-//                chatProfile.activity.setStatus(svlink, uplink);
-//                chatProfile.activity.updateTitle();
-//            }
         }
 
         @Override
@@ -605,13 +589,6 @@ public class LauncherActivity extends AppCompatActivity {
                     statusBar.setProfileInfo(nick);
                 }
             }
-
-//            updateTitle();
-//
-//            for (ChatProfile chatProfile : chatProfiles)
-//            {
-//                chatProfile.activity.finish();
-//            }
         }
 
         @Override
