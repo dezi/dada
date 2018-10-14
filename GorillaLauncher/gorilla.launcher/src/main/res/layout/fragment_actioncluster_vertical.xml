@@ -1,25 +1,18 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/actionClusterFrame"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterView xmlns:android="http://schemas.android.com/apk/res/android"
 
-    <com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterView
+    android:id="@+id/actionCluster"
+    android:layout_width="wrap_content"
+    android:layout_height="380dp"
+    android:layout_marginBottom="@dimen/actioncluster_vertical_lay_marginVertical"
+    android:layout_marginEnd="@dimen/actioncluster_vertical_lay_marginHorizontal"
+    android:layout_marginStart="@dimen/actioncluster_vertical_lay_marginHorizontal"
+    android:layout_marginTop="@dimen/actioncluster_vertical_lay_marginVertical"
+    android:alpha="1"
+    android:fadingEdge="vertical"
+    android:fadingEdgeLength="@dimen/actioncluster_fading_edge_length"
+    android:paddingBottom="@dimen/actioncluster_vertical_paddingVertical"
+    android:paddingEnd="@dimen/actioncluster_vertical_paddingHorizontal"
+    android:paddingStart="@dimen/actioncluster_vertical_paddingHorizontal"
+    android:paddingTop="@dimen/actioncluster_vertical_paddingVertical"
+    android:requiresFadingEdge="vertical|horizontal" />
 
-        android:id="@+id/actionCluster"
-        android:layout_width="wrap_content"
-        android:layout_height="380dp"
-        android:layout_marginBottom="@dimen/actioncluster_vertical_lay_marginVertical"
-        android:layout_marginEnd="@dimen/actioncluster_vertical_lay_marginHorizontal"
-        android:layout_marginStart="@dimen/actioncluster_vertical_lay_marginHorizontal"
-        android:layout_marginTop="@dimen/actioncluster_vertical_lay_marginVertical"
-        android:alpha="1"
-        android:fadingEdge="vertical"
-        android:fadingEdgeLength="@dimen/actioncluster_fading_edge_length"
-        android:paddingBottom="@dimen/actioncluster_vertical_paddingVertical"
-        android:paddingEnd="@dimen/actioncluster_vertical_paddingHorizontal"
-        android:paddingStart="@dimen/actioncluster_vertical_paddingHorizontal"
-        android:paddingTop="@dimen/actioncluster_vertical_paddingVertical"
-        android:requiresFadingEdge="vertical|horizontal" />
-
-</FrameLayout>
