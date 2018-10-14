@@ -11,7 +11,7 @@ public class ContactStreamItem extends StreamItem {
     public Identity identity;
 
     public ContactStreamItem(Identity identity) {
-        super(ItemType.TYPE_STREAMITEM_CONTACT, identity.getNick(), identity.getFull(), R.drawable.ic_person_black_24dp);
+        super(ItemType.TYPE_STREAMITEM_CONTACT, identity.getNick(), identity.getFull(), R.drawable.ic_account_circle_black_24dp);
         setIdentity(identity);
     }
 

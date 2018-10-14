@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.univid.Contacts;
@@ -16,12 +17,16 @@ import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
+import com.aura.aosp.gorilla.launcher.model.ActionCluster;
+import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.store.StreamStore;
 import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
 import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
 import com.aura.aosp.gorilla.launcher.ui.content.SimpleCalendarView;
 import com.aura.aosp.gorilla.launcher.ui.content.StreamAdapter;
 import com.aura.aosp.gorilla.launcher.ui.content.StreamView;
+import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterAdapter;
+import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterView;
 
 import org.json.JSONObject;
 
@@ -104,8 +109,6 @@ public class StreamActivity extends LauncherActivity {
      */
     public void onOpenStream() {
 
-        refreshStreamItems();
-
         // Create and display stream items
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -116,11 +119,49 @@ public class StreamActivity extends LauncherActivity {
     }
 
     /**
+     * Remove active func views and action cluster layers and start
+     * with refreshed stream view.
+     */
+    public void onReturnToStream() {
+        removeMainFuncView();
+        deactivateAllActionsClusterViews();
+        activateMainContentView();
+        refreshStreamItems();
+    }
+
+    /**
      * ACTION: "Open Content Composer"
      */
     public void onOpenContentComposer(@Nullable Identity identity) {
 
         setMainFuncView(R.layout.func_content_composer);
+        Log.d(LOGTAG, String.format("onOpenContentComposer for identity <%s>", identity.getNick()));
+
+        actionClusterStore.setContext(this);
+        ActionCluster cocoActionCluster = actionClusterStore.getClusterForSelectedIdentity("com.aura.aosp.gorilla.func.message_composer", identity);
+
+        // TODO: Fix, solve generically by using an actionClusterManager which know about current hierarchy and context!
+        ActionClusterView activeActionClusterView = activeActionClusterViews.get(0);
+        activeActionClusterView.setSticky(true);
+        ((ActionClusterAdapter) activeActionClusterView.getAdapter()).setActionItems(cocoActionCluster.getActionItems());
+
+        // TODO: This is hacked! Use e.g. constraints to reposition and/or perform a view transition
+        activeActionClusterView.setY(40f);
+    }
+
+    /**
+     * ACTION: "Open Content Composer"
+     */
+    public void onSendMessage(Identity identity) {
+
+        Log.d(LOGTAG, String.format("onSendMessage for identity <%s>", identity.getNick()));
+
+        EditText editText = (EditText) findViewById(R.id.editText);
+        String message = editText.getText().toString();
+
+        Log.d(LOGTAG, String.format("onSendMessage message <%s>", message));
+
+        removeMainFuncView();
     }
 
     /**
@@ -128,16 +169,7 @@ public class StreamActivity extends LauncherActivity {
      */
     public void onOpenSimpleCalendar() {
 
-        // Create calendar view by inflating xml, adding an item adapter
-        // and attach it to launcher (main) view
-        LayoutInflater inflater = LayoutInflater.from(this);
-        SimpleCalendarView simpleCalendarView = (SimpleCalendarView) inflater.inflate(R.layout.func_simple_calendar, launcherView, false);
-        simpleCalendarView.setVisibility(View.INVISIBLE);
-        simpleCalendarView.fadeIn(null);
-
-        // Add view to launcher
-        launcherView.addView(simpleCalendarView);
-        funcViewManager.addFuncView(FuncBaseView.FuncType.OVERLAY, simpleCalendarView);
+        setMainFuncView(R.layout.func_simple_calendar);
     }
 
     /**
@@ -216,6 +248,7 @@ public class StreamActivity extends LauncherActivity {
             if (ownerIdent != null) {
 
                 Log.d(LOGTAG, "onOwnerReceived: +++++ CONTACT +++++ nick=" + ownerIdent.getNick());
+                refreshStreamItems();
                 onOpenStream();
             }
         }

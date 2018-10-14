@@ -22,12 +22,13 @@ public class ActionClusterAdapter extends RecyclerView.Adapter<ActionClusterView
     private Activity activity;
 
     /**
-     * @param list
+     * @param actionItems
      * @param context
      * @param activity
      */
-    public ActionClusterAdapter(List<ActionItem> list, Context context, Activity activity) {
-        this.actionItems = list;
+    public ActionClusterAdapter(List<ActionItem> actionItems, Context context, Activity activity) {
+        // Set initial items but Don't use setter: Until view holder isn't bound, we don't want to notify about changes
+        this.actionItems = actionItems;
         this.context = context;
         this.activity = activity;
     }
@@ -73,5 +74,14 @@ public class ActionClusterAdapter extends RecyclerView.Adapter<ActionClusterView
         int position = actionItems.indexOf(actionItem);
         actionItems.remove(position);
         notifyItemRemoved(position);
+    }
+
+    public List<ActionItem> getActionItems() {
+        return actionItems;
+    }
+
+    public void setActionItems(List<ActionItem> actionItems) {
+        this.actionItems = actionItems;
+        notifyDataSetChanged();
     }
 }

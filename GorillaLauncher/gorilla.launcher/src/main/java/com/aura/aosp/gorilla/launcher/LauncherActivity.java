@@ -32,7 +32,6 @@ import com.aura.aosp.gorilla.launcher.model.ActionItem;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 import com.aura.aosp.gorilla.launcher.ui.animation.drawable.ExpandingCircleDrawable;
-import com.aura.aosp.gorilla.launcher.ui.common.FuncViewManager;
 import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
 import com.aura.aosp.gorilla.launcher.ui.common.BaseView;
 import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
@@ -67,7 +66,7 @@ public class LauncherActivity extends AppCompatActivity {
     protected ConstraintLayout mainContentContainer;
 
     protected ConstraintLayout funcContainer;
-    protected ConstraintLayout funcInnerView;
+    protected FuncBaseView mainFuncView;
 
     protected FrameLayout actionClusterContainer;
     protected ConstraintLayout actionClusterMask;
@@ -80,7 +79,6 @@ public class LauncherActivity extends AppCompatActivity {
     protected List<SmartScrollableLayoutManager> mcSmartScrollableLayoutManagers = new ArrayList<>();
 
     protected List<ActionClusterView> activeActionClusterViews = new ArrayList<>();
-    protected FuncViewManager funcViewManager = new FuncViewManager();
 
     public static final int MP = ViewGroup.LayoutParams.MATCH_PARENT;
     public static final int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -178,22 +176,37 @@ public class LauncherActivity extends AppCompatActivity {
      */
     public void setMainFuncView(int layoutResID) {
 
+        if (mainFuncView != null) {
+            removeMainFuncView();
+        }
+
         // Create "func" view by inflating xml, adding an item adapter
         // and attach it to launcher (main) view
         LayoutInflater inflater = LayoutInflater.from(this);
-        FuncBaseView funcView = (FuncBaseView) inflater.inflate(layoutResID, funcContainer, false);
-        funcView.setVisibility(View.INVISIBLE);
+        mainFuncView = (FuncBaseView) inflater.inflate(layoutResID, funcContainer, false);
+        mainFuncView.setVisibility(View.INVISIBLE);
 
         // Add view to container
-        funcContainer.addView(funcView);
+        funcContainer.addView(mainFuncView);
 
-        // Register view
-        funcViewManager.addFuncView(FuncBaseView.FuncType.FULLSCREEN, funcView);
+        mainFuncView.fadeIn(null);
+    }
 
-        // Get reference to child view components
-        funcInnerView = funcContainer.findViewById(R.id.funcInnerView);
+    /**
+     * Set the main content/func view which is added (attached) to the "func" container.
+     * TODO Fix func view management (add/remove)
+     */
+    public void removeMainFuncView() {
 
-        funcView.fadeIn(null);
+        if (mainFuncView == null) {
+            return;
+        }
+
+        mainFuncView.fadeOut(null);
+
+        // Completely remove view
+        funcContainer.removeView(mainFuncView);
+        mainFuncView = null;
     }
 
     /**
@@ -401,6 +414,15 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     /**
+     * Deactivate (hide/remove) all action cluster views.
+     */
+    public void deactivateAllActionsClusterViews() {
+        for (ActionClusterView actionClusterView : activeActionClusterViews) {
+            deactivateActionClusterView(actionClusterView);
+        }
+    }
+
+    /**
      * Hide action cluster
      *
      * @param actionClusterView
@@ -462,32 +484,33 @@ public class LauncherActivity extends AppCompatActivity {
 
             case MotionEvent.ACTION_UP:
 
-                Log.d(LOGTAG, String.format("activeActionClusterViews.size() <%d>", activeActionClusterViews.size()));
-
-                if (activeActionClusterViews.size() > 0) {
-
-                    ActionClusterView actionClusterView = activeActionClusterViews.get(activeActionClusterViews.size() - 1);
-
+                if (mainFuncView != null) {
+                    // Check for active "function view" and close it if touch happened outside visible rect
                     Rect viewRect = new Rect();
-                    actionClusterView.getGlobalVisibleRect(viewRect);
-
-                    if (!viewRect.contains(rawX, rawY)) {
-                        deactivateActionClusterView(actionClusterView);
-                    }
-                }
-
-                // Check for active "function view(s)" and close them if touch happened outside visible rect
-                for (final FuncBaseView funcView : funcViewManager.getFuncViews().values()) {
-                    Rect viewRect = new Rect();
-                    View innerView = funcView.findViewById(R.id.funcInnerView);
+                    View innerView = mainFuncView.findViewById(R.id.funcInnerView);
                     innerView.getGlobalVisibleRect(viewRect);
 
                     // TODO Fix func view management (add/remove)
                     if (!viewRect.contains(rawX, rawY)) {
-                        funcView.fadeOut(null);
-                        // Completely remove view
-                        funcContainer.removeView(funcView);
-                        funcViewManager.removeFuncView(funcView);
+                        removeMainFuncView();
+                    }
+                } else {
+                    // Check for action button cluster layers and close the topmost if not sticky
+                    if (activeActionClusterViews.size() > 0) {
+
+                        Log.d(LOGTAG, String.format("activeActionClusterViews.size() <%d>", activeActionClusterViews.size()));
+
+                        ActionClusterView actionClusterView = activeActionClusterViews.get(activeActionClusterViews.size() - 1);
+
+                        if (!actionClusterView.isSticky()) {
+
+                            Rect viewRect = new Rect();
+                            actionClusterView.getGlobalVisibleRect(viewRect);
+
+                            if (!viewRect.contains(rawX, rawY)) {
+                                deactivateActionClusterView(actionClusterView);
+                            }
+                        }
                     }
                 }
 

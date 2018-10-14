@@ -20,8 +20,9 @@ import jp.wasabeef.blurry.Blurry;
 public class ActionClusterView extends RecyclerView implements View.OnTouchListener {
 
     private float dX, dY;
-//    private Drawable bgDrawable;
+
     private ClusterButtonView invokingActionButtonView = null;
+    private boolean sticky;
 
     public ActionClusterView(Context context) {
         super(context);
@@ -49,12 +50,15 @@ public class ActionClusterView extends RecyclerView implements View.OnTouchListe
         final TypedArray a = getContext().obtainStyledAttributes(attrs,
                 R.styleable.ActionClusterView, defStyle, 0);
 
-//        if (a.hasValue(R.styleable.ActionClusterView_bgDrawable)) {
-//            bgDrawable = a.getDrawable(R.styleable.ActionClusterView_bgDrawable);
-//            bgDrawable.setCallback(this);
-//        }
-
         a.recycle();
+    }
+
+    public boolean isSticky() {
+        return sticky;
+    }
+
+    public void setSticky(boolean sticky) {
+        this.sticky = sticky;
     }
 
     /**
