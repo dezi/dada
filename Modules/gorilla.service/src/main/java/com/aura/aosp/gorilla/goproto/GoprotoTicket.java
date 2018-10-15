@@ -9,6 +9,7 @@ import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.gorilla.service.GorillaSender;
+import com.aura.aosp.gorilla.service.GorillaTime;
 
 import org.json.JSONObject;
 
@@ -197,7 +198,7 @@ public class GoprotoTicket implements Json.JsonMarshaller
         statusTicket.ReceiverDeviceUUID = this.SenderDeviceUUID;
 
         statusTicket.setStatus(status);
-        statusTicket.setTimeStamp(System.currentTimeMillis());
+        statusTicket.setTimeStamp(GorillaTime.serverTimeMillis());
 
         return statusTicket;
     }
