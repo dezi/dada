@@ -152,7 +152,7 @@ public class GorillaTime extends BroadcastReceiver
     }
 
     /**
-     * Convert device time into server time.
+     * Convert device time obtained somewhere into server time.
      *
      * @param deviceTime device time in millis.
      * @return server time in millis.
@@ -186,9 +186,19 @@ public class GorillaTime extends BroadcastReceiver
     {
         String action = intent.getAction();
 
-        if ((action != null) && action.equals(Intent.ACTION_TIME_CHANGED))
+        if ((action == null) || !action.equals(Intent.ACTION_TIME_CHANGED))
         {
-            Log.e("time manually set!");
+            //
+            // Silently ignore broadcast.
+            //
+
+            return;
         }
+
+        Log.e("time manually set!");
+
+        //
+        // Todo: heavily punish user for fucking with the time setting.
+        //
     }
 }
