@@ -13,6 +13,7 @@ import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Owner;
+import com.aura.aosp.gorilla.service.GorillaTime;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -63,6 +64,7 @@ public class GoatomStorage
         return (errAtom != null) ? errAtom : errSync;
     }
 
+    @Nullable
     private static Err putSync(@NonNull String ownerUUID, @NonNull String sharedUUID, @NonNull JSONObject atom)
     {
         File appfilesdir = Environment.getExternalStorageDirectory();
@@ -134,9 +136,10 @@ public class GoatomStorage
         File[] typeDirs = userdir.listFiles();
         if (typeDirs == null) return null;
 
-        long count = 0;
-        long start = System.currentTimeMillis();
+        GorillaTime startTime = new GorillaTime();
         Log.d("start:...");
+
+        long count = 0;
 
         for (File typeDir : typeDirs)
         {
@@ -160,7 +163,7 @@ public class GoatomStorage
             }
         }
 
-        long elapsed = System.currentTimeMillis() - start;
+        long elapsed = startTime.elapsedTime();
         Log.d("count=%d elapsed=%d", count, elapsed);
 
         return null;

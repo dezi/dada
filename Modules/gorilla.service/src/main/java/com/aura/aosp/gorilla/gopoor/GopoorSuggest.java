@@ -13,6 +13,7 @@ import com.aura.aosp.gorilla.goatoms.GorillaAtomAction;
 import com.aura.aosp.gorilla.goatoms.GorillaAtomEvent;
 import com.aura.aosp.gorilla.goatoms.GorillaAtomState;
 import com.aura.aosp.gorilla.service.GorillaState;
+import com.aura.aosp.gorilla.service.GorillaTime;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -203,7 +204,7 @@ public class GopoorSuggest
     @Nullable
     private static Err precomputeSuggestions(@NonNull GorillaAtomState state)
     {
-        long startTime = System.currentTimeMillis();
+        GorillaTime startTime = new GorillaTime();
 
         //
         // Provide timestamp from state.
@@ -327,7 +328,7 @@ public class GopoorSuggest
         // Log all scores.
         //
 
-        Log.d("elapsedTime=%d", System.currentTimeMillis() - startTime);
+        Log.d("elapsedTime=%d", startTime.elapsedTime());
 
         for (int inx = 0; inx < currentSuggestions.length(); inx++)
         {
@@ -450,7 +451,7 @@ public class GopoorSuggest
         row2envtag.clear();
         event2column.clear();
 
-        long startTime = System.currentTimeMillis();
+        GorillaTime startTime = new GorillaTime();
 
         long timeTo = System.currentTimeMillis();
         long timeFrom = timeTo - (30L * 86400L * 1000L);
@@ -458,7 +459,7 @@ public class GopoorSuggest
         JSONArray events = GoatomStorage.queryAtoms("aura.event.action", timeFrom, timeTo);
         if (events == null) return Err.getLastErr();
 
-        long fetchTime = System.currentTimeMillis();
+        GorillaTime computeTime = new GorillaTime();
 
         for (int inx = 0; inx < events.length(); inx++)
         {
@@ -469,9 +470,7 @@ public class GopoorSuggest
             if (err != null) Log.d("fail! err=%s", err.toString());
         }
 
-        long totalTime = System.currentTimeMillis();
-
-        Log.d("fetchTime=%d computeTime=%d totalTime=%d", fetchTime - startTime, totalTime - fetchTime, totalTime - startTime);
+        Log.d("fetchTime=%d computeTime=%d totalTime=%d", startTime.elapsedTime() - computeTime.elapsedTime(),  computeTime.elapsedTime(), startTime.elapsedTime());
 
         //dumpMatrix();
 

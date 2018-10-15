@@ -456,12 +456,13 @@ public class GomessClient
 
         serverTime += responseMillis / 2;
 
-        Log.d("clientTime=%s", Dates.getLocalDateAndTimeMillis(clientTime));
-        Log.d("serverTime=%s", Dates.getLocalDateAndTimeMillis(serverTime));
         Log.d("difference=%s", Math.abs(serverTime - clientTime));
         Log.d("responseMillis=%s", responseMillis);
 
         GorillaTime.setServerTime(serverTime);
+
+        Log.d("clientTime=%s", Dates.getLocalDateAndTimeMillis(clientTime));
+        Log.d("serverTime=%s", Dates.getLocalDateAndTimeMillis(GorillaTime.serverTimeMillis()));
 
         return null;
     }
