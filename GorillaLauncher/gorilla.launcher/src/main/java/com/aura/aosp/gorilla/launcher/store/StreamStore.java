@@ -4,9 +4,10 @@ import android.content.Context;
 
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
+import com.aura.aosp.gorilla.launcher.model.StreamItem;
 import com.aura.aosp.gorilla.launcher.model.StreamItemContact;
 import com.aura.aosp.gorilla.launcher.model.StreamItemInvisible;
-import com.aura.aosp.gorilla.launcher.model.StreamItem;
+import com.aura.aosp.gorilla.launcher.model.StreamItemGeneric;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class StreamStore {
                         continue;
                     }
 
-                    items.add(new StreamItemContact(identity));
+                    items.add(new StreamItemContact(ownIdentity, identity));
 
 //                    Intent chatIntent = new Intent(atomContext)
 //                    Intent intent = new Intent(context, DisplayMessageActivity.class);

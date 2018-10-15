@@ -157,18 +157,18 @@ public class LauncherActivity extends AppCompatActivity {
         ColorStateList fabColorList = new ColorStateList(states, colors);
         toggleClusterButton.setBackgroundTintList(fabColorList);
 
-        // Wait for layout before initializing top level action cluster. Otherwise getting
-        // current coordinates of toggle cluster button will fail!
-        toggleClusterButton.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        createInitialActionClusterView(false);
-                        // Remove listener when done
-                        toggleClusterButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-                }
-        );
+//        // Wait for layout before initializing top level action cluster. Otherwise getting
+//        // current coordinates of toggle cluster button will fail!
+//        toggleClusterButton.getViewTreeObserver().addOnGlobalLayoutListener(
+//                new ViewTreeObserver.OnGlobalLayoutListener() {
+//                    @Override
+//                    public void onGlobalLayout() {
+//                        getBaseActionClusterView(false);
+//                        // Remove listener when done
+//                        toggleClusterButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//                    }
+//                }
+//        );
     }
 
     /**
@@ -176,7 +176,7 @@ public class LauncherActivity extends AppCompatActivity {
      *
      * @param layoutResID
      */
-    public void setMainFuncView(int layoutResID) {
+    public void setMainFuncView(int layoutResID, boolean fadeIn) {
 
         if (mainFuncView != null) {
             removeMainFuncView();
@@ -191,7 +191,9 @@ public class LauncherActivity extends AppCompatActivity {
         // Add view to container
         funcContainer.addView(mainFuncView);
 
-        mainFuncView.fadeIn(null);
+        if (fadeIn) {
+            mainFuncView.fadeIn(null);
+        }
     }
 
     /**
@@ -235,16 +237,6 @@ public class LauncherActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
-    }
-
-    /**
-     * Create initial action button cluster (attach it to "root" container)
-     */
-    public void createInitialActionClusterView(boolean instantShow) {
-
-        actionClusterStore = new ActionClusterStore(getApplicationContext());
-        ActionCluster initialActionCluster = actionClusterStore.getClusterForActionEvent(getPackageName());
-        createActionClusterView(initialActionCluster, null, instantShow);
     }
 
     /**
@@ -319,12 +311,14 @@ public class LauncherActivity extends AppCompatActivity {
 
         actionClusterView.setElevation(nextElevation);
 
-        // Add view to root container
+        // Put View into list of active Action Cluster Views
+        activeActionClusterViews.add(actionClusterView);
+
+        // Add Action Cluster Views to root container
         actionClusterContainer.addView(actionClusterView);
 
-        if (instantShow) {
-            activateActionClusterView(actionClusterView);
-        }
+        // Activate (position + register) Action Cluster View
+        activateActionClusterView(actionClusterView, instantShow);
 
         Log.d(LOGTAG, String.format("Added action cluster <%s>", actionCluster.getName()));
     }
@@ -333,8 +327,9 @@ public class LauncherActivity extends AppCompatActivity {
      * Show action cluster
      *
      * @param actionClusterView
+     * @param show
      */
-    public void activateActionClusterView(final ActionClusterView actionClusterView) {
+    public void activateActionClusterView(final ActionClusterView actionClusterView, boolean show) {
 
         ClusterButtonView invokingActionClusterView = actionClusterView.getInvokingActionButtonView();
 
@@ -382,10 +377,30 @@ public class LauncherActivity extends AppCompatActivity {
 //            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_forward_black_24dp, getTheme()));
         }
 
-        actionClusterView.fadeIn();
+        if (show) {
+            actionClusterView.fadeIn();
+        }
 
         // Put View into list of active Action Cluster Views
         activeActionClusterViews.add(actionClusterView);
+    }
+
+    /**
+     * Get base Action Cluster View
+     *
+     * @param instantShowOnCreate
+     * @return
+     */
+    public ActionClusterView getBaseActionClusterView(boolean instantShowOnCreate) {
+
+        if (activeActionClusterViews.size() == 0) {
+            // Create initial action button cluster (attach it to "root" container)
+            actionClusterStore = new ActionClusterStore(getApplicationContext());
+            ActionCluster initialActionCluster = actionClusterStore.getClusterForActionEvent(getPackageName());
+            createActionClusterView(initialActionCluster, null, instantShowOnCreate);
+        }
+
+        return activeActionClusterViews.get(0);
     }
 
     /**
@@ -401,7 +416,7 @@ public class LauncherActivity extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 public void run() {
                     ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
-                    activateActionClusterView(actionClusterView);
+                    activateActionClusterView(actionClusterView, true);
                     Effects.doClusterDemoAnimation(actionClusterView);
                 }
             }, 800);
@@ -444,7 +459,7 @@ public class LauncherActivity extends AppCompatActivity {
             actionClusterView.fadeOut();
             activateMainContentView();
             actionClusterContainer.removeView(actionClusterView);
-            Log.d(LOGTAG, String.format("Removed Action Cluster <%s>", actionClusterView.getId()));
+            Log.d(LOGTAG, String.format("Removed ROOT Action Cluster <%s>", actionClusterView.getId()));
         }
 
         activeActionClusterViews.remove(actionClusterView);
@@ -455,11 +470,11 @@ public class LauncherActivity extends AppCompatActivity {
      */
     public void toggleActionCluster(View view) {
 
-        ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
-
-        if (actionClusterView == null) {
-            createInitialActionClusterView(true);
+        if (activeActionClusterViews.size() == 0) {
+            getBaseActionClusterView(true);
         } else {
+            ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
+
             switch (actionClusterView.getVisibility()) {
                 case View.VISIBLE:
                     deactivateActionClusterView(actionClusterView);
@@ -467,7 +482,7 @@ public class LauncherActivity extends AppCompatActivity {
 
                 case View.GONE:
                 case View.INVISIBLE:
-                    activateActionClusterView(actionClusterView);
+                    activateActionClusterView(actionClusterView, true);
                     break;
             }
         }
@@ -492,7 +507,6 @@ public class LauncherActivity extends AppCompatActivity {
                     View innerView = mainFuncView.findViewById(R.id.funcInnerView);
                     innerView.getGlobalVisibleRect(viewRect);
 
-                    // TODO Fix func view management (add/remove)
                     if (!viewRect.contains(rawX, rawY)) {
                         removeMainFuncView();
                     }

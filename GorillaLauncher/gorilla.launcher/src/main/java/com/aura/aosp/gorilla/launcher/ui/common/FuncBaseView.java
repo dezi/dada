@@ -20,7 +20,7 @@ public class FuncBaseView extends ConstraintLayout {
     public enum FuncType {
         FULLSCREEN,
         OVERLAY
-    };
+    }
 
     public FuncBaseView(Context context) {
         super(context);
@@ -36,6 +36,7 @@ public class FuncBaseView extends ConstraintLayout {
 
     /**
      * Fade in view.
+     *
      * @param duration
      */
     public void fadeIn(@Nullable Integer duration) {
@@ -48,6 +49,7 @@ public class FuncBaseView extends ConstraintLayout {
 
     /**
      * Fade out view.
+     *
      * @param duration
      */
     public void fadeOut(@Nullable Integer duration) {

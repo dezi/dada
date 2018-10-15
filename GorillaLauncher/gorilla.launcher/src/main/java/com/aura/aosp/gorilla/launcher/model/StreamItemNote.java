@@ -1,6 +1,10 @@
 package com.aura.aosp.gorilla.launcher.model;
 
+import android.support.annotation.NonNull;
+
 import com.aura.aosp.aura.common.crypter.UID;
+import com.aura.aosp.aura.common.univid.Contacts;
+import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.atoms.GorillaAtom;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.client.GorillaClient;
@@ -11,12 +15,23 @@ import com.aura.aosp.gorilla.launcher.R;
  */
 public class StreamItemNote extends StreamItem implements GorillaPersistable {
 
-    public StreamItemNote() {
-        super(ItemType.TYPE_STREAMITEM_NOTE, null, null, R.drawable.ic_note_black_24dp);
+    /**
+     * Note item construction
+     *
+     * @param ownerIdentity
+     * @param text
+     */
+    public StreamItemNote(@NonNull Identity ownerIdentity, @NonNull String text) {
+        super(ownerIdentity, ItemType.TYPE_STREAMITEM_NOTE, extractTitle(text), text, R.drawable.ic_note_black_24dp);
     }
 
-    public StreamItemNote(String text) {
-        super(ItemType.TYPE_STREAMITEM_NOTE, extractTitle(text), text, R.drawable.ic_note_black_24dp);
+    /**
+     * Note item construction from Gorilla atom.
+     *
+     * @param atom
+     */
+    public StreamItemNote(GorillaAtom atom) {
+        this(Contacts.getContact(atom.getUUIDBase64()), ((GorillaMessage) atom).getMessageText());
     }
 
     /**
@@ -67,12 +82,5 @@ public class StreamItemNote extends StreamItem implements GorillaPersistable {
         GorillaClient.getInstance().putAtom(noteMessage.getAtom());
 
         return noteMessage;
-    }
-
-    @Override
-    public void readFromGorillaAtom(GorillaAtom atom) {
-        GorillaMessage message = (GorillaMessage) atom;
-        setTitle(extractTitle(message.getMessageText()));
-        setText(message.getMessageText());
     }
 }

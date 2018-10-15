@@ -12,7 +12,6 @@ import android.widget.EditText;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
-import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
@@ -20,11 +19,8 @@ import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.StreamItemMessage;
-import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.store.StreamStore;
-import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
 import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
-import com.aura.aosp.gorilla.launcher.ui.content.SimpleCalendarView;
 import com.aura.aosp.gorilla.launcher.ui.content.StreamAdapter;
 import com.aura.aosp.gorilla.launcher.ui.content.StreamView;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterAdapter;
@@ -63,24 +59,32 @@ public class StreamActivity extends LauncherActivity {
             }
         }, 2000);
 
-
         // Create "stream" view by inflating xml, adding an item adapter
         // and attach it to main content container
         LayoutInflater inflater = LayoutInflater.from(this);
         streamView = (StreamView) inflater.inflate(R.layout.func_stream, mainContentContainer, false);
         streamView.setVisibility(View.INVISIBLE);
 
-        // Add view to container
-        mainContentContainer.addView(streamView);
-
-        // Get references to main child view components
-        streamRecyclerView = launcherView.findViewById(R.id.innerstream);
-
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
 //        streamView.setHasFixedSize(true);
 
-        // use a "smart scrollable" linear layout manager
+        // Add view to container
+        mainContentContainer.addView(streamView);
+
+        // Get references to main child view components
+        streamRecyclerView = launcherView.findViewById(R.id.streamRecycler);
+
+        // Subscribe to Gorilla listener
+        GorillaClient.getInstance().subscribeGorillaListener(listener);
+    }
+
+    /**
+     * Create main stream items
+     */
+    protected void createStream() {
+
+        // use a linear layout manager
         streamLayoutManager = new SmartScrollableLayoutManager(this);
         streamRecyclerView.setLayoutManager(streamLayoutManager);
 
@@ -91,8 +95,7 @@ public class StreamActivity extends LauncherActivity {
         // Create initial content stream items and specify adapter
         streamStore = new StreamStore(getApplicationContext());
 
-        // Subscribe to Gorilla listener
-        GorillaClient.getInstance().subscribeGorillaListener(listener);
+        refreshStreamItems();
     }
 
     /**
@@ -136,19 +139,37 @@ public class StreamActivity extends LauncherActivity {
      */
     public void onOpenContentComposer(@Nullable Identity identity) {
 
-        setMainFuncView(R.layout.func_content_composer);
+//        Effects.fadeOutView(actionClusterContainer, this, null);
+//        ConstraintSet constraintSet = new ConstraintSet();
+//        constraintSet.clone(actionClusterContainer);
+//        constraintSet.connect(R.id.actionClusterRecycler, ConstraintSet.TOP, R.id.editText, ConstraintSet.BOTTOM, 0);
+//        constraintSet.applyTo(actionClusterContainer);
+
+        setMainFuncView(R.layout.func_content_composer, true);
         Log.d(LOGTAG, String.format("onOpenContentComposer for contactIdentity <%s>", identity.getNick()));
 
         actionClusterStore.setContext(this);
-        ActionCluster cocoActionCluster = actionClusterStore.getClusterForSelectedIdentity("com.aura.aosp.gorilla.func.message_composer", identity);
 
         // TODO: Fix, solve generically by using an actionClusterManager which know about current hierarchy and context!
-        ActionClusterView activeActionClusterView = activeActionClusterViews.get(0);
+        ActionClusterView activeActionClusterView = getBaseActionClusterView(true);
+
+        ActionClusterAdapter actionClusterAdapter = (ActionClusterAdapter) activeActionClusterView.getAdapter();
+        ActionCluster cocoActionCluster = actionClusterStore.getClusterForSelectedIdentity("com.aura.aosp.gorilla.func.content_composer", identity);
+
+        actionClusterAdapter.setActionItems(cocoActionCluster.getActionItems());
+
         activeActionClusterView.setSticky(true);
-        ((ActionClusterAdapter) activeActionClusterView.getAdapter()).setActionItems(cocoActionCluster.getActionItems());
 
         // TODO: This is hacked! Use e.g. constraints to reposition and/or perform a view transition
         activeActionClusterView.setY(40f);
+
+//        actionClusterStore = new ActionClusterStore(this);
+//
+//        ActionCluster itemActionCluster = actionClusterStore.getClusterForSelectedIdentity(
+//                "com.aura.aosp.gorilla.func.content_composer", identity);
+//
+//        createActionClusterView(itemActionCluster, null, true);
+
     }
 
     /**
@@ -157,6 +178,7 @@ public class StreamActivity extends LauncherActivity {
     public void onSendMessage(Identity identity) {
 
         Log.d(LOGTAG, String.format("onSendMessage for contactIdentity <%s>", identity.getNick()));
+        Log.d(LOGTAG, String.format("onSendMessage ownerIdentity <%s>", getOwnerIdent().getNick()));
 
         EditText editTextView = (EditText) findViewById(R.id.editText);
 
@@ -164,7 +186,7 @@ public class StreamActivity extends LauncherActivity {
 
         Log.d(LOGTAG, String.format("onSendMessage message <%s>", messageText));
 
-        StreamItemMessage streamItemMessage = new StreamItemMessage(messageText);
+        StreamItemMessage streamItemMessage = new StreamItemMessage(getOwnerIdent(), messageText);
         streamItemMessage.shareWith(identity);
 
         // TODO: CONTINNUE HERE! Read messages from goatoms and put into stream!
@@ -179,7 +201,7 @@ public class StreamActivity extends LauncherActivity {
      */
     public void onOpenSimpleCalendar() {
 
-        setMainFuncView(R.layout.func_simple_calendar);
+        setMainFuncView(R.layout.func_simple_calendar, true);
     }
 
     /**
@@ -258,7 +280,7 @@ public class StreamActivity extends LauncherActivity {
             if (ownerIdent != null) {
 
                 Log.d(LOGTAG, "onOwnerReceived: +++++ CONTACT +++++ nick=" + ownerIdent.getNick());
-                refreshStreamItems();
+                createStream();
                 onOpenStream();
             }
         }

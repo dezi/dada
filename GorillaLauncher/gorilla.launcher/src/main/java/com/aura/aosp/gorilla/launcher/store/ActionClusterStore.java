@@ -66,7 +66,7 @@ public class ActionClusterStore {
 
                     break;
 
-                case "com.aura.aosp.gorilla.func.message_composer":
+                case "com.aura.aosp.gorilla.func.content_composer":
 
                     items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_sendMessage),

@@ -11,8 +11,9 @@ import android.view.ViewGroup;
 
 import com.aura.aosp.gorilla.launcher.StreamActivity;
 import com.aura.aosp.gorilla.launcher.R;
-import com.aura.aosp.gorilla.launcher.model.StreamItemContact;
 import com.aura.aosp.gorilla.launcher.model.StreamItem;
+import com.aura.aosp.gorilla.launcher.model.StreamItemContact;
+import com.aura.aosp.gorilla.launcher.model.StreamItemGeneric;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 
@@ -113,7 +114,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         DrawableCompat.setTint(iDrawable, ContextCompat.getColor(context, usePreviewImageColor[0]));
 
         // Very hacky by now:
-        if (dataSet.getType() == StreamItem.ItemType.TYPE_STREAMITEM_CONTACT) {
+        if (dataSet.getType() == StreamItemGeneric.ItemType.TYPE_STREAMITEM_CONTACT) {
             holder.dotButton.setScaleX(0.5f);
             holder.dotButton.setScaleY(0.5f);
             holder.previewImage.setScaleX(1.5f);
@@ -149,13 +150,13 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         super.onAttachedToRecyclerView(recyclerView);
     }
 
-    public void addItem(int position, StreamItem streamItem) {
+    public void addItem(int position, StreamItemGeneric streamItem) {
         // Insert a new item to the RecyclerView on a predefined position
         streamItems.add(position, streamItem);
         notifyItemInserted(position);
     }
 
-    public void removeItem(StreamItem streamItem) {
+    public void removeItem(StreamItemGeneric streamItem) {
         // Remove a RecyclerView item containing a specified Data object
         int position = streamItems.indexOf(streamItem);
         streamItems.remove(position);

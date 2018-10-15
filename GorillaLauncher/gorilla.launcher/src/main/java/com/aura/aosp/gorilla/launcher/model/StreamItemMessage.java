@@ -1,5 +1,8 @@
 package com.aura.aosp.gorilla.launcher.model;
 
+import android.support.annotation.NonNull;
+import android.util.Log;
+
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
@@ -13,25 +16,23 @@ import java.util.List;
  */
 public class StreamItemMessage extends StreamItemNote implements GorillaSharable {
 
-    public StreamItemMessage(String text) {
-        super(text);
+    final static String LOGTAG = StreamItemMessage.class.getSimpleName();
+
+    public StreamItemMessage(@NonNull Identity ownerIdentity, @NonNull String text) {
+        super(ownerIdentity, text);
     }
 
     @Override
     public void shareWith(Identity remoteIdentity) {
 
-        GorillaPayloadResult result = GorillaClient.getInstance().sendPayload(remoteIdentity.getUserUUID().toString(),
-                remoteIdentity.getDeviceUUID().toString(), getText());
+        GorillaPayloadResult result = GorillaClient.getInstance().sendPayload(remoteIdentity.getUserUUIDBase64(),
+                remoteIdentity.getDeviceUUIDBase64(), getText());
 
-        if (result == null) return;
-
+        // TODO: Result and result fields may be null, how to handle?
         Long time = result.getTime();
-        if (time == null) return;
-
         String uuid = result.getUUIDBase64();
-        if (uuid == null) return;
 
-        // TODO: How to change an usual atom into a shared atom?
+        // TODO: How to convert an note atom into a shared atom?
         GorillaMessage message = new GorillaMessage();
 
         message.setUUID(uuid);
@@ -39,7 +40,7 @@ public class StreamItemMessage extends StreamItemNote implements GorillaSharable
         message.setType("aura.chat.message");
         message.setMessageText(getText());
 
-        GorillaClient.getInstance().putAtomSharedWith(remoteIdentity.getUserUUID().toString(), message.getAtom());
+        GorillaClient.getInstance().putAtomSharedWith(remoteIdentity.getUserUUIDBase64(), message.getAtom());
     }
 
     @Override

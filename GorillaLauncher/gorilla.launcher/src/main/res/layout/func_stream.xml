@@ -3,12 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/stream"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/color_launcher_background_debug"
-    android:keepScreenOn="true">
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/innerstream"
+        android:id="@+id/streamRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fadingEdge="horizontal"

@@ -45,4 +45,11 @@
     <dimen name="clusterbutton_paddingHorizontal">0dp</dimen>
     <dimen name="clusterbutton_paddingVertical">0dp</dimen>
     <dimen name="clusterbutton_elevationPerLevel">20dp</dimen>
+
+    <!-- Content Composer -->
+    <dimen name="coco_lay_marginHorizontal">0dp</dimen>
+    <dimen name="coco_lay_marginVertical">0dp</dimen>
+    <dimen name="coco_paddingHorizontal">16dp</dimen>
+    <dimen name="coco_paddingVertical">16dp</dimen>
+    <dimen name="coco_textsize">20sp</dimen>
 </resources>

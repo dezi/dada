@@ -25,7 +25,7 @@ public class ComposeMessageActivity extends LauncherActivity {
         super.onCreate(savedInstanceState);
 
         // Set main content view
-        setMainFuncView(R.layout.func_content_composer);
+        setMainFuncView(R.layout.func_content_composer, true);
     }
 
     /** Called when the user taps the Send button */
