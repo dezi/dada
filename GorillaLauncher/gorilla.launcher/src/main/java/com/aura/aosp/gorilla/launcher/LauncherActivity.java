@@ -130,6 +130,9 @@ public class LauncherActivity extends AppCompatActivity {
         // Subscribe to Gorilla listener
         GorillaClient.getInstance().subscribeGorillaListener(listener);
 
+        // Initialize action cluster store
+        actionClusterStore = new ActionClusterStore(getApplicationContext());
+
         // Get some generic resource values
         // TODO: Move to UI components, pass to Effects!
         blurSampliong = getResources().getInteger(R.integer.launcher_blur_sampling);
@@ -198,7 +201,6 @@ public class LauncherActivity extends AppCompatActivity {
 
     /**
      * Set the main content/func view which is added (attached) to the "func" container.
-     * TODO Fix func view management (add/remove)
      */
     public void removeMainFuncView() {
 
@@ -258,7 +260,6 @@ public class LauncherActivity extends AppCompatActivity {
         float nextElevation = clusterElevationPerLevel;
 
         if (invokingActionButtonView != null) {
-
             // Position new cluster on top of invoking button
             nextXPos = invokingActionButtonView.getX();
             nextYPos = invokingActionButtonView.getY();
@@ -282,6 +283,7 @@ public class LauncherActivity extends AppCompatActivity {
                     nextLayout = R.layout.fragment_actioncluster_vertical;
                     break;
             }
+
         } else {
             nextXPos = 0;
             nextYPos = toggleClusterButton.getY();
@@ -290,7 +292,7 @@ public class LauncherActivity extends AppCompatActivity {
 
         // Inflate action cluster layout
         LayoutInflater inflater = LayoutInflater.from(this);
-        ActionClusterView actionClusterView = (ActionClusterView) inflater.inflate(nextLayout, actionClusterContainer, false);
+        final ActionClusterView actionClusterView = (ActionClusterView) inflater.inflate(nextLayout, actionClusterContainer, false);
         actionClusterView.setInvokingActionButtonView(invokingActionButtonView);
         actionClusterView.setVisibility(View.INVISIBLE);
 
@@ -302,54 +304,29 @@ public class LauncherActivity extends AppCompatActivity {
         ActionClusterAdapter actionClusterAdapter = new ActionClusterAdapter(actionCluster.getItemsByRelevance(), this, this);
         actionClusterView.setAdapter(actionClusterAdapter);
 
-        Log.d(LOGTAG, String.format("nextElevation <%f>", nextElevation));
-        Log.d(LOGTAG, String.format("nextXPos <%f>", nextXPos));
-        Log.d(LOGTAG, String.format("nextYPos <%f>", nextYPos));
+        Log.d(LOGTAG, String.format("actionClusterView nextElevation <%f>", nextElevation));
+        Log.d(LOGTAG, String.format("actionClusterView nextXPos <%f>", nextXPos));
+        Log.d(LOGTAG, String.format("actionClusterView nextYPos <%f>", nextYPos));
 
         actionClusterView.setX(nextXPos);
         actionClusterView.setY(nextYPos);
 
         actionClusterView.setElevation(nextElevation);
 
-        // Put View into list of active Action Cluster Views
-        activeActionClusterViews.add(actionClusterView);
-
-        // Add Action Cluster Views to root container
-        actionClusterContainer.addView(actionClusterView);
-
-        // Activate (position + register) Action Cluster View
-        activateActionClusterView(actionClusterView, instantShow);
-
-        Log.d(LOGTAG, String.format("Added action cluster <%s>", actionCluster.getName()));
-    }
-
-    /**
-     * Show action cluster
-     *
-     * @param actionClusterView
-     * @param show
-     */
-    public void activateActionClusterView(final ActionClusterView actionClusterView, boolean show) {
-
-        ClusterButtonView invokingActionClusterView = actionClusterView.getInvokingActionButtonView();
-
-        if (invokingActionClusterView != null) {
-
+        // Add events for additional layers
+        if (invokingActionButtonView != null) {
             // Wait for layout before initializing top level action cluster. Otherwise getting
             // current coordinates of toggle cluster button will fail!
             actionClusterView.getViewTreeObserver().addOnGlobalLayoutListener(
                     new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
                         public void onGlobalLayout() {
-                            // Create initial action button cluster (attach it to "root" container)
-                            List<ActionItem> initialActionItems = SampleData.getLauncherActionItems(actionClusterView.getContext());
-
-                            LinearLayoutManager layoutManager = (LinearLayoutManager) actionClusterView.getLayoutManager();
+                            SmartScrollableLayoutManager layoutManager = (SmartScrollableLayoutManager) actionClusterView.getLayoutManager();
                             Float addX = actionClusterView.getWidth() / 2.0f;
                             Float addY = actionClusterView.getHeight() / 2.0f;
 
-                            Log.d(LOGTAG, String.format("actionClusterWidth <%d>", actionClusterView.getWidth()));
-                            Log.d(LOGTAG, String.format("actionClusterHeight <%d>", actionClusterView.getHeight()));
+                            Log.d(LOGTAG, String.format("onGlobalLayout actionClusterWidth <%d>", actionClusterView.getWidth()));
+                            Log.d(LOGTAG, String.format("onGlobalLayout actionClusterHeight <%d>", actionClusterView.getHeight()));
 
                             switch (layoutManager.getOrientation()) {
 
@@ -369,7 +346,29 @@ public class LauncherActivity extends AppCompatActivity {
                         }
                     }
             );
+        }
 
+        // Add Action Cluster Views to root container
+        actionClusterContainer.addView(actionClusterView);
+
+        // Activate (position + register) Action Cluster View
+        if (instantShow) {
+            activateActionClusterView(actionClusterView);
+        }
+
+        Log.d(LOGTAG, String.format("Added action cluster <%s>", actionCluster.getName()));
+    }
+
+    /**
+     * Show action cluster: If there is a parent cluster (identified by invokingActionClusterButtonView)
+     *
+     * @param actionClusterView
+     */
+    public void activateActionClusterView(final ActionClusterView actionClusterView) {
+
+        ClusterButtonView invokingActionClusterView = actionClusterView.getInvokingActionButtonView();
+
+        if (invokingActionClusterView != null) {
             ((ActionClusterView) invokingActionClusterView.getParent()).fadeToBack();
         } else {
             deactivateMainContentView();
@@ -377,11 +376,9 @@ public class LauncherActivity extends AppCompatActivity {
 //            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_forward_black_24dp, getTheme()));
         }
 
-        if (show) {
-            actionClusterView.fadeIn();
-        }
+        actionClusterView.fadeIn();
 
-        // Put View into list of active Action Cluster Views
+        // Put View into list of active (visible) Action Cluster Views
         activeActionClusterViews.add(actionClusterView);
     }
 
@@ -395,7 +392,6 @@ public class LauncherActivity extends AppCompatActivity {
 
         if (activeActionClusterViews.size() == 0) {
             // Create initial action button cluster (attach it to "root" container)
-            actionClusterStore = new ActionClusterStore(getApplicationContext());
             ActionCluster initialActionCluster = actionClusterStore.getClusterForActionEvent(getPackageName());
             createActionClusterView(initialActionCluster, null, instantShowOnCreate);
         }
@@ -416,7 +412,7 @@ public class LauncherActivity extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 public void run() {
                     ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
-                    activateActionClusterView(actionClusterView, true);
+                    activateActionClusterView(actionClusterView);
                     Effects.doClusterDemoAnimation(actionClusterView);
                 }
             }, 800);
@@ -482,7 +478,7 @@ public class LauncherActivity extends AppCompatActivity {
 
                 case View.GONE:
                 case View.INVISIBLE:
-                    activateActionClusterView(actionClusterView, true);
+                    activateActionClusterView(actionClusterView);
                     break;
             }
         }

@@ -104,7 +104,6 @@ public class StreamActivity extends LauncherActivity {
      */
     protected void refreshStreamItems() {
 
-//        streamAdapter = new StreamAdapter(SampleData.getDummyStreamData(), this);
         streamAdapter = new StreamAdapter(streamStore.getItemsForAtomContext("aura.uxtream.launcher", getOwnerIdent()), this, this);
         streamRecyclerView.setAdapter(streamAdapter);
     }
@@ -129,7 +128,7 @@ public class StreamActivity extends LauncherActivity {
      */
     public void onReturnToStream() {
         removeMainFuncView();
-        deactivateAllActionsClusterViews();
+//        deactivateAllActionsClusterViews();
         activateMainContentView();
         refreshStreamItems();
     }
@@ -151,7 +150,7 @@ public class StreamActivity extends LauncherActivity {
         actionClusterStore.setContext(this);
 
         // TODO: Fix, solve generically by using an actionClusterManager which know about current hierarchy and context!
-        ActionClusterView activeActionClusterView = getBaseActionClusterView(true);
+        ActionClusterView activeActionClusterView = getBaseActionClusterView(false);
 
         ActionClusterAdapter actionClusterAdapter = (ActionClusterAdapter) activeActionClusterView.getAdapter();
         ActionCluster cocoActionCluster = actionClusterStore.getClusterForSelectedIdentity("com.aura.aosp.gorilla.func.content_composer", identity);

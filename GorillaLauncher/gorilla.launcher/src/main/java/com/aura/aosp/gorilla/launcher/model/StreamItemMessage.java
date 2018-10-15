@@ -25,7 +25,8 @@ public class StreamItemMessage extends StreamItemNote implements GorillaSharable
     @Override
     public void shareWith(Identity remoteIdentity) {
 
-        GorillaPayloadResult result = GorillaClient.getInstance().sendPayload(remoteIdentity.getUserUUIDBase64(),
+        // TODO: Replace with sendPayload(), this is just for testing.
+        GorillaPayloadResult result = GorillaClient.getInstance().sendPayloadQuer("com.aura.aosp.gorilla.messenger", remoteIdentity.getUserUUIDBase64(),
                 remoteIdentity.getDeviceUUIDBase64(), getText());
 
         // TODO: Result and result fields may be null, how to handle?
