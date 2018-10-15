@@ -454,6 +454,7 @@ public class GorillaClient
             }
         });
     }
+
     /**
      * Package private handle a received payload. Build a JSON message object and dispatch
      * to all subscribed listeners.
@@ -551,7 +552,7 @@ public class GorillaClient
 
             GorillaPayloadResult result = new GorillaPayloadResult();
 
-            if (! result.setAtom(resultStr))
+            if (!result.setAtom(resultStr))
             {
                 Log.e(LOGTAG, "sendPayload: result failed!");
                 return null;
@@ -586,6 +587,77 @@ public class GorillaClient
             boolean result = gr.sendPayloadRead(apkname, userUUID, deviceUUID, messageUUID, checksum);
 
             Log.d(LOGTAG, "sendPayloadRead: result=" + result);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Send a payload to a target user and device.
+     *
+     * @param toapkname  target APK name.
+     * @param userUUID   target user identity UUID.
+     * @param deviceUUID target device identity UUID.
+     * @param payload    binary payload in base64 encoding.
+     * @return GorillaPayloadResult or null if transfer to Gorilla system app failed.
+     */
+    @Nullable
+    public GorillaPayloadResult sendPayloadQuer(String toapkname, String userUUID, String deviceUUID, String payload)
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return null;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, toapkname, userUUID, deviceUUID, payload);
+
+            String resultStr = gr.sendPayloadQuer(apkname, toapkname, userUUID, deviceUUID, payload, checksum);
+
+            Log.d(LOGTAG, "sendPayloadQuer: resultStr=" + resultStr);
+
+            GorillaPayloadResult result = new GorillaPayloadResult();
+
+            if (!result.setAtom(resultStr))
+            {
+                Log.e(LOGTAG, "sendPayloadQuer: result failed!");
+                return null;
+            }
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Send a read state for a particular payload.
+     *
+     * @param toapkname  target APK name.
+     * @param userUUID    target user identity UUID.
+     * @param deviceUUID  target device identity UUID.
+     * @param messageUUID target message UUID.
+     * @return true if transferred to Gorilla system app.
+     */
+    public boolean sendPayloadReadQuer(String toapkname, String userUUID, String deviceUUID, String messageUUID)
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return false;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, toapkname, userUUID, deviceUUID, messageUUID);
+
+            boolean result = gr.sendPayloadReadQuer(apkname, toapkname, userUUID, deviceUUID, messageUUID, checksum);
+
+            Log.d(LOGTAG, "sendPayloadReadQuer: result=" + result);
 
             return result;
         }
@@ -883,7 +955,7 @@ public class GorillaClient
      * Register event on domain and subaction.
      *
      * @param actionDomain action domain reverse domain order.
-     * @param subAction sub action to be recorded.
+     * @param subAction    sub action to be recorded.
      * @return true if event was registered.
      */
     public boolean registerActionEventDomain(String actionDomain, String subAction)
@@ -912,8 +984,8 @@ public class GorillaClient
      * Register event on domain, context and subaction.
      *
      * @param actionDomain action domain reverse domain order.
-     * @param subContext sub context of action domain.
-     * @param subAction sub action to be recorded.
+     * @param subContext   sub context of action domain.
+     * @param subAction    sub action to be recorded.
      * @return true if event was registered.
      */
     public boolean registerActionEventDomainContext(String actionDomain, String subContext, String subAction)

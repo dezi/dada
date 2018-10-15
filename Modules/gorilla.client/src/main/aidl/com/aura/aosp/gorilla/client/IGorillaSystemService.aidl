@@ -85,8 +85,10 @@ interface IGorillaSystemService
     boolean requestPersisted(String apkname, String checksum);
 
     String sendPayload(String apkname, String userUUID, String deviceUUID, String payload, String checksum);
-
     boolean sendPayloadRead(String apkname, String userUUID, String deviceUUID, String messageUUID, String checksum);
+
+    String sendPayloadQuer(String apkname, String toapkname, String userUUID, String deviceUUID, String payload, String checksum);
+    boolean sendPayloadReadQuer(String apkname, String toapkname, String userUUID, String deviceUUID, String messageUUID, String checksum);
 
     boolean putAtom(String apkname, String atomJSON, String checksum);
 

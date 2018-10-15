@@ -106,6 +106,31 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
+    @Nullable
+    public String sendPayloadQuer(@NonNull String apkname, @NonNull String toapkname, @NonNull String userUUID, @NonNull String deviceUUID, @NonNull String payload, @NonNull String checksum)
+    {
+        if (!GorillaIntercon.validateSHASignatureBase64(checksum, apkname, apkname, toapkname, userUUID, deviceUUID, payload))
+        {
+            return null;
+        }
+
+        JSONObject result = GomessHandler.getInstance().sendPayload(toapkname, userUUID, deviceUUID, payload);
+
+        return result.toString();
+    }
+
+    @Override
+    public boolean sendPayloadReadQuer(@NonNull String apkname, @NonNull String toapkname, @NonNull String userUUID, @NonNull String deviceUUID, @NonNull String messageUUID, @NonNull String checksum)
+    {
+        if (!GorillaIntercon.validateSHASignatureBase64(checksum, apkname, apkname, toapkname, userUUID, deviceUUID, messageUUID))
+        {
+            return false;
+        }
+
+        return GomessHandler.getInstance().sendPayloadRead(toapkname, userUUID, deviceUUID, messageUUID);
+    }
+
+    @Override
     public boolean putAtom(@NonNull String apkname, @NonNull String atomJSON, @NonNull String checksum)
     {
         if (!GorillaIntercon.validateSHASignatureBase64(checksum, apkname, apkname, atomJSON))

@@ -21,6 +21,7 @@ import com.aura.aosp.gorilla.goproto.GoprotoMessage;
 import com.aura.aosp.gorilla.goproto.GoprotoSession;
 import com.aura.aosp.gorilla.goproto.GoprotoTicket;
 import com.aura.aosp.gorilla.service.GorillaSender;
+import com.aura.aosp.gorilla.service.GorillaTime;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -453,9 +454,14 @@ public class GomessClient
         long serverTime = Marshal.unMarshalLong(Simple.sliceBytes(message.Base, 8, 16));
         long responseMillis = System.currentTimeMillis() - clientTime;
 
+        serverTime += responseMillis / 2;
+
         Log.d("clientTime=%s", Dates.getLocalDateAndTimeMillis(clientTime));
         Log.d("serverTime=%s", Dates.getLocalDateAndTimeMillis(serverTime));
+        Log.d("difference=%s", Math.abs(serverTime - clientTime));
         Log.d("responseMillis=%s", responseMillis);
+
+        GorillaTime.setServerTime(serverTime);
 
         return null;
     }
