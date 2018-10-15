@@ -11,9 +11,9 @@ import android.view.ViewGroup;
 
 import com.aura.aosp.gorilla.launcher.StreamActivity;
 import com.aura.aosp.gorilla.launcher.R;
+import com.aura.aosp.gorilla.launcher.model.StreamItemContact;
 import com.aura.aosp.gorilla.launcher.model.StreamItem;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
-import com.aura.aosp.gorilla.launcher.model.ContactStreamItem;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 
 import java.util.Collections;
@@ -130,7 +130,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                     actionClusterStore = new ActionClusterStore(context);
 
                     ActionCluster itemActionCluster = actionClusterStore.getClusterForSelectedIdentity(
-                            "com.aura.aosp.gorilla.stream.contacts", ((ContactStreamItem) dataSet).getIdentity());
+                            "com.aura.aosp.gorilla.stream.contacts", ((StreamItemContact) dataSet).getContactIdentity());
 
                     activity.createActionClusterView(itemActionCluster, null, true);
                 }

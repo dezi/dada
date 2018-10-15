@@ -1,16 +1,20 @@
 package com.aura.aosp.gorilla.launcher.model;
 
+import com.aura.aosp.aura.common.univid.Identity;
+
 /**
  * Generic Stream Item: the topmost container for every kind of data items that might
  * be displayed within the UI stream component.
  */
 public class StreamItem {
 
-    public String title;
-    public String text;
-    public int imageId;
-    private ItemType type;
+    protected Identity ownerIdentity;
+    protected String title;
+    protected String text;
+    protected Integer imageId;
+    protected ItemType type;
 
+    // TODO: Create rule for action domains, context, subactions: com.aura.notes...
     public static enum ItemType {
         TYPE_STREAMITEM_GENERIC,
         TYPE_STREAMITEM_CONTACT,
@@ -33,6 +37,14 @@ public class StreamItem {
         setImageId(imageId);
     }
 
+    public Identity getOwnerIdentity() {
+        return ownerIdentity;
+    }
+
+    public void setOwnerIdentity(Identity ownerIdentity) {
+        this.ownerIdentity = ownerIdentity;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -50,11 +62,11 @@ public class StreamItem {
     }
 
 
-    public int getImageId() {
+    public Integer getImageId() {
         return imageId;
     }
 
-    public void setImageId(int imageId) {
+    public void setImageId(Integer imageId) {
         this.imageId = imageId;
     }
 

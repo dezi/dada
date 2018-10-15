@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.launcher;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Rect;
@@ -16,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
 import com.aura.aosp.aura.common.simple.Json;
@@ -549,6 +551,21 @@ public class LauncherActivity extends AppCompatActivity {
                 .onto(mainContentContainer);
     }
 
+    /**
+     * Hide the soft keyboard
+     * @param activity
+     */
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -568,7 +585,7 @@ public class LauncherActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        // Check for owner identity and start "Gorilla SysApp" if not given yet
+        // Check for owner contactIdentity and start "Gorilla SysApp" if not given yet
         // TODO: To be replaced by discovering UID from "Identity Manager" later on.
         if (getOwnerIdent() == null) {
             Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp");

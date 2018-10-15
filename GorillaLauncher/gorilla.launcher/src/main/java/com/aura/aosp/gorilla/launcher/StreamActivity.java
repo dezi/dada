@@ -12,12 +12,14 @@ import android.widget.EditText;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
+import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
+import com.aura.aosp.gorilla.launcher.model.StreamItemMessage;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.store.StreamStore;
 import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
@@ -135,7 +137,7 @@ public class StreamActivity extends LauncherActivity {
     public void onOpenContentComposer(@Nullable Identity identity) {
 
         setMainFuncView(R.layout.func_content_composer);
-        Log.d(LOGTAG, String.format("onOpenContentComposer for identity <%s>", identity.getNick()));
+        Log.d(LOGTAG, String.format("onOpenContentComposer for contactIdentity <%s>", identity.getNick()));
 
         actionClusterStore.setContext(this);
         ActionCluster cocoActionCluster = actionClusterStore.getClusterForSelectedIdentity("com.aura.aosp.gorilla.func.message_composer", identity);
@@ -154,14 +156,22 @@ public class StreamActivity extends LauncherActivity {
      */
     public void onSendMessage(Identity identity) {
 
-        Log.d(LOGTAG, String.format("onSendMessage for identity <%s>", identity.getNick()));
+        Log.d(LOGTAG, String.format("onSendMessage for contactIdentity <%s>", identity.getNick()));
 
-        EditText editText = (EditText) findViewById(R.id.editText);
-        String message = editText.getText().toString();
+        EditText editTextView = (EditText) findViewById(R.id.editText);
 
-        Log.d(LOGTAG, String.format("onSendMessage message <%s>", message));
+        String messageText = editTextView.getText().toString();
 
-        removeMainFuncView();
+        Log.d(LOGTAG, String.format("onSendMessage message <%s>", messageText));
+
+        StreamItemMessage streamItemMessage = new StreamItemMessage(messageText);
+        streamItemMessage.shareWith(identity);
+
+        // TODO: CONTINNUE HERE! Read messages from goatoms and put into stream!
+        // TODO: CONTINNUE HERE! Cleanup all this hide/show stuff!
+        hideKeyboard(this);
+        hideStatusAndActionBar();
+        onReturnToStream();
     }
 
     /**
