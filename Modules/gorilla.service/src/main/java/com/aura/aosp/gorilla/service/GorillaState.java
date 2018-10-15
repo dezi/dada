@@ -45,7 +45,7 @@ public class GorillaState
 
         GorillaLocation gl = GorillaLocation.getInstance();
         state.setLatLonFine(gl.getLat(), gl.getLon());
-        state.setStateTime(System.currentTimeMillis());
+        state.setStateTime(GorillaTime.serverTimeMillis());
 
         return state;
     }

@@ -454,7 +454,7 @@ public class GopoorSuggest
 
         Perf startTime = new Perf();
 
-        long timeTo = System.currentTimeMillis();
+        long timeTo = GorillaTime.serverTimeMillis();
         long timeFrom = timeTo - (30L * 86400L * 1000L);
 
         JSONArray events = GoatomStorage.queryAtoms("aura.event.action", timeFrom, timeTo);
@@ -508,7 +508,7 @@ public class GopoorSuggest
         countEnvironmentTag(column, getDayOfWeekEnvironment(calendar));
         countEnvironmentTag(column, getPartOfMonthEnvironment(calendar));
 
-        if (time >= (System.currentTimeMillis() - RECENT_SECONDS * 1000))
+        if (time >= (GorillaTime.serverTimeMillis() - RECENT_SECONDS * 1000))
         {
             recentEvents.add(event);
         }

@@ -18,6 +18,7 @@ import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.service.GorillaMapper;
 import com.aura.aosp.gorilla.service.GorillaSender;
+import com.aura.aosp.gorilla.service.GorillaTime;
 
 import org.json.JSONObject;
 
@@ -77,7 +78,7 @@ public class GomessHandler
         JSONObject load = new JSONObject();
 
         String uuid = UID.randomUUIDBase64();
-        long time = System.currentTimeMillis();
+        long time = GorillaTime.serverTimeMillis();
         Log.d("uuid=" + uuid + " time=" + time);
 
         Json.put(result, "uuid", uuid);
@@ -147,7 +148,7 @@ public class GomessHandler
         }
 
         GoprotoMetadata metadata = new GoprotoMetadata();
-        metadata.setTimeStamp(System.currentTimeMillis());
+        metadata.setTimeStamp(GorillaTime.serverTimeMillis());
         metadata.setStatus(GoprotoDefs.MsgStatusRead);
 
         GoprotoTicket ticket = new GoprotoTicket();

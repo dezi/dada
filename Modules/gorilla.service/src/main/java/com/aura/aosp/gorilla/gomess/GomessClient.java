@@ -434,7 +434,7 @@ public class GomessClient
 
     private Err sendTimeRequest()
     {
-        byte[] clientTime = Marshal.marshalLong(System.currentTimeMillis());
+        byte[] clientTime = Marshal.marshalLong(GorillaTime.serverTimeMillis());
         byte[] serverTime = Marshal.marshalLong(0);
 
         byte[] head = new GoprotoMessage(GoprotoDefs.MsgTimeRequest, 0, 0, GoprotoDefs.GorillaUUIDSize).marshall();
@@ -452,7 +452,7 @@ public class GomessClient
 
         long clientTime = Marshal.unMarshalLong(Simple.sliceBytes(message.Base, 0, 8));
         long serverTime = Marshal.unMarshalLong(Simple.sliceBytes(message.Base, 8, 16));
-        long responseMillis = System.currentTimeMillis() - clientTime;
+        long responseMillis = GorillaTime.serverTimeMillis() - clientTime;
 
         serverTime += responseMillis / 2;
 

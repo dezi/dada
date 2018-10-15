@@ -78,8 +78,9 @@ public class GoatomStorage
         }
 
         String syncUUID = UID.randomUUIDString();
-        String dateStr = Dates.getUniversalDateAndTimeMillis(System.currentTimeMillis());
-        if (dateStr == null) return Err.getLastErr();
+
+        Long timeStamp = GorillaTime.serverTimeMillis();
+        String dateStr = Dates.getUniversalDateAndTimeMillis(timeStamp);
 
         JSONObject sync = new JSONObject();
 
@@ -260,7 +261,7 @@ public class GoatomStorage
 
         if (!Json.has(atom, "time"))
         {
-            Json.put(atom, "time", System.currentTimeMillis());
+            Json.put(atom, "time", GorillaTime.serverTimeMillis());
         }
 
         if (!Json.has(atom, "type"))
