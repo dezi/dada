@@ -99,6 +99,17 @@ public class Err
         return err;
     }
 
+    public static void printStackTrace()
+    {
+        try
+        {
+            throw new RuntimeException("schniddel");
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
     //endregion Static stuff.
 
     //region Instance stuff.
