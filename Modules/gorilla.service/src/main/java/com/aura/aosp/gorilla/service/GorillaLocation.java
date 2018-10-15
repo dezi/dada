@@ -183,7 +183,7 @@ public class GorillaLocation implements LocationListener
 
     private long getAgeInSeconds(long timestamp)
     {
-        return (System.currentTimeMillis() - timestamp) / 1000;
+        return (GorillaTime.serverTimeMillis() - timestamp) / 1000;
     }
 
     private void storeLocation(Location location)
@@ -198,17 +198,13 @@ public class GorillaLocation implements LocationListener
         lon = location.getLongitude();
         alt = location.getAltitude();
 
-        time = location.getTime();
+        time = GorillaTime.serverizeTime(location.getTime());
         accuracy = location.getAccuracy();
         provider = location.getProvider();
 
         Log.d("lat+lon=%f %f alt=%f acc=%f pro=%s age=%d",
-                location.getLatitude(),
-                location.getLongitude(),
-                location.getAltitude(),
-                location.getAccuracy(),
-                location.getProvider(),
-                getAgeInSeconds(location.getTime())
+                lat, lon, alt, accuracy, provider,
+                getAgeInSeconds(time)
         );
 
         if (Simple.nequals(lastLat, lat, 1000)

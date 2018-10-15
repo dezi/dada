@@ -90,7 +90,7 @@ public class GorillaTime extends BroadcastReceiver
 
         Log.d("save server time apkname=%s", prefkey);
 
-        serverTimeMillis();
+        dumpTime();
     }
 
     /**
@@ -116,7 +116,7 @@ public class GorillaTime extends BroadcastReceiver
 
             Log.d("load server time apkname=%s", prefkey);
 
-            serverTimeMillis();
+            dumpTime();
         }
         else
         {
@@ -148,13 +148,31 @@ public class GorillaTime extends BroadcastReceiver
             return deviceTimeMillis();
         }
 
-        long nowServerTime = serverTime + (SystemClock.elapsedRealtime() - syncedTime);
+        return serverTime + (SystemClock.elapsedRealtime() - syncedTime);
+    }
+
+    /**
+     * Convert device time into server time.
+     *
+     * @param deviceTime device time in millis.
+     * @return server time in millis.
+     */
+    public static long serverizeTime(long deviceTime)
+    {
+        long timeSkew = deviceTimeMillis() - deviceTime;
+        return serverTimeMillis() - timeSkew;
+    }
+
+    /**
+     * Dump time for debug.
+     */
+    private static void dumpTime()
+    {
+        long nowServerTime = serverTimeMillis();
         long nowClientTime = deviceTimeMillis();
 
         Log.d("nowServerTime=%s", Dates.getLocalDateAndTimeMillis(nowServerTime));
         Log.d("nowClientTime=%s", Dates.getLocalDateAndTimeMillis(nowClientTime));
-
-        return nowServerTime;
     }
 
     /**
