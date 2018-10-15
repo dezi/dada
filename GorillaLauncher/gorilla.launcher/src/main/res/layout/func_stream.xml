@@ -3,33 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/stream"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/color_launcher_background_debug"
-    android:keepScreenOn="true">
+    android:layout_height="match_parent">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/funcInnerView"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/streamRecycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/innerstream"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fadingEdge="horizontal"
-                android:fadingEdgeLength="@dimen/stream_fading_edge_length"
-                android:requiresFadingEdge="vertical"
-                android:scrollbars="none"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </RelativeLayout>
-
-    </android.support.constraint.ConstraintLayout>
+        android:layout_height="match_parent"
+        android:fadingEdge="horizontal"
+        android:fadingEdgeLength="@dimen/stream_fading_edge_length"
+        android:requiresFadingEdge="vertical"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </com.aura.aosp.gorilla.launcher.ui.content.StreamView>

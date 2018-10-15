@@ -8,7 +8,7 @@ public abstract class AbstractActionItem {
         TYPE_ACTION_INTERN,
         TYPE_ACTION_EXTERN,
         TYPE_CLUSTER
-    };
+    }
 
     public ItemType getType() {
         return type;

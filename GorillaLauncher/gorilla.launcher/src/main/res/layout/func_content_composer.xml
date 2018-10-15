@@ -1,51 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.aura.aosp.gorilla.launcher.ui.content.ContentComposerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/contentComposer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_launcher_background_debug"
-    android:keepScreenOn="true">
+    tools:context=".StreamActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/funcInnerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="10dp">
+        android:alpha="0.8"
+        android:background="@color/coco_background"
+        android:paddingTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <EditText
             android:id="@+id/editText"
             android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_height="375dp"
+            android:layout_marginHorizontal="@dimen/coco_lay_marginHorizontal"
+            android:layout_marginVertical="@dimen/coco_lay_marginVertical"
+            android:alpha="0.8"
             android:ems="10"
-            android:hint="@string/edit_message"
-            android:inputType="textPersonName"
-            android:textColor="@color/color_text_primary"
-            app:layout_constraintEnd_toStartOf="@+id/button"
-            app:layout_constraintHorizontal_bias="0.5"
+            android:fontFamily="sans-serif"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:padding="20dp"
+            android:paddingHorizontal="@dimen/coco_paddingHorizontal"
+            android:paddingVertical="@dimen/coco_paddingVertical"
+            android:textColor="@color/coco_text_primary"
+            android:textColorLink="@color/coco_background"
+            android:textSize="@dimen/coco_textsize"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="539dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:onClick="sendMessage"
-            android:text="@string/button_send"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/editText"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
 
     </android.support.constraint.ConstraintLayout>
 
 </com.aura.aosp.gorilla.launcher.ui.content.ContentComposerView>
-

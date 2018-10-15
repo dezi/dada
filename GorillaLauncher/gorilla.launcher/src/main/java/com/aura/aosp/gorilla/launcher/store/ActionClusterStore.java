@@ -34,11 +34,12 @@ public class ActionClusterStore {
     public ActionCluster getClusterForSelectedIdentity(String actionDomain, Identity identity) {
 
         List<ActionItem> items = new ArrayList<>();
+        // TODO: Add actions based on score for this action domain
+        try {
 
-        switch (actionDomain) {
-            case "com.aura.aosp.gorilla.stream.contacts":
+            switch (actionDomain) {
+                case "com.aura.aosp.gorilla.stream.contacts":
 
-                try {
                     items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_composeMessage),
                             FuncBaseView.FuncType.OVERLAY,
@@ -62,12 +63,27 @@ public class ActionClusterStore {
                             R.drawable.ic_person_add_black_24dp,
                             0.95f, actionDomain + ".action.ADD_PERSON"
                     ));
-                } catch (NoSuchMethodException e) {
-                    Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>",
-                            e.getMessage()));
-                }
 
-                break;
+                    break;
+
+                case "com.aura.aosp.gorilla.func.content_composer":
+
+                    items.add(new ActionItem(
+                            context.getResources().getString(R.string.actions_sendMessage),
+                            FuncBaseView.FuncType.OVERLAY,
+                            R.drawable.ic_send_black_24dp,
+                            1f,
+                            getContext(),
+                            StreamActivity.class.getMethod("onSendMessage", Identity.class),
+                            identity));
+
+                    break;
+            }
+
+        } catch (NoSuchMethodException e) {
+
+            Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>",
+                    e.getMessage()));
         }
 
         return new ActionCluster(actionDomain, items);
@@ -84,10 +100,11 @@ public class ActionClusterStore {
 
         List<ActionItem> items = new ArrayList<>();
 
-        switch (actionDomain) {
-            case "com.aura.aosp.gorilla.launcher":
+        try {
 
-                try {
+            switch (actionDomain) {
+                case "com.aura.aosp.gorilla.launcher":
+
                     items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_openCalendar),
                             FuncBaseView.FuncType.OVERLAY,
@@ -144,19 +161,14 @@ public class ActionClusterStore {
                             FuncBaseView.FuncType.FULLSCREEN,
                             R.drawable.stream_oval_24dp,
                             0.93f,
-                            StreamActivity.class.getMethod("onOpenStream")
+                            StreamActivity.class.getMethod("onReturnToStream")
                     ));
 
-                } catch (NoSuchMethodException e) {
-                    Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>",
-                            e.getMessage()));
-                }
 
-                break;
+                    break;
 
-            case "com.aura.aosp.gorilla.stream.contacts":
+                case "com.aura.aosp.gorilla.stream.contacts":
 
-                try {
                     items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_composeMessage),
                             FuncBaseView.FuncType.OVERLAY,
@@ -180,12 +192,12 @@ public class ActionClusterStore {
                             R.drawable.ic_person_add_black_24dp,
                             0.95f, actionDomain + ".action.ADD_PERSON"
                     ));
-                } catch (NoSuchMethodException e) {
-                    Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>",
-                            e.getMessage()));
-                }
 
-                break;
+                    break;
+            }
+        } catch (NoSuchMethodException e) {
+            Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>",
+                    e.getMessage()));
         }
 
         return new ActionCluster(actionDomain, items);
