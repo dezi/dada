@@ -11,6 +11,7 @@ import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
+import com.aura.aosp.aura.common.simple.Perf;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.gorilla.service.GorillaTime;
@@ -136,7 +137,8 @@ public class GoatomStorage
         File[] typeDirs = userdir.listFiles();
         if (typeDirs == null) return null;
 
-        GorillaTime startTime = new GorillaTime();
+        Perf startTime = new Perf();
+
         Log.d("start:...");
 
         long count = 0;

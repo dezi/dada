@@ -8,6 +8,7 @@ import android.util.SparseIntArray;
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
+import com.aura.aosp.aura.common.simple.Perf;
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
 import com.aura.aosp.gorilla.goatoms.GorillaAtomAction;
 import com.aura.aosp.gorilla.goatoms.GorillaAtomEvent;
@@ -204,7 +205,7 @@ public class GopoorSuggest
     @Nullable
     private static Err precomputeSuggestions(@NonNull GorillaAtomState state)
     {
-        GorillaTime startTime = new GorillaTime();
+        Perf startTime = new Perf();
 
         //
         // Provide timestamp from state.
@@ -451,7 +452,7 @@ public class GopoorSuggest
         row2envtag.clear();
         event2column.clear();
 
-        GorillaTime startTime = new GorillaTime();
+        Perf startTime = new Perf();
 
         long timeTo = System.currentTimeMillis();
         long timeFrom = timeTo - (30L * 86400L * 1000L);
@@ -459,7 +460,7 @@ public class GopoorSuggest
         JSONArray events = GoatomStorage.queryAtoms("aura.event.action", timeFrom, timeTo);
         if (events == null) return Err.getLastErr();
 
-        GorillaTime computeTime = new GorillaTime();
+        Perf computeTime = new Perf();
 
         for (int inx = 0; inx < events.length(); inx++)
         {

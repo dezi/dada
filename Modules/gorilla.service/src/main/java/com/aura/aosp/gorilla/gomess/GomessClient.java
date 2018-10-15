@@ -461,9 +461,6 @@ public class GomessClient
 
         GorillaTime.setServerTime(serverTime);
 
-        Log.d("clientTime=%s", Dates.getLocalDateAndTimeMillis(clientTime));
-        Log.d("serverTime=%s", Dates.getLocalDateAndTimeMillis(GorillaTime.serverTimeMillis()));
-
         return null;
     }
 

@@ -1,11 +1,11 @@
-package com.aura.aosp.gorilla.service;
-
 /*
  * Copyright (C) 2018 Aura Software Inc.
  *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  */
+
+package com.aura.aosp.gorilla.service;
 
 import android.support.annotation.NonNull;
 
@@ -61,6 +61,8 @@ public class GorillaBase extends Application
         super.onCreate();
 
         Simple.initialize(this);
+
+        GorillaTime.loadServerTime();
 
         GorillaBase.startCronJob();
 
