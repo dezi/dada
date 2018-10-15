@@ -553,6 +553,8 @@ public class LauncherActivity extends AppCompatActivity {
 
     /**
      * Hide the soft keyboard
+     * See also: https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
+     *
      * @param activity
      */
     public static void hideKeyboard(Activity activity) {
