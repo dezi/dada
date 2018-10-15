@@ -69,4 +69,8 @@
     <!-- Function: Calendar -->
     <color name="color_function_calendar_background">#b9b9b9</color>
 
+    <!-- Func: Content Composer -->
+    <color name="coco_background">#dcdcdc</color>
+    <color name="coco_text_primary">#222222</color>
+
 </resources>

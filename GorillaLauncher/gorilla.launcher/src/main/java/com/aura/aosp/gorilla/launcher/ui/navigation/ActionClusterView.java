@@ -12,14 +12,17 @@ import android.view.View;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 
+import jp.wasabeef.blurry.Blurry;
+
 /**
  * Main view which holds and manages the "Action Cluster"
  */
 public class ActionClusterView extends RecyclerView implements View.OnTouchListener {
 
     private float dX, dY;
-//    private Drawable bgDrawable;
+
     private ClusterButtonView invokingActionButtonView = null;
+    private boolean sticky;
 
     public ActionClusterView(Context context) {
         super(context);
@@ -47,22 +50,57 @@ public class ActionClusterView extends RecyclerView implements View.OnTouchListe
         final TypedArray a = getContext().obtainStyledAttributes(attrs,
                 R.styleable.ActionClusterView, defStyle, 0);
 
-//        if (a.hasValue(R.styleable.ActionClusterView_bgDrawable)) {
-//            bgDrawable = a.getDrawable(R.styleable.ActionClusterView_bgDrawable);
-//            bgDrawable.setCallback(this);
-//        }
-
         a.recycle();
     }
 
+    public boolean isSticky() {
+        return sticky;
+    }
+
+    public void setSticky(boolean sticky) {
+        this.sticky = sticky;
+    }
+
+    /**
+     * Fade in view
+     */
     public void fadeIn() {
         Integer duration = getContext().getResources().getInteger(R.integer.actioncluster_fadein_transition_duration);
         Effects.fadeInView(this, getContext(), duration);
     }
 
+    /**
+     * Fade out view
+     */
     public void fadeOut() {
         Integer duration = getContext().getResources().getInteger(R.integer.actioncluster_fadein_transition_duration);
         Effects.fadeOutView(this, getContext(), duration);
+    }
+
+    /**
+     * Activate view
+     */
+    public void restore() {
+
+        setEnabled(true);
+        setAlpha(1f);
+        Blurry.delete(this);
+    }
+
+    /**
+     * Deactivate view
+     */
+    public void fadeToBack() {
+
+        setEnabled(false);
+        setAlpha(0.3f);
+
+//        Blurry.with(this)
+//                .radius(blurRadius)
+//                .sampling(blurSampliong)
+////                .color(R.color.color_transparent)
+//                .animate(blurTransisitionDuration)
+//                .onto(viewGroup);
     }
 
     /**

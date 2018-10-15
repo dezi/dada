@@ -1,67 +1,88 @@
 package com.aura.aosp.gorilla.launcher.model;
 
-/**
- * Generic Stream Item: the topmost container for every kind of data items that might
- * be displayed within the UI stream component.
- */
-public class StreamItem {
+import android.support.annotation.NonNull;
 
-    public String title;
-    public String text;
-    public int imageId;
-    private ItemType type;
+import com.aura.aosp.aura.common.univid.Identity;
+import com.aura.aosp.gorilla.launcher.R;
 
-    public static enum ItemType {
-        TYPE_STREAMITEM_GENERIC,
-        TYPE_STREAMITEM_CONTACT,
-        TYPE_STREAMITEM_NOTE,
-        TYPE_STREAMUTEN_MESSAGE,
-        TYPE_STREAMUTEN_HIGHLIGHT,
-        TYPE_STREAMITEM_INVISIBLE
-    };
+public class StreamItem implements StreamItemInterface {
 
-    public StreamItem(ItemType type, String title, String text, int imageId) {
-        setType(type);
+    protected Identity ownerIdentity;
+    protected String title;
+    protected String text;
+    protected Integer imageId;
+    protected ItemType type;
+
+    /**
+     * Construct stream item of type "unknown".
+     */
+    public StreamItem() {
+        setType(ItemType.TYPE_STREAMITEM_UNKNOWN);
+    }
+
+    /**
+     * Construct stream item with or without owner identity.
+     *
+     * @param ownerIdentity
+     * @param itemType
+     * @param title
+     * @param text
+     * @param imageId
+     */
+    public StreamItem(Identity ownerIdentity, @NonNull ItemType itemType, @NonNull String title, @NonNull String text, @NonNull Integer imageId) {
+        setOwnerIdentity(ownerIdentity);
+        setType(itemType);
         setTitle(title);
         setText(text);
         setImageId(imageId);
     }
 
-    public StreamItem(ItemType type, String text, int imageId) {
-        setType(type);
-        setText(text);
-        setImageId(imageId);
+    @Override
+    public Identity getOwnerIdentity() {
+        return ownerIdentity;
     }
 
+    @Override
+    public void setOwnerIdentity(Identity ownerIdentity) {
+        this.ownerIdentity = ownerIdentity;
+    }
+
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @Override
     public String getText() {
         return text;
     }
 
+    @Override
     public void setText(String text) {
         this.text = text;
     }
 
-
-    public int getImageId() {
+    @Override
+    public Integer getImageId() {
         return imageId;
     }
 
-    public void setImageId(int imageId) {
+    @Override
+    public void setImageId(Integer imageId) {
         this.imageId = imageId;
     }
 
+    @Override
     public ItemType getType() {
         return type;
     }
 
+    @Override
     public void setType(ItemType type) {
         this.type = type;
     }

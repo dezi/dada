@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.launcher;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Rect;
@@ -16,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
 import com.aura.aosp.aura.common.simple.Json;
@@ -32,7 +34,6 @@ import com.aura.aosp.gorilla.launcher.model.ActionItem;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 import com.aura.aosp.gorilla.launcher.ui.animation.drawable.ExpandingCircleDrawable;
-import com.aura.aosp.gorilla.launcher.ui.common.FuncViewManager;
 import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
 import com.aura.aosp.gorilla.launcher.ui.common.BaseView;
 import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
@@ -64,19 +65,22 @@ public class LauncherActivity extends AppCompatActivity {
 
     protected BaseView launcherView;
     protected StatusBar statusBar;
-    protected ConstraintLayout funcContainer;
-    protected ConstraintLayout funcInnerView;
-    protected FrameLayout actionClusterContainer;
+    protected ConstraintLayout mainContentContainer;
 
+    protected ConstraintLayout funcContainer;
+    protected FuncBaseView mainFuncView;
+
+    protected FrameLayout actionClusterContainer;
     protected ConstraintLayout actionClusterMask;
     protected ToggleClusterButton toggleClusterButton;
 
     private static ExpandingCircleDrawable mCircle;
 
     protected Float clusterElevationPerLevel;
-    protected SmartScrollableLayoutManager streamLayoutManager;
+
+    protected List<SmartScrollableLayoutManager> mcSmartScrollableLayoutManagers = new ArrayList<>();
+
     protected List<ActionClusterView> activeActionClusterViews = new ArrayList<>();
-    protected FuncViewManager funcViewManager = new FuncViewManager();
 
     public static final int MP = ViewGroup.LayoutParams.MATCH_PARENT;
     public static final int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -102,19 +106,13 @@ public class LauncherActivity extends AppCompatActivity {
 
         Log.d(LOGTAG, "onCreate: ...");
 
-        // Check for owner identity and start "Gorilla SysApp" if not given yet
-        // TODO: To be replaced with "Identity Manager" later on.
-        if (getOwnerIdent() == null) {
-            Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp");
-            Simple.startActivity(this, launchIntent);
-        }
-
         // Set outer base content view
         setContentView(R.layout.activity_launcher);
 
         // Get references to main child view components
         launcherView = findViewById(R.id.launcher);
         statusBar = findViewById(R.id.statusBar);
+        mainContentContainer = findViewById(R.id.mainContentContainer);
         funcContainer = findViewById(R.id.funcContainer);
 
         actionClusterContainer = launcherView.findViewById(R.id.actionClusterContainer);
@@ -131,6 +129,9 @@ public class LauncherActivity extends AppCompatActivity {
 
         // Subscribe to Gorilla listener
         GorillaClient.getInstance().subscribeGorillaListener(listener);
+
+        // Initialize action cluster store
+        actionClusterStore = new ActionClusterStore(getApplicationContext());
 
         // Get some generic resource values
         // TODO: Move to UI components, pass to Effects!
@@ -159,24 +160,18 @@ public class LauncherActivity extends AppCompatActivity {
         ColorStateList fabColorList = new ColorStateList(states, colors);
         toggleClusterButton.setBackgroundTintList(fabColorList);
 
-        // Wait for layout before initializing top level action cluster. Otherwise getting
-        // current coordinates of toggle cluster button will fail!
-        toggleClusterButton.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        // Create initial action button cluster (attach it to "root" container)
-                        actionClusterStore = new ActionClusterStore(getApplicationContext());
-
-                        ActionCluster initialActionCluster = actionClusterStore.getClusterForActionEvent(getPackageName());
-//                        ActionCluster initialActionCluster = SampleData.getLauncherActionCluster(toggleClusterButton.getContext());
-
-                        createActionClusterView(initialActionCluster, null, false);
-                        // Remove listener when done
-                        toggleClusterButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-                }
-        );
+//        // Wait for layout before initializing top level action cluster. Otherwise getting
+//        // current coordinates of toggle cluster button will fail!
+//        toggleClusterButton.getViewTreeObserver().addOnGlobalLayoutListener(
+//                new ViewTreeObserver.OnGlobalLayoutListener() {
+//                    @Override
+//                    public void onGlobalLayout() {
+//                        getBaseActionClusterView(false);
+//                        // Remove listener when done
+//                        toggleClusterButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//                    }
+//                }
+//        );
     }
 
     /**
@@ -184,24 +179,40 @@ public class LauncherActivity extends AppCompatActivity {
      *
      * @param layoutResID
      */
-    public void setMainFuncView(int layoutResID) {
+    public void setMainFuncView(int layoutResID, boolean fadeIn) {
+
+        if (mainFuncView != null) {
+            removeMainFuncView();
+        }
 
         // Create "func" view by inflating xml, adding an item adapter
         // and attach it to launcher (main) view
         LayoutInflater inflater = LayoutInflater.from(this);
-        FuncBaseView funcView = (FuncBaseView) inflater.inflate(layoutResID, funcContainer, false);
-        funcView.setVisibility(View.INVISIBLE);
+        mainFuncView = (FuncBaseView) inflater.inflate(layoutResID, funcContainer, false);
+        mainFuncView.setVisibility(View.INVISIBLE);
 
         // Add view to container
-        funcContainer.addView(funcView);
+        funcContainer.addView(mainFuncView);
 
-        // Register view
-        funcViewManager.addFuncView(FuncBaseView.FuncType.FULLSCREEN, funcView);
+        if (fadeIn) {
+            mainFuncView.fadeIn(null);
+        }
+    }
 
-        // Get reference to child view components
-        funcInnerView = funcContainer.findViewById(R.id.funcInnerView);
+    /**
+     * Set the main content/func view which is added (attached) to the "func" container.
+     */
+    public void removeMainFuncView() {
 
-        funcView.fadeIn(null);
+        if (mainFuncView == null) {
+            return;
+        }
+
+        mainFuncView.fadeOut(null);
+
+        // Completely remove view
+        funcContainer.removeView(mainFuncView);
+        mainFuncView = null;
     }
 
     /**
@@ -249,7 +260,6 @@ public class LauncherActivity extends AppCompatActivity {
         float nextElevation = clusterElevationPerLevel;
 
         if (invokingActionButtonView != null) {
-
             // Position new cluster on top of invoking button
             nextXPos = invokingActionButtonView.getX();
             nextYPos = invokingActionButtonView.getY();
@@ -273,6 +283,7 @@ public class LauncherActivity extends AppCompatActivity {
                     nextLayout = R.layout.fragment_actioncluster_vertical;
                     break;
             }
+
         } else {
             nextXPos = 0;
             nextYPos = toggleClusterButton.getY();
@@ -281,8 +292,7 @@ public class LauncherActivity extends AppCompatActivity {
 
         // Inflate action cluster layout
         LayoutInflater inflater = LayoutInflater.from(this);
-        FrameLayout actionClusterFrame = (FrameLayout) inflater.inflate(nextLayout, actionClusterContainer, false);
-        ActionClusterView actionClusterView = actionClusterFrame.findViewById(R.id.actionCluster);
+        final ActionClusterView actionClusterView = (ActionClusterView) inflater.inflate(nextLayout, actionClusterContainer, false);
         actionClusterView.setInvokingActionButtonView(invokingActionButtonView);
         actionClusterView.setVisibility(View.INVISIBLE);
 
@@ -294,51 +304,29 @@ public class LauncherActivity extends AppCompatActivity {
         ActionClusterAdapter actionClusterAdapter = new ActionClusterAdapter(actionCluster.getItemsByRelevance(), this, this);
         actionClusterView.setAdapter(actionClusterAdapter);
 
-        Log.d(LOGTAG, String.format("nextElevation <%f>", nextElevation));
-        Log.d(LOGTAG, String.format("nextXPos <%f>", nextXPos));
-        Log.d(LOGTAG, String.format("nextYPos <%f>", nextYPos));
+        Log.d(LOGTAG, String.format("actionClusterView nextElevation <%f>", nextElevation));
+        Log.d(LOGTAG, String.format("actionClusterView nextXPos <%f>", nextXPos));
+        Log.d(LOGTAG, String.format("actionClusterView nextYPos <%f>", nextYPos));
 
         actionClusterView.setX(nextXPos);
         actionClusterView.setY(nextYPos);
 
-        actionClusterFrame.setElevation(nextElevation);
+        actionClusterView.setElevation(nextElevation);
 
-        // Add view to root container
-        actionClusterContainer.addView(actionClusterFrame);
-
-        if (instantShow) {
-            activateActionClusterView(actionClusterView);
-        }
-
-        Log.d(LOGTAG, String.format("Added action cluster <%s>", actionCluster.getName()));
-    }
-
-    /**
-     * Show action cluster
-     *
-     * @param actionClusterView
-     */
-    public void activateActionClusterView(final ActionClusterView actionClusterView) {
-
-        ClusterButtonView invokingActionClusterView = actionClusterView.getInvokingActionButtonView();
-
-        if (invokingActionClusterView != null) {
-
+        // Add events for additional layers
+        if (invokingActionButtonView != null) {
             // Wait for layout before initializing top level action cluster. Otherwise getting
             // current coordinates of toggle cluster button will fail!
             actionClusterView.getViewTreeObserver().addOnGlobalLayoutListener(
                     new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
                         public void onGlobalLayout() {
-                            // Create initial action button cluster (attach it to "root" container)
-                            List<ActionItem> initialActionItems = SampleData.getLauncherActionItems(actionClusterView.getContext());
-
-                            LinearLayoutManager layoutManager = (LinearLayoutManager) actionClusterView.getLayoutManager();
+                            SmartScrollableLayoutManager layoutManager = (SmartScrollableLayoutManager) actionClusterView.getLayoutManager();
                             Float addX = actionClusterView.getWidth() / 2.0f;
                             Float addY = actionClusterView.getHeight() / 2.0f;
 
-                            Log.d(LOGTAG, String.format("actionClusterWidth <%d>", actionClusterView.getWidth()));
-                            Log.d(LOGTAG, String.format("actionClusterHeight <%d>", actionClusterView.getHeight()));
+                            Log.d(LOGTAG, String.format("onGlobalLayout actionClusterWidth <%d>", actionClusterView.getWidth()));
+                            Log.d(LOGTAG, String.format("onGlobalLayout actionClusterHeight <%d>", actionClusterView.getHeight()));
 
                             switch (layoutManager.getOrientation()) {
 
@@ -358,18 +346,57 @@ public class LauncherActivity extends AppCompatActivity {
                         }
                     }
             );
+        }
 
-            deactivateView((ViewGroup) invokingActionClusterView.getParent());
+        // Add Action Cluster Views to root container
+        actionClusterContainer.addView(actionClusterView);
+
+        // Activate (position + register) Action Cluster View
+        if (instantShow) {
+            activateActionClusterView(actionClusterView);
+        }
+
+        Log.d(LOGTAG, String.format("Added action cluster <%s>", actionCluster.getName()));
+    }
+
+    /**
+     * Show action cluster: If there is a parent cluster (identified by invokingActionClusterButtonView)
+     *
+     * @param actionClusterView
+     */
+    public void activateActionClusterView(final ActionClusterView actionClusterView) {
+
+        ClusterButtonView invokingActionClusterView = actionClusterView.getInvokingActionButtonView();
+
+        if (invokingActionClusterView != null) {
+            ((ActionClusterView) invokingActionClusterView.getParent()).fadeToBack();
         } else {
-            deactivateBackgroundView();
+            deactivateMainContentView();
             toggleClusterButton.minimize();
 //            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_forward_black_24dp, getTheme()));
         }
 
         actionClusterView.fadeIn();
 
-        // Put View into list of active Action Cluster Views
+        // Put View into list of active (visible) Action Cluster Views
         activeActionClusterViews.add(actionClusterView);
+    }
+
+    /**
+     * Get base Action Cluster View
+     *
+     * @param instantShowOnCreate
+     * @return
+     */
+    public ActionClusterView getBaseActionClusterView(boolean instantShowOnCreate) {
+
+        if (activeActionClusterViews.size() == 0) {
+            // Create initial action button cluster (attach it to "root" container)
+            ActionCluster initialActionCluster = actionClusterStore.getClusterForActionEvent(getPackageName());
+            createActionClusterView(initialActionCluster, null, instantShowOnCreate);
+        }
+
+        return activeActionClusterViews.get(0);
     }
 
     /**
@@ -400,6 +427,15 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     /**
+     * Deactivate (hide/remove) all action cluster views.
+     */
+    public void deactivateAllActionsClusterViews() {
+        for (ActionClusterView actionClusterView : activeActionClusterViews) {
+            deactivateActionClusterView(actionClusterView);
+        }
+    }
+
+    /**
      * Hide action cluster
      *
      * @param actionClusterView
@@ -410,16 +446,16 @@ public class LauncherActivity extends AppCompatActivity {
 
         if (invokingActionButtonView != null) {
             actionClusterView.fadeOut();
-            activateView((ViewGroup) invokingActionButtonView.getParent());
-            actionClusterContainer.removeView((ViewGroup) actionClusterView.getParent());
-            Log.d(LOGTAG, String.format("Removed Action Cluster <%s>", ((ViewGroup) actionClusterView.getParent()).getId()));
+            ((ActionClusterView) invokingActionButtonView.getParent()).restore();
+            actionClusterContainer.removeView(actionClusterView);
+            Log.d(LOGTAG, String.format("Removed Action Cluster <%s>", actionClusterView.getId()));
         } else {
 //            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_24dp, getTheme()));
             toggleClusterButton.maximize();
             actionClusterView.fadeOut();
-            activateBackgroundView();
+            activateMainContentView();
             actionClusterContainer.removeView(actionClusterView);
-            Log.d(LOGTAG, String.format("Removed Action Cluster <%s>", actionClusterView.getId()));
+            Log.d(LOGTAG, String.format("Removed ROOT Action Cluster <%s>", actionClusterView.getId()));
         }
 
         activeActionClusterViews.remove(actionClusterView);
@@ -430,17 +466,21 @@ public class LauncherActivity extends AppCompatActivity {
      */
     public void toggleActionCluster(View view) {
 
-        ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
+        if (activeActionClusterViews.size() == 0) {
+            getBaseActionClusterView(true);
+        } else {
+            ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
 
-        switch (actionClusterView.getVisibility()) {
-            case View.VISIBLE:
-                deactivateActionClusterView(actionClusterView);
-                break;
+            switch (actionClusterView.getVisibility()) {
+                case View.VISIBLE:
+                    deactivateActionClusterView(actionClusterView);
+                    break;
 
-            case View.GONE:
-            case View.INVISIBLE:
-                activateActionClusterView(actionClusterView);
-                break;
+                case View.GONE:
+                case View.INVISIBLE:
+                    activateActionClusterView(actionClusterView);
+                    break;
+            }
         }
     }
 
@@ -457,32 +497,32 @@ public class LauncherActivity extends AppCompatActivity {
 
             case MotionEvent.ACTION_UP:
 
-                Log.d(LOGTAG, String.format("activeActionClusterViews.size() <%d>", activeActionClusterViews.size()));
-
-                if (activeActionClusterViews.size() > 0) {
-
-                    ActionClusterView actionClusterView = activeActionClusterViews.get(activeActionClusterViews.size() - 1);
-
+                if (mainFuncView != null) {
+                    // Check for active "function view" and close it if touch happened outside visible rect
                     Rect viewRect = new Rect();
-                    actionClusterView.getGlobalVisibleRect(viewRect);
-
-                    if (!viewRect.contains(rawX, rawY)) {
-                        deactivateActionClusterView(actionClusterView);
-                    }
-                }
-
-                // Check for active "function view(s)" and close them if touch happened outside visible rect
-                for (final FuncBaseView funcView : funcViewManager.getFuncViews().values()) {
-                    Rect viewRect = new Rect();
-                    View innerView = funcView.findViewById(R.id.funcInnerView);
+                    View innerView = mainFuncView.findViewById(R.id.funcInnerView);
                     innerView.getGlobalVisibleRect(viewRect);
 
-                    // TODO Fix func view management (add/remove)
                     if (!viewRect.contains(rawX, rawY)) {
-                        funcView.fadeOut(null);
-                        // Completely remove view
-                        funcContainer.removeView(funcView);
-                        funcViewManager.removeFuncView(funcView);
+                        removeMainFuncView();
+                    }
+                } else {
+                    // Check for action button cluster layers and close the topmost if not sticky
+                    if (activeActionClusterViews.size() > 0) {
+
+                        Log.d(LOGTAG, String.format("activeActionClusterViews.size() <%d>", activeActionClusterViews.size()));
+
+                        ActionClusterView actionClusterView = activeActionClusterViews.get(activeActionClusterViews.size() - 1);
+
+                        if (!actionClusterView.isSticky()) {
+
+                            Rect viewRect = new Rect();
+                            actionClusterView.getGlobalVisibleRect(viewRect);
+
+                            if (!viewRect.contains(rawX, rawY)) {
+                                deactivateActionClusterView(actionClusterView);
+                            }
+                        }
                     }
                 }
 
@@ -495,53 +535,47 @@ public class LauncherActivity extends AppCompatActivity {
     /**
      * Activate background view
      */
-    public void activateBackgroundView() {
+    public void activateMainContentView() {
 
-        funcInnerView.setEnabled(true);
-        streamLayoutManager.setScrollEnabled(true);
-        Blurry.delete(funcInnerView);
+        for (SmartScrollableLayoutManager mcSmartScrollableLayoutManager : mcSmartScrollableLayoutManagers) {
+            mcSmartScrollableLayoutManager.setScrollEnabled(true);
+        }
+
+        Blurry.delete(mainContentContainer);
     }
 
     /**
      * Deactivate background view
      */
-    public void deactivateBackgroundView() {
+    public void deactivateMainContentView() {
 
-        streamLayoutManager.setScrollEnabled(false);
-        funcInnerView.setEnabled(false);
+        for (SmartScrollableLayoutManager mcSmartScrollableLayoutManager : mcSmartScrollableLayoutManagers) {
+            mcSmartScrollableLayoutManager.setScrollEnabled(false);
+        }
 
         Blurry.with(this)
                 .radius(blurRadius)
                 .sampling(blurSampliong)
 //                .color(R.color.color_transparent)
                 .animate(blurTransisitionDuration)
-                .onto(funcInnerView);
+                .onto(mainContentContainer);
     }
 
     /**
-     * Activate view
+     * Hide the soft keyboard
+     * See also: https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
+     *
+     * @param activity
      */
-    public void activateView(ViewGroup viewGroup) {
-
-        viewGroup.setEnabled(true);
-        viewGroup.setAlpha(1f);
-        Blurry.delete(viewGroup);
-    }
-
-    /**
-     * Deactivate view
-     */
-    public void deactivateView(ViewGroup viewGroup) {
-
-        viewGroup.setEnabled(false);
-        viewGroup.setAlpha(0.3f);
-
-//        Blurry.with(this)
-//                .radius(blurRadius)
-//                .sampling(blurSampliong)
-////                .color(R.color.color_transparent)
-//                .animate(blurTransisitionDuration)
-//                .onto(viewGroup);
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     @Override
@@ -550,7 +584,6 @@ public class LauncherActivity extends AppCompatActivity {
 
         // Hide status and action bars
         hideStatusAndActionBar();
-
 //        mCircle.start();
     }
 
@@ -558,6 +591,18 @@ public class LauncherActivity extends AppCompatActivity {
     protected void onPause() {
 //        mCircle.stop();
         super.onPause();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Check for owner contactIdentity and start "Gorilla SysApp" if not given yet
+        // TODO: To be replaced by discovering UID from "Identity Manager" later on.
+        if (getOwnerIdent() == null) {
+            Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp");
+            Simple.startActivity(this, launchIntent);
+        }
     }
 
     /**
@@ -571,14 +616,6 @@ public class LauncherActivity extends AppCompatActivity {
             if (statusBar != null) {
                 statusBar.setSvLink(connected);
             }
-
-//            updateTitle();
-//
-//            for (ChatProfile chatProfile : chatProfiles)
-//            {
-//                chatProfile.activity.setStatus(svlink, uplink);
-//                chatProfile.activity.updateTitle();
-//            }
         }
 
         @Override
@@ -588,14 +625,6 @@ public class LauncherActivity extends AppCompatActivity {
             if (statusBar != null) {
                 statusBar.setUplink(connected);
             }
-
-//            updateTitle();
-//
-//            for (ChatProfile chatProfile : chatProfiles)
-//            {
-//                chatProfile.activity.setStatus(svlink, uplink);
-//                chatProfile.activity.updateTitle();
-//            }
         }
 
         @Override
@@ -616,13 +645,6 @@ public class LauncherActivity extends AppCompatActivity {
                     statusBar.setProfileInfo(nick);
                 }
             }
-
-//            updateTitle();
-//
-//            for (ChatProfile chatProfile : chatProfiles)
-//            {
-//                chatProfile.activity.finish();
-//            }
         }
 
         @Override

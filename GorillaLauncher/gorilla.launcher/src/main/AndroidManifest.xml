@@ -34,14 +34,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <!--<activity-->
-        <!--android:name=".DisplayMessageActivity"-->
-        <!--android:parentActivityName=".ComposeMessageActivity">-->
-        <!--&lt;!&ndash; The meta-data tag is required if you support API level 15 and lower &ndash;&gt;-->
-        <!--<meta-data-->
-        <!--android:name="android.support.PARENT_ACTIVITY"-->
-        <!--android:value=".ComposeMessageActivity" />-->
-        <!--</activity>-->
+        <activity
+            android:name=".DisplayMessageActivity"
+            android:parentActivityName=".ComposeMessageActivity">
+            <!-- The meta-data tag is required if you support API level 15 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ComposeMessageActivity" />
+        </activity>
 
     </application>
 

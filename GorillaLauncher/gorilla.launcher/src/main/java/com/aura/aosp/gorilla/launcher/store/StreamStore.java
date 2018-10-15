@@ -4,9 +4,10 @@ import android.content.Context;
 
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
-import com.aura.aosp.gorilla.launcher.model.ContactStreamItem;
-import com.aura.aosp.gorilla.launcher.model.InvisibleStreamItem;
 import com.aura.aosp.gorilla.launcher.model.StreamItem;
+import com.aura.aosp.gorilla.launcher.model.StreamItemContact;
+import com.aura.aosp.gorilla.launcher.model.StreamItemInvisible;
+import com.aura.aosp.gorilla.launcher.model.StreamItemGeneric;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class StreamStore {
         this.setContext(context);
     }
 
-    public static final InvisibleStreamItem emptyItem = new InvisibleStreamItem();
+    public static final StreamItemInvisible emptyItem = new StreamItemInvisible();
 
     /**
      * Get content stream items for given atom context
@@ -52,7 +53,7 @@ public class StreamStore {
                         continue;
                     }
 
-                    items.add(new ContactStreamItem(identity));
+                    items.add(new StreamItemContact(ownIdentity, identity));
 
 //                    Intent chatIntent = new Intent(atomContext)
 //                    Intent intent = new Intent(context, DisplayMessageActivity.class);

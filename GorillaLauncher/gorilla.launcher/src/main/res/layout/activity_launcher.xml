@@ -25,6 +25,16 @@
     <include layout="@layout/fragment_base_status_bar" />
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/mainContentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statusBar" />
+
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/funcContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -33,7 +43,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/statusBar" />
-    
+
     <FrameLayout
         android:id="@+id/actionClusterContainer"
         android:layout_width="match_parent"
@@ -55,9 +65,10 @@
             android:id="@+id/actionClusterMask"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:alpha="0.2"
+            android:alpha="0.1"
             android:background="@color/color_actioncluster_container_mask_background_debug" />
 
     </FrameLayout>
+    >
 
 </com.aura.aosp.gorilla.launcher.ui.common.BaseView>

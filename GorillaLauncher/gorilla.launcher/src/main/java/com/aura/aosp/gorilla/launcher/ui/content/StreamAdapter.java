@@ -12,8 +12,9 @@ import android.view.ViewGroup;
 import com.aura.aosp.gorilla.launcher.StreamActivity;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.StreamItem;
+import com.aura.aosp.gorilla.launcher.model.StreamItemContact;
+import com.aura.aosp.gorilla.launcher.model.StreamItemGeneric;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
-import com.aura.aosp.gorilla.launcher.model.ContactStreamItem;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 
 import java.util.Collections;
@@ -27,17 +28,20 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
     private static final String LOGTAG = StreamAdapter.class.getSimpleName();
 
-    private List<StreamItem> streamDataList = Collections.emptyList();
+    private List<StreamItem> streamItems = Collections.emptyList();
     private Context context;
     private StreamActivity activity;
     private ActionClusterStore actionClusterStore;
 
     /**
-     * @param list
+     *
+     * @param streamItems
      * @param context
+     * @param activity
      */
-    public StreamAdapter(List<StreamItem> list, Context context, StreamActivity activity) {
-        this.streamDataList = list;
+    public StreamAdapter(List<StreamItem> streamItems, Context context, StreamActivity activity) {
+        // Set initial items but Don't use setter: Until view holder isn't bound, we don't want to notify about changes
+        this.streamItems = streamItems;
         this.context = context;
         this.activity = activity;
     }
@@ -59,7 +63,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         // to populate the current row on the RecyclerView
         // TODO: Probably it makes sense to initialize child views of the
         // TODO: StreamItemView independently
-        final StreamItem dataSet = streamDataList.get(position);
+        final StreamItem dataSet = streamItems.get(position);
 //        holder.item.initWithItem(dataSet);
 
         int useDotButtonRes;
@@ -110,7 +114,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         DrawableCompat.setTint(iDrawable, ContextCompat.getColor(context, usePreviewImageColor[0]));
 
         // Very hacky by now:
-        if (dataSet.getType() == StreamItem.ItemType.TYPE_STREAMITEM_CONTACT) {
+        if (dataSet.getType() == StreamItemGeneric.ItemType.TYPE_STREAMITEM_CONTACT) {
             holder.dotButton.setScaleX(0.5f);
             holder.dotButton.setScaleY(0.5f);
             holder.previewImage.setScaleX(1.5f);
@@ -127,7 +131,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                     actionClusterStore = new ActionClusterStore(context);
 
                     ActionCluster itemActionCluster = actionClusterStore.getClusterForSelectedIdentity(
-                            "com.aura.aosp.gorilla.stream.contacts", ((ContactStreamItem) dataSet).getIdentity());
+                            "com.aura.aosp.gorilla.stream.contacts", ((StreamItemContact) dataSet).getContactIdentity());
 
                     activity.createActionClusterView(itemActionCluster, null, true);
                 }
@@ -138,7 +142,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
     @Override
     public int getItemCount() {
         // Return the size of your dataset (invoked by the layout manager)
-        return streamDataList.size();
+        return streamItems.size();
     }
 
     @Override
@@ -146,16 +150,25 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         super.onAttachedToRecyclerView(recyclerView);
     }
 
-    public void addItem(int position, ContactStreamItem contactStreamItem) {
+    public void addItem(int position, StreamItemGeneric streamItem) {
         // Insert a new item to the RecyclerView on a predefined position
-        streamDataList.add(position, contactStreamItem);
+        streamItems.add(position, streamItem);
         notifyItemInserted(position);
     }
 
-    public void removeItem(ContactStreamItem contactStreamItem) {
+    public void removeItem(StreamItemGeneric streamItem) {
         // Remove a RecyclerView item containing a specified Data object
-        int position = streamDataList.indexOf(contactStreamItem);
-        streamDataList.remove(position);
+        int position = streamItems.indexOf(streamItem);
+        streamItems.remove(position);
         notifyItemRemoved(position);
+    }
+
+    public List<StreamItem> getStreamItems() {
+        return streamItems;
+    }
+
+    public void setStreamItems(List<StreamItem> streamItems) {
+        this.streamItems = streamItems;
+        notifyDataSetChanged();
     }
 }
