@@ -27,9 +27,9 @@
             android:name=".ComposeMessageActivity"
             android:parentActivityName=".StreamActivity">
             <intent-filter>
-                <action android:name="com.aura.aosp.gorilla.launcher.action.CREATE_NOTE" />
-                <action android:name="com.aura.aosp.gorilla.launcher.action.CREATE_NOTE_SHARED_WITH" />
-                <action android:name="com.aura.aosp.gorilla.stream.contacts.action.COMPOSE_MESSAGE" />
+                <action android:name="com.aura.aosp.gorilla.launcher.CREATE_NOTE" />
+                <action android:name="com.aura.aosp.gorilla.launcher.CREATE_NOTE_SHARED_WITH" />
+                <action android:name="com.aura.aosp.gorilla.stream.contacts.COMPOSE_MESSAGE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

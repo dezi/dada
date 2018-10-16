@@ -130,8 +130,8 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                     // Create initial action button cluster (attach it to "root" container)
                     actionClusterStore = new ActionClusterStore(context);
 
-                    ActionCluster itemActionCluster = actionClusterStore.getClusterForSelectedIdentity(
-                            "com.aura.aosp.gorilla.stream.contacts", ((StreamItemContact) dataSet).getContactIdentity());
+                    ActionCluster itemActionCluster = actionClusterStore.getClusterForAction(
+                            "stream.contacts", ((StreamItemContact) dataSet).getContactIdentity());
 
                     activity.createActionClusterView(itemActionCluster, null, true);
                 }

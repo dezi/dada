@@ -1,7 +1,6 @@
 package com.aura.aosp.gorilla.launcher.ui.navigation;
 
 import android.content.Context;
-import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 
 import com.aura.aosp.gorilla.launcher.R;
@@ -10,7 +9,7 @@ import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 /**
  * Launcher button for toggling main action button cluster
  */
-public class ToggleClusterButton extends FloatingActionButton {
+public class ToggleClusterButton extends ClusterButtonView {
 
     public ToggleClusterButton(Context context) {
         super(context);

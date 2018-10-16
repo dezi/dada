@@ -11,7 +11,7 @@
     <string name="image_preview">Bildvorschau</string>
     <string name="cluster_icon">Cluster Icon</string>
 
-    <string name="actions_composeMessage">Compoose New Message</string>
+    <string name="actions_composeMessage">Compose New Message</string>
     <string name="actions_takePhoto">Take Picture</string>
     <string name="actions_startPhoneCall">Start Phone Call</string>
     <string name="actions_addNote">Add Note</string>

@@ -69,6 +69,5 @@
             android:background="@color/color_actioncluster_container_mask_background_debug" />
 
     </FrameLayout>
-    >
 
 </com.aura.aosp.gorilla.launcher.ui.common.BaseView>

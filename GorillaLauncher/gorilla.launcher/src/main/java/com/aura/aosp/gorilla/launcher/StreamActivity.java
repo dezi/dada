@@ -128,7 +128,7 @@ public class StreamActivity extends LauncherActivity {
      */
     public void onReturnToStream() {
         removeMainFuncView();
-//        deactivateAllActionsClusterViews();
+        deactivateAllActionsClusterViews();
         activateMainContentView();
         refreshStreamItems();
     }
@@ -136,7 +136,7 @@ public class StreamActivity extends LauncherActivity {
     /**
      * ACTION: "Open Content Composer"
      */
-    public void onOpenContentComposer(@Nullable Identity identity) {
+    public void onOpenContentComposer(@Nullable Identity contactIdentity) {
 
 //        Effects.fadeOutView(actionClusterContainer, this, null);
 //        ConstraintSet constraintSet = new ConstraintSet();
@@ -145,7 +145,7 @@ public class StreamActivity extends LauncherActivity {
 //        constraintSet.applyTo(actionClusterContainer);
 
         setMainFuncView(R.layout.func_content_composer, true);
-        Log.d(LOGTAG, String.format("onOpenContentComposer for contactIdentity <%s>", identity.getNick()));
+        Log.d(LOGTAG, String.format("onOpenContentComposer for contactIdentity <%s>", contactIdentity.getNick()));
 
         actionClusterStore.setContext(this);
 
@@ -153,21 +153,18 @@ public class StreamActivity extends LauncherActivity {
         ActionClusterView activeActionClusterView = getBaseActionClusterView(false);
 
         ActionClusterAdapter actionClusterAdapter = (ActionClusterAdapter) activeActionClusterView.getAdapter();
-        ActionCluster cocoActionCluster = actionClusterStore.getClusterForSelectedIdentity("com.aura.aosp.gorilla.func.content_composer", identity);
+        ActionCluster cocoActionCluster = actionClusterStore.getClusterForAction(
+                "func.content_composer", contactIdentity);
 
         actionClusterAdapter.setActionItems(cocoActionCluster.getActionItems());
 
         activeActionClusterView.setSticky(true);
 
+//        // For creating a new action cluster view instead of transitioning existing one:
+//        createActionClusterView(cocoActionCluster, null, true);
+
         // TODO: This is hacked! Use e.g. constraints to reposition and/or perform a view transition
         activeActionClusterView.setY(40f);
-
-//        actionClusterStore = new ActionClusterStore(this);
-//
-//        ActionCluster itemActionCluster = actionClusterStore.getClusterForSelectedIdentity(
-//                "com.aura.aosp.gorilla.func.content_composer", identity);
-//
-//        createActionClusterView(itemActionCluster, null, true);
 
     }
 
