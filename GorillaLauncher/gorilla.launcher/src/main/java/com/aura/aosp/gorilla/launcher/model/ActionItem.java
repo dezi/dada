@@ -3,38 +3,45 @@ package com.aura.aosp.gorilla.launcher.model;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 
-import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
-
-import java.lang.reflect.Method;
-
 /**
  * The ActionItem model represents the universal action button found throughout all
  * navigation action button collections like the "action cluster".
+ * <p>
+ * TODO: Extract more subclasses: GenericActionItem, IntentActionItem, ClusterActionItem
  */
-public class ActionItem extends AbstractActionItem {
+public class ActionItem implements ActionItemInterface {
+
+    protected invocationType invocationType = ActionItemInterface.invocationType.INVOCATION_TYPE_UNKNOWN;
+    protected invocationTarget invocationTarget = ActionItemInterface.invocationTarget.INVOCATION_TARGET_INTERN_VIEW;
 
     protected String name;
-    protected FuncBaseView.FuncType funcType;
     protected Integer imageId;
-    protected String action;
-    protected Object invokeObject;
-    protected Method invokeMethod;
-    protected Object invokePayload;
+    protected String action = null;
     protected Intent intent;
     protected ActionCluster actionCluster;
     protected Float absoluteScore;
 
     /**
      * @param name
-     * @param funcType
+     * @param imageId
+     * @param initialScore
+     */
+    public ActionItem(String name, Integer imageId, @Nullable Float initialScore) {
+        setName(name);
+        setImageId(imageId);
+        setAbsoluteScore(initialScore);
+    }
+
+    /**
+     *
+     * @param name
      * @param imageId
      * @param initialScore
      * @param action
      */
-    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, @Nullable Float initialScore, String action) {
-        setType(ItemType.TYPE_ACTION_INTERN);
+    public ActionItem(String name, Integer imageId, @Nullable Float initialScore, String action) {
+        setInvocationType(ActionItemInterface.invocationType.INVOCATION_TYPE_INTENTSTRING);
         setName(name);
-        setFuncType(funcType);
         setImageId(imageId);
         setAction(action);
         setAbsoluteScore(initialScore);
@@ -42,49 +49,13 @@ public class ActionItem extends AbstractActionItem {
 
     /**
      * @param name
-     * @param funcType
-     * @param imageId
-     * @param invokedMethod
-     */
-    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, @Nullable Float initialScore, Method invokedMethod) {
-        setType(ItemType.TYPE_ACTION_INTERN);
-        setName(name);
-        setFuncType(funcType);
-        setImageId(imageId);
-        setInvokeMethod(invokedMethod);
-        setAbsoluteScore(initialScore);
-    }
-
-    /**
-     * @param name
-     * @param funcType
-     * @param imageId
-     * @param invokedObject
-     * @param invokedMethod
-     * @param invokedPayload
-     */
-    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, @Nullable Float initialScore, Object invokedObject, Method invokedMethod, Object invokedPayload) {
-        setType(ItemType.TYPE_ACTION_INTERN);
-        setName(name);
-        setFuncType(funcType);
-        setImageId(imageId);
-        setInvokeObject(invokedObject);
-        setInvokeMethod(invokedMethod);
-        setInvokePayload(invokedPayload);
-        setAbsoluteScore(initialScore);
-    }
-
-    /**
-     * @param name
-     * @param funcType
      * @param imageId
      * @param initialScore
      * @param intent
      */
-    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, @Nullable Float initialScore, Intent intent) {
-        setType(ItemType.TYPE_ACTION_INTERN);
+    public ActionItem(String name, Integer imageId, @Nullable Float initialScore, Intent intent) {
+        setInvocationType(ActionItemInterface.invocationType.INVOCATION_TYPE_INTENT);
         setName(name);
-        setFuncType(funcType);
         setImageId(imageId);
         setIntent(intent);
         setAbsoluteScore(initialScore);
@@ -92,48 +63,63 @@ public class ActionItem extends AbstractActionItem {
 
     /**
      * @param name
-     * @param funcType
      * @param imageId
      * @param initialScore
      * @param actionCluster
      */
-    public ActionItem(String name, FuncBaseView.FuncType funcType, Integer imageId, @Nullable Float initialScore, ActionCluster actionCluster) {
-        setType(ItemType.TYPE_CLUSTER);
+    public ActionItem(String name, Integer imageId, @Nullable Float initialScore, ActionCluster actionCluster) {
+        setInvocationType(ActionItemInterface.invocationType.INVOCATION_TYPE_CLUSTER);
+        setInvocationTarget(ActionItemInterface.invocationTarget.INVOCATION_TARGET_INTERN_CLUSTER);
         setName(name);
-        setFuncType(funcType);
         setImageId(imageId);
         setActionCluster(actionCluster);
         setAbsoluteScore(initialScore);
     }
 
+    @Override
+    public invocationType getInvocationType() {
+        return invocationType;
+    }
+
+    @Override
+    public void setInvocationType(invocationType invocationType) {
+        this.invocationType = invocationType;
+    }
+
+    public invocationTarget getInvocationTarget() {
+        return invocationTarget;
+    }
+
+    public void setInvocationTarget(invocationTarget invocationTarget) {
+        this.invocationTarget = invocationTarget;
+    }
+
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
-    public FuncBaseView.FuncType getFuncType() {
-        return funcType;
-    }
-
-    public void setFuncType(FuncBaseView.FuncType funcType) {
-        this.funcType = funcType;
-    }
-
+    @Override
     public Integer getImageId() {
         return imageId;
     }
 
+    @Override
     public void setImageId(Integer imageId) {
         this.imageId = imageId;
     }
 
+    @Override
     public Float getAbsoluteScore() {
         return absoluteScore;
     }
 
+    @Override
     public void setAbsoluteScore(@Nullable Float absoluteScore) {
         this.absoluteScore = absoluteScore != null ? absoluteScore : 1.0f;
     }
@@ -144,30 +130,6 @@ public class ActionItem extends AbstractActionItem {
 
     public void setAction(String action) {
         this.action = action;
-    }
-
-    public Object getInvokeObject() {
-        return invokeObject;
-    }
-
-    public void setInvokeObject(Object invokeObject) {
-        this.invokeObject = invokeObject;
-    }
-
-    public Method getInvokeMethod() {
-        return invokeMethod;
-    }
-
-    public void setInvokeMethod(Method invokeMethod) {
-        this.invokeMethod = invokeMethod;
-    }
-
-    public Object getInvokePayload() {
-        return invokePayload;
-    }
-
-    public void setInvokePayload(Object invokePayload) {
-        this.invokePayload = invokePayload;
     }
 
     public Intent getIntent() {

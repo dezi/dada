@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.univid.Contacts;
@@ -18,6 +19,7 @@ import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
+import com.aura.aosp.gorilla.launcher.model.ActionItem;
 import com.aura.aosp.gorilla.launcher.model.StreamItemMessage;
 import com.aura.aosp.gorilla.launcher.store.StreamStore;
 import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
@@ -27,6 +29,9 @@ import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterAdapter;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterView;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Main activity, i.e. the "launcher" screen
@@ -138,6 +143,8 @@ public class StreamActivity extends LauncherActivity {
      */
     public void onOpenContentComposer(@Nullable Identity contactIdentity) {
 
+        Log.d(LOGTAG, String.format("onOpenContentComposer for contactIdentity <%s>", contactIdentity.getNick()));
+
 //        Effects.fadeOutView(actionClusterContainer, this, null);
 //        ConstraintSet constraintSet = new ConstraintSet();
 //        constraintSet.clone(actionClusterContainer);
@@ -145,11 +152,33 @@ public class StreamActivity extends LauncherActivity {
 //        constraintSet.applyTo(actionClusterContainer);
 
         setMainFuncView(R.layout.func_content_composer, true);
-        Log.d(LOGTAG, String.format("onOpenContentComposer for contactIdentity <%s>", contactIdentity.getNick()));
 
+        FrameLayout recipientListContainer = mainFuncView.findViewById(R.id.recipientListContainer);
+
+//        // Create an avatar image manually
+//        ImageView recipientAvatarImage = new ImageView(this);
+//        recipientAvatarImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_person_black_24dp));
+//        recipientAvatarImage.setScaleX(0.5f);
+//        recipientAvatarImage.setScaleY(0.5f);
+
+//        recipientListContainer.addView(recipientAvatarImage);
+
+        // Create extra action cluster (disabled avatar items only) for content editor:
+        List<ActionItem> recipientActionItems = new ArrayList<>();
+        recipientActionItems.add(new ActionItem(
+                contactIdentity.getFull(),
+                R.drawable.ic_person_black_24dp,
+                1.0f
+        ));
+
+        ActionClusterView recipientAvatarClusterView = createActionClusterView(new ActionCluster("recipients", recipientActionItems), null, false);
+        recipientListContainer.addView(recipientAvatarClusterView);
+        recipientAvatarClusterView.fadeIn();
+
+        // Get base action cluster for current view
+        // TODO: Fix, solve generically by using an actionClusterManager which know about current hierarchy and context!
         actionClusterStore.setContext(this);
 
-        // TODO: Fix, solve generically by using an actionClusterManager which know about current hierarchy and context!
         ActionClusterView activeActionClusterView = getBaseActionClusterView(false);
 
         ActionClusterAdapter actionClusterAdapter = (ActionClusterAdapter) activeActionClusterView.getAdapter();

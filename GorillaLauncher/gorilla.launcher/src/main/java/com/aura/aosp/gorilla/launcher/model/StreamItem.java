@@ -3,8 +3,10 @@ package com.aura.aosp.gorilla.launcher.model;
 import android.support.annotation.NonNull;
 
 import com.aura.aosp.aura.common.univid.Identity;
-import com.aura.aosp.gorilla.launcher.R;
 
+/**
+ * Stream item base class.
+ */
 public class StreamItem implements StreamItemInterface {
 
     protected Identity ownerIdentity;
@@ -14,7 +16,7 @@ public class StreamItem implements StreamItemInterface {
     protected ItemType type;
 
     /**
-     * Construct stream item of type "unknown".
+     * Construct stream item of invocationType "unknown".
      */
     public StreamItem() {
         setType(ItemType.TYPE_STREAMITEM_UNKNOWN);

@@ -63,7 +63,6 @@ public class StreamStore {
 //
 //                    items.add(new ActionItem(
 //                            contact.getNick(),
-//                            FuncBaseView.FuncType.OVERLAY,
 //                            R.drawable.ic_account_circle_black_24dp,
 //                            intent,
 //                            0.870f
@@ -74,6 +73,10 @@ public class StreamStore {
         items.add(emptyItem);
 
         return items;
+    }
+
+    public void getSuggestions(String atomContext) {
+
     }
 
     public Context getContext() {

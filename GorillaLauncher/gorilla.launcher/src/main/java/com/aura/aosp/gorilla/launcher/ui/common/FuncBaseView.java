@@ -17,11 +17,6 @@ import jp.wasabeef.blurry.Blurry;
  */
 public class FuncBaseView extends ConstraintLayout {
 
-    public enum FuncType {
-        FULLSCREEN,
-        OVERLAY
-    }
-
     public FuncBaseView(Context context) {
         super(context);
     }

@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
@@ -33,9 +32,9 @@ import com.aura.aosp.gorilla.launcher.model.ActionCluster;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 import com.aura.aosp.gorilla.launcher.ui.animation.drawable.ExpandingCircleDrawable;
-import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
 import com.aura.aosp.gorilla.launcher.ui.common.BaseView;
 import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
+import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterAdapter;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterView;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ClusterButtonView;
@@ -240,7 +239,6 @@ public class LauncherActivity extends AppCompatActivity {
         }
     }
 
-
     /**
      * Create action button cluster view by inflating xml, adding an item adapter
      * and attach it to launcher (main) view
@@ -319,7 +317,7 @@ public class LauncherActivity extends AppCompatActivity {
      * @param invokingActionButtonView
      * @param instantShow
      */
-    public void createActionClusterView(ActionCluster actionCluster, @Nullable ClusterButtonView invokingActionButtonView, boolean instantShow) {
+    public ActionClusterView createActionClusterView(ActionCluster actionCluster, @Nullable ClusterButtonView invokingActionButtonView, boolean instantShow) {
 
         Integer nextLayOrientation = LinearLayoutManager.HORIZONTAL;
         Integer nextLayout = R.layout.fragment_actioncluster_horizontal;
@@ -395,6 +393,8 @@ public class LauncherActivity extends AppCompatActivity {
         }
 
         Log.d(LOGTAG, String.format("Added action cluster <%s>", actionCluster.getName()));
+
+        return actionClusterView;
     }
 
     /**
@@ -405,13 +405,15 @@ public class LauncherActivity extends AppCompatActivity {
      */
     public ActionClusterView getBaseActionClusterView(boolean instantShowOnCreate) {
 
+        // TODO: Fix! Created but not activated views are not within activeActionClusterViews!
         if (activeActionClusterViews.size() == 0) {
             // Create initial action button cluster (attach it to "root" container)
             ActionCluster initialActionCluster = actionClusterStore.getClusterForAction("launcher", null);
-            createActionClusterView(initialActionCluster, toggleClusterButton, instantShowOnCreate);
+            ActionClusterView baseActionClusterView = createActionClusterView(initialActionCluster, toggleClusterButton, instantShowOnCreate);
+            return baseActionClusterView;
+        } else {
+            return activeActionClusterViews.get(0);
         }
-
-        return activeActionClusterViews.get(0);
     }
 
     /**
@@ -523,21 +525,17 @@ public class LauncherActivity extends AppCompatActivity {
      */
     public void toggleActionCluster(View view) {
 
-        if (activeActionClusterViews.size() == 0) {
-            getBaseActionClusterView(true);
-        } else {
-            ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
+        ActionClusterView baseActionClusterView = getBaseActionClusterView(false);
 
-            switch (actionClusterView.getVisibility()) {
-                case View.VISIBLE:
-                    deactivateActionClusterView(actionClusterView);
-                    break;
+        switch (baseActionClusterView.getVisibility()) {
+            case View.VISIBLE:
+                deactivateActionClusterView(baseActionClusterView);
+                break;
 
-                case View.GONE:
-                case View.INVISIBLE:
-                    activateActionClusterView(actionClusterView);
-                    break;
-            }
+            case View.GONE:
+            case View.INVISIBLE:
+                activateActionClusterView(baseActionClusterView);
+                break;
         }
     }
 

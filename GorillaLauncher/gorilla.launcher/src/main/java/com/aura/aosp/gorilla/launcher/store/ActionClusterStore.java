@@ -9,7 +9,8 @@ import com.aura.aosp.gorilla.launcher.StreamActivity;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.ActionItem;
-import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
+import com.aura.aosp.gorilla.launcher.model.ActionItemInterface;
+import com.aura.aosp.gorilla.launcher.model.InvokerActionItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,6 @@ public class ActionClusterStore {
 
                     items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_openCalendar),
-                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_add_black_24dp,
                             1f,
                             getClusterForAction("launcher", partnerIdentity)
@@ -66,9 +66,8 @@ public class ActionClusterStore {
 
                 case "launcher":
 
-                    items.add(new ActionItem(
+                    items.add(new InvokerActionItem(
                             context.getResources().getString(R.string.actions_openCalendar),
-                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_add_a_photo_black_24dp,
                             0.870f,
                             StreamActivity.class.getMethod("onOpenSimpleCalendar")
@@ -76,7 +75,6 @@ public class ActionClusterStore {
 
                     items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_startPhoneCall),
-                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_call_black_24dp,
                             0.95f,
                             getActionDomainForFragment(actionPath + ".START_PHONE_CALL")
@@ -84,7 +82,6 @@ public class ActionClusterStore {
 
                     items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_composeMessage),
-                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_sms_black_24dp,
                             0.92f,
                             getClusterForAction("func.content_composer", partnerIdentity)
@@ -92,7 +89,6 @@ public class ActionClusterStore {
 
                     items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_composeMessage),
-                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_message_black_24dp,
                             0.98f,
                             getActionDomainForFragment(actionPath + ".CREATE_NOTE")
@@ -101,26 +97,23 @@ public class ActionClusterStore {
                     // Special action "Switch Profile". TODO: Remove for 0.1:
                     ActionItem switchProfileActionItem = new ActionItem(
                             context.getResources().getString(R.string.actions_switchProfile),
-                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_account_circle_black_24dp,
                             0.97f,
                             context.getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp")
                     );
 
-                    switchProfileActionItem.setType(ActionItem.ItemType.TYPE_ACTION_EXTERN);
+                    switchProfileActionItem.setInvocationTarget(ActionItemInterface.invocationTarget.INVOCATION_TARGET_EXTERN);
                     items.add(switchProfileActionItem);
 
-                    items.add(new ActionItem(
+                    items.add(new InvokerActionItem(
                             context.getResources().getString(R.string.actions_addAlarm),
-                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_add_alarm_black_24dp,
                             0.88f,
                             StreamActivity.class.getMethod("onOpenAlarmClock")
                     ));
 
-                    items.add(new ActionItem(
+                    items.add(new InvokerActionItem(
                             context.getResources().getString(R.string.actions_openStream),
-                            FuncBaseView.FuncType.FULLSCREEN,
                             R.drawable.stream_oval_24dp,
                             0.93f,
                             StreamActivity.class.getMethod("onReturnToStream")
@@ -130,9 +123,8 @@ public class ActionClusterStore {
 
                 case "stream.contacts":
 
-                    items.add(new ActionItem(
+                    items.add(new InvokerActionItem(
                             context.getResources().getString(R.string.actions_composeMessage),
-                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_message_black_24dp,
                             1f,
                             getContext(),
@@ -142,7 +134,6 @@ public class ActionClusterStore {
 
                     items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_startPhoneCall),
-                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_call_black_24dp,
                             0.95f,
                             getActionDomainForFragment(actionPath + ".START_PHONE_CALL")
@@ -150,7 +141,6 @@ public class ActionClusterStore {
 
                     items.add(new ActionItem(
                             context.getResources().getString(R.string.actions_addPerson),
-                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_person_add_black_24dp,
                             0.95f,
                             getActionDomainForFragment(actionPath + ".ADD_PERSON")
@@ -162,9 +152,8 @@ public class ActionClusterStore {
 
                     if (partnerIdentity != null) {
 
-                        items.add(new ActionItem(
+                        items.add(new InvokerActionItem(
                                 context.getResources().getString(R.string.actions_sendMessage),
-                                FuncBaseView.FuncType.OVERLAY,
                                 R.drawable.ic_send_black_24dp,
                                 1f,
                                 getContext(),
@@ -176,9 +165,8 @@ public class ActionClusterStore {
 
                     } else {
 
-                        items.add(new ActionItem(
+                        items.add(new InvokerActionItem(
                                 context.getResources().getString(R.string.actions_pickDate),
-                                FuncBaseView.FuncType.OVERLAY,
                                 R.drawable.ic_date_range_black_24dp,
                                 0.80f,
                                 StreamActivity.class.getMethod("onPickDate")
@@ -186,7 +174,6 @@ public class ActionClusterStore {
 
                         items.add(new ActionItem(
                                 context.getResources().getString(R.string.actions_composeMessage),
-                                FuncBaseView.FuncType.OVERLAY,
                                 R.drawable.ic_sms_black_24dp,
                                 0.69f,
                                 getActionDomainForFragment("launcher.CREATE_NOTE")
@@ -194,7 +181,6 @@ public class ActionClusterStore {
 
                         items.add(new ActionItem(
                                 context.getResources().getString(R.string.actions_newtextsharedwith),
-                                FuncBaseView.FuncType.OVERLAY,
                                 R.drawable.ic_contact_mail_black_24dp,
                                 0.99f,
                                 getActionDomainForFragment("launcher.CREATE_NOTE_SHARED_WITH")
@@ -202,7 +188,6 @@ public class ActionClusterStore {
 
                         items.add(new ActionItem(
                                 context.getResources().getString(R.string.actions_lookupContact),
-                                FuncBaseView.FuncType.OVERLAY,
                                 R.drawable.ic_person_black_24dp,
                                 0.75f,
                                 getActionDomainForFragment("launcher.LOOKUP_CONTENT")
@@ -210,7 +195,6 @@ public class ActionClusterStore {
 
                         items.add(new ActionItem(
                                 context.getResources().getString(R.string.actions_editText),
-                                FuncBaseView.FuncType.OVERLAY,
                                 R.drawable.ic_mode_edit_black_24dp,
                                 0.80f,
                                 getClusterForAction(actionPath + ".SELECT_TEXT", partnerIdentity)
@@ -218,7 +202,6 @@ public class ActionClusterStore {
 
                         items.add(new ActionItem(
                                 context.getResources().getString(R.string.actions_share),
-                                FuncBaseView.FuncType.OVERLAY,
                                 R.drawable.ic_share_black_24dp,
                                 0.98f,
                                 getActionDomainForFragment("launcher.SHARE")
@@ -229,33 +212,29 @@ public class ActionClusterStore {
 
                 case "func.content_composer.SELECT_TEXT":
 
-                    items.add(new ActionItem(
+                    items.add(new InvokerActionItem(
                             context.getResources().getString(R.string.actions_markSelectedTextBold),
-                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_format_bold_black_24dp,
                             1f,
                             StreamActivity.class.getMethod("onMarkSelectedTextBold")
                     ));
 
-                    items.add(new ActionItem(
+                    items.add(new InvokerActionItem(
                             context.getResources().getString(R.string.actions_markSelectedTextItalic),
-                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_format_italic_black_24dp,
                             1f,
                             StreamActivity.class.getMethod("onMarkSelectedTextItalic")
                     ));
 
-                    items.add(new ActionItem(
+                    items.add(new InvokerActionItem(
                             context.getResources().getString(R.string.actions_markSelectedTextUnderlined),
-                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_format_underlined_black_24dp,
                             1f,
                             StreamActivity.class.getMethod("onMarkSelectedTextUnderlined")
                     ));
 
-                    items.add(new ActionItem(
+                    items.add(new InvokerActionItem(
                             context.getResources().getString(R.string.actions_markSelectedTextAlignJustify),
-                            FuncBaseView.FuncType.OVERLAY,
                             R.drawable.ic_format_align_justify_black_24dp,
                             1f,
                             StreamActivity.class.getMethod("onMarkSelectedTextAlignJustify")
