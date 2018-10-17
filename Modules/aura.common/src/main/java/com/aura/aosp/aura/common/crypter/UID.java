@@ -190,7 +190,6 @@ public class UID
             if (uuidAnyStr.length() != 36)
             {
                 Err.errp("uuid wrong format=%s!", uuidAnyStr);
-                Err.printStackTrace();
                 return null;
             }
 
@@ -216,7 +215,6 @@ public class UID
         if ((uuidBytes == null) || (uuidBytes.length != 16))
         {
             Err.errp("uuid wrong format=%s!", uuidAnyStr);
-            Err.printStackTrace();
             return null;
         }
 

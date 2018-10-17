@@ -1,8 +1,11 @@
 package com.aura.aosp.aura.common.simple;
 
+import android.support.annotation.NonNull;
+
 @SuppressWarnings("PointlessBitwiseExpression")
 public class Marshal
 {
+    @NonNull
     public static byte[] marshalShort(short val)
     {
         byte[] bytes = new byte[ 2 ];
@@ -27,6 +30,7 @@ public class Marshal
         // formatter: on
     }
 
+    @NonNull
     public static byte[] marshalInt(int val)
     {
         byte[] bytes = new byte[ 4 ];
@@ -55,6 +59,7 @@ public class Marshal
         // formatter: on
     }
 
+    @NonNull
     public static byte[] marshalLong(long val)
     {
         byte[] bytes = new byte[ 8 ];
