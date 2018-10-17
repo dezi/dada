@@ -26,7 +26,7 @@ import java.io.ByteArrayInputStream;
 public class GZP
 {
     /**
-     * GZIP encode binary raw data.
+     * Encode binary raw data into GZIP.
      *
      * @param data binary raw data.
      * @return GZIP encoded data or null on failure.
@@ -61,7 +61,7 @@ public class GZP
     }
 
     /**
-     * GZIP decode GZIP encoded data.
+     * Decode GZIP encoded data.
      *
      * @param gzip GZIP encoded data.
      * @return binary raw data or null on failure.

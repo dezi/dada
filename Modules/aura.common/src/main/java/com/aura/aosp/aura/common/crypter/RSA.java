@@ -150,6 +150,12 @@ public class RSA
     @Nullable
     public static byte[] encodeRSABuffer(RSAPublicKey publicKey, byte[] plain)
     {
+        if ((publicKey == null) || (plain == null))
+        {
+            Err.errp();
+            return null;
+        }
+
         try
         {
             final Cipher cipher = Cipher.getInstance("RSA/None/PKCS1Padding","AndroidOpenSSL");
@@ -173,6 +179,12 @@ public class RSA
     @Nullable
     public static byte[] decodeRSABuffer(RSAPrivateKey privateKey, byte[] crypt)
     {
+        if ((privateKey == null) || (crypt == null))
+        {
+            Err.errp();
+            return null;
+        }
+
         try
         {
             final Cipher cipher = Cipher.getInstance("RSA/None/PKCS1Padding","AndroidOpenSSL");
@@ -196,6 +208,12 @@ public class RSA
     @Nullable
     public static byte[] createRSASignature(RSAPrivateKey privateKey, byte[]... buffers)
     {
+        if ((privateKey == null) || (buffers == null))
+        {
+            Err.errp();
+            return null;
+        }
+
         if (dryrunRSA)
         {
             return new byte[256];
@@ -230,6 +248,12 @@ public class RSA
      */
     public static Err verifyRSASignature(RSAPublicKey publicKey, byte[] signature, byte[]... buffers)
     {
+        if ((publicKey == null) || (signature == null) || (buffers == null))
+        {
+            Err.errp();
+            return null;
+        }
+
         if (dryrunRSA)
         {
             return null;

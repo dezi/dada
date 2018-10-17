@@ -53,6 +53,12 @@ public class AES
     @Nullable
     public static AESBlock newAESCipher(byte[] aeskey)
     {
+        if (aeskey == null)
+        {
+            Err.errp();
+            return null;
+        }
+
         try
         {
             SecretKeySpec skeySpec = new SecretKeySpec(aeskey, "AES");
@@ -106,6 +112,12 @@ public class AES
     @Nullable
     public static byte[] encryptAESBlock(AESBlock block, byte[]... buffers)
     {
+        if ((block == null) || (buffers == null))
+        {
+            Err.errp();
+            return null;
+        }
+
         int total = 0;
 
         for (byte[] buffer : buffers)
@@ -173,6 +185,12 @@ public class AES
     @Nullable
     public static byte[] encryptAES(byte[] aeskey, byte[]... buffers)
     {
+        if ((aeskey == null) || (buffers == null))
+        {
+            Err.errp();
+            return null;
+        }
+
         AESBlock block = newAESCipher(aeskey);
 
         return encryptAESBlock(block, buffers);
@@ -188,6 +206,12 @@ public class AES
     @Nullable
     public static byte[] decryptAESBlock(AESBlock block, byte[] ciphertext)
     {
+        if ((block == null) || (ciphertext == null))
+        {
+            Err.errp();
+            return null;
+        }
+
         if (ciphertext.length < AESBlockSize * 2)
         {
             Err.errp("wrong block size");
@@ -229,6 +253,12 @@ public class AES
     @Nullable
     public static byte[] decryptAES(byte[] aeskey, byte[] ciphertext)
     {
+        if ((aeskey == null) || (ciphertext == null))
+        {
+            Err.errp();
+            return null;
+        }
+
         AESBlock block = newAESCipher(aeskey);
 
         return decryptAESBlock(block, ciphertext);

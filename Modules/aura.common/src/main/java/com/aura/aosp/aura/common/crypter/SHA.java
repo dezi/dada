@@ -33,6 +33,12 @@ public class SHA
     @Nullable
     public static byte[] createSHASignature(byte[] secret, byte[]... buffers)
     {
+        if ((secret == null) || (buffers == null))
+        {
+            Err.errp();
+            return null;
+        }
+
         try
         {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -64,7 +70,10 @@ public class SHA
     @Nullable
     public static Err verifySHASignature(byte[] secret, byte[] signature, byte[]... buffers)
     {
-        if (signature == null) return Err.err();
+        if ((secret == null) || (signature == null) || (buffers == null))
+        {
+            return Err.err();
+        }
 
         byte[] mysignature = createSHASignature(secret, buffers);
         if (mysignature == null) return Err.getLastErr();

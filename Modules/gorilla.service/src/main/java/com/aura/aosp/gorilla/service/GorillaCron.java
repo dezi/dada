@@ -31,6 +31,7 @@ import com.aura.aosp.aura.common.simple.Log;
  * <p>
  * <pre>
  * {@code
+ * <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
  * <service>
  *     android:name=".GorillaCron"
  *     android:permission="android.permission.BIND_JOB_SERVICE">
