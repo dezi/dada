@@ -365,6 +365,7 @@ public class LauncherActivity extends AppCompatActivity {
         LayoutInflater inflater = LayoutInflater.from(this);
 
         final ActionClusterView actionClusterView = (ActionClusterView) inflater.inflate(nextLayout, actionClusterContainer, false);
+//        actionClusterView.setLayoutParams(nextLayoutParams);
         actionClusterView.setInvokingActionButtonView(invokingActionButtonView);
 //        actionClusterView.setInvokingFuncView();
 

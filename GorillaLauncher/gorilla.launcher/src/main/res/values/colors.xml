@@ -58,6 +58,10 @@
     <color name="color_clusterbutton_icon_cluster">#f19393</color>
     <color name="color_clusterbutton_icon_generic">@color/color_clusterbutton_icon_action_intern</color>
 
+    <!-- Circle Images / Avatars -->
+    <color name="color_circleimage_background">#fafafa</color>
+    <color name="color_circleimage_avatar_border">#ffffff</color>
+
     <!-- Navigation Buttons -->
     <color name="color_navigation_foo">#80ffe3</color>
 
@@ -75,5 +79,6 @@
     <!-- Func: Content Composer -->
     <color name="coco_background">#dcdcdc</color>
     <color name="coco_text_primary">#222222</color>
+    <color name="color_circleimage_avatar_primary">#808080</color>
 
 </resources>

@@ -46,6 +46,9 @@
     <dimen name="clusterbutton_paddingVertical">0dp</dimen>
     <dimen name="clusterbutton_elevationPerLevel">20dp</dimen>
 
+    <!-- Circle Images / Avatars -->
+    <dimen name="circleimage_avatar_borderWidth">2dp</dimen>
+
     <!-- Content Composer -->
     <dimen name="coco_lay_marginHorizontal">0dp</dimen>
     <dimen name="coco_lay_marginVertical">0dp</dimen>
