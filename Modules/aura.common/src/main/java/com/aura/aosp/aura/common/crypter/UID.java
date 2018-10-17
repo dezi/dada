@@ -91,8 +91,9 @@ public class UID
      * @return UUID as traditional string or null.
      */
     @Nullable
-    public static String convertUUIDToString(byte[] uuidBytes)
+    public static String convertUUIDToString(@NonNull byte[] uuidBytes)
     {
+        //noinspection ConstantConditions
         if (uuidBytes == null)
         {
             Err.errp();
@@ -120,8 +121,9 @@ public class UID
      * @return UUID as traditional string or null.
      */
     @Nullable
-    public static String convertUUIDToString(String uuidBase64)
+    public static String convertUUIDToString(@NonNull String uuidBase64)
     {
+        //noinspection ConstantConditions
         if (uuidBase64 == null)
         {
             Err.errp();
@@ -147,8 +149,9 @@ public class UID
      * @return UUID as base64 encoded string or null.
      */
     @Nullable
-    public static String convertUUIDToStringBase64(byte[] uuidBytes)
+    public static String convertUUIDToStringBase64(@NonNull byte[] uuidBytes)
     {
+        //noinspection ConstantConditions
         if (uuidBytes == null)
         {
             Err.errp();
@@ -172,8 +175,9 @@ public class UID
      * @return UUID in bytes or null.
      */
     @Nullable
-    public static byte[] convertUUIDToBytes(String uuidAnyStr)
+    public static byte[] convertUUIDToBytes(@NonNull String uuidAnyStr)
     {
+        //noinspection ConstantConditions
         if (uuidAnyStr == null)
         {
             Err.errp();
@@ -190,7 +194,6 @@ public class UID
             if (uuidAnyStr.length() != 36)
             {
                 Err.errp("uuid wrong format=%s!", uuidAnyStr);
-                Err.printStackTrace();
                 return null;
             }
 
@@ -216,7 +219,6 @@ public class UID
         if ((uuidBytes == null) || (uuidBytes.length != 16))
         {
             Err.errp("uuid wrong format=%s!", uuidAnyStr);
-            Err.printStackTrace();
             return null;
         }
 

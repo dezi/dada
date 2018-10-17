@@ -7,6 +7,7 @@
 
 package com.aura.aosp.aura.common.crypter;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.security.MessageDigest;
@@ -31,8 +32,15 @@ public class SHA
      * @return SHA-256 signature over secret and buffers.
      */
     @Nullable
-    public static byte[] createSHASignature(byte[] secret, byte[]... buffers)
+    public static byte[] createSHASignature(@NonNull byte[] secret, @NonNull byte[]... buffers)
     {
+        //noinspection ConstantConditions
+        if ((secret == null) || (buffers == null))
+        {
+            Err.errp();
+            return null;
+        }
+
         try
         {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -62,9 +70,13 @@ public class SHA
      * @return null on signatures match, error otherwise.
      */
     @Nullable
-    public static Err verifySHASignature(byte[] secret, byte[] signature, byte[]... buffers)
+    public static Err verifySHASignature(@NonNull byte[] secret, @NonNull byte[] signature, @NonNull byte[]... buffers)
     {
-        if (signature == null) return Err.err();
+        //noinspection ConstantConditions
+        if ((secret == null) || (signature == null) || (buffers == null))
+        {
+            return Err.err();
+        }
 
         byte[] mysignature = createSHASignature(secret, buffers);
         if (mysignature == null) return Err.getLastErr();

@@ -7,6 +7,7 @@
 
 package com.aura.aosp.aura.common.crypter;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.common.simple.Err;
@@ -34,7 +35,7 @@ class Utils
      * @return RSAPublicKeySpec
      */
     @Nullable
-    static RSAPublicKeySpec newRSAPublicKeySpec(byte[] keyInPkcs1)
+    static RSAPublicKeySpec newRSAPublicKeySpec(@NonNull byte[] keyInPkcs1)
     {
         try
         {
@@ -71,7 +72,7 @@ class Utils
      * @return RSAPrivateCrtKeySpec
      */
     @Nullable
-    static RSAPrivateCrtKeySpec newRSAPrivateCrtKeySpec(byte[] keyInPkcs1)
+    static RSAPrivateCrtKeySpec newRSAPrivateCrtKeySpec(@NonNull byte[] keyInPkcs1)
     {
         try
         {

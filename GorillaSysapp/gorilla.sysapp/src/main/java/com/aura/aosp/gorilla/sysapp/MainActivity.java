@@ -2,16 +2,12 @@ package com.aura.aosp.gorilla.sysapp;
 
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.view.Gravity;
 import android.view.View;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.aura.aosp.aura.common.crypter.B64;
-import com.aura.aosp.aura.common.crypter.RND;
-import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.rights.Perms;
 import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Simple;
@@ -31,7 +27,6 @@ import com.aura.aosp.aura.gui.base.GUIDefs;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 import java.util.List;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
 {

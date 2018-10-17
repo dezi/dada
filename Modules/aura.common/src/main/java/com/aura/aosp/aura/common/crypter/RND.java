@@ -42,7 +42,7 @@ public class RND
      * Generate random integer value.
      *
      * @param max max value - 1.
-     * @return random value between 0 and max - 1.
+     * @return random value between 0 and max - 1 inclusive.
      */
     @SuppressWarnings("PointlessBitwiseExpression")
     public static int randomIntn(int max)
@@ -65,6 +65,7 @@ public class RND
 
     /**
      * Generate a random float value between 0 and 1.
+     *
      * @return random float value.
      */
     @SuppressWarnings("PointlessBitwiseExpression")
