@@ -1,10 +1,29 @@
+/*
+ * Copyright (C) 2018 Aura Software Inc.
+ *
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ */
+
 package com.aura.aosp.aura.common.simple;
 
 import android.support.annotation.NonNull;
 
+/**
+ * Exception safe, annotated and simplified
+ * numeric marshal methods.
+ *
+ * @author Dennis Zierahn
+ */
 @SuppressWarnings("PointlessBitwiseExpression")
 public class Marshal
 {
+    /**
+     * Marshal short value into 2 bytes byte array.
+     *
+     * @param val value.
+     * @return byte array.
+     */
     @NonNull
     public static byte[] marshalShort(short val)
     {
@@ -20,6 +39,12 @@ public class Marshal
         return bytes;
     }
 
+    /**
+     * Unmarshal short value from 2 bytes byte array.
+     *
+     * @param bytes byte array.
+     * @return value or 0 if array null or to short.
+     */
     public static short unMarshalShort(byte[] bytes)
     {
         if (bytes == null)
@@ -42,6 +67,12 @@ public class Marshal
         // formatter: on
     }
 
+    /**
+     * Marshal int value into 4 bytes byte array.
+     *
+     * @param val value.
+     * @return byte array.
+     */
     @NonNull
     public static byte[] marshalInt(int val)
     {
@@ -59,6 +90,12 @@ public class Marshal
         return bytes;
     }
 
+    /**
+     * Unmarshal int value from 4 bytes byte array.
+     *
+     * @param bytes byte array.
+     * @return value or 0 if array null or to short.
+     */
     public static int unMarshalInt(byte[] bytes)
     {
         if (bytes == null)
@@ -83,6 +120,12 @@ public class Marshal
         // formatter: on
     }
 
+    /**
+     * Marshal long value into 8 bytes byte array.
+     *
+     * @param val value.
+     * @return byte array.
+     */
     @NonNull
     public static byte[] marshalLong(long val)
     {
@@ -104,6 +147,12 @@ public class Marshal
         return bytes;
     }
 
+    /**
+     * Unmarshal long value from 8 bytes byte array.
+     *
+     * @param bytes byte array.
+     * @return value or 0 if array null or to short.
+     */
     public static long unMarshalLong(byte[] bytes)
     {
         if (bytes == null)

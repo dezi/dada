@@ -2,12 +2,11 @@ package com.aura.aosp.aura.common.utility;
 
 import android.support.annotation.Nullable;
 
-import com.aura.aosp.aura.common.crypter.RND;
-import com.aura.aosp.aura.common.crypter.UID;
-import com.aura.aosp.aura.common.simple.Err;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.aura.aosp.aura.common.crypter.UID;
+import com.aura.aosp.aura.common.simple.Err;
 
 public class Regions
 {

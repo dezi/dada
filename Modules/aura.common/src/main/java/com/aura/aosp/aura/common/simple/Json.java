@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2018 Aura Software Inc.
+ *
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ */
+
 package com.aura.aosp.aura.common.simple;
 
 import android.support.annotation.NonNull;
@@ -6,22 +13,36 @@ import android.support.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.io.File;
 
+/**
+ * Exception safe, annotated and simplified
+ * JSON helper methods.
+ *
+ * @author Dennis Zierahn
+ */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Json
 {
-    public static JSONObject getFileContent(File jsonFile)
+    /**
+     * Read JSON object from file.
+     *
+     * @param jsonFile JSON file.
+     * @return JSONObject or null on failure.
+     */
+    @Nullable
+    public static JSONObject getFileContent(@NonNull File jsonFile)
     {
+        //noinspection ConstantConditions
         if (jsonFile == null)
         {
             Err.errp();
@@ -29,22 +50,38 @@ public class Json
         }
 
         String jsonStr = Simple.getFileContent(jsonFile);
-
         if (jsonStr == null) return null;
 
         return fromStringObject(jsonStr);
     }
 
-    public static Err putFileContent(File jsonFile, JSONObject content)
+    /**
+     * Write JSON object into file.
+     *
+     * @param jsonFile JSON file.
+     * @return null or error on failure.
+     */
+    public static Err putFileContent(@NonNull File jsonFile, @NonNull JSONObject content)
     {
-        if ((jsonFile == null) || (content == null)) return Err.errp();
+        //noinspection ConstantConditions
+        if ((jsonFile == null) || (content == null))
+        {
+            return Err.errp();
+        }
 
-        return Simple.putFileContent(jsonFile, Json.defuck(Json.toPretty(content)));
+        return Simple.putFileContent(jsonFile, Json.toPretty(content));
     }
 
+    /**
+     * Create JSONOBject from JSON string.
+     *
+     * @param jsonStr JSON string.
+     * @return JSONOBject or null on failure.
+     */
     @Nullable
-    public static JSONObject fromStringObject(String jsonStr)
+    public static JSONObject fromStringObject(@NonNull String jsonStr)
     {
+        //noinspection ConstantConditions
         if (jsonStr == null)
         {
             Err.errp();
@@ -57,412 +94,819 @@ public class Json
         }
         catch (Exception ex)
         {
-            Err.errp();
+            Err.errp(ex);
             return null;
         }
     }
 
-    public static JSONArray fromStringArray(String jsonstr)
+    /**
+     * Create JSONArray from JSON string.
+     *
+     * @param jsonStr JSON string.
+     * @return JSONArray or null on failure.
+     */
+    @Nullable
+    public static JSONArray fromStringArray(@NonNull String jsonStr)
     {
-        if (jsonstr != null)
+        //noinspection ConstantConditions
+        if (jsonStr == null)
         {
-            try
-            {
-                return new JSONArray(jsonstr);
-            }
-            catch (Exception ex)
-            {
-                Log.d(ex.toString());
-            }
+            Err.errp();
+            return null;
         }
 
-        return new JSONArray();
-    }
-
-    public static JSONObject clone(JSONObject json)
-    {
         try
         {
-            return new JSONObject(json.toString());
+            return new JSONArray(jsonStr);
         }
         catch (Exception ex)
         {
-            Log.d(ex.toString());
+            Err.errp(ex);
+            return null;
         }
-
-        return new JSONObject();
     }
 
-    public static JSONArray clone(JSONArray json)
+    /**
+     * Clone JSONObject.
+     *
+     * @param jsonObject JSONObject to clone.
+     * @return cloned JSONObject or null on failure.
+     */
+    @Nullable
+    public static JSONObject clone(@NonNull JSONObject jsonObject)
     {
+        //noinspection ConstantConditions
+        if (jsonObject == null)
+        {
+            Err.errp();
+            return null;
+        }
+
         try
         {
-            return new JSONArray(json.toString());
+            return new JSONObject(jsonObject.toString());
         }
         catch (Exception ex)
         {
-            Log.d(ex.toString());
+            Err.errp(ex);
+            return null;
+        }
+    }
+
+    /**
+     * Clone JSONArray.
+     *
+     * @param jsonArray JSONArray to clone.
+     * @return cloned JSONArray or null on failure.
+     */
+    @Nullable
+    public static JSONArray clone(@NonNull JSONArray jsonArray)
+    {
+        //noinspection ConstantConditions
+        if (jsonArray == null)
+        {
+            Err.errp();
+            return null;
         }
 
-        return new JSONArray();
+        try
+        {
+            return new JSONArray(jsonArray.toString());
+        }
+        catch (Exception ex)
+        {
+            Err.errp(ex);
+            return null;
+        }
     }
 
-    public static void remove(JSONObject json, String key)
+    /**
+     * Remove key from JSONObject.
+     *
+     * @param jsonObject JSONObject to work on.
+     * @param key key to remove from JSONObject.
+     * @return null or error on failure.
+     */
+    @Nullable
+    public static Err remove(@NonNull JSONObject jsonObject, @NonNull String key)
     {
-        json.remove(key);
+        //noinspection ConstantConditions
+        if ((jsonObject == null) || (key == null))
+        {
+            return Err.errp();
+        }
+
+        jsonObject.remove(key);
+        return null;
     }
 
-    public static void remove(JSONArray json, int index)
+    /**
+     * Remove index from JSONArray.
+     *
+     * @param jsonArray JSONArray to work on.
+     * @param index index to remove from JSONArray.
+     * @return null or error on failure.
+     */
+    @Nullable
+    public static Err remove(JSONArray jsonArray, int index)
     {
-        json.remove(index);
+        //noinspection ConstantConditions
+        if (jsonArray == null)
+        {
+            return Err.errp();
+        }
+
+        jsonArray.remove(index);
+        return null;
     }
 
-    public static boolean equals(JSONObject j1, String k1, String val)
+    /**
+     * Compare key from withon JSONObject with given value.
+     *
+     * @param j1 JSONObject to take data from.
+     * @param k1 key in JSONObject.
+     * @param val value to compare to.
+     * @return true if value matches content or both are null.
+     */
+    public static boolean equals(@NonNull JSONObject j1, @NonNull String k1, @Nullable String val)
     {
-        if ((k1 == null) && (val == null)) return true;
+        //noinspection ConstantConditions
+        if ((j1 == null) || (k1 == null))
+        {
+            //
+            // Decided to return false on bogous comparisions.
+            //
+
+            return false;
+        }
 
         String s1 = getString(j1, k1);
 
         return ((s1 == null) && (val == null)) || ((s1 != null) && s1.equals(val));
     }
 
-    public static boolean equals(JSONObject j1, String k1, JSONObject j2)
+    /**
+     * Compare key from withon JSONObject with given value.
+     *
+     * @param j1 JSONObject to take data from.
+     * @param k1 key in JSONObject.
+     * @param j2 JSONObject to take data from.
+     * @return true if both contents match or both are null.
+     */
+    public static boolean equals(@NonNull JSONObject j1, @NonNull String k1, @NonNull JSONObject j2)
     {
+        //noinspection ConstantConditions
+        if ((j1 == null) || (k1 == null) || (j2 == null))
+        {
+            //
+            // Decided to return false on bogous comparisions.
+            //
+
+            return false;
+        }
+
         Object s1 = get(j1, k1);
         Object s2 = get(j2, k1);
 
         return ((s1 == null) && (s2 == null)) || ((s1 != null) && s1.equals(s2));
     }
 
-    public static void copy(JSONObject dst, String dkey, JSONObject src, String skey)
+    /**
+     * Copy value from one JSONObject to another.
+     *
+     * @param dst destination JSONObject.
+     * @param dkey destination key.
+     * @param src source JSONObject.
+     * @param skey source key.
+     * @return null on success or error.
+     */
+    @Nullable
+    public static Err copy(@NonNull JSONObject dst, @NonNull String dkey,
+                           @NonNull JSONObject src, @NonNull String skey)
     {
+        //noinspection ConstantConditions
+        if ((dst == null) || (dkey == null) || (src == null) || (skey == null))
+        {
+            return Err.errp();
+        }
+
+        //
+        // Decided that if tmp is null it should remove key in target.
+        //
+
         Object tmp = get(src, skey);
-        if (tmp != null) put(dst, dkey, tmp);
+        put(dst, dkey, tmp);
+
+        return null;
     }
 
-    public static void copy(JSONObject dst, String key, JSONObject src)
+    /**
+     * Copy value from one JSONObject to another.
+     *
+     * @param dst destination JSONObject.
+     * @param key key to copy.
+     * @param src source JSONObject.
+     * @return null on success or error.
+     */
+    @Nullable
+    public static Err copy(@NonNull JSONObject dst, @NonNull String key, @NonNull JSONObject src)
     {
+        //noinspection ConstantConditions
+        if ((dst == null) || (key == null) || (src == null))
+        {
+            return Err.errp();
+        }
+
+        //
+        // Decided that if tmp is null it should remove key in target.
+        //
+
         Object tmp = get(src, key);
-        if (tmp != null) put(dst, key, tmp);
+        put(dst, key, tmp);
+
+        return null;
     }
 
-    public static void copy(JSONObject dst, JSONObject src)
+    /**
+     * Copy all values from one JSONObject to another.
+     *
+     * @param dst destination JSONObject.
+     * @param src source JSONObject.
+     * @return null on success or error.
+     */
+    @Nullable
+    public static Err copy(@NonNull JSONObject dst, @NonNull JSONObject src)
     {
+        //noinspection ConstantConditions
+        if ((dst == null) || (src == null))
+        {
+            return Err.errp();
+        }
+
         Iterator<String> keysIterator = src.keys();
 
         while (keysIterator.hasNext())
         {
             String key = keysIterator.next();
 
-            copy(dst, key, src);
+            Err err = copy(dst, key, src);
+            if (err != null) return err;
         }
+
+        return null;
     }
 
-    public static JSONArray append(JSONArray dst, JSONArray src)
+    /**
+     * Append one JSONArray into another.
+     *
+     * @param destination destination JSONArray.
+     * @param source source JSONArray.
+     * @return null or error.
+     */
+    @Nullable
+    @SuppressWarnings("ConstantConditions")
+    public static Err append(@NonNull JSONArray destination, @NonNull JSONArray source)
     {
-        if ((dst != null) && (src != null))
+        //noinspection ConstantConditions
+        if ((destination == null) || (source == null))
         {
-            for (int inx = 0; inx < src.length(); inx++)
-            {
-                put(dst, get(src, inx));
-            }
+            Err.errp();
+            return null;
         }
 
-        return dst;
+        for (int inx = 0; inx < source.length(); inx++)
+        {
+            put(destination, get(source, inx));
+        }
+
+        return null;
     }
 
-    public static void put(JSONObject json, String key, Object val)
+    /**
+     * Put generic value into JSONObject.
+     *
+     * @param jsonObject target JSONObject.
+     * @param key key value.
+     * @param val object value.
+     * @return null or error.
+     */
+    @Nullable
+    public static Err put(@NonNull JSONObject jsonObject, @NonNull String key, @Nullable Object val)
     {
+        //noinspection ConstantConditions
+        if ((jsonObject == null) || (key == null))
+        {
+            return Err.errp();
+        }
+
         try
         {
-            json.put(key, val);
+            jsonObject.put(key, val);
+            return null;
         }
         catch (Exception ex)
         {
-            Log.d(ex.toString());
+            return Err.errp(ex);
         }
     }
 
-    public static void put(JSONArray json, Object val)
-    {
-        json.put(val);
-    }
-
-    public static boolean has(JSONObject json, String key)
-    {
-        return (json != null) && json.has(key);
-    }
-
+    /**
+     * Append generic value into JSONArray.
+     *
+     * @param jsonArray target JSONArray.
+     * @param val object value.
+     * @return null or error.
+     */
     @Nullable
-    public static Object get(JSONObject json, String key)
+    public static Err put(@NonNull JSONArray jsonArray, @NonNull Object val)
+    {
+        //noinspection ConstantConditions
+        if ((jsonArray == null) || (val == null))
+        {
+            return Err.errp();
+        }
+
+        try
+        {
+            jsonArray.put(val);
+            return null;
+        }
+        catch (Exception ex)
+        {
+            return Err.errp(ex);
+        }
+    }
+
+    /**
+     * Check if JSONObject has key.
+     *
+     * @param jsonObject target JSONObject.
+     * @param key target key.
+     * @return true if JSONObject contains key.
+     */
+    public static boolean has(@NonNull JSONObject jsonObject, @NonNull String key)
+    {
+        //noinspection ConstantConditions
+        return (jsonObject != null) && jsonObject.has(key);
+    }
+
+    /**
+     * Get generic object from JSONObject.
+     *
+     * @param jsonObject target JSONObject.
+     * @param key target key.
+     * @return object or null.
+     */
+    @Nullable
+    public static Object get(@NonNull JSONObject jsonObject, @NonNull String key)
     {
         try
         {
-            return json.get(key);
+            return jsonObject.get(key);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get generic object from JSONArray.
+     *
+     * @param jsonArray target JSONArray.
+     * @param index target index.
+     * @return object or null.
+     */
     @Nullable
-    public static Object get(JSONArray json, int index)
+    public static Object get(@NonNull JSONArray jsonArray, int index)
     {
         try
         {
-            return json.get(index);
+            return jsonArray.get(index);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get float object from JSONObject.
+     *
+     * @param jsonObject target JSONObject.
+     * @param key target key.
+     * @return object or null.
+     */
     @Nullable
-    public static Float getFloat(JSONObject json, String key)
+    public static Float getFloat(@NonNull JSONObject jsonObject, @NonNull String key)
     {
         try
         {
-            return (float) json.getDouble(key);
+            return (float) jsonObject.getDouble(key);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get double object from JSONObject.
+     *
+     * @param jsonObject target JSONObject.
+     * @param key target key.
+     * @return object or null.
+     */
     @Nullable
-    public static Double getDouble(JSONObject json, String key)
+    public static Double getDouble(@NonNull JSONObject jsonObject, @NonNull String key)
     {
         try
         {
-            return json.getDouble(key);
+            return jsonObject.getDouble(key);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get boolean object from JSONObject.
+     *
+     * @param jsonObject target JSONObject.
+     * @param key target key.
+     * @return object or null.
+     */
     @Nullable
-    public static Boolean getBoolean(JSONObject json, String key)
+    public static Boolean getBoolean(@NonNull JSONObject jsonObject, @NonNull String key)
     {
         try
         {
-            return json.getBoolean(key);
+            return jsonObject.getBoolean(key);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get byte object from JSONObject.
+     *
+     * @param jsonObject target JSONObject.
+     * @param key target key.
+     * @return object or null.
+     */
     @Nullable
-    public static Byte getByte(JSONObject json, String key)
+    public static Byte getByte(@NonNull JSONObject jsonObject, @NonNull String key)
     {
         try
         {
-            return (byte) (json.getInt(key) & 0xff);
+            return (byte) (jsonObject.getInt(key) & 0xff);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get short object from JSONObject.
+     *
+     * @param jsonObject target JSONObject.
+     * @param key target key.
+     * @return object or null.
+     */
     @Nullable
-    public static Short getShort(JSONObject json, String key)
+    public static Short getShort(@NonNull JSONObject jsonObject, @NonNull String key)
     {
         try
         {
-            return (short) (json.getInt(key) & 0xffff);
+            return (short) (jsonObject.getInt(key) & 0xffff);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get int object from JSONObject.
+     *
+     * @param jsonObject target JSONObject.
+     * @param key target key.
+     * @return object or null.
+     */
     @Nullable
-    public static Integer getInt(JSONObject json, String key)
+    public static Integer getInt(@NonNull JSONObject jsonObject, @NonNull String key)
     {
         try
         {
-            return json.getInt(key);
+            return jsonObject.getInt(key);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get int object from JSONArray.
+     *
+     * @param jsonArray target JSONArray.
+     * @param index target index.
+     * @return object or null.
+     */
     @Nullable
-    public static Long getLong(JSONObject json, String key)
+    public static Integer getInt(@NonNull JSONArray jsonArray, int index)
     {
         try
         {
-            return json.getLong(key);
+            return jsonArray.getInt(index);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get long object from JSONObject.
+     *
+     * @param jsonObject target JSONObject.
+     * @param key target key.
+     * @return object or null.
+     */
     @Nullable
-    public static String getString(JSONObject json, String key)
+    public static Long getLong(@NonNull JSONObject jsonObject, @NonNull String key)
     {
         try
         {
-            return json.getString(key);
+            return jsonObject.getLong(key);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get string object from JSONObject.
+     *
+     * @param jsonObject target JSONObject.
+     * @param key target key.
+     * @return object or null.
+     */
     @Nullable
-    public static Integer getInt(JSONArray json, int index)
+    public static String getString(@NonNull JSONObject jsonObject, @NonNull String key)
     {
         try
         {
-            return json.getInt(index);
+            return jsonObject.getString(key);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get string object from JSONArray.
+     *
+     * @param jsonArray target JSONArray.
+     * @param index target index.
+     * @return object or null.
+     */
     @Nullable
-    public static String getString(JSONArray json, int index)
+    public static String getString(@NonNull JSONArray jsonArray, int index)
     {
         try
         {
-            return json.getString(index);
+            return jsonArray.getString(index);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get generic object from JSONObject.
+     *
+     * @param jsonObject target JSONObject.
+     * @param key target key.
+     * @return object or null.
+     */
     @Nullable
-    public static Object getGeneric(JSONObject json, String key)
+    public static Object getGeneric(@NonNull JSONObject jsonObject, String key)
     {
         try
         {
-            return json.get(key);
+            return jsonObject.get(key);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get JSONObject from JSONObject.
+     *
+     * @param jsonObject target JSONObject.
+     * @param key target key.
+     * @return object or null.
+     */
     @Nullable
-    public static JSONArray getArray(JSONObject json, String key)
+    public static JSONObject getObject(@NonNull JSONObject jsonObject, String key)
     {
         try
         {
-            return json.getJSONArray(key);
+            return jsonObject.getJSONObject(key);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get JSONArray from JSONObject.
+     *
+     * @param jsonObject target JSONObject.
+     * @param key target key.
+     * @return object or null.
+     */
     @Nullable
-    public static JSONObject getObject(JSONObject json, String key)
+    public static JSONArray getArray(@NonNull JSONObject jsonObject, String key)
     {
         try
         {
-            return json.getJSONObject(key);
+            return jsonObject.getJSONArray(key);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Get JSONObject from JSONArray.
+     *
+     * @param jsonArray target JSONArray.
+     * @param index target index.
+     * @return object or null.
+     */
     @Nullable
-    public static JSONObject getObject(JSONArray json, int index)
+    public static JSONObject getObject(@NonNull JSONArray jsonArray, int index)
     {
         try
         {
-            return json.getJSONObject(index);
+            return jsonArray.getJSONObject(index);
         }
-        catch (Exception ignore)
+        catch (Exception ex)
         {
+            Err.err(ex);
             return null;
         }
     }
 
+    /**
+     * Pretty JSON string from JSONObject. NO Slash escapes!
+     *
+     * @param jsonObject target JSONObject.
+     * @return pretty JSON string or null.
+     */
     @Nullable
-    public static String toPretty(JSONObject jsonObject)
+    public static String toPretty(@NonNull JSONObject jsonObject)
     {
-        if (jsonObject != null)
+        try
         {
-            try
-            {
-                return defuck(jsonObject.toString(2));
-            }
-            catch (Exception ignored)
-            {
-            }
+            return defuck(jsonObject.toString(2));
         }
-
-        return "NULL";
+        catch (Exception ex)
+        {
+            Err.err(ex);
+            return null;
+        }
     }
 
+    /**
+     * Pretty JSON string from JSONArray. NO Slash escapes!
+     *
+     * @param jsonArray target JSONArray.
+     * @return pretty JSON string or null.
+     */
     @Nullable
-    public static String toPretty(JSONArray jsonArray)
+    public static String toPretty(@NonNull JSONArray jsonArray)
     {
-        if (jsonArray != null)
+        try
         {
-            try
-            {
-                return defuck(jsonArray.toString(2));
-            }
-            catch (Exception ignored)
-            {
-            }
+            return defuck(jsonArray.toString(2));
         }
-
-        return "NULL";
+        catch (Exception ex)
+        {
+            Err.err(ex);
+            return null;
+        }
     }
 
+    /**
+     * Compact JSON string from JSONObject. NO Slash escapes!
+     *
+     * @param jsonObject target JSONObject.
+     * @return Normal JSON string or null.
+     */
+    @Nullable
+    public static String toString(@NonNull JSONObject jsonObject)
+    {
+        try
+        {
+            return defuck(jsonObject.toString());
+        }
+        catch (Exception ex)
+        {
+            Err.err(ex);
+            return null;
+        }
+    }
+
+    /**
+     * Compact JSON string from JSONArray. NO Slash escapes!
+     *
+     * @param jsonArray target JSONArray.
+     * @return pretty JSON string or null.
+     */
+    @Nullable
+    public static String toString(@NonNull JSONArray jsonArray)
+    {
+        try
+        {
+            return defuck(jsonArray.toString());
+        }
+        catch (Exception ex)
+        {
+            Err.err(ex);
+            return null;
+        }
+    }
+
+    /**
+     * Convert JSONArray to set.
+     *
+     * @param jsonArray target JSONArray.
+     * @return string set or null.
+     */
+    @Nullable
     public static Set<String> toSet(JSONArray jsonArray)
     {
-        Set<String> set = new HashSet<>();
-
-        if (jsonArray != null)
+        try
         {
-            try
-            {
-                for (int inx = 0; inx < jsonArray.length(); inx++)
-                {
-                    set.add(jsonArray.getString(inx));
-                }
-            }
-            catch (Exception ignored)
-            {
-            }
-        }
+            Set<String> set = new HashSet<>();
 
-        return set;
+            for (int inx = 0; inx < jsonArray.length(); inx++)
+            {
+                set.add(jsonArray.getString(inx));
+            }
+
+            return set;
+        }
+        catch (Exception ex)
+        {
+            Err.err(ex);
+            return null;
+        }
     }
 
-    public static String defuck(String json)
+    /**
+     * Defuck JSON string.
+     *
+     * @param jsonString target JSON string.
+     * @return defucked JSON string.
+     */
+    @Nullable
+    public static String defuck(String jsonString)
     {
         //
         // I hate slash escaping.
         //
 
-        return (json == null) ? "{}" : json.replace("\\/", "/");
+        return (jsonString == null) ? null : jsonString.replace("\\/", "/");
     }
 
     public static JSONArray sort(JSONArray array, String field, boolean descending)
@@ -763,8 +1207,6 @@ public class Json
     public static Err unmarshalJSON(Object object, JSONObject json)
     {
         if (json == null) return Err.errp();
-
-        boolean ok = false;
 
         for (Field field : object.getClass().getDeclaredFields())
         {

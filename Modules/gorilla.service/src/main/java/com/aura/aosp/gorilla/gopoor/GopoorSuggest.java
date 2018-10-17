@@ -329,7 +329,7 @@ public class GopoorSuggest
         // Log all scores.
         //
 
-        Log.d("elapsedTime=%d", startTime.elapsedTime());
+        Log.d("elapsedTimeMillis=%d", startTime.elapsedTimeMillis());
 
         for (int inx = 0; inx < currentSuggestions.length(); inx++)
         {
@@ -471,7 +471,7 @@ public class GopoorSuggest
             if (err != null) Log.d("fail! err=%s", err.toString());
         }
 
-        Log.d("fetchTime=%d computeTime=%d totalTime=%d", startTime.elapsedTime() - computeTime.elapsedTime(),  computeTime.elapsedTime(), startTime.elapsedTime());
+        Log.d("fetchTime=%d computeTime=%d totalTime=%d", startTime.elapsedTimeMillis() - computeTime.elapsedTimeMillis(),  computeTime.elapsedTimeMillis(), startTime.elapsedTimeMillis());
 
         //dumpMatrix();
 
