@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.launcher.model.stream;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.common.univid.Identity;
 
@@ -14,6 +15,7 @@ public class StreamItem implements StreamItemInterface {
     protected String text;
     protected Integer imageId;
     protected ItemType type;
+    protected Float absoluteScore = 1.0f;
 
     /**
      * Construct stream item of invocationType "unknown".
@@ -87,5 +89,15 @@ public class StreamItem implements StreamItemInterface {
     @Override
     public void setType(ItemType type) {
         this.type = type;
+    }
+
+    @Override
+    public Float getAbsoluteScore() {
+        return absoluteScore;
+    }
+
+    @Override
+    public void setAbsoluteScore(@Nullable Float absoluteScore) {
+        this.absoluteScore = absoluteScore != null ? absoluteScore : 1.0f;
     }
 }

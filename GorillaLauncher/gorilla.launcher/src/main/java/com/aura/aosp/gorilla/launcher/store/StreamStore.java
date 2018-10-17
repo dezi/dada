@@ -52,7 +52,9 @@ public class StreamStore {
                         continue;
                     }
 
-                    items.add(new ContactStreamItem(ownIdentity, identity));
+                    ContactStreamItem contactStreamItem = new ContactStreamItem(ownIdentity, identity);
+                    contactStreamItem.setAbsoluteScore(1f);
+                    items.add(contactStreamItem);
 
 //                    Intent chatIntent = new Intent(atomContext)
 //                    Intent intent = new Intent(context, DisplayMessageActivity.class);

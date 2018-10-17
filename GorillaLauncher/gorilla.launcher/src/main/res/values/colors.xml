@@ -26,11 +26,14 @@
     <color name="color_statusbar_profileinfo">#535353</color>
 
     <!-- Content Stream -->
-    <color name="color_stream_button">#c0c0c0</color>
+    <color name="color_stream_button">#cacaca</color>
     <color name="color_stream_button_highlight">#6b3efc</color>
     <color name="color_stream_hint">#8e6bff</color>
     <color name="color_stream_image_background_primary">#f76dee</color>
     <color name="color_stream_image_background_secondary">#f9a6f3</color>
+    <color name="color_stream_preview_generic">#774ec7</color>
+    <color name="color_stream_preview_contact">#676cf9</color>
+    <color name="color_stream_preview_message">#31b6a2</color>
 
     <!-- Action Cluster Container / Mask -->
     <color name="color_actioncluster_container_mask_background">#000000</color>
@@ -61,6 +64,7 @@
     <!-- Circle Images / Avatars -->
     <color name="color_circleimage_background">#fafafa</color>
     <color name="color_circleimage_avatar_border">#ffffff</color>
+    <color name="color_circleimage_avatar_primary">#808080</color>
 
     <!-- Navigation Buttons -->
     <color name="color_navigation_foo">#80ffe3</color>
@@ -77,8 +81,6 @@
     <color name="color_function_calendar_background">#b9b9b9</color>
 
     <!-- Func: Content Composer -->
-    <color name="coco_background">#dcdcdc</color>
-    <color name="coco_text_primary">#222222</color>
-    <color name="color_circleimage_avatar_primary">#808080</color>
-
+    <color name="color_coco_background">#dcdcdc</color>
+    <color name="color_coco_text_primary">#222222</color>
 </resources>

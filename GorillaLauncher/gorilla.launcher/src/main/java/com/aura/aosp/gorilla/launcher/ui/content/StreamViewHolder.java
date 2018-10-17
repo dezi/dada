@@ -17,7 +17,6 @@ public class StreamViewHolder extends RecyclerView.ViewHolder {
 //    public TextView title;
     public TextView previewText;
     public ImageView previewImage;
-    public ImageView dotButton;
 
     public StreamViewHolder(View itemView) {
         super(itemView);
@@ -25,6 +24,5 @@ public class StreamViewHolder extends RecyclerView.ViewHolder {
 //        title = itemView.findViewById(R.id.title);
         previewText = itemView.findViewById(R.id.previewText);
         previewImage = itemView.findViewById(R.id.previewImage);
-        dotButton = itemView.findViewById(R.id.dotButton);
     }
 }
