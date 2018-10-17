@@ -7,13 +7,14 @@
 
 package com.aura.aosp.aura.common.crypter;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.aura.aosp.aura.common.simple.Err;
-
-import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.Cipher;
+
+import com.aura.aosp.aura.common.simple.Err;
 
 /**
  * Exception safe, annotated and simplified
@@ -51,8 +52,9 @@ public class AES
      * @return AES cypher block.
      */
     @Nullable
-    public static AESBlock newAESCipher(byte[] aeskey)
+    public static AESBlock newAESCipher(@NonNull byte[] aeskey)
     {
+        //noinspection ConstantConditions
         if (aeskey == null)
         {
             Err.errp();
@@ -61,43 +63,15 @@ public class AES
 
         try
         {
-            SecretKeySpec skeySpec = new SecretKeySpec(aeskey, "AES");
+            SecretKeySpec secretKeySpec = new SecretKeySpec(aeskey, "AES");
             Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
 
-            return new AESBlock(skeySpec, cipher);
+            return new AESBlock(secretKeySpec, cipher);
         }
         catch (Exception ex)
         {
             Err.errp(ex);
             return null;
-        }
-    }
-
-    /**
-     * AES block holding sub class.
-     */
-    public static class AESBlock
-    {
-        /**
-         * Secret key spec.
-         */
-        private SecretKeySpec skeySpec;
-
-        /**
-         * Cipher worker.
-         */
-        private Cipher cipher;
-
-        /**
-         * Construct AES cypher block.
-         *
-         * @param skeySpec secret key spec.
-         * @param cipher cipher worker.
-         */
-        private AESBlock(SecretKeySpec skeySpec, Cipher cipher)
-        {
-            this.skeySpec = skeySpec;
-            this.cipher = cipher;
         }
     }
 
@@ -110,8 +84,9 @@ public class AES
      * @return One block of encrypted data or null on failure.
      */
     @Nullable
-    public static byte[] encryptAESBlock(AESBlock block, byte[]... buffers)
+    public static byte[] encryptAESBlock(@NonNull AESBlock block, @NonNull byte[]... buffers)
     {
+        //noinspection ConstantConditions
         if ((block == null) || (buffers == null))
         {
             Err.errp();
@@ -151,7 +126,7 @@ public class AES
             try
             {
                 IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
-                block.cipher.init(Cipher.ENCRYPT_MODE, block.skeySpec, ivParameterSpec);
+                block.cipher.init(Cipher.ENCRYPT_MODE, block.secretKeySpec, ivParameterSpec);
 
                 ms = block.cipher.doFinal(ms);
             }
@@ -183,8 +158,9 @@ public class AES
      * @return One block of encrypted data or null on failure.
      */
     @Nullable
-    public static byte[] encryptAES(byte[] aeskey, byte[]... buffers)
+    public static byte[] encryptAES(@NonNull byte[] aeskey, @NonNull byte[]... buffers)
     {
+        //noinspection ConstantConditions
         if ((aeskey == null) || (buffers == null))
         {
             Err.errp();
@@ -192,6 +168,7 @@ public class AES
         }
 
         AESBlock block = newAESCipher(aeskey);
+        if (block == null) return null;
 
         return encryptAESBlock(block, buffers);
     }
@@ -204,8 +181,9 @@ public class AES
      * @return decrypted binary data or null on failure.
      */
     @Nullable
-    public static byte[] decryptAESBlock(AESBlock block, byte[] ciphertext)
+    public static byte[] decryptAESBlock(@NonNull AESBlock block, @NonNull byte[] ciphertext)
     {
+        //noinspection ConstantConditions
         if ((block == null) || (ciphertext == null))
         {
             Err.errp();
@@ -229,7 +207,7 @@ public class AES
             try
             {
                 IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
-                block.cipher.init(Cipher.DECRYPT_MODE, block.skeySpec, ivParameterSpec);
+                block.cipher.init(Cipher.DECRYPT_MODE, block.secretKeySpec, ivParameterSpec);
 
                 ms = block.cipher.doFinal(ms);
             }
@@ -251,8 +229,9 @@ public class AES
      * @return decrypted binary data or null on failure.
      */
     @Nullable
-    public static byte[] decryptAES(byte[] aeskey, byte[] ciphertext)
+    public static byte[] decryptAES(@NonNull byte[] aeskey, @NonNull byte[] ciphertext)
     {
+        //noinspection ConstantConditions
         if ((aeskey == null) || (ciphertext == null))
         {
             Err.errp();
@@ -260,7 +239,36 @@ public class AES
         }
 
         AESBlock block = newAESCipher(aeskey);
+        if (block == null) return null;
 
         return decryptAESBlock(block, ciphertext);
+    }
+
+    /**
+     * AES block holding sub class.
+     */
+    public static class AESBlock
+    {
+        /**
+         * Secret key spec.
+         */
+        private SecretKeySpec secretKeySpec;
+
+        /**
+         * Cipher worker.
+         */
+        private Cipher cipher;
+
+        /**
+         * Construct AES cypher block.
+         *
+         * @param secretKeySpec secret key spec.
+         * @param cipher cipher worker.
+         */
+        private AESBlock(@NonNull SecretKeySpec secretKeySpec, @NonNull Cipher cipher)
+        {
+            this.secretKeySpec = secretKeySpec;
+            this.cipher = cipher;
+        }
     }
 }

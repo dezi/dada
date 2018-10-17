@@ -22,6 +22,18 @@ public class Marshal
 
     public static short unMarshalShort(byte[] bytes)
     {
+        if (bytes == null)
+        {
+            Err.errp();
+            return 0;
+        }
+
+        if (bytes.length < 2)
+        {
+            Err.errp("wrong size=%d", bytes.length);
+            return 0;
+        }
+
         // formatter: off
 
         return (short) (((bytes[ 0 ] & 0xff) << 8)
@@ -49,6 +61,18 @@ public class Marshal
 
     public static int unMarshalInt(byte[] bytes)
     {
+        if (bytes == null)
+        {
+            Err.errp();
+            return 0;
+        }
+
+        if (bytes.length < 4)
+        {
+            Err.errp("wrong size=%d", bytes.length);
+            return 0;
+        }
+
         // formatter: off
 
         return ((bytes[ 0 ] & 0xff) << 24)
@@ -82,6 +106,18 @@ public class Marshal
 
     public static long unMarshalLong(byte[] bytes)
     {
+        if (bytes == null)
+        {
+            Err.errp();
+            return 0;
+        }
+
+        if (bytes.length < 8)
+        {
+            Err.errp("wrong size=%d", bytes.length);
+            return 0;
+        }
+
         // formatter: off
 
         return ((long) (bytes[ 0 ] & 0xff) << 56)

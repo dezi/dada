@@ -246,6 +246,7 @@ public class RSA
      * @param buffers arbitrary numbers of binary buffers.
      * @return null if signature is verified or error code.
      */
+    @Nullable
     public static Err verifyRSASignature(RSAPublicKey publicKey, byte[] signature, byte[]... buffers)
     {
         if ((publicKey == null) || (signature == null) || (buffers == null))

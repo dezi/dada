@@ -42,7 +42,7 @@ public class Err
     @NonNull
     public static Err err()
     {
-        return new Err("null pointer!");
+        return new Err(new NullPointerException(), "null pointer!");
     }
 
     /**
