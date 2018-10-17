@@ -61,7 +61,7 @@ public class Simple
 
     public static boolean nequals(String val1, String val2)
     {
-        return ! equals(val1, val2);
+        return !equals(val1, val2);
     }
 
     public static boolean equals(Long val1, Long val2)
@@ -71,7 +71,7 @@ public class Simple
 
     public static boolean nequals(Long val1, Long val2)
     {
-        return ! equals(val1, val2);
+        return !equals(val1, val2);
     }
 
     public static boolean equals(Float val1, Float val2)
@@ -81,7 +81,7 @@ public class Simple
 
     public static boolean nequals(Float val1, Float val2)
     {
-        return ! equals(val1, val2);
+        return !equals(val1, val2);
     }
 
     public static boolean equals(Double val1, Double val2)
@@ -99,12 +99,12 @@ public class Simple
 
     public static boolean nequals(Double val1, Double val2, int accurary)
     {
-        return ! equals(val1, val2, accurary);
+        return !equals(val1, val2, accurary);
     }
 
     public static boolean nequals(Double val1, Double val2)
     {
-        return ! equals(val1, val2);
+        return !equals(val1, val2);
     }
 
 
@@ -370,11 +370,11 @@ public class Simple
         }
 
         int length = bytes.length;
-        byte[] copy = new byte[ length ];
+        byte[] copy = new byte[length];
 
         for (int inx = 0; inx < length; inx++)
         {
-            copy[ inx ] = bytes[ inx];
+            copy[inx] = bytes[inx];
         }
 
         return Base64.encodeToString(copy, android.util.Base64.NO_WRAP);
@@ -407,17 +407,17 @@ public class Simple
         int clen = (length << 1) + (space && (length > 0) ? (length - 1) : 0);
 
         char[] hexArray = "0123456789ABCDEF".toCharArray();
-        char[] hexChars = new char[ clen ];
+        char[] hexChars = new char[clen];
 
         int pos = 0;
 
         for (int inx = offset; inx < (length + offset); inx++)
         {
-            if (space && (inx > offset)) hexChars[ pos++ ] = ' ';
+            if (space && (inx > offset)) hexChars[pos++] = ' ';
 
-            hexChars[ pos++ ] = hexArray[ (bytes[ inx ] >> 4) & 0x0f ];
+            hexChars[pos++] = hexArray[(bytes[inx] >> 4) & 0x0f];
             //noinspection PointlessBitwiseExpression
-            hexChars[ pos++ ] = hexArray[ (bytes[ inx ] >> 0) & 0x0f ];
+            hexChars[pos++] = hexArray[(bytes[inx] >> 0) & 0x0f];
         }
 
         return String.valueOf(hexChars);
@@ -425,7 +425,7 @@ public class Simple
 
     public static byte[] sliceBytes(byte[] bytes, int from)
     {
-        return sliceBytes(bytes,from, bytes.length);
+        return sliceBytes(bytes, from, bytes.length);
     }
 
     public static byte[] sliceBytes(byte[] bytes, int from, int toto)
@@ -555,7 +555,7 @@ public class Simple
 
     public static boolean isPhone()
     {
-        return ! istablet;
+        return !istablet;
     }
 
     public static boolean isTablet()
@@ -782,9 +782,9 @@ public class Simple
     {
         float[] hsv = new float[3];
 
-        hsv[ 0 ] = hue;
-        hsv[ 1 ] = saturation / 100f;
-        hsv[ 2 ] = brightness / 100f;
+        hsv[0] = hue;
+        hsv[1] = saturation / 100f;
+        hsv[2] = brightness / 100f;
 
         return Color.HSVToColor(hsv);
     }
@@ -793,7 +793,7 @@ public class Simple
     {
         int r = (rgbcolor >> 16) & 0xff;
         int g = (rgbcolor >> 8) & 0xff;
-        int b = rgbcolor& 0xff;
+        int b = rgbcolor & 0xff;
 
         float scale = 255 / (float) Math.max(r, Math.max(g, b));
         scale = scale * brightness / 100f;
@@ -1101,7 +1101,7 @@ public class Simple
             int xfer = is.read(buffer);
             is.close();
 
-            return Base64.encodeToString(buffer, 0 ,xfer, android.util.Base64.NO_WRAP);
+            return Base64.encodeToString(buffer, 0, xfer, android.util.Base64.NO_WRAP);
         }
         catch (Exception ex)
         {
