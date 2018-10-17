@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
@@ -30,13 +29,12 @@ import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
-import com.aura.aosp.gorilla.launcher.model.ActionItem;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 import com.aura.aosp.gorilla.launcher.ui.animation.drawable.ExpandingCircleDrawable;
-import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
 import com.aura.aosp.gorilla.launcher.ui.common.BaseView;
 import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
+import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterAdapter;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterView;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ClusterButtonView;
@@ -85,7 +83,7 @@ public class LauncherActivity extends AppCompatActivity {
     public static final int MP = ViewGroup.LayoutParams.MATCH_PARENT;
     public static final int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
 
-    protected static int blurSampliong;
+    protected static int blurSampling;
     protected static int blurRadius;
     protected static int blurTransisitionDuration;
 
@@ -131,17 +129,17 @@ public class LauncherActivity extends AppCompatActivity {
         GorillaClient.getInstance().subscribeGorillaListener(listener);
 
         // Initialize action cluster store
-        actionClusterStore = new ActionClusterStore(getApplicationContext());
+        actionClusterStore = new ActionClusterStore(this);
 
         // Get some generic resource values
         // TODO: Move to UI components, pass to Effects!
-        blurSampliong = getResources().getInteger(R.integer.launcher_blur_sampling);
+        blurSampling = getResources().getInteger(R.integer.launcher_blur_sampling);
         blurRadius = getResources().getInteger(R.integer.launcher_blur_radius);
         blurTransisitionDuration = getResources().getInteger(R.integer.launcher_blur_transition_duration);
         clusterElevationPerLevel = getResources().getDimension(R.dimen.clusterbutton_elevationPerLevel);
 
 //        // Testing drawables:
-//        Drawable ringDrawable = new RingDrawable(getApplicationContext());
+//        Drawable ringDrawable = new RingDrawable(this);
 //        mCircle = new ExpandingCircleDrawable(400, R.color.color_ai_circle);
 //        launcherView.setForeground(mCircle);
 
@@ -249,7 +247,77 @@ public class LauncherActivity extends AppCompatActivity {
      * @param invokingActionButtonView
      * @param instantShow
      */
-    public void createActionClusterView(ActionCluster actionCluster, @Nullable ClusterButtonView invokingActionButtonView, boolean instantShow) {
+    public void createActionClusterViewNew(ActionCluster actionCluster, @Nullable ClusterButtonView invokingActionButtonView, boolean instantShow) {
+
+        if (invokingActionButtonView == null) {
+            invokingActionButtonView = toggleClusterButton;
+        }
+
+        // Create view with certain parameters based on invoking view:
+        ActionClusterView actionClusterView = new ActionClusterView(this);
+
+        actionClusterView.createByInvokingActionButtonView(invokingActionButtonView, actionClusterContainer, false);
+
+        // specify adapter
+        ActionClusterAdapter actionClusterAdapter = new ActionClusterAdapter(actionCluster.getItemsByRelevance(), this, this);
+        actionClusterView.setAdapter(actionClusterAdapter);
+
+//        // Add events for additional layers
+//        if (invokingActionButtonView != null) {
+//            // Wait for layout before initializing top level action cluster. Otherwise getting
+//            // current coordinates of toggle cluster button will fail!
+//            actionClusterView.getViewTreeObserver().addOnGlobalLayoutListener(
+//                    new ViewTreeObserver.OnGlobalLayoutListener() {
+//                        @Override
+//                        public void onGlobalLayout() {
+//                            SmartScrollableLayoutManager layoutManager = (SmartScrollableLayoutManager) actionClusterView.getLayoutManager();
+//                            Float addX = actionClusterView.getWidth() / 2.0f;
+//                            Float addY = actionClusterView.getHeight() / 2.0f;
+//
+//                            Log.d(LOGTAG, String.format("onGlobalLayout actionClusterWidth <%d>", actionClusterView.getWidth()));
+//                            Log.d(LOGTAG, String.format("onGlobalLayout actionClusterHeight <%d>", actionClusterView.getHeight()));
+//
+//                            switch (layoutManager.getOrientation()) {
+//
+//                                case LinearLayoutManager.VERTICAL:
+//                                    Log.d(LOGTAG, String.format("VERTICAL addY <%f>", addY));
+////                                    actionClusterView.setX(actionClusterView.getX() + addX);
+//                                    break;
+//
+//                                case LinearLayoutManager.HORIZONTAL:
+//                                    Log.d(LOGTAG, String.format("HORIZONTAL addX <%f>", addX));
+////                                    actionClusterView.setY(actionClusterView.getY() + addY);
+//                                    break;
+//                            }
+//
+//                            // Remove listener when done
+//                            actionClusterView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//                        }
+//                    }
+//            );
+//        }
+
+//        // Add Action Cluster Views to root container
+//        actionClusterContainer.addView(actionClusterView);
+
+        // Activate (position + register) Action Cluster View
+        if (instantShow) {
+            activateActionClusterView(actionClusterView);
+        }
+
+        Log.d(LOGTAG, String.format("Added action cluster <%s>", actionCluster.getName()));
+    }
+
+
+    /**
+     * Create action button cluster view by inflating xml, adding an item adapter
+     * and attach it to launcher (main) view
+     *
+     * @param actionCluster
+     * @param invokingActionButtonView
+     * @param instantShow
+     */
+    public ActionClusterView createActionClusterView(ActionCluster actionCluster, @Nullable ClusterButtonView invokingActionButtonView, boolean instantShow) {
 
         Integer nextLayOrientation = LinearLayoutManager.HORIZONTAL;
         Integer nextLayout = R.layout.fragment_actioncluster_horizontal;
@@ -259,31 +327,34 @@ public class LauncherActivity extends AppCompatActivity {
 
         float nextElevation = clusterElevationPerLevel;
 
-        if (invokingActionButtonView != null) {
+        if (invokingActionButtonView != null && ! (invokingActionButtonView instanceof ToggleClusterButton)) {
             // Position new cluster on top of invoking button
             nextXPos = invokingActionButtonView.getX();
             nextYPos = invokingActionButtonView.getY();
 
-            ActionClusterView invokingActionClusterView = (ActionClusterView) invokingActionButtonView.getParent();
+            ViewGroup invokingViewGroup = (ViewGroup) invokingActionButtonView.getParent();
 
-            nextElevation += invokingActionButtonView.getElevation();
+            if (invokingViewGroup instanceof ActionClusterView) {
+                ActionClusterView invokingActionClusterView = (ActionClusterView) invokingViewGroup;
 
-            // Add view as a child to given parent action cluster view or to "actionClusterContainer" which serves as a root
-            LinearLayoutManager layoutManager = (LinearLayoutManager) invokingActionClusterView.getLayoutManager();
+                nextElevation += invokingActionButtonView.getElevation();
 
-            switch (layoutManager.getOrientation()) {
+                // Add view as a child to given parent action cluster view or to "actionClusterContainer" which serves as a root
+                LinearLayoutManager layoutManager = (LinearLayoutManager) invokingActionClusterView.getLayoutManager();
 
-                case LinearLayoutManager.VERTICAL:
-                    nextLayOrientation = LinearLayoutManager.HORIZONTAL;
-                    nextLayout = R.layout.fragment_actioncluster_horizontal;
-                    break;
+                switch (layoutManager.getOrientation()) {
 
-                case LinearLayoutManager.HORIZONTAL:
-                    nextLayOrientation = LinearLayoutManager.VERTICAL;
-                    nextLayout = R.layout.fragment_actioncluster_vertical;
-                    break;
+                    case LinearLayoutManager.VERTICAL:
+                        nextLayOrientation = LinearLayoutManager.HORIZONTAL;
+                        nextLayout = R.layout.fragment_actioncluster_horizontal;
+                        break;
+
+                    case LinearLayoutManager.HORIZONTAL:
+                        nextLayOrientation = LinearLayoutManager.VERTICAL;
+                        nextLayout = R.layout.fragment_actioncluster_vertical;
+                        break;
+                }
             }
-
         } else {
             nextXPos = 0;
             nextYPos = toggleClusterButton.getY();
@@ -292,8 +363,11 @@ public class LauncherActivity extends AppCompatActivity {
 
         // Inflate action cluster layout
         LayoutInflater inflater = LayoutInflater.from(this);
+
         final ActionClusterView actionClusterView = (ActionClusterView) inflater.inflate(nextLayout, actionClusterContainer, false);
         actionClusterView.setInvokingActionButtonView(invokingActionButtonView);
+//        actionClusterView.setInvokingFuncView();
+
         actionClusterView.setVisibility(View.INVISIBLE);
 
         // use a linear layout manager
@@ -313,73 +387,14 @@ public class LauncherActivity extends AppCompatActivity {
 
         actionClusterView.setElevation(nextElevation);
 
-        // Add events for additional layers
-        if (invokingActionButtonView != null) {
-            // Wait for layout before initializing top level action cluster. Otherwise getting
-            // current coordinates of toggle cluster button will fail!
-            actionClusterView.getViewTreeObserver().addOnGlobalLayoutListener(
-                    new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            SmartScrollableLayoutManager layoutManager = (SmartScrollableLayoutManager) actionClusterView.getLayoutManager();
-                            Float addX = actionClusterView.getWidth() / 2.0f;
-                            Float addY = actionClusterView.getHeight() / 2.0f;
-
-                            Log.d(LOGTAG, String.format("onGlobalLayout actionClusterWidth <%d>", actionClusterView.getWidth()));
-                            Log.d(LOGTAG, String.format("onGlobalLayout actionClusterHeight <%d>", actionClusterView.getHeight()));
-
-                            switch (layoutManager.getOrientation()) {
-
-                                case LinearLayoutManager.VERTICAL:
-                                    Log.d(LOGTAG, String.format("VERTICAL addY <%f>", addY));
-//                                    actionClusterView.setX(actionClusterView.getX() + addX);
-                                    break;
-
-                                case LinearLayoutManager.HORIZONTAL:
-                                    Log.d(LOGTAG, String.format("HORIZONTAL addX <%f>", addX));
-//                                    actionClusterView.setY(actionClusterView.getY() + addY);
-                                    break;
-                            }
-
-                            // Remove listener when done
-                            actionClusterView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        }
-                    }
-            );
-        }
-
-        // Add Action Cluster Views to root container
-        actionClusterContainer.addView(actionClusterView);
-
         // Activate (position + register) Action Cluster View
         if (instantShow) {
             activateActionClusterView(actionClusterView);
         }
 
         Log.d(LOGTAG, String.format("Added action cluster <%s>", actionCluster.getName()));
-    }
 
-    /**
-     * Show action cluster: If there is a parent cluster (identified by invokingActionClusterButtonView)
-     *
-     * @param actionClusterView
-     */
-    public void activateActionClusterView(final ActionClusterView actionClusterView) {
-
-        ClusterButtonView invokingActionClusterView = actionClusterView.getInvokingActionButtonView();
-
-        if (invokingActionClusterView != null) {
-            ((ActionClusterView) invokingActionClusterView.getParent()).fadeToBack();
-        } else {
-            deactivateMainContentView();
-            toggleClusterButton.minimize();
-//            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_forward_black_24dp, getTheme()));
-        }
-
-        actionClusterView.fadeIn();
-
-        // Put View into list of active (visible) Action Cluster Views
-        activeActionClusterViews.add(actionClusterView);
+        return actionClusterView;
     }
 
     /**
@@ -390,13 +405,15 @@ public class LauncherActivity extends AppCompatActivity {
      */
     public ActionClusterView getBaseActionClusterView(boolean instantShowOnCreate) {
 
+        // TODO: Fix! Created but not activated views are not within activeActionClusterViews!
         if (activeActionClusterViews.size() == 0) {
             // Create initial action button cluster (attach it to "root" container)
-            ActionCluster initialActionCluster = actionClusterStore.getClusterForActionEvent(getPackageName());
-            createActionClusterView(initialActionCluster, null, instantShowOnCreate);
+            ActionCluster initialActionCluster = actionClusterStore.getClusterForAction("launcher", null);
+            ActionClusterView baseActionClusterView = createActionClusterView(initialActionCluster, toggleClusterButton, instantShowOnCreate);
+            return baseActionClusterView;
+        } else {
+            return activeActionClusterViews.get(0);
         }
-
-        return activeActionClusterViews.get(0);
     }
 
     /**
@@ -436,29 +453,71 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     /**
-     * Hide action cluster
+     * Activate action cluster: Display and add to list of active cluster views
+     *
+     * @param actionClusterView
+     */
+    public void activateActionClusterView(ActionClusterView actionClusterView) {
+
+        if (activeActionClusterViews.contains(actionClusterView)) {
+            return;
+        }
+
+        activeActionClusterViews.add(actionClusterView);
+
+        actionClusterContainer.addView(actionClusterView);
+        actionClusterView.fadeIn();
+
+        ClusterButtonView invokingActionButtonView = actionClusterView.getInvokingActionButtonView();
+
+        if (invokingActionButtonView != null) {
+            if (invokingActionButtonView instanceof ToggleClusterButton) {
+                deactivateMainContentView();
+                ((ToggleClusterButton) invokingActionButtonView).minimize();
+            } else {
+                ((ActionClusterView) invokingActionButtonView.getParent()).fadeToBack();
+            }
+        }
+        else {
+            deactivateMainContentView();
+            toggleClusterButton.minimize();
+//            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_forward_black_24dp, getTheme()));
+        }
+    }
+
+    /**
+     * Deactivate action cluster: Hide and remove
      *
      * @param actionClusterView
      */
     public void deactivateActionClusterView(ActionClusterView actionClusterView) {
 
-        ClusterButtonView invokingActionButtonView = actionClusterView.getInvokingActionButtonView();
-
-        if (invokingActionButtonView != null) {
-            actionClusterView.fadeOut();
-            ((ActionClusterView) invokingActionButtonView.getParent()).restore();
-            actionClusterContainer.removeView(actionClusterView);
-            Log.d(LOGTAG, String.format("Removed Action Cluster <%s>", actionClusterView.getId()));
-        } else {
-//            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_24dp, getTheme()));
-            toggleClusterButton.maximize();
-            actionClusterView.fadeOut();
-            activateMainContentView();
-            actionClusterContainer.removeView(actionClusterView);
-            Log.d(LOGTAG, String.format("Removed ROOT Action Cluster <%s>", actionClusterView.getId()));
+        if (! activeActionClusterViews.contains(actionClusterView)) {
+            return;
         }
 
         activeActionClusterViews.remove(actionClusterView);
+
+        actionClusterView.fadeOut();
+        actionClusterContainer.removeView(actionClusterView);
+
+        ClusterButtonView invokingActionButtonView = actionClusterView.getInvokingActionButtonView();
+
+        if (invokingActionButtonView != null) {
+            if (invokingActionButtonView instanceof ToggleClusterButton) {
+                ((ToggleClusterButton) invokingActionButtonView).maximize();
+                activateMainContentView();
+                Log.d(LOGTAG, String.format("Removed ROOT Action Cluster <%s>", actionClusterView.getId()));
+            } else {
+                ((ActionClusterView) invokingActionButtonView.getParent()).restore();
+                Log.d(LOGTAG, String.format("Removed Action Cluster <%s>", actionClusterView.getId()));
+            }
+        }
+        else {
+//            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_24dp, getTheme()));
+            activateMainContentView();
+            Log.d(LOGTAG, String.format("Removed ROOT Action Cluster <%s>", actionClusterView.getId()));
+        }
     }
 
     /**
@@ -466,21 +525,17 @@ public class LauncherActivity extends AppCompatActivity {
      */
     public void toggleActionCluster(View view) {
 
-        if (activeActionClusterViews.size() == 0) {
-            getBaseActionClusterView(true);
-        } else {
-            ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
+        ActionClusterView baseActionClusterView = getBaseActionClusterView(false);
 
-            switch (actionClusterView.getVisibility()) {
-                case View.VISIBLE:
-                    deactivateActionClusterView(actionClusterView);
-                    break;
+        switch (baseActionClusterView.getVisibility()) {
+            case View.VISIBLE:
+                deactivateActionClusterView(baseActionClusterView);
+                break;
 
-                case View.GONE:
-                case View.INVISIBLE:
-                    activateActionClusterView(actionClusterView);
-                    break;
-            }
+            case View.GONE:
+            case View.INVISIBLE:
+                activateActionClusterView(baseActionClusterView);
+                break;
         }
     }
 
@@ -555,7 +610,7 @@ public class LauncherActivity extends AppCompatActivity {
 
         Blurry.with(this)
                 .radius(blurRadius)
-                .sampling(blurSampliong)
+                .sampling(blurSampling)
 //                .color(R.color.color_transparent)
                 .animate(blurTransisitionDuration)
                 .onto(mainContentContainer);

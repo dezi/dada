@@ -51,9 +51,12 @@
     <color name="color_clusterbutton_pressed_action_extern">#7b2a75</color>
     <color name="color_clusterbutton_enabled_cluster">#4cccb0</color>
     <color name="color_clusterbutton_pressed_cluster">#3f9f8a</color>
+    <color name="color_clusterbutton_enabled_generic">#d8d8d8</color>
+    <color name="color_clusterbutton_pressed_generic">#bebebe</color>
     <color name="color_clusterbutton_icon_action_intern">#ffffff</color>
     <color name="color_clusterbutton_icon_action_extern">@color/color_clusterbutton_icon_action_intern</color>
     <color name="color_clusterbutton_icon_cluster">#f19393</color>
+    <color name="color_clusterbutton_icon_generic">@color/color_clusterbutton_icon_action_intern</color>
 
     <!-- Navigation Buttons -->
     <color name="color_navigation_foo">#80ffe3</color>

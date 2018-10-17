@@ -17,11 +17,6 @@ import jp.wasabeef.blurry.Blurry;
  */
 public class FuncBaseView extends ConstraintLayout {
 
-    public enum FuncType {
-        FULLSCREEN,
-        OVERLAY
-    }
-
     public FuncBaseView(Context context) {
         super(context);
     }
@@ -80,7 +75,7 @@ public class FuncBaseView extends ConstraintLayout {
 
 //        Blurry.with(this)
 //                .radius(blurRadius)
-//                .sampling(blurSampliong)
+//                .sampling(blurSampling)
 ////                .color(R.color.color_transparent)
 //                .animate(blurTransisitionDuration)
 //                .onto(viewGroup);

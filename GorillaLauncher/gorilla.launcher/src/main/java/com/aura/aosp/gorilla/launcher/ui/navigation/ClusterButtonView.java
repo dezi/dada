@@ -14,9 +14,9 @@ import android.util.Log;
 import android.view.View;
 
 import com.aura.aosp.gorilla.launcher.R;
-import com.aura.aosp.gorilla.launcher.model.AbstractActionItem;
 import com.aura.aosp.gorilla.launcher.model.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.ActionItem;
+import com.aura.aosp.gorilla.launcher.model.InvokerActionItem;
 
 import java.lang.reflect.Method;
 
@@ -60,21 +60,52 @@ public class ClusterButtonView extends FloatingActionButton {
 
         setLabel(actionItem.getName());
 
-        switch (actionItem.getType()) {
+        switch (actionItem.getInvocationTarget()) {
 
-            // Call to an internal or external action/function view
-            case TYPE_ACTION_INTERN:
             default:
 
-                if (actionItem.getType() == AbstractActionItem.ItemType.TYPE_ACTION_INTERN) {
-                    useEnabledColor = R.color.color_clusterbutton_enabled_action_intern;
-                    usePressedColor = R.color.color_clusterbutton_pressed_action_intern;
-                    useIconColor = R.color.color_clusterbutton_icon_action_intern;
-                } else {
-                    useEnabledColor = R.color.color_clusterbutton_enabled_action_extern;
-                    usePressedColor = R.color.color_clusterbutton_pressed_action_extern;
-                    useIconColor = R.color.color_clusterbutton_icon_action_extern;
-                }
+                useEnabledColor = R.color.color_clusterbutton_enabled_generic;
+                usePressedColor = R.color.color_clusterbutton_pressed_generic;
+                useIconColor = R.color.color_clusterbutton_icon_generic;
+
+                break;
+
+            case INVOCATION_TARGET_INTERN_VIEW:
+
+                useEnabledColor = R.color.color_clusterbutton_enabled_action_intern;
+                usePressedColor = R.color.color_clusterbutton_pressed_action_intern;
+                useIconColor = R.color.color_clusterbutton_icon_action_intern;
+
+                break;
+
+            case INVOCATION_TARGET_EXTERN:
+
+                useEnabledColor = R.color.color_clusterbutton_enabled_action_extern;
+                usePressedColor = R.color.color_clusterbutton_pressed_action_extern;
+                useIconColor = R.color.color_clusterbutton_icon_action_extern;
+
+                break;
+
+            case INVOCATION_TARGET_INTERN_CLUSTER:
+
+                useEnabledColor = R.color.color_clusterbutton_enabled_cluster;
+                usePressedColor = R.color.color_clusterbutton_pressed_cluster;
+                useIconColor = R.color.color_clusterbutton_icon_cluster;
+
+                break;
+        }
+
+        switch (actionItem.getInvocationType()) {
+
+            // A "dead end" button (-> icon) just representing information itself
+            case INVOCATION_TYPE_UNKNOWN:
+            case INVOCATION_TYPE_DISABLED:
+            default:
+
+                break;
+
+            // Call to an internal or activity via intent string
+            case INVOCATION_TYPE_INTENTSTRING:
 
                 // Set on click (action) listener
                 if (actionItem.getAction() != null) {
@@ -92,7 +123,14 @@ public class ClusterButtonView extends FloatingActionButton {
                             }
                         }
                     });
-                } else if (actionItem.getIntent() != null) {
+                }
+
+                break;
+
+            // Call to an internal or activity via intent string
+            case INVOCATION_TYPE_INTENT:
+
+                if (actionItem.getIntent() != null) {
                     // Invoke action based on invokeMethod of current activity
                     setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -106,19 +144,28 @@ public class ClusterButtonView extends FloatingActionButton {
                             }
                         }
                     });
-                } else if (actionItem.getInvokeMethod() != null) {
-                    if (actionItem.getInvokeObject() == null) {
+                }
+
+                break;
+
+            // Call to an invoker action
+            case INVOCATION_TYPE_INVOKER:
+
+                final InvokerActionItem ivActionItem = (InvokerActionItem) actionItem;
+
+                if (ivActionItem.getInvokeMethod() != null) {
+                    if (ivActionItem.getInvokeObject() == null) {
                         // Invoke action based on current context and without any arguments
                         setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 Log.d(LOGTAG, String.format("Executing onClick for OBJECT <%s> and METHOD <%s>",
                                         getContext().toString(),
-                                        actionItem.getInvokeMethod().toString()));
+                                        ivActionItem.getInvokeMethod().toString()));
                                 try {
-                                    actionItem.getInvokeMethod().invoke(getContext());
+                                    ivActionItem.getInvokeMethod().invoke(getContext());
                                 } catch (Exception e) {
-                                    Log.e(LOGTAG, String.format("Could not invoke METHOD <%s>", actionItem.getInvokeMethod().toString()));
+                                    Log.e(LOGTAG, String.format("Could not invoke METHOD <%s>", ivActionItem.getInvokeMethod().toString()));
                                     e.printStackTrace();
                                 }
                             }
@@ -129,13 +176,13 @@ public class ClusterButtonView extends FloatingActionButton {
                             @Override
                             public void onClick(View view) {
                                 Log.d(LOGTAG, String.format("Executing onClick for OBJECT <%s>, METHOD <%s> AND ARGS <%s>",
-                                        actionItem.getInvokeObject().toString(),
-                                        actionItem.getInvokeMethod().toString(),
-                                        actionItem.getInvokePayload() != null ? actionItem.getInvokePayload().toString() : "(null)"));
+                                        ivActionItem.getInvokeObject().toString(),
+                                        ivActionItem.getInvokeMethod().toString(),
+                                        ivActionItem.getInvokePayload() != null ? ivActionItem.getInvokePayload().toString() : "(null)"));
                                 try {
-                                    actionItem.getInvokeMethod().invoke(actionItem.getInvokeObject(), actionItem.getInvokePayload());
+                                    ivActionItem.getInvokeMethod().invoke(ivActionItem.getInvokeObject(), ivActionItem.getInvokePayload());
                                 } catch (Exception e) {
-                                    Log.e(LOGTAG, String.format("Could not invoke METHOD <%s>", actionItem.getInvokeMethod().toString()));
+                                    Log.e(LOGTAG, String.format("Could not invoke METHOD <%s>", ivActionItem.getInvokeMethod().toString()));
                                     e.printStackTrace();
                                 }
                             }
@@ -146,11 +193,7 @@ public class ClusterButtonView extends FloatingActionButton {
                 break;
 
             // Call to a nested action cluster
-            case TYPE_CLUSTER:
-
-                useEnabledColor = R.color.color_clusterbutton_enabled_cluster;
-                usePressedColor = R.color.color_clusterbutton_pressed_cluster;
-                useIconColor = R.color.color_clusterbutton_icon_cluster;
+            case INVOCATION_TYPE_CLUSTER:
 
                 // Invoke action which attaches and shows another action cluster
                 setOnClickListener(new View.OnClickListener() {
