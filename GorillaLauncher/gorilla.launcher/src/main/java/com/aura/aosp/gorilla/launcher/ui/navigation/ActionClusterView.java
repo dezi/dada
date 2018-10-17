@@ -8,15 +8,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 
-import com.aura.aosp.gorilla.launcher.LauncherActivity;
 import com.aura.aosp.gorilla.launcher.R;
-import com.aura.aosp.gorilla.launcher.model.ActionCluster;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
 import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;

@@ -18,9 +18,9 @@ import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
-import com.aura.aosp.gorilla.launcher.model.ActionCluster;
-import com.aura.aosp.gorilla.launcher.model.ActionItem;
-import com.aura.aosp.gorilla.launcher.model.StreamItemMessage;
+import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
+import com.aura.aosp.gorilla.launcher.model.actions.ActionItem;
+import com.aura.aosp.gorilla.launcher.model.stream.MessageStreamItem;
 import com.aura.aosp.gorilla.launcher.store.StreamStore;
 import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
 import com.aura.aosp.gorilla.launcher.ui.content.StreamAdapter;
@@ -211,8 +211,8 @@ public class StreamActivity extends LauncherActivity {
 
         Log.d(LOGTAG, String.format("onSendMessage message <%s>", messageText));
 
-        StreamItemMessage streamItemMessage = new StreamItemMessage(getOwnerIdent(), messageText);
-        streamItemMessage.shareWith(identity);
+        MessageStreamItem messageStreamItem = new MessageStreamItem(getOwnerIdent(), messageText);
+        messageStreamItem.shareWith(identity);
 
         // TODO: CONTINNUE HERE! Read messages from goatoms and put into stream!
         // TODO: CONTINNUE HERE! Cleanup all this hide/show stuff!

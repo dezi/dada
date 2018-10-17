@@ -1,4 +1,4 @@
-package com.aura.aosp.gorilla.launcher.model;
+package com.aura.aosp.gorilla.launcher.model.stream;
 
 import android.support.annotation.NonNull;
 
@@ -9,11 +9,11 @@ import com.aura.aosp.gorilla.launcher.R;
  * Contact item
  * TODO: Implement peristable/sharable interfaces!
  */
-public class StreamItemContact extends StreamItem {
+public class ContactStreamItem extends StreamItem  {
 
     public Identity contactIdentity;
 
-    public StreamItemContact(@NonNull Identity ownerIdentity, @NonNull Identity contactIdentity) {
+    public ContactStreamItem(@NonNull Identity ownerIdentity, @NonNull Identity contactIdentity) {
         setOwnerIdentity(ownerIdentity);
         setContactIdentity(contactIdentity);
         setType(ItemType.TYPE_STREAMITEM_CONTACT);

@@ -28,7 +28,7 @@ import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
-import com.aura.aosp.gorilla.launcher.model.ActionCluster;
+import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 import com.aura.aosp.gorilla.launcher.ui.animation.drawable.ExpandingCircleDrawable;

@@ -1,4 +1,4 @@
-package com.aura.aosp.gorilla.launcher.model;
+package com.aura.aosp.gorilla.launcher.model.stream;
 
 import com.aura.aosp.aura.common.univid.Identity;
 

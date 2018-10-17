@@ -1,4 +1,4 @@
-package com.aura.aosp.gorilla.launcher.model;
+package com.aura.aosp.gorilla.launcher.model.stream;
 
 import android.support.annotation.NonNull;
 
@@ -9,11 +9,12 @@ import com.aura.aosp.gorilla.atoms.GorillaAtom;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.launcher.R;
+import com.aura.aosp.gorilla.launcher.model.GorillaPersistable;
 
 /**
  * Note item
  */
-public class StreamItemNote extends StreamItem implements GorillaPersistable {
+public class NoteStreamItem extends StreamItem implements GorillaPersistable {
 
     /**
      * Note item construction
@@ -21,7 +22,7 @@ public class StreamItemNote extends StreamItem implements GorillaPersistable {
      * @param ownerIdentity
      * @param text
      */
-    public StreamItemNote(@NonNull Identity ownerIdentity, @NonNull String text) {
+    public NoteStreamItem(@NonNull Identity ownerIdentity, @NonNull String text) {
         super(ownerIdentity, ItemType.TYPE_STREAMITEM_NOTE, extractTitle(text), text, R.drawable.ic_note_black_24dp);
     }
 
@@ -30,7 +31,7 @@ public class StreamItemNote extends StreamItem implements GorillaPersistable {
      *
      * @param atom
      */
-    public StreamItemNote(GorillaAtom atom) {
+    public NoteStreamItem(GorillaAtom atom) {
         this(Contacts.getContact(atom.getUUIDBase64()), ((GorillaMessage) atom).getMessageText());
     }
 

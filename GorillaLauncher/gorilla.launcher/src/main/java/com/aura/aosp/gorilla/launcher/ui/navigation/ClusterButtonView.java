@@ -14,9 +14,9 @@ import android.util.Log;
 import android.view.View;
 
 import com.aura.aosp.gorilla.launcher.R;
-import com.aura.aosp.gorilla.launcher.model.ActionCluster;
-import com.aura.aosp.gorilla.launcher.model.ActionItem;
-import com.aura.aosp.gorilla.launcher.model.InvokerActionItem;
+import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
+import com.aura.aosp.gorilla.launcher.model.actions.ActionItem;
+import com.aura.aosp.gorilla.launcher.model.actions.InvokerActionItem;
 
 import java.lang.reflect.Method;
 

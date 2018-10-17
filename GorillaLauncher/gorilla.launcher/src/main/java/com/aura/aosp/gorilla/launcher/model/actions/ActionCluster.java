@@ -1,4 +1,4 @@
-package com.aura.aosp.gorilla.launcher.model;
+package com.aura.aosp.gorilla.launcher.model.actions;
 
 import java.util.Comparator;
 import java.util.List;
