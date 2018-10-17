@@ -7,6 +7,7 @@
 
 package com.aura.aosp.aura.common.crypter;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import android.util.Base64;
@@ -29,8 +30,9 @@ public class B64
      * @return base64 encoded string or null.
      */
     @Nullable
-    public static String encode(byte[] bytes)
+    public static String encode(@NonNull byte[] bytes)
     {
+        //noinspection ConstantConditions
         if (bytes == null)
         {
             Err.err();
@@ -55,8 +57,9 @@ public class B64
      * @return decoded bytes or null.
      */
     @Nullable
-    public static byte[] decode(String base64)
+    public static byte[] decode(@NonNull String base64)
     {
+        //noinspection ConstantConditions
         if (base64 == null)
         {
             Err.err();

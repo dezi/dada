@@ -7,14 +7,15 @@
 
 package com.aura.aosp.aura.common.crypter;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
-import com.aura.aosp.aura.common.simple.Err;
 
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
+
+import com.aura.aosp.aura.common.simple.Err;
 
 /**
  * Exception safe, annotated and simplified
@@ -32,8 +33,9 @@ public class GZP
      * @return GZIP encoded data or null on failure.
      */
     @Nullable
-    public static byte[] enGzip(byte[] data)
+    public static byte[] enGzip(@NonNull byte[] data)
     {
+        //noinspection ConstantConditions
         if (data == null)
         {
             Err.err();
@@ -67,8 +69,9 @@ public class GZP
      * @return binary raw data or null on failure.
      */
     @Nullable
-    public static byte[] unGzip(byte[] gzip)
+    public static byte[] unGzip(@NonNull byte[] gzip)
     {
+        //noinspection ConstantConditions
         if (gzip == null)
         {
             Err.err();

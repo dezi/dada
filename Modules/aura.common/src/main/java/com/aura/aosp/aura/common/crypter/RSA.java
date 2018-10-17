@@ -7,10 +7,11 @@
 
 package com.aura.aosp.aura.common.crypter;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.security.interfaces.RSAPublicKey;
 import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.RSAPrivateCrtKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.security.KeyFactory;
@@ -51,8 +52,9 @@ public class RSA
      * @return RSAPrivateKey or null on failure.
      */
     @Nullable
-    public static RSAPrivateKey unmarshalRSAPrivateKey(byte[] pkcs1PrivateKey)
+    public static RSAPrivateKey unmarshalRSAPrivateKey(@NonNull byte[] pkcs1PrivateKey)
     {
+        //noinspection ConstantConditions
         if (pkcs1PrivateKey == null)
         {
             Err.errp();
@@ -81,15 +83,19 @@ public class RSA
      * @return RSAPrivateKey or null on failure.
      */
     @Nullable
-    public static RSAPrivateKey unmarshalRSAPrivateKeyBase64(String pkcs1base64PrivateKey)
+    public static RSAPrivateKey unmarshalRSAPrivateKeyBase64(@NonNull String pkcs1base64PrivateKey)
     {
+        //noinspection ConstantConditions
         if (pkcs1base64PrivateKey == null)
         {
             Err.errp();
             return null;
         }
 
-        return unmarshalRSAPrivateKey(B64.decode(pkcs1base64PrivateKey));
+        byte[] pkcs1PrivateKey = B64.decode(pkcs1base64PrivateKey);
+        if (pkcs1PrivateKey == null) return null;
+
+        return unmarshalRSAPrivateKey(pkcs1PrivateKey);
     }
 
     /**
@@ -99,8 +105,9 @@ public class RSA
      * @return RSAPublicKey or null on failure.
      */
     @Nullable
-    public static RSAPublicKey unmarshalRSAPublicKey(byte[] pkcs1PublicKey)
+    public static RSAPublicKey unmarshalRSAPublicKey(@NonNull byte[] pkcs1PublicKey)
     {
+        //noinspection ConstantConditions
         if (pkcs1PublicKey == null)
         {
             Err.errp();
@@ -129,15 +136,19 @@ public class RSA
      * @return RSAPublicKey or null on failure.
      */
     @Nullable
-    public static RSAPublicKey unmarshalRSAPublicKeyBase64(String pkcs1base64PublicKey)
+    public static RSAPublicKey unmarshalRSAPublicKeyBase64(@NonNull String pkcs1base64PublicKey)
     {
+        //noinspection ConstantConditions
         if (pkcs1base64PublicKey == null)
         {
             Err.errp();
             return null;
         }
 
-        return unmarshalRSAPublicKey(B64.decode(pkcs1base64PublicKey));
+        byte[] pkcs1PublicKey = B64.decode(pkcs1base64PublicKey);
+        if (pkcs1PublicKey == null) return null;
+
+        return unmarshalRSAPublicKey(pkcs1PublicKey);
     }
 
     /**
@@ -148,8 +159,9 @@ public class RSA
      * @return encoded binary message or null on failure.
      */
     @Nullable
-    public static byte[] encodeRSABuffer(RSAPublicKey publicKey, byte[] plain)
+    public static byte[] encodeRSABuffer(@NonNull RSAPublicKey publicKey, @NonNull byte[] plain)
     {
+        //noinspection ConstantConditions
         if ((publicKey == null) || (plain == null))
         {
             Err.errp();
@@ -177,8 +189,9 @@ public class RSA
      * @return decoded plain text binary message or null on failure.
      */
     @Nullable
-    public static byte[] decodeRSABuffer(RSAPrivateKey privateKey, byte[] crypt)
+    public static byte[] decodeRSABuffer(@NonNull RSAPrivateKey privateKey, @NonNull byte[] crypt)
     {
+        //noinspection ConstantConditions
         if ((privateKey == null) || (crypt == null))
         {
             Err.errp();
@@ -206,8 +219,9 @@ public class RSA
      * @return 256 byte binary signature or null on failure.
      */
     @Nullable
-    public static byte[] createRSASignature(RSAPrivateKey privateKey, byte[]... buffers)
+    public static byte[] createRSASignature(@NonNull RSAPrivateKey privateKey, @NonNull byte[]... buffers)
     {
+        //noinspection ConstantConditions
         if ((privateKey == null) || (buffers == null))
         {
             Err.errp();
@@ -247,8 +261,9 @@ public class RSA
      * @return null if signature is verified or error code.
      */
     @Nullable
-    public static Err verifyRSASignature(RSAPublicKey publicKey, byte[] signature, byte[]... buffers)
+    public static Err verifyRSASignature(@NonNull RSAPublicKey publicKey, @NonNull byte[] signature, @NonNull byte[]... buffers)
     {
+        //noinspection ConstantConditions
         if ((publicKey == null) || (signature == null) || (buffers == null))
         {
             Err.errp();
