@@ -40,6 +40,6 @@ public class Perf
      */
     public long elapsedTimeMillis()
     {
-        return startTime - SystemClock.elapsedRealtime();
+        return SystemClock.elapsedRealtime() - startTime;
     }
 }
