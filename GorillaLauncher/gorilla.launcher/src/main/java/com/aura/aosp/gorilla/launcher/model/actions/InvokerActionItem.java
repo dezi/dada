@@ -1,6 +1,9 @@
-package com.aura.aosp.gorilla.launcher.model;
+package com.aura.aosp.gorilla.launcher.model.actions;
 
 import android.support.annotation.Nullable;
+
+import com.aura.aosp.gorilla.launcher.model.actions.ActionItem;
+import com.aura.aosp.gorilla.launcher.model.actions.ActionItemInterface;
 
 import java.lang.reflect.Method;
 

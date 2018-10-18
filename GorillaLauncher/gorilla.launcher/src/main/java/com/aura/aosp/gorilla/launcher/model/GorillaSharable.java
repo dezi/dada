@@ -4,7 +4,7 @@ import com.aura.aosp.aura.common.univid.Identity;
 
 import java.util.List;
 
-interface GorillaSharable {
+public interface GorillaSharable {
 
     public void shareWith(Identity remoteIdentity);
 

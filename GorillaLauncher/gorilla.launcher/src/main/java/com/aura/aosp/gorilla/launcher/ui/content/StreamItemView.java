@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aura.aosp.gorilla.launcher.R;
-import com.aura.aosp.gorilla.launcher.model.StreamItemContact;
+import com.aura.aosp.gorilla.launcher.model.stream.ContactStreamItem;
 
 /**
  * View representing an item of a stream.
@@ -46,7 +46,7 @@ public class StreamItemView extends ConstraintLayout {
     /**
      * Initialize content stream item from contactStreamItem model.
      */
-    public void initWithItem(final StreamItemContact contactStreamItem) {
+    public void initWithItem(final ContactStreamItem contactStreamItem) {
         // TODO: Implement (extract from StreamAdapter)
     }
 }

@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.aura.aosp.gorilla.launcher.R;
-import com.aura.aosp.gorilla.launcher.model.ActionItem;
+import com.aura.aosp.gorilla.launcher.model.actions.ActionItem;
 
 import java.util.List;
 

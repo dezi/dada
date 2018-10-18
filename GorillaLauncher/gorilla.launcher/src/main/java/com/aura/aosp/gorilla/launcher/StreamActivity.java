@@ -3,12 +3,15 @@ package com.aura.aosp.gorilla.launcher;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.univid.Contacts;
@@ -18,11 +21,14 @@ import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
-import com.aura.aosp.gorilla.launcher.model.ActionCluster;
-import com.aura.aosp.gorilla.launcher.model.ActionItem;
-import com.aura.aosp.gorilla.launcher.model.StreamItemMessage;
+import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
+import com.aura.aosp.gorilla.launcher.model.actions.ActionItem;
+import com.aura.aosp.gorilla.launcher.model.actions.InvokerActionItem;
+import com.aura.aosp.gorilla.launcher.model.stream.MessageStreamItem;
 import com.aura.aosp.gorilla.launcher.store.StreamStore;
+import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
+import com.aura.aosp.gorilla.launcher.ui.common.UserAvatarImage;
 import com.aura.aosp.gorilla.launcher.ui.content.StreamAdapter;
 import com.aura.aosp.gorilla.launcher.ui.content.StreamView;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterAdapter;
@@ -32,6 +38,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Main activity, i.e. the "launcher" screen
@@ -153,27 +161,57 @@ public class StreamActivity extends LauncherActivity {
 
         setMainFuncView(R.layout.func_content_composer, true);
 
-        FrameLayout recipientListContainer = mainFuncView.findViewById(R.id.recipientListContainer);
+        ConstraintLayout recipientListContainer = mainFuncView.findViewById(R.id.recipientListContainer);
 
-//        // Create an avatar image manually
-//        ImageView recipientAvatarImage = new ImageView(this);
-//        recipientAvatarImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_person_black_24dp));
-//        recipientAvatarImage.setScaleX(0.5f);
-//        recipientAvatarImage.setScaleY(0.5f);
+        // Create an avatar image manually
+        UserAvatarImage contactAvatarImage = new UserAvatarImage(this, contactIdentity);
 
-//        recipientListContainer.addView(recipientAvatarImage);
+        recipientListContainer.addView(contactAvatarImage);
+        Effects.fadeInView(contactAvatarImage, this, null);
 
         // Create extra action cluster (disabled avatar items only) for content editor:
         List<ActionItem> recipientActionItems = new ArrayList<>();
-        recipientActionItems.add(new ActionItem(
-                contactIdentity.getFull(),
-                R.drawable.ic_person_black_24dp,
-                1.0f
-        ));
 
-        ActionClusterView recipientAvatarClusterView = createActionClusterView(new ActionCluster("recipients", recipientActionItems), null, false);
+        try {
+            recipientActionItems.add(new ActionItem(
+                    contactIdentity.getFull(),
+                    R.drawable.ic_person_black_24dp,
+                    1.0f
+            ));
+
+            recipientActionItems.add(new InvokerActionItem(
+                    getResources().getString(R.string.actions_openCalendar),
+                    R.drawable.ic_add_a_photo_black_24dp,
+                    0.870f,
+                    StreamActivity.class.getMethod("onOpenSimpleCalendar")
+            ));
+        } catch (NoSuchMethodException e) {
+
+            Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>",
+                    e.getMessage()));
+        }
+
+        ActionCluster recipientActionCluster = new ActionCluster("recipients", recipientActionItems);
+//        ActionClusterView recipientAvatarClusterView = createActionClusterView(recipientActionCluster, null, false);
+
+        final ActionClusterView recipientAvatarClusterView = (ActionClusterView) getLayoutInflater().inflate(
+                R.layout.fragment_actioncluster_horizontal, recipientListContainer, false);
+        recipientAvatarClusterView.setVisibility(View.INVISIBLE);
+
+//        // use a linear layout manager
+//        SmartScrollableLayoutManager layoutManager = new SmartScrollableLayoutManager(actionClusterContainer.getContext(), nextLayOrientation, true);
+//        actionClusterView.setLayoutManager(layoutManager);
+
+        // specify adapter
+        ActionClusterAdapter recipientActionClusterAdapter = new ActionClusterAdapter(
+                recipientActionCluster.getItemsByRelevance(), this, this);
+        recipientAvatarClusterView.setAdapter(recipientActionClusterAdapter);
+
         recipientListContainer.addView(recipientAvatarClusterView);
         recipientAvatarClusterView.fadeIn();
+
+
+
 
         // Get base action cluster for current view
         // TODO: Fix, solve generically by using an actionClusterManager which know about current hierarchy and context!
@@ -194,7 +232,6 @@ public class StreamActivity extends LauncherActivity {
 
         // TODO: This is hacked! Use e.g. constraints to reposition and/or perform a view transition
         activeActionClusterView.setY(40f);
-
     }
 
     /**
@@ -211,8 +248,8 @@ public class StreamActivity extends LauncherActivity {
 
         Log.d(LOGTAG, String.format("onSendMessage message <%s>", messageText));
 
-        StreamItemMessage streamItemMessage = new StreamItemMessage(getOwnerIdent(), messageText);
-        streamItemMessage.shareWith(identity);
+        MessageStreamItem messageStreamItem = new MessageStreamItem(getOwnerIdent(), messageText);
+        messageStreamItem.shareWith(identity);
 
         // TODO: CONTINNUE HERE! Read messages from goatoms and put into stream!
         // TODO: CONTINNUE HERE! Cleanup all this hide/show stuff!

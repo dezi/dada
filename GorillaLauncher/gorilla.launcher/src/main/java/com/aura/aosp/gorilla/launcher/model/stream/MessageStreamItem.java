@@ -1,24 +1,24 @@
-package com.aura.aosp.gorilla.launcher.model;
+package com.aura.aosp.gorilla.launcher.model.stream;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
+import com.aura.aosp.gorilla.launcher.model.GorillaSharable;
 
 import java.util.List;
 
 /**
  * Message item
- * TODO: This may be subject to be merged with "StreamItemNote"
+ * TODO: This may be subject to be merged with "NoteStreamItem"
  */
-public class StreamItemMessage extends StreamItemNote implements GorillaSharable {
+public class MessageStreamItem extends NoteStreamItem implements GorillaSharable {
 
-    final static String LOGTAG = StreamItemMessage.class.getSimpleName();
+    final static String LOGTAG = MessageStreamItem.class.getSimpleName();
 
-    public StreamItemMessage(@NonNull Identity ownerIdentity, @NonNull String text) {
+    public MessageStreamItem(@NonNull Identity ownerIdentity, @NonNull String text) {
         super(ownerIdentity, text);
     }
 

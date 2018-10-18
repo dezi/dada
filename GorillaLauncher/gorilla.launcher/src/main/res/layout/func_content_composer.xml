@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.8"
-        android:background="@color/coco_background"
+        android:background="@color/color_coco_background"
         android:paddingTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -31,26 +31,26 @@
             android:padding="20dp"
             android:paddingHorizontal="@dimen/coco_paddingHorizontal"
             android:paddingVertical="@dimen/coco_paddingVertical"
-            android:textColor="@color/coco_text_primary"
-            android:textColorLink="@color/coco_background"
+            android:textColor="@color/color_coco_text_primary"
+            android:textColorLink="@color/color_coco_background"
             android:textSize="@dimen/coco_textsize"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <FrameLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/recipientListContainer"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginBottom="@dimen/actioncluster_container_lay_marginVertical"
-            android:layout_marginEnd="@dimen/actioncluster_container_lay_marginHorizontal"
-            android:layout_marginStart="@dimen/actioncluster_container_lay_marginHorizontal"
-            android:layout_marginTop="@dimen/actioncluster_container_lay_marginVertical"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="end"
             android:paddingBottom="@dimen/actioncluster_container_paddingVertical"
             android:paddingEnd="@dimen/actioncluster_container_paddingHorizontal"
             android:paddingStart="@dimen/actioncluster_container_paddingHorizontal"
             android:paddingTop="@dimen/actioncluster_container_paddingVertical"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>

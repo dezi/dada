@@ -11,10 +11,10 @@ import android.view.ViewGroup;
 
 import com.aura.aosp.gorilla.launcher.StreamActivity;
 import com.aura.aosp.gorilla.launcher.R;
-import com.aura.aosp.gorilla.launcher.model.StreamItem;
-import com.aura.aosp.gorilla.launcher.model.StreamItemContact;
-import com.aura.aosp.gorilla.launcher.model.StreamItemGeneric;
-import com.aura.aosp.gorilla.launcher.model.ActionCluster;
+import com.aura.aosp.gorilla.launcher.model.stream.StreamItem;
+import com.aura.aosp.gorilla.launcher.model.stream.ContactStreamItem;
+import com.aura.aosp.gorilla.launcher.model.stream.GenericStreamItem;
+import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 
 import java.util.Collections;
@@ -50,7 +50,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
     public StreamViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Create new views (invoked by the layout manager)
         StreamItemView itemView = (StreamItemView) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_stream_item, parent, false);
+                .inflate(R.layout.fragment_stream_item_preview, parent, false);
 
         StreamViewHolder viewHolder = new StreamViewHolder(itemView);
         return viewHolder;
@@ -70,6 +70,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         int useDotButtonColor;
         int usePreviewImageRes;
         final int[] usePreviewImageColor = new int[1];
+        final int useShapeColor;
 
         switch (dataSet.getType()) {
             case TYPE_STREAMITEM_GENERIC:
@@ -78,6 +79,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 useDotButtonColor = R.color.color_stream_button;
                 usePreviewImageRes = dataSet.getImageId();
                 usePreviewImageColor[0] = R.color.color_stream_image_background_primary;
+                useShapeColor = R.color.color_stream_preview_generic;
                 break;
 
             case TYPE_STREAMITEM_CONTACT:
@@ -85,13 +87,15 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 useDotButtonColor = R.color.color_stream_button;
                 usePreviewImageRes = dataSet.getImageId();
                 usePreviewImageColor[0] = R.color.color_stream_button;
+                useShapeColor = R.color.color_stream_preview_contact;
                 break;
 
-            case TYPE_STREAMUTEN_HIGHLIGHT:
+            case TYPE_STREAMITEM_MESSAGE:
                 useDotButtonRes = R.drawable.stream_oval_24dp;
                 useDotButtonColor = R.color.color_stream_button_highlight;
                 usePreviewImageRes = R.drawable.ic_bubble_chart_black_24dp;
                 usePreviewImageColor[0] = R.color.color_stream_image_background_secondary;
+                useShapeColor = R.color.color_stream_preview_message;
                 break;
 
             case TYPE_STREAMITEM_INVISIBLE:
@@ -99,26 +103,30 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 useDotButtonColor = R.color.color_transparent;
                 usePreviewImageRes = R.drawable.stream_oval_transparent_24dp;
                 usePreviewImageColor[0] = R.color.color_transparent;
+                useShapeColor = R.color.color_transparent;
                 break;
         }
 
 //        holder.title.setText(dataSet.title);
         holder.previewText.setText(dataSet.getTitle());
 
-        holder.dotButton.setImageResource(useDotButtonRes);
-        Drawable dbDrawable = holder.dotButton.getDrawable();
-        DrawableCompat.setTint(dbDrawable, ContextCompat.getColor(context, useDotButtonColor));
+//        holder.dotButton.setImageResource(useDotButtonRes);
+//        Drawable dbDrawable = holder.dotButton.getDrawable();
+//        DrawableCompat.setTint(dbDrawable, ContextCompat.getColor(context, useDotButtonColor));
 
         holder.previewImage.setImageResource(usePreviewImageRes);
-        Drawable iDrawable = holder.previewImage.getDrawable();
-        DrawableCompat.setTint(iDrawable, ContextCompat.getColor(context, usePreviewImageColor[0]));
+        Drawable previewImageDrawable = holder.previewImage.getDrawable();
+        DrawableCompat.setTint(previewImageDrawable, ContextCompat.getColor(context, usePreviewImageColor[0]));
+
+        Drawable shapeDrawable = holder.previewText.getBackground();
+        DrawableCompat.setTint(shapeDrawable, ContextCompat.getColor(context, useShapeColor));
 
         // Very hacky by now:
-        if (dataSet.getType() == StreamItemGeneric.ItemType.TYPE_STREAMITEM_CONTACT) {
-            holder.dotButton.setScaleX(0.5f);
-            holder.dotButton.setScaleY(0.5f);
-            holder.previewImage.setScaleX(1.5f);
-            holder.previewImage.setScaleY(1.5f);
+        if (dataSet.getType() == GenericStreamItem.ItemType.TYPE_STREAMITEM_CONTACT) {
+//            holder.dotButton.setScaleX(0.5f);
+//            holder.dotButton.setScaleY(0.5f);
+            holder.previewImage.setScaleX(1.8f);
+            holder.previewImage.setScaleY(1.8f);
 
             // Invoke intent based action
             holder.previewImage.setOnClickListener(new View.OnClickListener() {
@@ -131,7 +139,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                     actionClusterStore = new ActionClusterStore(context);
 
                     ActionCluster itemActionCluster = actionClusterStore.getClusterForAction(
-                            "stream.contacts", ((StreamItemContact) dataSet).getContactIdentity());
+                            "stream.contacts", ((ContactStreamItem) dataSet).getContactIdentity());
 
                     activity.createActionClusterView(itemActionCluster, null, true);
                 }
@@ -150,13 +158,13 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         super.onAttachedToRecyclerView(recyclerView);
     }
 
-    public void addItem(int position, StreamItemGeneric streamItem) {
+    public void addItem(int position, GenericStreamItem streamItem) {
         // Insert a new item to the RecyclerView on a predefined position
         streamItems.add(position, streamItem);
         notifyItemInserted(position);
     }
 
-    public void removeItem(StreamItemGeneric streamItem) {
+    public void removeItem(GenericStreamItem streamItem) {
         // Remove a RecyclerView item containing a specified Data object
         int position = streamItems.indexOf(streamItem);
         streamItems.remove(position);

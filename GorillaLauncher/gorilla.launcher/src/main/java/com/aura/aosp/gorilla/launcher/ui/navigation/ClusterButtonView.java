@@ -14,9 +14,9 @@ import android.util.Log;
 import android.view.View;
 
 import com.aura.aosp.gorilla.launcher.R;
-import com.aura.aosp.gorilla.launcher.model.ActionCluster;
-import com.aura.aosp.gorilla.launcher.model.ActionItem;
-import com.aura.aosp.gorilla.launcher.model.InvokerActionItem;
+import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
+import com.aura.aosp.gorilla.launcher.model.actions.ActionItem;
+import com.aura.aosp.gorilla.launcher.model.actions.InvokerActionItem;
 
 import java.lang.reflect.Method;
 
@@ -102,6 +102,13 @@ public class ClusterButtonView extends FloatingActionButton {
             case INVOCATION_TYPE_DISABLED:
             default:
 
+                setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.d(LOGTAG, String.format("Executing onClick for INVOCATION_TYPE_DISABLED"));
+                    }
+                });
+
                 break;
 
             // Call to an internal or activity via intent string
@@ -113,12 +120,12 @@ public class ClusterButtonView extends FloatingActionButton {
                     setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Log.d(LOGTAG, String.format("Executing onClick for ACTION <%s>", actionItem.getAction()));
+                            Log.d(LOGTAG, String.format("Executing onClick for action <%s>", actionItem.getAction()));
                             try {
                                 Intent intent = new Intent(actionItem.getAction());
                                 getContext().startActivity(intent);
                             } catch (ActivityNotFoundException e) {
-                                Log.e(LOGTAG, String.format("Could not invoke ACTION <%s>", actionItem.getAction()));
+                                Log.e(LOGTAG, String.format("Could not invoke INVOCATION_TYPE_INTENTSTRING <%s>", actionItem.getAction()));
                                 e.printStackTrace();
                             }
                         }
@@ -135,11 +142,11 @@ public class ClusterButtonView extends FloatingActionButton {
                     setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Log.d(LOGTAG, String.format("Executing onClick for INTENT <%s>", actionItem.getIntent().toString()));
+                            Log.d(LOGTAG, String.format("Executing onClick for intent <%s>", actionItem.getIntent().toString()));
                             try {
                                 getContext().startActivity(actionItem.getIntent());
                             } catch (ActivityNotFoundException e) {
-                                Log.e(LOGTAG, String.format("Could not invoke INTENT <%s>", actionItem.getIntent().toString()));
+                                Log.e(LOGTAG, String.format("Could not invoke INVOCATION_TYPE_INTENT <%s>", actionItem.getIntent().toString()));
                                 e.printStackTrace();
                             }
                         }
@@ -159,13 +166,15 @@ public class ClusterButtonView extends FloatingActionButton {
                         setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Log.d(LOGTAG, String.format("Executing onClick for OBJECT <%s> and METHOD <%s>",
+                                Log.d(LOGTAG, String.format("Executing onClick for object <%s> and method <%s>",
                                         getContext().toString(),
                                         ivActionItem.getInvokeMethod().toString()));
                                 try {
                                     ivActionItem.getInvokeMethod().invoke(getContext());
                                 } catch (Exception e) {
-                                    Log.e(LOGTAG, String.format("Could not invoke METHOD <%s>", ivActionItem.getInvokeMethod().toString()));
+                                    Log.e(LOGTAG, String.format("Could not invoke INVOCATION_TYPE_INVOKER for object <%s> and method <%s>",
+                                            getContext().toString(),
+                                            ivActionItem.getInvokeMethod().toString()));
                                     e.printStackTrace();
                                 }
                             }
@@ -175,14 +184,17 @@ public class ClusterButtonView extends FloatingActionButton {
                         setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Log.d(LOGTAG, String.format("Executing onClick for OBJECT <%s>, METHOD <%s> AND ARGS <%s>",
+                                Log.d(LOGTAG, String.format("Executing onClick for object <%s>, method <%s> and args <%s>",
                                         ivActionItem.getInvokeObject().toString(),
                                         ivActionItem.getInvokeMethod().toString(),
                                         ivActionItem.getInvokePayload() != null ? ivActionItem.getInvokePayload().toString() : "(null)"));
                                 try {
                                     ivActionItem.getInvokeMethod().invoke(ivActionItem.getInvokeObject(), ivActionItem.getInvokePayload());
                                 } catch (Exception e) {
-                                    Log.e(LOGTAG, String.format("Could not invoke METHOD <%s>", ivActionItem.getInvokeMethod().toString()));
+                                    Log.e(LOGTAG, String.format("Could not invoke INVOCATION_TYPE_INVOKER for object <%s>, method <%s> and args <%s>",
+                                            ivActionItem.getInvokeObject().toString(),
+                                            ivActionItem.getInvokeMethod().toString(),
+                                            ivActionItem.getInvokePayload() != null ? ivActionItem.getInvokePayload().toString() : "(null)"));
                                     e.printStackTrace();
                                 }
                             }
@@ -218,16 +230,6 @@ public class ClusterButtonView extends FloatingActionButton {
 
         setScaleX(actionItem.getAbsoluteScore());
         setScaleY(actionItem.getAbsoluteScore());
-
-//        if (actionItem.getAbsoluteScore() <= 0.9f) {
-//            setScaleX(0.88f);
-//            setScaleY(0.88f);
-//        }
-//
-//        if (actionItem.getAbsoluteScore() <= 0.7f) {
-//            setScaleX(0.75f);
-//            setScaleY(0.75f);
-//        }
 
         // Set drawable (icon) color
         Drawable iDrawable = getDrawable();

@@ -1,4 +1,4 @@
-package com.aura.aosp.gorilla.launcher.model;
+package com.aura.aosp.gorilla.launcher.model.stream;
 
 import com.aura.aosp.aura.common.univid.Identity;
 
@@ -10,8 +10,7 @@ interface StreamItemInterface {
         TYPE_STREAMITEM_GENERIC,
         TYPE_STREAMITEM_CONTACT,
         TYPE_STREAMITEM_NOTE,
-        TYPE_STREAMUTEN_MESSAGE,
-        TYPE_STREAMUTEN_HIGHLIGHT,
+        TYPE_STREAMITEM_MESSAGE,
         TYPE_STREAMITEM_INVISIBLE
     }
 
@@ -34,4 +33,8 @@ interface StreamItemInterface {
     ItemType getType();
 
     void setType(ItemType type);
+
+    Float getAbsoluteScore();
+
+    void setAbsoluteScore(Float absoluteScore);
 }
