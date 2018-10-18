@@ -18,12 +18,6 @@ public class Log
     {
         try
         {
-            //
-            // Sleep because of da fucked log format in Android Studio 3.1
-            //
-
-            Simple.sleep(5);
-
             StackTraceElement[] elements = Thread.currentThread().getStackTrace();
 
             String logtag = "????????";
