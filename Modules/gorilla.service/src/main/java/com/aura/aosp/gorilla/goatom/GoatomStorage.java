@@ -166,7 +166,7 @@ public class GoatomStorage
             }
         }
 
-        long elapsed = startTime.elapsedTime();
+        long elapsed = startTime.elapsedTimeMillis();
         Log.d("count=%d elapsed=%d", count, elapsed);
 
         return null;

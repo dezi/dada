@@ -15,6 +15,7 @@ public class Connect
 {
     private final String addr;
     private final int port;
+
     private Socket socket;
     private InputStream input;
     private OutputStream output;
@@ -127,7 +128,6 @@ public class Connect
 
             return buffer;
         }
-
         catch (Exception ex)
         {
             disconnect();
@@ -142,8 +142,7 @@ public class Connect
     {
         if (buffer == null)
         {
-            Err.errp();
-            return null;
+            return Err.errp();
         }
 
         synchronized (mutex)
