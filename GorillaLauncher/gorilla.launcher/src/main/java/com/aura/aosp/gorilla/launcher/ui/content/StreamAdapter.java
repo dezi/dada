@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.launcher.StreamActivity;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.stream.StreamItem;
@@ -16,6 +17,7 @@ import com.aura.aosp.gorilla.launcher.model.stream.ContactStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.GenericStreamItem;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
+import com.aura.aosp.gorilla.launcher.ui.common.ImageShaper;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +36,6 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
     private ActionClusterStore actionClusterStore;
 
     /**
-     *
      * @param streamItems
      * @param context
      * @param activity
@@ -50,7 +51,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
     public StreamViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Create new views (invoked by the layout manager)
         StreamItemView itemView = (StreamItemView) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_stream_item_preview, parent, false);
+                .inflate(R.layout.fragment_stream_item_preview_left, parent, false);
 
         StreamViewHolder viewHolder = new StreamViewHolder(itemView);
         return viewHolder;
@@ -91,6 +92,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 break;
 
             case TYPE_STREAMITEM_MESSAGE:
+            case TYPE_STREAMITEM_INVISIBLE:
                 useDotButtonRes = R.drawable.stream_oval_24dp;
                 useDotButtonColor = R.color.color_stream_button_highlight;
                 usePreviewImageRes = R.drawable.ic_bubble_chart_black_24dp;
@@ -98,7 +100,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 useShapeColor = R.color.color_stream_preview_message;
                 break;
 
-            case TYPE_STREAMITEM_INVISIBLE:
+            case TYPE_STREAMITEM_UNKNOWN:
                 useDotButtonRes = R.drawable.stream_oval_transparent_24dp;
                 useDotButtonColor = R.color.color_transparent;
                 usePreviewImageRes = R.drawable.stream_oval_transparent_24dp;
@@ -115,25 +117,47 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 //        DrawableCompat.setTint(dbDrawable, ContextCompat.getColor(context, useDotButtonColor));
 
         holder.previewImage.setImageResource(usePreviewImageRes);
+
         Drawable previewImageDrawable = holder.previewImage.getDrawable();
         DrawableCompat.setTint(previewImageDrawable, ContextCompat.getColor(context, usePreviewImageColor[0]));
 
-        Drawable shapeDrawable = holder.previewText.getBackground();
-        DrawableCompat.setTint(shapeDrawable, ContextCompat.getColor(context, useShapeColor));
+        Drawable shapeTextDrawable = holder.previewText.getBackground();
+        DrawableCompat.setTint(shapeTextDrawable, ContextCompat.getColor(context, useShapeColor));
 
-        // Very hacky by now:
+//        Drawable shapeImageDrawable = holder.previewImage.getBackground();
+//        DrawableCompat.setTint(shapeImageDrawable, ContextCompat.getColor(context, useShapeColor));
+
+        // TODO: Clean up, very hacky by now:
         if (dataSet.getType() == GenericStreamItem.ItemType.TYPE_STREAMITEM_CONTACT) {
+
+            ContactStreamItem contactStreamItem = (ContactStreamItem) dataSet;
+
+            Identity contactIdentity = contactStreamItem.getContactIdentity();
+
+            if (contactIdentity != null) {
+                switch (contactIdentity.getNick()) {
+
+                    case "matthias":
+                        ImageShaper.shape(context, R.drawable.avatar_matthias_250x250, R.drawable.stream_preview_rounded_corners_right, holder.previewImage, 48, 48);
+                        break;
+
+                    case "ola":
+                        ImageShaper.shape(context, R.drawable.avatar_ola_586x586, R.drawable.stream_preview_rounded_corners_right, holder.previewImage, 48, 48);
+                        break;
+                }
+            }
+
 //            holder.dotButton.setScaleX(0.5f);
 //            holder.dotButton.setScaleY(0.5f);
-            holder.previewImage.setScaleX(1.8f);
-            holder.previewImage.setScaleY(1.8f);
+//            holder.previewImage.setScaleX(1.8f);
+//            holder.previewImage.setScaleY(1.8f);
 
             // Invoke intent based action
             holder.previewImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    holder.itemView.setScaleX(1.2f);
-                    holder.itemView.setScaleY(1.2f);
+//                    holder.previewImage.setScaleX(1.2f);
+//                    holder.previewImage.setScaleY(1.2f);
 
                     // Create initial action button cluster (attach it to "root" container)
                     actionClusterStore = new ActionClusterStore(context);

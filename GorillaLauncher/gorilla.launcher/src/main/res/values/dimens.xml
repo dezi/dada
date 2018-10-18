@@ -8,8 +8,8 @@
     <dimen name="stream_item_padding_bottom">0dp</dimen>
     <dimen name="stream_item_padding_left">0dp</dimen>
     <dimen name="stream_item_padding_right">0dp</dimen>
-    <dimen name="stream_item_margin_top">5dp</dimen>
-    <dimen name="stream_item_margin_bottom">5dp</dimen>
+    <dimen name="stream_item_margin_top">10dp</dimen>
+    <dimen name="stream_item_margin_bottom">10dp</dimen>
     <dimen name="stream_item_margin_left">0dp</dimen>
     <dimen name="stream_item_margin_right">0dp</dimen>
 

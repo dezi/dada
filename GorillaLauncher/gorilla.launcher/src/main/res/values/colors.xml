@@ -27,6 +27,7 @@
 
     <!-- Content Stream -->
     <color name="color_stream_button">#cacaca</color>
+    <color name="color_stream_dot">#cacaca</color>
     <color name="color_stream_button_highlight">#6b3efc</color>
     <color name="color_stream_hint">#8e6bff</color>
     <color name="color_stream_image_background_primary">#f76dee</color>
