@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.aura.aosp.gorilla.launcher.ui.content.StreamItemView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/stream_preview_item_height"
+    android:layout_marginBottom="@dimen/stream_item_margin_bottom"
+    android:layout_marginEnd="@dimen/stream_item_margin_right"
+    android:layout_marginStart="@dimen/stream_item_margin_left"
+    android:layout_marginTop="@dimen/stream_item_margin_top"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingBottom="@dimen/stream_item_padding_bottom"
+    android:paddingEnd="@dimen/stream_item_padding_right"
+    android:paddingStart="@dimen/stream_item_padding_left"
+    android:paddingTop="@dimen/stream_item_padding_top">
+
+    <TextView
+        android:id="@+id/previewText"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:background="@drawable/stream_preview_rounded_corners_right"
+        android:gravity="end|center_vertical"
+        android:maxWidth="240dp"
+        android:minWidth="20dp"
+        android:paddingEnd="20dp"
+        android:paddingStart="20dp"
+        android:text="@string/_dotdotdot"
+        android:textAlignment="textEnd"
+        android:textColor="@color/color_text_primary"
+        android:textSize="13sp"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/previewImageContainer"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/previewImageContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:background="@drawable/stream_preview_rounded_corners_left"
+        android:gravity="center_horizontal|center_vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/previewImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/ic_error_outline_black_24dp"
+            android:contentDescription="@string/image_preview"
+            android:gravity="center_horizontal|center_vertical" />
+    </RelativeLayout>
+
+</com.aura.aosp.gorilla.launcher.ui.content.StreamItemView>

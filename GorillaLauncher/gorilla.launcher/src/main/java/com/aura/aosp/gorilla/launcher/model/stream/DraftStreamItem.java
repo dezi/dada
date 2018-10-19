@@ -14,7 +14,7 @@ import com.aura.aosp.gorilla.launcher.model.GorillaPersistable;
 /**
  * Note item
  */
-public class NoteStreamItem extends StreamItem implements GorillaPersistable {
+public class DraftStreamItem extends StreamItem implements GorillaPersistable {
 
     /**
      * Note item construction
@@ -22,8 +22,8 @@ public class NoteStreamItem extends StreamItem implements GorillaPersistable {
      * @param ownerIdentity
      * @param text
      */
-    public NoteStreamItem(@NonNull Identity ownerIdentity, @NonNull String text) {
-        super(ownerIdentity, ItemType.TYPE_STREAMITEM_NOTE, extractTitle(text), text, R.drawable.ic_note_black_24dp);
+    public DraftStreamItem(@NonNull Identity ownerIdentity, @NonNull String text) {
+        super(ownerIdentity, ItemType.TYPE_STREAMITEM_DRAFT, extractTitle(text), text, R.drawable.ic_note_black_24dp);
     }
 
     /**
@@ -31,7 +31,7 @@ public class NoteStreamItem extends StreamItem implements GorillaPersistable {
      *
      * @param atom
      */
-    public NoteStreamItem(GorillaAtom atom) {
+    public DraftStreamItem(GorillaAtom atom) {
         this(Contacts.getContact(atom.getUUIDBase64()), ((GorillaMessage) atom).getMessageText());
     }
 

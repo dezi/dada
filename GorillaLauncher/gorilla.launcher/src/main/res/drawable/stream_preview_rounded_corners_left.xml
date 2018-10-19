@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid android:color="#ffffff" />
+
+    <size
+        android:width="@dimen/stream_preview_item_height"
+        android:height="@dimen/stream_preview_item_height" />
+
+    <corners
+        android:bottomLeftRadius="15dp"
+        android:topLeftRadius="15dp" />
+
+    <padding
+        android:bottom="0dp"
+        android:left="0dp"
+        android:right="0dp"
+        android:top="0dp" />
+
+    <stroke
+        android:width="0dp"
+        android:color="@color/color_launcher_background" />
+
+</shape>

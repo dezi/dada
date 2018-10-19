@@ -9,17 +9,14 @@ import com.aura.aosp.gorilla.launcher.R;
  * Contact item
  * TODO: Implement peristable/sharable interfaces!
  */
-public class ContactStreamItem extends StreamItem  {
+public class ContactStreamItem extends StreamItem {
 
-    public Identity contactIdentity;
+    protected Identity contactIdentity;
+    protected boolean isOwnerIdentity;
 
     public ContactStreamItem(@NonNull Identity ownerIdentity, @NonNull Identity contactIdentity) {
-        setOwnerIdentity(ownerIdentity);
+        super(ownerIdentity, ItemType.TYPE_STREAMITEM_CONTACT, contactIdentity.getNick(),contactIdentity.getFull(), R.drawable.ic_person_black_24dp);
         setContactIdentity(contactIdentity);
-        setType(ItemType.TYPE_STREAMITEM_CONTACT);
-        setImageId(R.drawable.ic_account_circle_black_24dp);
-        setTitle(contactIdentity.getNick());
-        setText(contactIdentity.getFull());
     }
 
     public Identity getContactIdentity() {
@@ -28,5 +25,9 @@ public class ContactStreamItem extends StreamItem  {
 
     public void setContactIdentity(Identity contactIdentity) {
         this.contactIdentity = contactIdentity;
+    }
+
+    public boolean isOwnerIdentity() {
+        return contactIdentity.equals(ownerIdentity);
     }
 }
