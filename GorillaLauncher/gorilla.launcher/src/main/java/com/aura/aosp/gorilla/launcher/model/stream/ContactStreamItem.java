@@ -2,8 +2,8 @@ package com.aura.aosp.gorilla.launcher.model.stream;
 
 import android.support.annotation.NonNull;
 
-import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.launcher.R;
+import com.aura.aosp.gorilla.launcher.model.user.User;
 
 /**
  * Contact item
@@ -11,23 +11,23 @@ import com.aura.aosp.gorilla.launcher.R;
  */
 public class ContactStreamItem extends StreamItem {
 
-    protected Identity contactIdentity;
+    protected User contactUser;
     protected boolean isOwnerIdentity;
 
-    public ContactStreamItem(@NonNull Identity ownerIdentity, @NonNull Identity contactIdentity) {
-        super(ownerIdentity, ItemType.TYPE_STREAMITEM_CONTACT, contactIdentity.getNick(),contactIdentity.getFull(), R.drawable.ic_person_black_24dp);
-        setContactIdentity(contactIdentity);
+    public ContactStreamItem(@NonNull User ownerUser, @NonNull User contactUser) {
+        super(ownerUser, ItemType.TYPE_STREAMITEM_CONTACT, contactUser.getIdentity().getFull(), contactUser.getIdentity().getFull(), R.drawable.ic_person_black_24dp);
+        setContactUser(contactUser);
     }
 
-    public Identity getContactIdentity() {
-        return contactIdentity;
+    public User getContactUser() {
+        return contactUser;
     }
 
-    public void setContactIdentity(Identity contactIdentity) {
-        this.contactIdentity = contactIdentity;
+    public void setContactUser(User contactUser) {
+        this.contactUser = contactUser;
     }
 
-    public boolean isOwnerIdentity() {
-        return contactIdentity.equals(ownerIdentity);
+    public boolean isOwnerUser() {
+        return contactUser.getIdentity().equals(ownerUser.getIdentity());
     }
 }

@@ -3,14 +3,14 @@ package com.aura.aosp.gorilla.launcher.model.stream;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.aura.aosp.aura.common.univid.Identity;
+import com.aura.aosp.gorilla.launcher.model.user.User;
 
 /**
  * Stream item base class.
  */
 public abstract class StreamItem implements StreamItemInterface {
 
-    protected Identity ownerIdentity;
+    protected User ownerUser;
     protected String title;
     protected String text;
     protected Integer imageId;
@@ -25,16 +25,16 @@ public abstract class StreamItem implements StreamItemInterface {
     }
 
     /**
-     * Construct stream item with or without owner identity.
+     * Construct stream item with or without owner user.
      *
-     * @param ownerIdentity
+     * @param ownerUser
      * @param itemType
      * @param title
      * @param text
      * @param imageId
      */
-    public StreamItem(Identity ownerIdentity, @NonNull ItemType itemType, @NonNull String title, @NonNull String text, @NonNull Integer imageId) {
-        setOwnerIdentity(ownerIdentity);
+    public StreamItem(User ownerUser, @NonNull ItemType itemType, @NonNull String title, @NonNull String text, @NonNull Integer imageId) {
+        setOwnerUser(ownerUser);
         setType(itemType);
         setTitle(title);
         setText(text);
@@ -42,13 +42,13 @@ public abstract class StreamItem implements StreamItemInterface {
     }
 
     @Override
-    public Identity getOwnerIdentity() {
-        return ownerIdentity;
+    public User getOwnerUser() {
+        return ownerUser;
     }
 
     @Override
-    public void setOwnerIdentity(Identity ownerIdentity) {
-        this.ownerIdentity = ownerIdentity;
+    public void setOwnerUser(User ownerUser) {
+        this.ownerUser = ownerUser;
     }
 
     @Override

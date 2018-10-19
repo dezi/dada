@@ -11,6 +11,7 @@ import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionItem;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionItemInterface;
 import com.aura.aosp.gorilla.launcher.model.actions.InvokerActionItem;
+import com.aura.aosp.gorilla.launcher.model.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,15 +36,15 @@ public class ActionClusterStore {
      * <p>
      * TODO: Add actions based on score for this action domain
      * <p>
-     * TODO: Objects like partner identity are probably superflous as soon as we
+     * TODO: Objects like contact identity are probably superflous as soon as we
      * TODO: an action scoring based on Gorilla functions where identity information
      * TODO: is passed through actionDomain/subContext...
      *
      * @param actionPath
-     * @param partnerIdentity
+     * @param contactUser
      * @return
      */
-    public ActionCluster getClusterForAction(String actionPath, @Nullable Identity partnerIdentity) {
+    public ActionCluster getClusterForAction(String actionPath, @Nullable User contactUser) {
 
         List<ActionItem> items = new ArrayList<>();
 
@@ -59,7 +60,7 @@ public class ActionClusterStore {
                             context.getResources().getString(R.string.actions_openCalendar),
                             R.drawable.ic_add_black_24dp,
                             1f,
-                            getClusterForAction("launcher", partnerIdentity)
+                            getClusterForAction("launcher", contactUser)
                     ));
 
                     break;
@@ -84,7 +85,7 @@ public class ActionClusterStore {
                             context.getResources().getString(R.string.actions_composeMessage),
                             R.drawable.ic_sms_black_24dp,
                             0.92f,
-                            getClusterForAction("func.content_composer", partnerIdentity)
+                            getClusterForAction("func.content_composer", contactUser)
                     ));
 
                     items.add(new ActionItem(
@@ -128,8 +129,8 @@ public class ActionClusterStore {
                             R.drawable.ic_message_black_24dp,
                             1f,
                             getContext(),
-                            StreamActivity.class.getMethod("onOpenContentComposer", Identity.class),
-                            partnerIdentity
+                            StreamActivity.class.getMethod("onOpenContentComposer", User.class),
+                            contactUser
                     ));
 
                     items.add(new ActionItem(
@@ -150,15 +151,15 @@ public class ActionClusterStore {
 
                 case "func.content_composer":
 
-                    if (partnerIdentity != null) {
+                    if (contactUser != null) {
 
                         items.add(new InvokerActionItem(
                                 context.getResources().getString(R.string.actions_sendMessage),
                                 R.drawable.ic_send_black_24dp,
                                 1f,
                                 getContext(),
-                                StreamActivity.class.getMethod("onSendMessage", Identity.class),
-                                partnerIdentity
+                                StreamActivity.class.getMethod("onSendMessage", User.class),
+                                contactUser
                         ));
 
                         break;
@@ -197,7 +198,7 @@ public class ActionClusterStore {
                                 context.getResources().getString(R.string.actions_editText),
                                 R.drawable.ic_mode_edit_black_24dp,
                                 0.80f,
-                                getClusterForAction(actionPath + ".SELECT_TEXT", partnerIdentity)
+                                getClusterForAction(actionPath + ".SELECT_TEXT", contactUser)
                         ));
 
                         items.add(new ActionItem(

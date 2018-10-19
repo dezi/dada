@@ -1,6 +1,6 @@
 package com.aura.aosp.gorilla.launcher.model.stream;
 
-import com.aura.aosp.aura.common.univid.Identity;
+import com.aura.aosp.gorilla.launcher.model.user.User;
 
 interface StreamItemInterface {
 
@@ -13,9 +13,9 @@ interface StreamItemInterface {
         TYPE_STREAMITEM_INVISIBLE
     }
 
-    Identity getOwnerIdentity();
+    User getOwnerUser();
 
-    void setOwnerIdentity(Identity ownerIdentity);
+    void setOwnerUser(User ownerUser);
 
     String getTitle();
 

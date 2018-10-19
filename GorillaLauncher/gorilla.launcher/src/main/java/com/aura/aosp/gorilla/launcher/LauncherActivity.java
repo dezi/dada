@@ -29,6 +29,7 @@ import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
+import com.aura.aosp.gorilla.launcher.model.user.User;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 import com.aura.aosp.gorilla.launcher.ui.animation.drawable.ExpandingCircleDrawable;
@@ -57,7 +58,7 @@ public class LauncherActivity extends AppCompatActivity {
     protected static Boolean svlink;
     protected static Boolean uplink;
 
-    public static Identity ownerIdent;
+    public static User ownerUser;
 
     protected ActionClusterStore actionClusterStore;
 
@@ -88,14 +89,14 @@ public class LauncherActivity extends AppCompatActivity {
     protected static int blurTransisitionDuration;
 
     @Nullable
-    public static Identity getOwnerIdent() {
-        return ownerIdent;
+    public static User getOwnerUser() {
+        return ownerUser;
     }
 
     @Nullable
     public static String getOwnerDeviceBase64() {
-        if (ownerIdent == null) return null;
-        return ownerIdent.getDeviceUUIDBase64();
+        if (ownerUser == null) return null;
+        return ownerUser.getIdentity().getDeviceUUIDBase64();
     }
 
     @Override
@@ -655,7 +656,7 @@ public class LauncherActivity extends AppCompatActivity {
 
         // Check for owner contactIdentity and start "Gorilla SysApp" if not given yet
         // TODO: To be replaced by discovering UID from "Identity Manager" later on.
-        if (getOwnerIdent() == null) {
+        if (getOwnerUser() == null) {
             Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp");
             Simple.startActivity(this, launchIntent);
         }
@@ -688,14 +689,14 @@ public class LauncherActivity extends AppCompatActivity {
             Log.d(LOGTAG, "onOwnerReceived: +++++ CURRENT +++++ owner=" + owner.toString());
 
             String ownerUUID = owner.getOwnerUUIDBase64();
+            Identity ownerIdentity = Contacts.getContact(ownerUUID);
 
-            ownerIdent = Contacts.getContact(ownerUUID);
+            if (ownerIdentity != null) {
 
-            if (ownerIdent != null) {
+                Log.d(LOGTAG, "onOwnerReceived: +++++ CONTACT +++++ nick=" + ownerIdentity.getNick());
 
-                Log.d(LOGTAG, "onOwnerReceived: +++++ CONTACT +++++ nick=" + ownerIdent.getNick());
-
-                String nick = ownerIdent.getNick();
+                ownerUser = new User(ownerIdentity);
+                String nick = ownerUser.getIdentity().getNick();
 
                 if (statusBar != null) {
                     statusBar.setProfileInfo(nick);

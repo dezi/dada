@@ -9,15 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aura.aosp.aura.common.simple.Log;
-import com.aura.aosp.aura.common.univid.Identity;
-import com.aura.aosp.gorilla.launcher.StreamActivity;
 import com.aura.aosp.gorilla.launcher.R;
-import com.aura.aosp.gorilla.launcher.model.stream.MessageStreamItem;
-import com.aura.aosp.gorilla.launcher.model.stream.StreamItem;
+import com.aura.aosp.gorilla.launcher.StreamActivity;
+import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.stream.ContactStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.GenericStreamItem;
-import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
+import com.aura.aosp.gorilla.launcher.model.stream.MessageStreamItem;
+import com.aura.aosp.gorilla.launcher.model.stream.StreamItem;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.ui.common.ImageShaper;
 
@@ -94,9 +92,8 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
             case TYPE_STREAMITEM_CONTACT:
                 ContactStreamItem contactStreamItem = (ContactStreamItem) dataSet;
-                Identity contactIdentity = contactStreamItem.getContactIdentity();
 
-                if (contactStreamItem.isOwnerIdentity()) {
+                if (contactStreamItem.isOwnerUser()) {
                     itemType = ITEM_TYPE_PREVIEW_RIGHT;
                 } else {
                     itemType = ITEM_TYPE_PREVIEW_LEFT;
@@ -128,14 +125,20 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         // Replace the contents of a view (invoked by the layout manager)
         // Use the provided View Holder on the onCreateViewHolder invokeMethod
         // to populate the current row on the RecyclerView
+
+        final StreamItem dataSet = streamItems.get(position);
+
+        // TODO: Initialize item directly through implementing class.
         // TODO: Probably it makes sense to initialize child views of the
         // TODO: StreamItemView independently
-        final StreamItem dataSet = streamItems.get(position);
 //        holder.item.initWithItem(dataSet);
 
-        int usePlaceholderImageRes = dataSet.getImageId();
-        int usePlaceholderImageColor = R.color.color_stream_image_drawable;
-        float previewItemHeight = context.getResources().getDimension(R.dimen.stream_preview_item_height);
+        final int usePlaceholderImageRes = dataSet.getImageId();
+        final int usePlaceholderImageColor = R.color.color_stream_image_drawable;
+
+        float previewItemHeight = context.getResources().getDimension(R.dimen.stream_preview_item_image_height);
+        float previewItemWidth = context.getResources().getDimension(R.dimen.stream_preview_item_image_width);
+
         final int useImageShapeBgRes;
         final int useShapeBgColor;
 
@@ -199,52 +202,27 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
             case TYPE_STREAMITEM_CONTACT:
 
-                ContactStreamItem contactStreamItem = (ContactStreamItem) dataSet;
+                final ContactStreamItem contactStreamItem = (ContactStreamItem) dataSet;
 
-                Identity contactIdentity = contactStreamItem.getContactIdentity();
+                Integer avatarResId = contactStreamItem.getContactUser().getContactAvatarImageRes();
 
-                // TODO: Clean up, totally hacky by now:
-                if (contactIdentity != null) {
-                    switch (contactIdentity.getNick()) {
-
-                        case "matthias":
-                            ImageShaper.shape(context, R.drawable.avatar_matthias_400x400,
-                                    useImageShapeBgRes, holder.previewImage, 48, 48);
-                            holder.previewImage.setImageAlpha(224);
-                            break;
-
-                        case "dezi":
-                            ImageShaper.shape(context, R.drawable.avatar_dezi_1024x1024,
-                                    useImageShapeBgRes, holder.previewImage, 48, 48);
-                            holder.previewImage.setImageAlpha(224);
-                            break;
-
-                        case "malte":
-                            ImageShaper.shape(context, R.drawable.avatar_malte_256x256,
-                                    useImageShapeBgRes, holder.previewImage, 48, 48);
-                            holder.previewImage.setImageAlpha(224);
-                            break;
-
-                        case "ola":
-                            ImageShaper.shape(context, R.drawable.avatar_ola_586x586,
-                                    useImageShapeBgRes, holder.previewImage, 48, 48);
-                            holder.previewImage.setImageAlpha(224);
-                            break;
-                    }
+                if (avatarResId != null) {
+                    ImageShaper.shape(context, avatarResId, useImageShapeBgRes, holder.previewImage, previewItemHeight, previewItemWidth);
+                    holder.previewImage.setImageAlpha(224);
                 }
 
                 // Invoke intent based action
                 holder.previewImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                        holder.previewImage.setScaleX(1.2f);
-//                        holder.previewImage.setScaleY(1.2f);
+
+                        // TODO: Create transition feedback and so on.
 
                         // Create initial action button cluster (attach it to "root" container)
                         actionClusterStore = new ActionClusterStore(context);
 
                         ActionCluster itemActionCluster = actionClusterStore.getClusterForAction(
-                                "stream.contacts", ((ContactStreamItem) dataSet).getContactIdentity());
+                                "stream.contacts", contactStreamItem.getContactUser());
 
                         activity.createActionClusterView(itemActionCluster, null, true);
                     }

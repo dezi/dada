@@ -9,8 +9,6 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.Drawable;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.widget.ImageView;
 
 public class ImageShaper {
@@ -18,6 +16,8 @@ public class ImageShaper {
     private final static String LOGTAG = ImageShaper.class.getSimpleName();
 
     /**
+     * Apply a shape to an image and place result in given image view.
+     *
      * @param context
      * @param originalImage
      * @param shapedImage
@@ -25,7 +25,7 @@ public class ImageShaper {
      * @param expectedHeight
      * @param expectedWidth
      */
-    public static void shape(Context context, int originalImage, int shapedImage, ImageView imgView, int expectedHeight, int expectedWidth) {
+    public static void shape(Context context, int originalImage, int shapedImage, ImageView imgView, float expectedHeight, float expectedWidth) {
 
         Bitmap oImageBitmap = BitmapFactory.decodeResource(context.getResources(), originalImage);
         Bitmap sImageBitmap = BitmapFactory.decodeResource(context.getResources(), shapedImage);
@@ -37,14 +37,14 @@ public class ImageShaper {
 
         Bitmap mask = sImageBitmap;
 
-        oImageBitmap = getResizedBitmap(oImageBitmap, dipToPixels(context, expectedHeight), dipToPixels(context, expectedWidth));
+        oImageBitmap = getResizedBitmap(oImageBitmap, expectedHeight, expectedWidth);
 
         int bitmapHeight = sImageBitmap.getHeight();
         int bitmapWidth = sImageBitmap.getWidth();
 
-        Bitmap result = Bitmap.createBitmap(mask.getWidth(), mask.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap resultBitmap = Bitmap.createBitmap(mask.getWidth(), mask.getHeight(), Bitmap.Config.ARGB_8888);
 
-        final Canvas maskCanvas = new Canvas(result);
+        final Canvas maskCanvas = new Canvas(resultBitmap);
 
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
@@ -63,7 +63,7 @@ public class ImageShaper {
         imgView.getLayoutParams().height = bitmapHeight;
         imgView.getLayoutParams().width = bitmapWidth;
         imgView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imgView.setImageBitmap(result);
+        imgView.setImageBitmap(resultBitmap);
         imgView.setAdjustViewBounds(true);
     }
 
@@ -86,18 +86,6 @@ public class ImageShaper {
         Bitmap resizedBitmap = Bitmap.createBitmap(image, 0, 0, width, height, matrix, false);
 
         return resizedBitmap;
-    }
-
-    /**
-     * Convert dip to pixel
-     *
-     * @param context
-     * @param dipValue
-     * @return
-     */
-    public static float dipToPixels(Context context, float dipValue) {
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
     }
 
     /**

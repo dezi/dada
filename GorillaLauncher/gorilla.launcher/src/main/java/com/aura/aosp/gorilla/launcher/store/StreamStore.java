@@ -7,6 +7,7 @@ import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.launcher.model.stream.StreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.ContactStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.InvisibleStreamItem;
+import com.aura.aosp.gorilla.launcher.model.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,10 +32,10 @@ public class StreamStore {
      * Get content stream items for given atom context
      *
      * @param atomContext
-     * @param ownIdentity
+     * @param ownUser
      * @return
      */
-    public List<StreamItem> getItemsForAtomContext(String atomContext, Identity ownIdentity) {
+    public List<StreamItem> getItemsForAtomContext(String atomContext, User ownUser) {
 
         List<StreamItem> items = new ArrayList<>();
 
@@ -46,14 +47,17 @@ public class StreamStore {
 
                 List<Identity> allContacts = Contacts.getAllContacts();
 
-                for (Identity identity : allContacts) {
+                for (Identity contactIdentity : allContacts) {
 
-//                    if (identity.equals(ownIdentity)) {
+//                    if (contactIdentity.equals(ownUser.getIdentity())) {
 //                        continue;
 //                    }
 
-                    ContactStreamItem contactStreamItem = new ContactStreamItem(ownIdentity, identity);
+                    User contactUser = new User(contactIdentity);
+
+                    ContactStreamItem contactStreamItem = new ContactStreamItem(ownUser, contactUser);
                     contactStreamItem.setAbsoluteScore(1f);
+
                     items.add(contactStreamItem);
                 }
         }

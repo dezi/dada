@@ -8,6 +8,7 @@ import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.GorillaSharable;
+import com.aura.aosp.gorilla.launcher.model.user.User;
 
 import java.util.List;
 
@@ -19,14 +20,15 @@ public class MessageStreamItem extends DraftStreamItem implements GorillaSharabl
 
     final static String LOGTAG = MessageStreamItem.class.getSimpleName();
 
-    protected Identity sharedByIdentity;
-
-    public MessageStreamItem(@NonNull Identity ownerIdentity, @NonNull String text) {
-        super(ownerIdentity, text);
+    public MessageStreamItem(@NonNull User ownerUser, @NonNull String text) {
+        super(ownerUser, text);
         setImageId(R.drawable.ic_message_black_24dp);
     }
 
-    @Override
+    public void shareWith(User remoteUser) {
+        shareWith(remoteUser.getIdentity());
+    }
+
     public void shareWith(Identity remoteIdentity) {
 
         // TODO: Replace with sendPayload(), this is just for testing.
@@ -49,14 +51,7 @@ public class MessageStreamItem extends DraftStreamItem implements GorillaSharabl
     }
 
     @Override
-    public void shareWith(List<Identity> remoteIdentities) {
-        for (Identity identity : remoteIdentities) {
-            shareWith(identity);
-        }
-    }
-
-    @Override
-    public void unshareWith(Identity remoteIdentity) {
+    public void unshareWith(User remoteUser) {
         // TODO: Implement
     }
 

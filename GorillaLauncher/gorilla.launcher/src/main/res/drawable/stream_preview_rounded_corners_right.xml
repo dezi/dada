@@ -5,8 +5,8 @@
     <solid android:color="@color/color_stream_dot" />
 
     <size
-        android:width="@dimen/stream_preview_item_height"
-        android:height="@dimen/stream_preview_item_height" />
+        android:width="@dimen/stream_preview_item_image_width"
+        android:height="@dimen/stream_preview_item_image_height" />
 
     <corners
         android:bottomRightRadius="15dp"

@@ -26,7 +26,7 @@
         </shape>
     </item>
     <item
-        android:drawable="@drawable/avatar_matthias_400x400"
+        android:drawable="@drawable/avatar_matthias"
         android:width="50dp"
         android:height="50dp"
         android:bottom="10dp"

@@ -3,16 +3,24 @@
     <!-- Content Stream -->
     <dimen name="stream_fading_edge_length">80dp</dimen>
 
-    <!-- Content Stream Item -->
+    <!-- Content Stream Item: Generic layout -->
     <dimen name="stream_item_padding_top">0dp</dimen>
     <dimen name="stream_item_padding_bottom">0dp</dimen>
     <dimen name="stream_item_padding_left">0dp</dimen>
     <dimen name="stream_item_padding_right">0dp</dimen>
-    <dimen name="stream_item_margin_top">10dp</dimen>
-    <dimen name="stream_item_margin_bottom">10dp</dimen>
+    <dimen name="stream_item_margin_top">8dp</dimen>
+    <dimen name="stream_item_margin_bottom">8dp</dimen>
     <dimen name="stream_item_margin_left">0dp</dimen>
     <dimen name="stream_item_margin_right">0dp</dimen>
-    <dimen name="stream_preview_item_height">42dp</dimen>
+
+    <!-- Content Stream Item: Expansion state "preview" -->
+    <dimen name="stream_preview_item_height">48dp</dimen>
+    <dimen name="stream_preview_item_image_width">48dp</dimen>
+    <dimen name="stream_preview_item_image_height">48dp</dimen>
+    <dimen name="stream_preview_item_text_paddingStart">18dp</dimen>
+    <dimen name="stream_preview_item_text_paddingEnd">18dp</dimen>
+    <dimen name="stream_preview_item_text_maxWidth">240dp</dimen>
+    <dimen name="stream_preview_item_text_minWidth">40dp</dimen>
 
     <!-- Main Status Bar -->
     <dimen name="statusbar_padding_horizontal">8dp</dimen>

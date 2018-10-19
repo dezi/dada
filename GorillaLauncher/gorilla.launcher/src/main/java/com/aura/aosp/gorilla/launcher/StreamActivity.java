@@ -6,12 +6,9 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.univid.Contacts;
@@ -25,6 +22,7 @@ import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionItem;
 import com.aura.aosp.gorilla.launcher.model.actions.InvokerActionItem;
 import com.aura.aosp.gorilla.launcher.model.stream.MessageStreamItem;
+import com.aura.aosp.gorilla.launcher.model.user.User;
 import com.aura.aosp.gorilla.launcher.store.StreamStore;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
@@ -38,8 +36,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Main activity, i.e. the "launcher" screen
@@ -117,7 +113,7 @@ public class StreamActivity extends LauncherActivity {
      */
     protected void refreshStreamItems() {
 
-        streamAdapter = new StreamAdapter(streamStore.getItemsForAtomContext("aura.uxtream.launcher", getOwnerIdent()), this, this);
+        streamAdapter = new StreamAdapter(streamStore.getItemsForAtomContext("aura.uxtream.launcher", getOwnerUser()), this, this);
         streamRecyclerView.setAdapter(streamAdapter);
     }
 
@@ -149,9 +145,9 @@ public class StreamActivity extends LauncherActivity {
     /**
      * ACTION: "Open Content Composer"
      */
-    public void onOpenContentComposer(@Nullable Identity contactIdentity) {
+    public void onOpenContentComposer(@Nullable User contactUser) {
 
-        Log.d(LOGTAG, String.format("onOpenContentComposer for contactIdentity <%s>", contactIdentity.getNick()));
+        Log.d(LOGTAG, String.format("onOpenContentComposer for contactUser <%s>", contactUser.getIdentity().getNick()));
 
 //        Effects.fadeOutView(actionClusterContainer, this, null);
 //        ConstraintSet constraintSet = new ConstraintSet();
@@ -164,7 +160,7 @@ public class StreamActivity extends LauncherActivity {
         ConstraintLayout recipientListContainer = mainFuncView.findViewById(R.id.recipientListContainer);
 
         // Create an avatar image manually
-        UserAvatarImage contactAvatarImage = new UserAvatarImage(this, contactIdentity);
+        UserAvatarImage contactAvatarImage = new UserAvatarImage(this, contactUser);
 
         recipientListContainer.addView(contactAvatarImage);
         Effects.fadeInView(contactAvatarImage, this, null);
@@ -174,7 +170,7 @@ public class StreamActivity extends LauncherActivity {
 
         try {
             recipientActionItems.add(new ActionItem(
-                    contactIdentity.getFull(),
+                    contactUser.getIdentity().getFull(),
                     R.drawable.ic_person_black_24dp,
                     1.0f
             ));
@@ -211,8 +207,6 @@ public class StreamActivity extends LauncherActivity {
         recipientAvatarClusterView.fadeIn();
 
 
-
-
         // Get base action cluster for current view
         // TODO: Fix, solve generically by using an actionClusterManager which know about current hierarchy and context!
         actionClusterStore.setContext(this);
@@ -221,7 +215,7 @@ public class StreamActivity extends LauncherActivity {
 
         ActionClusterAdapter actionClusterAdapter = (ActionClusterAdapter) activeActionClusterView.getAdapter();
         ActionCluster cocoActionCluster = actionClusterStore.getClusterForAction(
-                "func.content_composer", contactIdentity);
+                "func.content_composer", contactUser);
 
         actionClusterAdapter.setActionItems(cocoActionCluster.getActionItems());
 
@@ -237,10 +231,10 @@ public class StreamActivity extends LauncherActivity {
     /**
      * ACTION: "Open Content Composer"
      */
-    public void onSendMessage(Identity identity) {
+    public void onSendMessage(User contactUser) {
 
-        Log.d(LOGTAG, String.format("onSendMessage for contactIdentity <%s>", identity.getNick()));
-        Log.d(LOGTAG, String.format("onSendMessage ownerIdentity <%s>", getOwnerIdent().getNick()));
+        Log.d(LOGTAG, String.format("onSendMessage for contactUser <%s>", contactUser.getIdentity().getNick()));
+        Log.d(LOGTAG, String.format("onSendMessage ownerUser <%s>", getOwnerUser().getIdentity().getNick()));
 
         EditText editTextView = (EditText) findViewById(R.id.editText);
 
@@ -248,8 +242,8 @@ public class StreamActivity extends LauncherActivity {
 
         Log.d(LOGTAG, String.format("onSendMessage message <%s>", messageText));
 
-        MessageStreamItem messageStreamItem = new MessageStreamItem(getOwnerIdent(), messageText);
-        messageStreamItem.shareWith(identity);
+        MessageStreamItem messageStreamItem = new MessageStreamItem(getOwnerUser(), messageText);
+        messageStreamItem.shareWith(contactUser);
 
         // TODO: CONTINNUE HERE! Read messages from goatoms and put into stream!
         // TODO: CONTINNUE HERE! Cleanup all this hide/show stuff!
@@ -336,12 +330,15 @@ public class StreamActivity extends LauncherActivity {
             Log.d(LOGTAG, "onOwnerReceived: +++++ CURRENT +++++ owner=" + owner.toString());
 
             String ownerUUID = owner.getOwnerUUIDBase64();
+            Identity ownerIdentity = Contacts.getContact(ownerUUID);
 
-            ownerIdent = Contacts.getContact(ownerUUID);
+            if (ownerIdentity != null) {
 
-            if (ownerIdent != null) {
+                Log.d(LOGTAG, "onOwnerReceived: +++++ CONTACT +++++ nick=" + ownerIdentity.getNick());
 
-                Log.d(LOGTAG, "onOwnerReceived: +++++ CONTACT +++++ nick=" + ownerIdent.getNick());
+                ownerUser = new User(ownerIdentity);
+                String nick = ownerUser.getIdentity().getNick();
+
                 createStream();
                 onOpenStream();
             }

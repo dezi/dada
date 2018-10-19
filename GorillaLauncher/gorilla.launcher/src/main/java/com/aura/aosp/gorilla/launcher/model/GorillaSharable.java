@@ -1,14 +1,10 @@
 package com.aura.aosp.gorilla.launcher.model;
 
-import com.aura.aosp.aura.common.univid.Identity;
-
-import java.util.List;
+import com.aura.aosp.gorilla.launcher.model.user.User;
 
 public interface GorillaSharable {
 
-    public void shareWith(Identity remoteIdentity);
+    public void shareWith(User remoteUser);
 
-    public void shareWith(List<Identity> remoteIdentities);
-
-    public void unshareWith(Identity remoteIdentity);
+    public void unshareWith(User remoteUser);
 }
