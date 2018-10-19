@@ -348,9 +348,9 @@ public class StreamActivity extends LauncherActivity {
         public void onPayloadReceived(GorillaPayload payload) {
             Log.d(LOGTAG, "onPayloadReceived: payload=" + payload.toString());
 
-//            displayMessageInList(payload);
+            // TODO: Update stream!
 
-            JSONObject atom = convertMessageToAtomAndPersists(payload);
+//            displayMessageInList(payload);
 
             String remoteUserUUID = payload.getSenderUUIDBase64();
             String remoteDeviceUUID = payload.getDeviceUUIDBase64();
@@ -364,31 +364,6 @@ public class StreamActivity extends LauncherActivity {
 //
 //                break;
 //            }
-        }
-
-        private JSONObject convertMessageToAtomAndPersists(GorillaPayload payload) {
-            Long time = payload.getTime();
-            String uuid = payload.getUUIDBase64();
-            String text = payload.getPayload();
-            String remoteUserUUID = payload.getSenderUUIDBase64();
-
-            JSONObject atomLoad = new JSONObject();
-            Json.put(atomLoad, "message", text);
-
-            JSONObject received = new JSONObject();
-            Json.put(received, StreamActivity.getOwnerDeviceBase64(), System.currentTimeMillis());
-            Json.put(atomLoad, "received", received);
-
-            JSONObject atom = new JSONObject();
-
-            Json.put(atom, "uuid", uuid);
-            Json.put(atom, "time", time);
-            Json.put(atom, "type", "aura.chat.message");
-            Json.put(atom, "load", atomLoad);
-
-            GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, atom);
-
-            return atom;
         }
 
         @Override

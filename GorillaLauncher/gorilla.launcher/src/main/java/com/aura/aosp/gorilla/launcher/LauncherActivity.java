@@ -23,6 +23,7 @@ import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
+import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
@@ -706,55 +707,93 @@ public class LauncherActivity extends AppCompatActivity {
 
         @Override
         public void onPayloadReceived(GorillaPayload payload) {
+
             Log.d(LOGTAG, "onPayloadReceived: payload=" + payload.toString());
 
+            GorillaMessage message = convertPayloadToMessageAndPersist(payload);
+            if (message == null) return;
+
 //            displayMessageInList(payload);
-
-            JSONObject atom = convertMessageToAtomAndPersists(payload);
-
-            String remoteUserUUID = payload.getSenderUUIDBase64();
-            String remoteDeviceUUID = payload.getDeviceUUIDBase64();
-
+//
+//            String remoteUserUUID = payload.getSenderUUIDBase64();
+//            String remoteDeviceUUID = payload.getDeviceUUIDBase64();
+//
 //            for (ChatProfile chatProfile : chatProfiles)
 //            {
-//                if (! chatProfile.remoteUserUUID.equals(remoteUserUUID)) continue;
-//                if (! chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
+//                if (!chatProfile.remoteUserUUID.equals(remoteUserUUID)) continue;
+//                if (!chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
 //
-//                chatProfile.activity.dispatchMessage(atom);
+//                chatProfile.activity.dispatchMessage(message);
 //
 //                break;
 //            }
         }
 
-        private JSONObject convertMessageToAtomAndPersists(GorillaPayload payload) {
+        @Nullable
+        private GorillaMessage convertPayloadToMessageAndPersist(GorillaPayload payload)
+        {
             Long time = payload.getTime();
             String uuid = payload.getUUIDBase64();
             String text = payload.getPayload();
             String remoteUserUUID = payload.getSenderUUIDBase64();
+            String ownerDeviceUUID = getOwnerDeviceBase64();
 
-            JSONObject atomLoad = new JSONObject();
-            Json.put(atomLoad, "message", text);
+            if ((time == null) || (uuid == null) || (text == null) || (remoteUserUUID == null))
+            {
+                Log.e(LOGTAG, "invalid payload=" + payload.toString());
+                return null;
+            }
 
-            JSONObject received = new JSONObject();
-            Json.put(received, StreamActivity.getOwnerDeviceBase64(), System.currentTimeMillis());
-            Json.put(atomLoad, "received", received);
+            if (ownerDeviceUUID == null)
+            {
+                Log.e(LOGTAG, "unknown owner device");
+                return null;
+            }
 
-            JSONObject atom = new JSONObject();
+            GorillaMessage message = new GorillaMessage();
 
-            Json.put(atom, "uuid", uuid);
-            Json.put(atom, "time", time);
-            Json.put(atom, "type", "aura.chat.message");
-            Json.put(atom, "load", atomLoad);
+            message.setType("aura.chat.message");
+            message.setTime(time);
+            message.setUUID(uuid);
+            message.setMessageText(text);
+            message.setStatusTime("received", ownerDeviceUUID, System.currentTimeMillis());
 
-            GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, atom);
+            if (! GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, message.getAtom()))
+            {
+                return null;
+            }
 
-            return atom;
+            return message;
         }
+
+//        private JSONObject convertMessageToAtomAndPersists(GorillaPayload payload) {
+//            Long time = payload.getTime();
+//            String uuid = payload.getUUIDBase64();
+//            String text = payload.getPayload();
+//            String remoteUserUUID = payload.getSenderUUIDBase64();
+//
+//            JSONObject atomLoad = new JSONObject();
+//            Json.put(atomLoad, "message", text);
+//
+//            JSONObject received = new JSONObject();
+//            Json.put(received, StreamActivity.getOwnerDeviceBase64(), System.currentTimeMillis());
+//            Json.put(atomLoad, "received", received);
+//
+//            JSONObject atom = new JSONObject();
+//
+//            Json.put(atom, "uuid", uuid);
+//            Json.put(atom, "time", time);
+//            Json.put(atom, "type", "aura.chat.message");
+//            Json.put(atom, "load", atomLoad);
+//
+//            GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, atom);
+//
+//            return atom;
+//        }
 
         @Override
         public void onPayloadResultReceived(GorillaPayloadResult result) {
             Log.d(LOGTAG, "onPayloadResultReceived: result=" + result.toString());
-
 //            for (ChatProfile chatProfile : chatProfiles)
 //            {
 //                chatProfile.activity.dispatchResult(result);
