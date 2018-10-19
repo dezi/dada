@@ -8,7 +8,7 @@ import com.aura.aosp.aura.common.univid.Identity;
 /**
  * Stream item base class.
  */
-public class StreamItem implements StreamItemInterface {
+public abstract class StreamItem implements StreamItemInterface {
 
     protected Identity ownerIdentity;
     protected String title;
@@ -20,8 +20,8 @@ public class StreamItem implements StreamItemInterface {
     /**
      * Construct stream item of invocationType "unknown".
      */
-    public StreamItem() {
-        setType(ItemType.TYPE_STREAMITEM_UNKNOWN);
+    public StreamItem(ItemType itemType) {
+        setType(itemType);
     }
 
     /**

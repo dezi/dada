@@ -6,20 +6,24 @@ import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
+import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.GorillaSharable;
 
 import java.util.List;
 
 /**
  * Message item
- * TODO: This may be subject to be merged with "NoteStreamItem"
+ * TODO: This may be subject to be merged with "DraftStreamItem"
  */
-public class MessageStreamItem extends NoteStreamItem implements GorillaSharable {
+public class MessageStreamItem extends DraftStreamItem implements GorillaSharable {
 
     final static String LOGTAG = MessageStreamItem.class.getSimpleName();
 
+    protected Identity sharedByIdentity;
+
     public MessageStreamItem(@NonNull Identity ownerIdentity, @NonNull String text) {
         super(ownerIdentity, text);
+        setImageId(R.drawable.ic_message_black_24dp);
     }
 
     @Override
@@ -53,6 +57,16 @@ public class MessageStreamItem extends NoteStreamItem implements GorillaSharable
 
     @Override
     public void unshareWith(Identity remoteIdentity) {
+        // TODO: Implement
+    }
+
+    public boolean isReceivedByOwner() {
+        return true;
+        // TODO: Implement
+    }
+
+    public boolean ieSentByOwner() {
+        return false;
         // TODO: Implement
     }
 }

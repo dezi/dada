@@ -3,6 +3,7 @@ package com.aura.aosp.gorilla.launcher.ui.content;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.aura.aosp.gorilla.launcher.R;
@@ -16,6 +17,7 @@ public class StreamViewHolder extends RecyclerView.ViewHolder {
     public StreamItemView item;
 //    public TextView title;
     public TextView previewText;
+    public RelativeLayout previewImageContainer;
     public ImageView previewImage;
 
     public StreamViewHolder(View itemView) {
@@ -24,5 +26,6 @@ public class StreamViewHolder extends RecyclerView.ViewHolder {
 //        title = itemView.findViewById(R.id.title);
         previewText = itemView.findViewById(R.id.previewText);
         previewImage = itemView.findViewById(R.id.previewImage);
+        previewImageContainer = itemView.findViewById(R.id.previewImageContainer);
     }
 }

@@ -84,4 +84,5 @@
     <!-- Func: Content Composer -->
     <color name="color_coco_background">#dcdcdc</color>
     <color name="color_coco_text_primary">#222222</color>
+    <color name="color_stream_image_drawable">#ffffff</color>
 </resources>

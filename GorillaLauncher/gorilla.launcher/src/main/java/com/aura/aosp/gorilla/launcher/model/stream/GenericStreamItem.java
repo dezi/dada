@@ -19,6 +19,6 @@ public class GenericStreamItem extends StreamItem {
      * @param text
      */
     public GenericStreamItem(Identity ownerIdentity, @NonNull String title, @NonNull String text) {
-        super(ownerIdentity, ItemType.TYPE_STREAMITEM_GENERIC, title, text, R.drawable.ic_public_black_24dp);
+        super(ownerIdentity, ItemType.TYPE_STREAMITEM_GENERIC, title, text, R.drawable.ic_blur_on_black_24dp);
     }
 }

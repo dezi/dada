@@ -48,26 +48,13 @@ public class StreamStore {
 
                 for (Identity identity : allContacts) {
 
-                    if (identity.equals(ownIdentity)) {
-                        continue;
-                    }
+//                    if (identity.equals(ownIdentity)) {
+//                        continue;
+//                    }
 
                     ContactStreamItem contactStreamItem = new ContactStreamItem(ownIdentity, identity);
                     contactStreamItem.setAbsoluteScore(1f);
                     items.add(contactStreamItem);
-
-//                    Intent chatIntent = new Intent(atomContext)
-//                    Intent intent = new Intent(context, DisplayMessageActivity.class);
-////                    EditText editText = (EditText) findViewById(R.id.editText);
-////                    String message = editText.getText().toString();
-//                    intent.putExtra(EXTRA_CHAT_PARTNER_UUID, contact.getUserUUID());
-//
-//                    items.add(new ActionItem(
-//                            contact.getNick(),
-//                            R.drawable.ic_account_circle_black_24dp,
-//                            intent,
-//                            0.870f
-//                    ));
                 }
         }
 

@@ -5,6 +5,8 @@ import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.aura.aosp.gorilla.launcher.R;
@@ -19,8 +21,8 @@ public class StreamItemView extends ConstraintLayout {
 
     public View item;
     public TextView previewText;
+    public RelativeLayout previewImageContainer;
     public ImageView previewImage;
-    public ImageView dotButton;
 
     public StreamItemView(Context context) {
         super(context);
@@ -38,9 +40,10 @@ public class StreamItemView extends ConstraintLayout {
     }
 
     public void init() {
+        item = findViewById(R.id.item);
         previewText = findViewById(R.id.previewText);
+        previewImageContainer = findViewById(R.id.previewImageContainer);
         previewImage = findViewById(R.id.previewImage);
-        dotButton = findViewById(R.id.dotButton);
     }
 
     /**
