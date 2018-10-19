@@ -63,7 +63,7 @@ public class GorillaBase extends Application
 
         Simple.initialize(this);
 
-        //GolangSuggest.testDat();
+        GolangSuggest.testDat();
 
         GorillaTime.loadServerTime();
 
