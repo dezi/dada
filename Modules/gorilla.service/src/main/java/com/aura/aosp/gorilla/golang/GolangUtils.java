@@ -74,13 +74,13 @@ public class GolangUtils
         }
     }
 
-    static int levenshtein(byte[] s1, byte[] s2, int s2len)
+    @SuppressWarnings("UnnecessaryLocalVariable")
+    static int levenshtein(byte[] s1, int s1len, byte[] s2, int s2len)
     {
-        int rows = s1.length;
+        int rows = s1len;
         int cols = s2len;
-
-        int rowsn = rows + 1;
-        int colsn = cols + 1;
+        int rown = rows + 1;
+        int coln = cols + 1;
 
         int d1;
         int d2;
@@ -89,14 +89,14 @@ public class GolangUtils
         int i;
         int j;
 
-        int[] dist = new int[rowsn * colsn];
+        int[] dist = new int[rown * coln];
 
-        for (i = 0; i < rowsn; i++)
+        for (i = 0; i < rown; i++)
         {
-            dist[i * colsn] = i;
+            dist[i * coln] = i;
         }
 
-        for (j = 0; j < colsn; j++)
+        for (j = 0; j < coln; j++)
         {
             dist[j] = j;
         }
@@ -107,31 +107,30 @@ public class GolangUtils
             {
                 if (s1[i] == s2[j])
                 {
-                    dist[((i + 1) * colsn) + (j + 1)] = dist[(i * colsn) + j];
+                    dist[((i + 1) * coln) + (j + 1)] = dist[(i * coln) + j];
                 }
                 else
                 {
-                    d1 = dist[(i * colsn) + (j + 1)] + 1;
-                    d2 = dist[((i + 1) * colsn) + j] + 1;
-                    d3 = dist[(i * colsn) + j] + 1;
+                    d1 = dist[(i * coln) + (j + 1)] + 1;
+                    d2 = dist[((i + 1) * coln) + j] + 1;
+                    d3 = dist[(i * coln) + j] + 1;
 
                     m1 = (d2 < d3) ? d2 : d3;
 
-                    dist[((i + 1) * colsn) + (j + 1)] = (d1 < m1) ? d1 : m1;
+                    dist[((i + 1) * coln) + (j + 1)] = (d1 < m1) ? d1 : m1;
                 }
             }
         }
 
-        return dist[(colsn * rowsn) - 1];
+        return dist[(coln * rown) - 1];
     }
 
     static int levenshtein(String s1, String s2)
     {
         int rows = s1.length();
         int cols = s2.length();
-
-        int rowsn = rows + 1;
-        int colsn = cols + 1;
+        int rown = rows + 1;
+        int coln = cols + 1;
 
         int d1;
         int d2;
@@ -140,14 +139,14 @@ public class GolangUtils
         int i;
         int j;
 
-        int[] dist = new int[rowsn * colsn];
+        int[] dist = new int[rown * coln];
 
-        for (i = 0; i < rowsn; i++)
+        for (i = 0; i < rown; i++)
         {
-            dist[i * colsn] = i;
+            dist[i * coln] = i;
         }
 
-        for (j = 0; j < colsn; j++)
+        for (j = 0; j < coln; j++)
         {
             dist[j] = j;
         }
@@ -158,77 +157,49 @@ public class GolangUtils
             {
                 if (s1.charAt(i) == s2.charAt(j))
                 {
-                    dist[((i + 1) * colsn) + (j + 1)] = dist[(i * colsn) + j];
+                    dist[((i + 1) * coln) + (j + 1)] = dist[(i * coln) + j];
                 }
                 else
                 {
-                    d1 = dist[(i * colsn) + (j + 1)] + 1;
-                    d2 = dist[((i + 1) * colsn) + j] + 1;
-                    d3 = dist[(i * colsn) + j] + 1;
+                    d1 = dist[(i * coln) + (j + 1)] + 1;
+                    d2 = dist[((i + 1) * coln) + j] + 1;
+                    d3 = dist[(i * coln) + j] + 1;
 
                     m1 = (d2 < d3) ? d2 : d3;
 
-                    dist[((i + 1) * colsn) + (j + 1)] = (d1 < m1) ? d1 : m1;
+                    dist[((i + 1) * coln) + (j + 1)] = (d1 < m1) ? d1 : m1;
                 }
             }
         }
 
-        return dist[(colsn * rowsn) - 1];
+        return dist[(coln * rown) - 1];
     }
 
-    static int levenshtein2(String s1, String s2)
+    /**
+     * Helper class for maintaining a score.
+     */
+    static class Score
     {
-        int rows = s1.length() + 1;
-        int cols = s2.length() + 1;
+        /**
+         * The phrase.
+         */
+        String phrase;
 
-        //char[] r1 = new char[rows];
-        //char[] r2 = new char[cols];
+        /**
+         * The score.
+         */
+        int score;
 
-        int d1;
-        int d2;
-        int d3;
-        int m1;
-        int i;
-        int j;
-
-        int[] dist = new int[rows * cols];
-
-        for (i = 0; i < rows; i++)
+        /**
+         * Create Score object.
+         *
+         * @param phrase the phrase.
+         * @param score  the score.
+         */
+        Score(String phrase, int score)
         {
-            dist[i * cols] = i;
-
-            //if ((i + 1) < rows) r1[i] = s1.charAt(i);
+            this.phrase = phrase;
+            this.score = score;
         }
-
-        for (j = 0; j < cols; j++)
-        {
-            dist[j] = j;
-
-            //if ((j + 1) < cols) r2[j] = s2.charAt(j);
-        }
-
-        for (j = 1; j < cols; j++)
-        {
-            for (i = 1; i < rows; i++)
-            {
-                //if (r1[i - 1] == r2[j - 1])
-                if (s1.charAt(i - 1) == s2.charAt(j - 1))
-                {
-                    dist[(i * cols) + j] = dist[((i - 1) * cols) + (j - 1)];
-                }
-                else
-                {
-                    d1 = dist[((i - 1) * cols) + j] + 1;
-                    d2 = dist[(i * cols) + (j - 1)] + 1;
-                    d3 = dist[((i - 1) * cols) + (j - 1)] + 1;
-
-                    m1 = (d2 < d3) ? d2 : d3;
-
-                    dist[(i * cols) + j] = (d1 < m1) ? d1 : m1;
-                }
-            }
-        }
-
-        return dist[(cols * rows) - 1];
     }
 }

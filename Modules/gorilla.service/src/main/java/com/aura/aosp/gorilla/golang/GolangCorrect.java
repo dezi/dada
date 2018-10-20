@@ -11,12 +11,17 @@ import android.support.annotation.Nullable;
 import android.util.SparseLongArray;
 
 import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Perf;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import java.io.RandomAccessFile;
@@ -103,6 +108,10 @@ public class GolangCorrect
 
         startTime = new Perf();
         result = correctWord("de", "Visibilifät");
+        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+
+        startTime = new Perf();
+        result = correctWord("de", "Visibilitat");
         Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
     }
 
@@ -210,9 +219,7 @@ public class GolangCorrect
 
                     if (inword)
                     {
-                        wrdbuf[ wordsize++ ] = buffer[ inx ];
-
-                        if ((buffer[ inx ] & 0x80) == 0x80)
+                        if (((wrdbuf[ wordsize++ ] = buffer[ inx ]) & 0x80) == 0x80)
                         {
                             utfccc = true;
                         }
@@ -266,10 +273,12 @@ public class GolangCorrect
             return null;
         }
 
+        List<GolangUtils.Score> targetScores = new ArrayList<>();
+
         int wordlen = word.length();
 
         int wordmin = (wordlen > 3) ? wordlen - 1 : wordlen;
-        int wordmax = wordlen + 2;
+        int wordmax = wordlen + 1;
 
         byte[] wordBytes = word.getBytes();
         boolean wordIsUTF = (word.length() < wordBytes.length);
@@ -285,8 +294,6 @@ public class GolangCorrect
 
             byte[] buffer = new byte[chunkSize];
 
-            //Log.d("word=%s checklen=%d seekPos=%d chunkSize=%d", word, checklen, seekPos, chunkSize);
-
             try
             {
                 raFile.seek(seekPos);
@@ -298,8 +305,8 @@ public class GolangCorrect
                 continue;
             }
 
-            byte[] wbyte = new byte[ 100 ];
-            byte[] pbyte = new byte[ 100 ];
+            byte[] wbytes = new byte[100];
+            byte[] pbytes = new byte[100];
 
             boolean isutf = false;
             boolean inword = true;
@@ -310,34 +317,32 @@ public class GolangCorrect
 
             for (int inx = 0; inx < chunkSize; inx++)
             {
-                if (buffer[ inx ] == ':')
+                if (buffer[inx] == ':')
                 {
                     inword = false;
                     continue;
                 }
 
-                if (buffer[ inx ] == '\n')
+                if (buffer[inx] == '\n')
                 {
                     if (isutf || wordIsUTF)
                     {
-                        dist = GolangUtils.levenshtein(word, new String(wbyte, 0, winx));
+                        dist = GolangUtils.levenshtein(word, new String(wbytes, 0, winx));
                     }
                     else
                     {
-                        dist = GolangUtils.levenshtein(wordBytes, wbyte, winx);
+                        dist = GolangUtils.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
                     }
 
                     if (dist <= 2)
                     {
-                        String target = new String(wbyte, 0, winx);
-                        String pstring = new String(pbyte, 0, pinx);
+                        String target = new String(wbytes, 0, winx);
+                        String pstring = new String(pbytes, 0, pinx);
 
                         int percent = Integer.parseInt(pstring);
+                        if (dist > 1) percent /= dist;
 
-                        if (percent > 10)
-                        {
-                            Log.d("word=%s target=%s dist=%d percent=%s", word, target, dist, percent);
-                        }
+                        targetScores.add(new GolangUtils.Score(target, percent));
                     }
 
                     winx = 0;
@@ -349,14 +354,73 @@ public class GolangCorrect
 
                 if (inword)
                 {
-                    if (((wbyte[ winx++ ] = buffer[ inx ]) & 0x80) == 0x80) isutf = true;
+                    if (winx < wbytes.length)
+                    {
+                        if (((wbytes[winx++] = buffer[inx]) & 0x80) == 0x80)
+                        {
+                            isutf = true;
+                        }
+                    }
                 }
                 else
                 {
-                    pbyte[ pinx++ ] = buffer[ inx ];
+                    if (pinx < pbytes.length)
+                    {
+                        pbytes[pinx++] = buffer[inx];
+                    }
                 }
             }
         }
+
+        int total = 0;
+
+        for (GolangUtils.Score targetScore : targetScores)
+        {
+            total += targetScore.score;
+        }
+
+        Collections.sort(targetScores, new Comparator<GolangUtils.Score>()
+        {
+            @Override
+            public int compare(GolangUtils.Score score1, GolangUtils.Score score2)
+            {
+                return score2.score - score1.score;
+            }
+        });
+
+        JSONObject resultJson = new JSONObject();
+        Json.put(resultJson, "phrase", word);
+        Json.put(resultJson, "language", language);
+
+        JSONObject hintsJson = new JSONObject();
+        boolean valid = false;
+
+        int limit = 0;
+
+        for (GolangUtils.Score targetScore : targetScores)
+        {
+            Log.d("word=%s target=%s percent=%d", word, targetScore.phrase, targetScore.score);
+
+            Json.put(hintsJson, targetScore.phrase, targetScore.score);
+            valid = true;
+
+            limit += targetScore.score;
+            if (limit > (total * 0.5f)) break;
+        }
+
+        if (valid)
+        {
+            //
+            // We have a least one valid hint.
+            //
+
+            Json.put(resultJson, "hints", hintsJson);
+            return resultJson;
+        }
+
+        //
+        // We had no valid hints.
+        //
 
         return null;
     }

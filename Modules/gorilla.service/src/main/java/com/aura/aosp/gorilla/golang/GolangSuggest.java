@@ -121,51 +121,51 @@ public class GolangSuggest
 
         startTime = new Perf();
         result = searchPhrase("de", "Bit");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
 
         startTime = new Perf();
         result = searchPhrase("de", "Bitte");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
 
         startTime = new Perf();
         result = searchPhrase("de", "Bitte ");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
 
         startTime = new Perf();
         result = searchPhrase("de", "Bitte d");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
 
         startTime = new Perf();
         result = searchPhrase("de", "Bärt");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
 
         startTime = new Perf();
         result = searchPhrase("en", "aspirations");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
 
         startTime = new Perf();
         result = searchPhrase("de", "aspirations");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
 
         startTime = new Perf();
         result = searchPhrase("de", "In folge der Demonstration würden wir gerne die Bitte");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
 
         startTime = new Perf();
         result = searchPhrase("de", "In folge der Demonstration würden wir gerne die Bitte ");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
 
         startTime = new Perf();
         result = searchPhrase("de", "In folge der Demonstration würden wir gerne die Bitte d");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
 
         startTime = new Perf();
         result = searchPhrase("de", "In folge der Demonstration würden wir gerne die Bitte dd");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
 
         startTime = new Perf();
         result = searchPhrase("de", "Bltte");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
     }
 
     public static void testSpell()
@@ -228,7 +228,9 @@ public class GolangSuggest
             }
             sb.append(si.getSuggestionAt(j));
         }
+
         sb.append(" (" + len + ")");
+
         if (length != -1)
         {
             sb.append(" length = " + length + ", offset = " + offset);
@@ -714,34 +716,6 @@ public class GolangSuggest
     }
 
     /**
-     * Helper class for maintaining a score.
-     */
-    private class Score
-    {
-        /**
-         * The phrase.
-         */
-        private String phrase;
-
-        /**
-         * The score.
-         */
-        private int score;
-
-        /**
-         * Create Score object.
-         *
-         * @param phrase the phrase.
-         * @param score  the score.
-         */
-        private Score(String phrase, int score)
-        {
-            this.phrase = phrase;
-            this.score = score;
-        }
-    }
-
-    /**
      * Get first phrase from unaligned memory buffer.
      *
      * @param seekpos seek position in file where buffer was read.
@@ -831,7 +805,7 @@ public class GolangSuggest
     @Nullable
     private String scanPhrase(String phrase)
     {
-        List<Score> targetScores = new ArrayList<>();
+        List<GolangUtils.Score> targetScores = new ArrayList<>();
         String targetPhrase;
         long total = 0;
 
@@ -868,7 +842,7 @@ public class GolangSuggest
 
                 int targetScore = Integer.parseInt(targetPhrase.substring(atchar + 2, comma));
 
-                targetScores.add(new Score(targetWord, targetScore));
+                targetScores.add(new GolangUtils.Score(targetWord, targetScore));
                 total += targetScore;
             }
             else
@@ -900,7 +874,7 @@ public class GolangSuggest
             prefixPhrases.append("@:");
             prefixPhrases.append(Long.toString(total));
 
-            for (Score targetScore : targetScores)
+            for (GolangUtils.Score targetScore : targetScores)
             {
                 //
                 // Normalize phrase count in percentage.
