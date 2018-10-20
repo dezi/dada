@@ -274,6 +274,7 @@ public class GolangCorrect
         }
 
         List<GolangUtils.Score> targetScores = new ArrayList<>();
+        int totalScore = 0;
 
         int wordlen = word.length();
 
@@ -343,6 +344,7 @@ public class GolangCorrect
                         if (dist > 1) percent /= dist;
 
                         targetScores.add(new GolangUtils.Score(target, percent));
+                        totalScore += percent;
                     }
 
                     winx = 0;
@@ -372,13 +374,6 @@ public class GolangCorrect
             }
         }
 
-        int total = 0;
-
-        for (GolangUtils.Score targetScore : targetScores)
-        {
-            total += targetScore.score;
-        }
-
         Collections.sort(targetScores, new Comparator<GolangUtils.Score>()
         {
             @Override
@@ -405,7 +400,7 @@ public class GolangCorrect
             valid = true;
 
             limit += targetScore.score;
-            if (limit > (total * 0.5f)) break;
+            if (limit > (totalScore * 0.5f)) break;
         }
 
         if (valid)
