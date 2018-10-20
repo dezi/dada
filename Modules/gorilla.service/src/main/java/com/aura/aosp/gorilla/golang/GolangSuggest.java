@@ -7,11 +7,11 @@
 
 package com.aura.aosp.gorilla.golang;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import android.os.Environment;
+import android.content.Context;
+
 import android.view.textservice.SentenceSuggestionsInfo;
 import android.view.textservice.SpellCheckerSession;
 import android.view.textservice.SuggestionsInfo;
@@ -21,8 +21,8 @@ import android.view.textservice.TextServicesManager;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Perf;
-import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.simple.Err;
+
 import com.aura.aosp.gorilla.service.GorillaBase;
 
 import org.json.JSONObject;
@@ -36,6 +36,7 @@ import java.io.File;
 
 /**
  * Suggestion and corrections engine for words and phrases.
+ * Suggestion and corrections engine for words and phrases.
  *
  * @author Dennis Zierahn
  */
@@ -45,7 +46,6 @@ public class GolangSuggest
     private final static int CACHEPOINTS = 32;
     private final static int MAXPHRASELEN = 16;
 
-    private final static Object mutex = new Object();
     private final static Map<String, GolangSuggest> languages = new HashMap<>();
 
     private RandomAccessFile raFile;
@@ -60,9 +60,9 @@ public class GolangSuggest
      *
      * @param language two digit language tag.
      * @param phrase the phrase to search.
-     * @return JSOnObject with resulting hints or null.
+     * @return JSOnObject with resulting hints.
      */
-    @Nullable
+    @NonNull
     public static JSONObject searchPhrase(String language, String phrase)
     {
         GolangSuggest gs = languages.get(language);
@@ -96,16 +96,19 @@ public class GolangSuggest
         // Fallback into english.
         //
 
-        if (language.equals("en"))
+        if (! language.equals("en"))
         {
-            //
-            // Was already english.
-            //
-
-            return null;
+            result = searchPhrase("en", phrase);
         }
 
-        return searchPhrase("en", phrase);
+        if (result == null)
+        {
+            result = new JSONObject();
+
+            Json.put(result, "phrase", phrase);
+        }
+
+        return result;
     }
 
     /**
@@ -241,8 +244,8 @@ public class GolangSuggest
     {
         this.language = language;
 
-        File suggestDir = getStorageDir(language, "suggest", false);
-        File suggestFile = new File(suggestDir, "suggest.json");
+        File suggestDir = GolangUtils.getStorageDir(language, "suggest", false);
+        File phrasesFile = new File(suggestDir, "phrases.json");
 
         try
         {
@@ -258,7 +261,7 @@ public class GolangSuggest
 
             Perf startTime = new Perf();
 
-            raFile = new RandomAccessFile(suggestFile, "r");
+            raFile = new RandomAccessFile(phrasesFile, "r");
             raFileSize = raFile.length();
 
             byte[] buffer = new byte[READSIZE];
@@ -299,7 +302,11 @@ public class GolangSuggest
     @Nullable
     private JSONObject searchPhrase(String phrase)
     {
-        if (!inited) return null;
+        if (!inited)
+        {
+            Err.errp("uninitialized!");
+            return null;
+        }
 
         //
         // Remember if phrase is complete or not because
@@ -434,7 +441,7 @@ public class GolangSuggest
         {
             byte[] buffer = new byte[READSIZE];
 
-            while (top < bot)
+            for (int loops = 0; top < bot && loops < 20; loops++)
             {
                 //
                 // Peek into middle of interval.
@@ -460,6 +467,7 @@ public class GolangSuggest
                 //
 
                 Phrase first = getFirstPhrase(middle, buffer);
+
                 if (first == null)
                 {
                     Err.errp("fucked up.");
@@ -481,6 +489,7 @@ public class GolangSuggest
                 //
 
                 Phrase last = getLastPhrase(middle, buffer);
+
                 if (last == null)
                 {
                     Err.errp("fucked up.");
@@ -507,7 +516,7 @@ public class GolangSuggest
                     // We search for a completed entry.
                     //
 
-                    String bufstr = newString(buffer, first.startBuff, last.startBuff - first.startBuff);
+                    String bufstr = new String(buffer, first.startBuff, last.startBuff - first.startBuff);
 
                     String[] targetPhrases = bufstr.split("\n");
                     String matchPhrase = prefix + ":";
@@ -760,9 +769,9 @@ public class GolangSuggest
             end++;
         }
 
-        if (++end > READSIZE) return null;
+        if (end > READSIZE) return null;
 
-        return new Phrase(newString(buffer, start, end - start), seekpos, start);
+        return new Phrase(new String(buffer, start, end - start), seekpos, start);
     }
 
     /**
@@ -783,7 +792,7 @@ public class GolangSuggest
             start--;
         }
 
-        int lastEnd = start;
+        int realEnd = start;
 
         start--;
 
@@ -807,36 +816,9 @@ public class GolangSuggest
             end++;
         }
 
-        if (++end > READSIZE) return null;
+        if (end > READSIZE) return null;
 
-        return new Phrase(newString(buffer, start, end - start), seekpos, start);
-    }
-
-    @Nullable
-    private File getStorageDir(@NonNull String language, @NonNull String area, boolean create)
-    {
-        //noinspection ConstantConditions
-        if ((language == null) || (area == null))
-        {
-            Err.errp();
-            return null;
-        }
-
-        File appfilesdir = Environment.getExternalStorageDirectory();
-        File golangdir = new File(appfilesdir, "golang");
-        File langdir = new File(golangdir, language);
-        File areadir = new File(langdir, area);
-
-        if (create)
-        {
-            synchronized (mutex)
-            {
-                Err err = Simple.mkdirs(appfilesdir, golangdir, langdir, areadir);
-                if (err != null) return null;
-            }
-        }
-
-        return areadir;
+        return new Phrase(new String(buffer, start, end - start), seekpos, realEnd);
     }
 
     /**
@@ -864,7 +846,7 @@ public class GolangSuggest
             // it fucks off UTF-8 characters!
             //
 
-            targetPhrase = readLineUTFSafe();
+            targetPhrase = GolangUtils.readLineUTFSafe(raFile);
             if (targetPhrase == null) break;
 
             if (targetPhrase.startsWith(phrase))
@@ -944,59 +926,5 @@ public class GolangSuggest
         }
 
         return null;
-    }
-
-    /**
-     * New string from bytes method w/o throwing an exception.
-     *
-     * @param bytes  byte array.
-     * @param offset offset into array.
-     * @param length length in array.
-     * @return UTF-8 string from bytes.
-     */
-    @NonNull
-    private String newString(byte[] bytes, int offset, int length)
-    {
-        try
-        {
-            return new String(bytes, offset, length, "UTF-8");
-        }
-        catch (Exception ignore)
-        {
-            return new String(bytes, offset, length);
-        }
-    }
-
-    /**
-     * UTF-8 safe read line from random access file.
-     * <p>
-     * Max line size is READSIZE.
-     *
-     * @return UTF-8 string or null on error.
-     */
-    @Nullable
-    private String readLineUTFSafe()
-    {
-        byte[] bytes = new byte[READSIZE];
-        int xfer = 0;
-
-        try
-        {
-            while (true)
-            {
-                byte byt = raFile.readByte();
-                if (byt == '\n') break;
-
-                bytes[xfer++] = byt;
-                if (xfer >= bytes.length) break;
-            }
-
-            return newString(bytes, 0, xfer);
-        }
-        catch (Exception ex)
-        {
-            Err.errp(ex);
-            return null;
-        }
     }
 }
