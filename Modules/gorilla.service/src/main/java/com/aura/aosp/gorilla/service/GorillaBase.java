@@ -13,8 +13,8 @@ import android.app.Application;
 
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.aura.nat.hello.Hello;
 
-import com.aura.aosp.aura.nat.levenshtein.Levenshtein;
 import com.aura.aosp.gorilla.golang.GolangCorrect;
 import com.aura.aosp.gorilla.golang.GolangSuggest;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
@@ -65,7 +65,7 @@ public class GorillaBase extends Application
 
         Simple.initialize(this);
 
-        Log.d("########################## %s", Levenshtein.helloFromJNI());
+        Log.d("########################## %s", Hello.helloFromJNI());
 
         //GolangSuggest.testDat();
         //GolangCorrect.testDat();
