@@ -11,6 +11,7 @@ static void copyToRunes(jbyte* bytes, int* runes, int size)
         runes[ inx ] = bytes[ inx ];
     }
 }
+
 extern "C" JNIEXPORT jint JNICALL
 Java_com_aura_aosp_aura_nat_levenshtein_Levenshtein_levenshtein
         (JNIEnv *env, jclass self, jbyteArray s1, jint s1len, jbyteArray s2, jint s2len)
