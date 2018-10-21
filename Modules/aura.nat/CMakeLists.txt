@@ -17,6 +17,7 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
+        src/main/cpp/prime.cpp
         src/main/cpp/hello.cpp
         src/main/cpp/levenshtein.cpp)
 
