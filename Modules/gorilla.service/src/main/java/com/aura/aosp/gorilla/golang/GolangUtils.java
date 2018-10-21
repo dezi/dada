@@ -78,7 +78,7 @@ public class GolangUtils
      * Compute Levenshtein distance between two strings.
      *
      * @param s1 first string.
-     * @param s2 seconde string.
+     * @param s2 second string.
      * @return distance or null on error.
      */
     @Nullable
@@ -139,6 +139,18 @@ public class GolangUtils
         return dist[(coln * rown) - 1];
     }
 
+    /**
+     * Compute Levenshtein distance between two string in byte array form.
+     * <p>
+     * Recommended method if data comes from byte arrays because converting
+     * byte array to strings is expensive.
+     *
+     * @param s1    first byte array string.
+     * @param s1len number of bytes to use.
+     * @param s2    second byte array string.
+     * @param s2len number of bytes to use.
+     * @return distance or null on error.
+     */
     public static Integer levenshtein(byte[] s1, int s1len, byte[] s2, int s2len)
     {
         if ((s1len > 48) || (s2len > 48))
@@ -167,27 +179,31 @@ public class GolangUtils
 
         for (int inx = 0; inx < s1len; inx++)
         {
-            if ((rows > 0) && (s1[ inx ] & 0xc0) == 0x80)
+            if ((rows > 0) && (s1[inx] & 0xc0) == 0x80)
             {
-                r1[ rows - 1 ] = (r1[ rows - 1 ] << 8) + s1[ inx ];
+                r1[rows - 1] = (r1[rows - 1] << 8) + s1[inx];
 
                 continue;
             }
 
-            r1[ rows++ ] = s1[ inx ];
+            r1[rows++] = s1[inx];
         }
 
         for (int inx = 0; inx < s2len; inx++)
         {
-            if ((cols > 0) && (s2[ inx ] & 0xc0) == 0x80)
+            if ((cols > 0) && (s2[inx] & 0xc0) == 0x80)
             {
-                r2[ cols - 1 ] = (r2[ cols - 1 ] << 8) + s2[ inx ];
+                r2[cols - 1] = (r2[cols - 1] << 8) + s2[inx];
 
                 continue;
             }
 
-            r2[ cols++ ] = s2[ inx ];
+            r2[cols++] = s2[inx];
         }
+
+        //
+        // Start computing distance.
+        //
 
         int rown = rows + 1;
         int coln = cols + 1;

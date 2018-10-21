@@ -283,14 +283,13 @@ public class GolangCorrect
         int wordmax = wordlen + 1;
 
         byte[] wordBytes = word.getBytes();
-        boolean wordIsUTF = (word.length() < wordBytes.length);
 
         for (int checklen = wordmin; checklen <= wordmax; checklen++)
         {
             long seekPos = raIndex.get(checklen, -1);
             if (seekPos < 0) continue;
 
-            long lastPos = getLastPosition(checklen + 1, raIndex, raSize);
+            long lastPos = getLastPosition(checklen, raIndex, raSize);
 
             int chunkSize = (int) (lastPos - seekPos);
 
@@ -385,7 +384,7 @@ public class GolangCorrect
 
         for (GolangUtils.Score targetScore : targetScores)
         {
-            Log.d("word=%s target=%s percent=%d", word, targetScore.phrase, targetScore.score);
+            //Log.d("word=%s target=%s percent=%d", word, targetScore.phrase, targetScore.score);
 
             Json.put(hintsJson, targetScore.phrase, targetScore.score);
             valid = true;
@@ -411,14 +410,22 @@ public class GolangCorrect
         return null;
     }
 
-    private long getLastPosition(int index, SparseLongArray indexArray, long fileSize)
+    /**
+     * Get last position of chunk for given word length.
+     *
+     * @param wordlenght given word length.
+     * @param indexArray file seek positions.
+     * @param fileSize total file size.
+     * @return end of chunk for given word length.
+     */
+    private long getLastPosition(int wordlenght, SparseLongArray indexArray, long fileSize)
     {
         for (int inx = 0; inx < 50; inx++)
         {
-            long seekpos = indexArray.get(index, -1);
-            if (seekpos >= 0) return  seekpos;
+            wordlenght++;
 
-            index++;
+            long seekpos = indexArray.get(wordlenght, -1);
+            if (seekpos >= 0) return  seekpos;
         }
 
         return fileSize;
