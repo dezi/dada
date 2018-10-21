@@ -600,6 +600,7 @@ public class LauncherActivity extends AppCompatActivity {
         }
 
         Blurry.delete(mainContentContainer);
+        mainContentContainer.setAlpha(1f);
     }
 
     /**
@@ -617,6 +618,8 @@ public class LauncherActivity extends AppCompatActivity {
 //                .color(R.color.color_transparent)
                 .animate(blurTransisitionDuration)
                 .onto(mainContentContainer);
+
+        mainContentContainer.setAlpha(0.3f);
     }
 
     /**

@@ -1,8 +1,8 @@
 <resources>
     <!-- Launcher -->
     <integer name="launcher_blur_sampling">8</integer>
-    <integer name="launcher_blur_radius">8</integer>
-    <integer name="launcher_blur_transition_duration">250</integer>
+    <integer name="launcher_blur_radius">4</integer>
+    <integer name="launcher_blur_transition_duration">160</integer>
 
     <!-- Action Cluster -->
     <integer name="actioncluster_fadein_transition_duration">80</integer>
