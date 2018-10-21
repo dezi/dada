@@ -7,5 +7,3 @@ Java_com_aura_aosp_aura_nat_levenshtein_Levenshtein_levenshtein
 {
     return 0;
 }
-
-
