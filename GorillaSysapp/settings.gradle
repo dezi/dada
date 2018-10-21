@@ -1,8 +1,8 @@
-include ':aura.gui'
-project(':aura.gui').projectDir = new File(settingsDir, '../Modules/aura.gui')
-
 include ':aura.nat'
 project(':aura.nat').projectDir = new File(settingsDir, '../Modules/aura.nat')
+
+include ':aura.gui'
+project(':aura.gui').projectDir = new File(settingsDir, '../Modules/aura.gui')
 
 include ':aura.common'
 project(':aura.common').projectDir = new File(settingsDir, '../Modules/aura.common')
