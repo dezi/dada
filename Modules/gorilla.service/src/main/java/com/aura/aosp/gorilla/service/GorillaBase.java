@@ -15,6 +15,7 @@ import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.nat.hello.Hello;
 
+import com.aura.aosp.aura.nat.levenshtein.Levenshtein;
 import com.aura.aosp.gorilla.golang.GolangCorrect;
 import com.aura.aosp.gorilla.golang.GolangSuggest;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
@@ -67,8 +68,16 @@ public class GorillaBase extends Application
 
         Log.d("########################## %s", Hello.helloFromJNI());
 
+        String str1 = "vitalitaet";
+        String str2 = "vutalitaet";
+
+        byte[] s1 = str1.getBytes();
+        byte[] s2 = str2.getBytes();
+
+        Levenshtein.levenshtein(s1, s1.length, s2, s2.length);
+
         //GolangSuggest.testDat();
-        //GolangCorrect.testDat();
+        GolangCorrect.testDat();
 
         GorillaTime.loadServerTime();
 

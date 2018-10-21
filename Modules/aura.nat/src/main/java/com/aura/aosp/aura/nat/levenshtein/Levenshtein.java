@@ -7,5 +7,5 @@ public class Levenshtein
         System.loadLibrary("auranat");
     }
 
-    public static native int levenshtein(byte[] s1, byte[] s2);
+    public static native int levenshtein(byte[] s1, int s1len, byte[] s2, int s2len);
 }

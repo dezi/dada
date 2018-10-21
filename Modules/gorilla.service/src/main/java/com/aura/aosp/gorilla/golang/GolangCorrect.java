@@ -14,6 +14,7 @@ import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Perf;
+import com.aura.aosp.aura.nat.levenshtein.Levenshtein;
 
 import org.json.JSONObject;
 
@@ -333,6 +334,7 @@ public class GolangCorrect
                     else
                     {
                         dist = GolangUtils.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
+                        dist = Levenshtein.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
                     }
 
                     if (dist <= 2)
