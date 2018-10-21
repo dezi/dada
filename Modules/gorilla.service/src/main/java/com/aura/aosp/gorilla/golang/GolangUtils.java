@@ -74,8 +74,80 @@ public class GolangUtils
         }
     }
 
-    public static int levenshtein(byte[] s1, int s1len, byte[] s2, int s2len)
+    /**
+     * Compute Levenshtein distance between two strings.
+     *
+     * @param s1 first string.
+     * @param s2 seconde string.
+     * @return distance or null on error.
+     */
+    @Nullable
+    public static Integer levenshtein(String s1, String s2)
     {
+        if ((s1.length() > 48) || (s2.length() > 48))
+        {
+            Err.errp("string length too big s1=%s s2=%d", s1.length(), s2.length());
+
+            return null;
+        }
+
+        int rows = s1.length();
+        int cols = s2.length();
+        int rown = rows + 1;
+        int coln = cols + 1;
+
+        int d1;
+        int d2;
+        int d3;
+        int m1;
+        int i;
+        int j;
+
+        int[] dist = new int[rown * coln];
+
+        for (i = 0; i < rown; i++)
+        {
+            dist[i * coln] = i;
+        }
+
+        for (j = 0; j < coln; j++)
+        {
+            dist[j] = j;
+        }
+
+        for (j = 0; j < cols; j++)
+        {
+            for (i = 0; i < rows; i++)
+            {
+                if (s1.charAt(i) == s2.charAt(j))
+                {
+                    dist[((i + 1) * coln) + (j + 1)] = dist[(i * coln) + j];
+                }
+                else
+                {
+                    d1 = dist[(i * coln) + (j + 1)] + 1;
+                    d2 = dist[((i + 1) * coln) + j] + 1;
+                    d3 = dist[(i * coln) + j] + 1;
+
+                    m1 = (d2 < d3) ? d2 : d3;
+
+                    dist[((i + 1) * coln) + (j + 1)] = (d1 < m1) ? d1 : m1;
+                }
+            }
+        }
+
+        return dist[(coln * rown) - 1];
+    }
+
+    public static Integer levenshtein(byte[] s1, int s1len, byte[] s2, int s2len)
+    {
+        if ((s1len > 48) || (s2len > 48))
+        {
+            Err.errp("string length too big s1=%s s2=%d", s1len, s2len);
+
+            return null;
+        }
+
         //
         // Convert byte array string into UTF-8 runes array.
         //
@@ -144,56 +216,6 @@ public class GolangUtils
             for (i = 0; i < rows; i++)
             {
                 if (r1[i] == r2[j])
-                {
-                    dist[((i + 1) * coln) + (j + 1)] = dist[(i * coln) + j];
-                }
-                else
-                {
-                    d1 = dist[(i * coln) + (j + 1)] + 1;
-                    d2 = dist[((i + 1) * coln) + j] + 1;
-                    d3 = dist[(i * coln) + j] + 1;
-
-                    m1 = (d2 < d3) ? d2 : d3;
-
-                    dist[((i + 1) * coln) + (j + 1)] = (d1 < m1) ? d1 : m1;
-                }
-            }
-        }
-
-        return dist[(coln * rown) - 1];
-    }
-
-    public static int levenshtein(String s1, String s2)
-    {
-        int rows = s1.length();
-        int cols = s2.length();
-        int rown = rows + 1;
-        int coln = cols + 1;
-
-        int d1;
-        int d2;
-        int d3;
-        int m1;
-        int i;
-        int j;
-
-        int[] dist = new int[rown * coln];
-
-        for (i = 0; i < rown; i++)
-        {
-            dist[i * coln] = i;
-        }
-
-        for (j = 0; j < coln; j++)
-        {
-            dist[j] = j;
-        }
-
-        for (j = 0; j < cols; j++)
-        {
-            for (i = 0; i < rows; i++)
-            {
-                if (s1.charAt(i) == s2.charAt(j))
                 {
                     dist[((i + 1) * coln) + (j + 1)] = dist[(i * coln) + j];
                 }

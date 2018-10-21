@@ -314,7 +314,8 @@ public class GolangCorrect
 
             int winx = 0;
             int pinx = 0;
-            int dist;
+
+            Integer dist;
 
             for (int inx = 0; inx < chunkSize; inx++)
             {
@@ -329,7 +330,7 @@ public class GolangCorrect
                     //dist = Levenshtein.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
                     dist = GolangUtils.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
 
-                    if ((0 <= dist) && (dist <= 2))
+                    if ((dist != null) && (dist <= 2))
                     {
                         String target = new String(wbytes, 0, winx);
                         String pstring = new String(pbytes, 0, pinx);

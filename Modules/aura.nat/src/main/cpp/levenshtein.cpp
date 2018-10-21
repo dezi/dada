@@ -4,16 +4,8 @@
 
 #define MAXCHARACTERS 64
 
-static void copyToRunes(jbyte* bytes, int* runes, int size)
-{
-    for (int inx = 0; inx < size; inx++)
-    {
-        runes[ inx ] = bytes[ inx ];
-    }
-}
-
 extern "C" JNIEXPORT jint JNICALL
-Java_com_aura_aosp_aura_nat_levenshtein_Levenshtein_levenshtein
+Java_com_aura_aosp_aura_nat_levenshtein_Levenshtein_levenshteinCPP
         (JNIEnv *env, jclass self, jbyteArray s1, jint s1len, jbyteArray s2, jint s2len)
 {
     //
@@ -45,21 +37,50 @@ Java_com_aura_aosp_aura_nat_levenshtein_Levenshtein_levenshtein
     jbyte* s2ptr = env->GetByteArrayElements(s2, NULL);
 
     //
-    // Convert byte character sequence into UTF-8 runes.
+    // Convert byte array string into UTF-8 runes array.
+    //
+    // UTF-8 encoding:
+    //
+    // 0000 0000 – 0000 007F 	0xxxxxxx
+    // 0000 0080 – 0000 07FF 	110xxxxx 10xxxxxx
+    // 0000 0800 – 0000 FFFF 	1110xxxx 10xxxxxx 10xxxxxx
+    // 0001 0000 – 0010 FFFF 	11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
     //
 
     int r1[ MAXCHARACTERS ];
     int r2[ MAXCHARACTERS ];
 
-    copyToRunes(s1ptr, r1, s1len);
-    copyToRunes(s2ptr, r2, s2len);
+    int rows = 0;
+    int cols = 0;
+
+    for (int inx = 0; inx < s1len; inx++)
+    {
+        if ((rows > 0) && (s1ptr[ inx ] & 0xc0) == 0x80)
+        {
+            r1[ rows - 1 ] = (r1[ rows - 1 ] << 8) + s1ptr[ inx ];
+
+            continue;
+        }
+
+        r1[ rows++ ] = s1ptr[ inx ];
+    }
+
+    for (int inx = 0; inx < s2len; inx++)
+    {
+        if ((cols > 0) && (s2ptr[ inx ] & 0xc0) == 0x80)
+        {
+            r2[ cols - 1 ] = (r2[ cols - 1 ] << 8) + s2ptr[ inx ];
+
+            continue;
+        }
+
+        r2[ cols++ ] = s2ptr[ inx ];
+    }
 
     //
     // Start computing the distance.
     //
 
-    int rows = s1len;
-    int cols = s2len;
     int rown = rows + 1;
     int coln = cols + 1;
 
