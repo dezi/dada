@@ -69,6 +69,7 @@ public class GorillaBase extends Application
 
         Simple.initialize(this);
 
+        /*
         Log.d("########################## %s", Hello.helloFromJNI());
 
         String str1 = "vitalitaetmonsterbauunterführungsassistent";
@@ -98,9 +99,10 @@ public class GorillaBase extends Application
         Perf primeCpp = new Perf();
         Prime.isPrimeCpp(2760889966651L);
         Log.d("cpp=%s", primeCpp.elapsedTimeMillis());
+        */
 
         //GolangSuggest.testDat();
-        //GolangCorrect.testDat();
+        GolangCorrect.testDat();
 
         GorillaTime.loadServerTime();
 

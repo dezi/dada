@@ -74,11 +74,49 @@ public class GolangUtils
         }
     }
 
-    @SuppressWarnings("UnnecessaryLocalVariable")
     public static int levenshtein(byte[] s1, int s1len, byte[] s2, int s2len)
     {
-        int rows = s1len;
-        int cols = s2len;
+        //
+        // Convert byte array string into UTF-8 runes array.
+        //
+        // UTF-8 encoding:
+        //
+        // 0000 0000 – 0000 007F 	0xxxxxxx
+        // 0000 0080 – 0000 07FF 	110xxxxx 10xxxxxx
+        // 0000 0800 – 0000 FFFF 	1110xxxx 10xxxxxx 10xxxxxx
+        // 0001 0000 – 0010 FFFF 	11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+        //
+
+        int[] r1 = new int[s1len];
+        int[] r2 = new int[s2len];
+
+        int rows = 0;
+        int cols = 0;
+
+        for (int inx = 0; inx < s1len; inx++)
+        {
+            if ((rows > 0) && (s1[ inx ] & 0xc0) == 0x80)
+            {
+                r1[ rows - 1 ] = (r1[ rows - 1 ] << 8) + s1[ inx ];
+
+                continue;
+            }
+
+            r1[ rows++ ] = s1[ inx ];
+        }
+
+        for (int inx = 0; inx < s2len; inx++)
+        {
+            if ((cols > 0) && (s2[ inx ] & 0xc0) == 0x80)
+            {
+                r2[ cols - 1 ] = (r2[ cols - 1 ] << 8) + s2[ inx ];
+
+                continue;
+            }
+
+            r2[ cols++ ] = s2[ inx ];
+        }
+
         int rown = rows + 1;
         int coln = cols + 1;
 
@@ -105,7 +143,7 @@ public class GolangUtils
         {
             for (i = 0; i < rows; i++)
             {
-                if (s1[i] == s2[j])
+                if (r1[i] == r2[j])
                 {
                     dist[((i + 1) * coln) + (j + 1)] = dist[(i * coln) + j];
                 }

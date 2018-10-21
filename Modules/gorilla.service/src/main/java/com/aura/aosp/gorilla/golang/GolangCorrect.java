@@ -310,7 +310,6 @@ public class GolangCorrect
             byte[] wbytes = new byte[100];
             byte[] pbytes = new byte[100];
 
-            boolean isutf = false;
             boolean inword = true;
 
             int winx = 0;
@@ -327,18 +326,10 @@ public class GolangCorrect
 
                 if (buffer[inx] == '\n')
                 {
-                    if (isutf || wordIsUTF)
-                    {
-                        //dist = GolangUtils.levenshtein(word, new String(wbytes, 0, winx));
-                        dist = Levenshtein.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
-                    }
-                    else
-                    {
-                        dist = GolangUtils.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
-                        dist = Levenshtein.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
-                    }
+                    //dist = Levenshtein.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
+                    dist = GolangUtils.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
 
-                    if (dist <= 2)
+                    if ((0 <= dist) && (dist <= 2))
                     {
                         String target = new String(wbytes, 0, winx);
                         String pstring = new String(pbytes, 0, pinx);
@@ -352,7 +343,6 @@ public class GolangCorrect
 
                     winx = 0;
                     pinx = 0;
-                    isutf = false;
                     inword = true;
                     continue;
                 }
@@ -361,10 +351,7 @@ public class GolangCorrect
                 {
                     if (winx < wbytes.length)
                     {
-                        if (((wbytes[winx++] = buffer[inx]) & 0x80) == 0x80)
-                        {
-                            isutf = true;
-                        }
+                        wbytes[winx++] = buffer[inx];
                     }
                 }
                 else
