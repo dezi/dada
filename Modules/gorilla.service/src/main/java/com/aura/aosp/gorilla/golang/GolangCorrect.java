@@ -329,7 +329,8 @@ public class GolangCorrect
                 {
                     if (isutf || wordIsUTF)
                     {
-                        dist = GolangUtils.levenshtein(word, new String(wbytes, 0, winx));
+                        //dist = GolangUtils.levenshtein(word, new String(wbytes, 0, winx));
+                        dist = Levenshtein.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
                     }
                     else
                     {

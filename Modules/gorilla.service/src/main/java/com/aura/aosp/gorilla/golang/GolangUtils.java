@@ -75,7 +75,7 @@ public class GolangUtils
     }
 
     @SuppressWarnings("UnnecessaryLocalVariable")
-    static int levenshtein(byte[] s1, int s1len, byte[] s2, int s2len)
+    public static int levenshtein(byte[] s1, int s1len, byte[] s2, int s2len)
     {
         int rows = s1len;
         int cols = s2len;
@@ -125,7 +125,7 @@ public class GolangUtils
         return dist[(coln * rown) - 1];
     }
 
-    static int levenshtein(String s1, String s2)
+    public static int levenshtein(String s1, String s2)
     {
         int rows = s1.length();
         int cols = s2.length();

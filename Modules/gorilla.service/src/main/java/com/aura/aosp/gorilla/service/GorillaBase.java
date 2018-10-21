@@ -12,12 +12,14 @@ import android.support.annotation.NonNull;
 import android.app.Application;
 
 import com.aura.aosp.aura.common.simple.Log;
+import com.aura.aosp.aura.common.simple.Perf;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.nat.hello.Hello;
 
 import com.aura.aosp.aura.nat.levenshtein.Levenshtein;
 import com.aura.aosp.gorilla.golang.GolangCorrect;
 import com.aura.aosp.gorilla.golang.GolangSuggest;
+import com.aura.aosp.gorilla.golang.GolangUtils;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 /**
@@ -68,16 +70,28 @@ public class GorillaBase extends Application
 
         Log.d("########################## %s", Hello.helloFromJNI());
 
-        String str1 = "vitalitaet";
-        String str2 = "vutalitaet";
+        String str1 = "vitalitaetmonsterbau";
+        String str2 = "vutalitaetmonsterbau";
 
         byte[] s1 = str1.getBytes();
         byte[] s2 = str2.getBytes();
 
-        Levenshtein.levenshtein(s1, s1.length, s2, s2.length);
+        Perf nat = new Perf();
+        for (int inx = 0; inx < 10000; inx++)
+        {
+            Levenshtein.levenshtein(s1, s1.length, s2, s2.length);
+        }
+        Log.d("nat=%s", nat.elapsedTimeMillis());
+
+        Perf jav = new Perf();
+        for (int inx = 0; inx < 10000; inx++)
+        {
+            GolangUtils.levenshtein(s1, s1.length, s2, s2.length);
+        }
+        Log.d("jav=%s", jav.elapsedTimeMillis());
 
         //GolangSuggest.testDat();
-        GolangCorrect.testDat();
+        //GolangCorrect.testDat();
 
         GorillaTime.loadServerTime();
 

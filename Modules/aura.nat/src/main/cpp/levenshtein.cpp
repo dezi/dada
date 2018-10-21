@@ -40,8 +40,8 @@ Java_com_aura_aosp_aura_nat_levenshtein_Levenshtein_levenshtein
     // Dereference byte arrays.
     //
 
-    jbyte* s1ptr = env->GetByteArrayElements(s1, 0);
-    jbyte* s2ptr = env->GetByteArrayElements(s2, 0);
+    jbyte* s1ptr = env->GetByteArrayElements(s1, NULL);
+    jbyte* s2ptr = env->GetByteArrayElements(s2, NULL);
 
     //
     // Convert byte character sequence into UTF-8 runes.
