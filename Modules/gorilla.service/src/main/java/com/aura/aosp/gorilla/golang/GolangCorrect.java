@@ -8,13 +8,13 @@
 package com.aura.aosp.gorilla.golang;
 
 import android.support.annotation.Nullable;
+
 import android.util.SparseLongArray;
 
-import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Json;
-import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Perf;
-import com.aura.aosp.aura.nat.levenshtein.Levenshtein;
+import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Log;
 
 import org.json.JSONObject;
 
@@ -167,10 +167,8 @@ public class GolangCorrect
     {
         try
         {
-            Perf startTime = new Perf();
-
-            byte[] buffer = new byte[ READSIZE ];
-            byte[] wrdbuf = new byte[ READSIZE ];
+            byte[] buffer = new byte[READSIZE];
+            byte[] wrdbuf = new byte[READSIZE];
 
             boolean inword = true;
             boolean utfccc = false;
@@ -182,17 +180,24 @@ public class GolangCorrect
             int lastsize = 0;
             long total = 0;
 
+            Perf startTime = new Perf();
+
             while (true)
             {
                 int xfer = raFile.read(buffer);
 
                 for (int inx = 0; inx < xfer; inx++, seekpos++)
                 {
-                    if (buffer[ inx ] == ':')
+                    if (buffer[inx] == ':')
                     {
                         if (utfccc)
                         {
-                            String runeStr = new String (wrdbuf, 0, wordsize);
+                            //
+                            // Target word contained UTF-8 chars. Convert
+                            // to string to get correct rune string length.
+                            //
+
+                            String runeStr = new String(wrdbuf, 0, wordsize);
                             wordsize = runeStr.length();
                         }
 
@@ -200,15 +205,13 @@ public class GolangCorrect
                         {
                             raIndex.put(wordsize, wordpos);
                             lastsize = wordsize;
-
-                            //Log.d("wordsize=%d wordpos=%d", wordsize, wordpos);
                         }
 
                         inword = false;
                         continue;
                     }
 
-                    if (buffer[ inx ] == '\n')
+                    if (buffer[inx] == '\n')
                     {
                         wordsize = 0;
                         wordpos = seekpos + 1;
@@ -220,7 +223,7 @@ public class GolangCorrect
 
                     if (inword)
                     {
-                        if (((wrdbuf[ wordsize++ ] = buffer[ inx ]) & 0x80) == 0x80)
+                        if (((wrdbuf[wordsize++] = buffer[inx]) & 0x80) == 0x80)
                         {
                             utfccc = true;
                         }
@@ -251,13 +254,13 @@ public class GolangCorrect
 
         JSONObject result;
 
-        result =  correctWord(word, topFile, topIndex, topFileSize);
+        result = correctWord(word, topFile, topIndex, topFileSize);
         if (result != null)
         {
             return result;
         }
 
-        result =  correctWord(word, botFile, botIndex, botFileSize);
+        result = correctWord(word, botFile, botIndex, botFileSize);
         if (result != null)
         {
             return result;
@@ -309,10 +312,10 @@ public class GolangCorrect
             byte[] wbytes = new byte[100];
             byte[] pbytes = new byte[100];
 
-            boolean inword = true;
-
             int winx = 0;
             int pinx = 0;
+
+            boolean inword = true;
 
             Integer dist;
 
@@ -415,7 +418,7 @@ public class GolangCorrect
      *
      * @param wordlenght given word length.
      * @param indexArray file seek positions.
-     * @param fileSize total file size.
+     * @param fileSize   total file size.
      * @return end of chunk for given word length.
      */
     private long getLastPosition(int wordlenght, SparseLongArray indexArray, long fileSize)
@@ -425,7 +428,7 @@ public class GolangCorrect
             wordlenght++;
 
             long seekpos = indexArray.get(wordlenght, -1);
-            if (seekpos >= 0) return  seekpos;
+            if (seekpos >= 0) return seekpos;
         }
 
         return fileSize;
