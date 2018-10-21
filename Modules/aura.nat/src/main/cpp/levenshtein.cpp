@@ -2,7 +2,7 @@
 #include <string>
 #include <android/log.h>
 
-#define MAXCHARACTERS 48
+#define MAXCHARACTERS 64
 
 static void copyToRunes(jbyte* bytes, int* runes, int size)
 {

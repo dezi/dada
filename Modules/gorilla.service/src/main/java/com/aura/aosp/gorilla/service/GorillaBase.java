@@ -70,8 +70,8 @@ public class GorillaBase extends Application
 
         Log.d("########################## %s", Hello.helloFromJNI());
 
-        String str1 = "vitalitaetmonsterbau";
-        String str2 = "vutalitaetmonsterbau";
+        String str1 = "vitalitaetmonsterbauunterführungsassistent";
+        String str2 = "vitalitaetmonsterbauunterführungsassistent";
 
         byte[] s1 = str1.getBytes();
         byte[] s2 = str2.getBytes();
