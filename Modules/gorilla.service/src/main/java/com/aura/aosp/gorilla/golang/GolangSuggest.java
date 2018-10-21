@@ -15,8 +15,8 @@ import android.content.Context;
 import android.view.textservice.SentenceSuggestionsInfo;
 import android.view.textservice.SpellCheckerSession;
 import android.view.textservice.SuggestionsInfo;
-import android.view.textservice.TextInfo;
 import android.view.textservice.TextServicesManager;
+import android.view.textservice.TextInfo;
 
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
@@ -35,8 +35,7 @@ import java.util.Map;
 import java.io.File;
 
 /**
- * Suggestion and corrections engine for words and phrases.
- * Suggestion and corrections engine for words and phrases.
+ * Suggestion engine for words and phrases.
  *
  * @author Dennis Zierahn
  */
@@ -60,10 +59,10 @@ public class GolangSuggest
      *
      * @param language two digit language tag.
      * @param phrase the phrase to search.
-     * @return JSOnObject with resulting hints.
+     * @return JSOnObject with resulting hints or null.
      */
-    @NonNull
-    public static JSONObject searchPhrase(String language, String phrase)
+    @Nullable
+    public static JSONObject suggestPhrase(String language, String phrase)
     {
         GolangSuggest gs = languages.get(language);
 
@@ -81,161 +80,8 @@ public class GolangSuggest
         // Look up phrase in desired language.
         //
 
-        JSONObject result = gs.searchPhrase(phrase);
-
-        if (result != null)
-        {
-            //
-            // Have results in desired language.
-            //
-
-            return result;
-        }
-
-        //
-        // Fallback into english.
-        //
-
-        if (! language.equals("en"))
-        {
-            result = searchPhrase("en", phrase);
-        }
-
-        if (result == null)
-        {
-            result = new JSONObject();
-
-            Json.put(result, "phrase", phrase);
-        }
-
-        return result;
-    }
-
-    /**
-     * Dezi's test patterns.
-     */
-    public static void testDat()
-    {
-        Perf startTime;
-        JSONObject result;
-
-        startTime = new Perf();
-        result = searchPhrase("de", "Bit");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-
-        startTime = new Perf();
-        result = searchPhrase("de", "Bitte");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-
-        startTime = new Perf();
-        result = searchPhrase("de", "Bitte ");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-
-        startTime = new Perf();
-        result = searchPhrase("de", "Bitte d");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-
-        startTime = new Perf();
-        result = searchPhrase("de", "Bärt");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-
-        startTime = new Perf();
-        result = searchPhrase("en", "aspirations");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-
-        startTime = new Perf();
-        result = searchPhrase("de", "aspirations");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-
-        startTime = new Perf();
-        result = searchPhrase("de", "In folge der Demonstration würden wir gerne die Bitte");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-
-        startTime = new Perf();
-        result = searchPhrase("de", "In folge der Demonstration würden wir gerne die Bitte ");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-
-        startTime = new Perf();
-        result = searchPhrase("de", "In folge der Demonstration würden wir gerne die Bitte d");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-
-        startTime = new Perf();
-        result = searchPhrase("de", "In folge der Demonstration würden wir gerne die Bitte dd");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-
-        startTime = new Perf();
-        result = searchPhrase("de", "Bltte");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-    }
-
-    public static void testSpell()
-    {
-        final TextServicesManager tsm = (TextServicesManager) GorillaBase.getAppContext().getSystemService(Context.TEXT_SERVICES_MANAGER_SERVICE);
-        if (tsm == null)
-        {
-            Log.d("nix hier....");
-            return;
-        }
-
-        SpellCheckerSession.SpellCheckerSessionListener listener = new SpellCheckerSession.SpellCheckerSessionListener()
-        {
-            @Override
-            public void onGetSuggestions(SuggestionsInfo[] results)
-            {
-
-            }
-
-            @Override
-            public void onGetSentenceSuggestions(SentenceSuggestionsInfo[] results)
-            {
-                final StringBuilder sb = new StringBuilder();
-
-                for (int i = 0; i < results.length; ++i)
-                {
-                    final SentenceSuggestionsInfo ssi = results[i];
-                    for (int j = 0; j < ssi.getSuggestionsCount(); ++j)
-                    {
-                        dumpSuggestionsInfoInternal(sb, ssi.getSuggestionsInfoAt(j), ssi.getOffsetAt(j), ssi.getLengthAt(j));
-                    }
-
-                    Log.d("results=%s", sb.toString());
-                }
-            }
-        };
-
-        SpellCheckerSession mScs = tsm.newSpellCheckerSession(null, null, listener, true);
-
-        if (mScs == null)
-        {
-            Log.d("nix da....");
-            return;
-        }
-
-        Log.d("start....");
-        mScs.getSentenceSuggestions(new TextInfo[] {new TextInfo("tgisis")}, 3);
-    }
-
-    private static void dumpSuggestionsInfoInternal(final StringBuilder sb, final SuggestionsInfo si, final int length, final int offset)
-    {
-        // Returned suggestions are contained in SuggestionsInfo
-        final int len = si.getSuggestionsCount();
-        sb.append('\n');
-        for (int j = 0; j < len; ++j)
-        {
-            if (j != 0)
-            {
-                sb.append(", ");
-            }
-            sb.append(si.getSuggestionAt(j));
-        }
-
-        sb.append(" (" + len + ")");
-
-        if (length != -1)
-        {
-            sb.append(" length = " + length + ", offset = " + offset);
-        }
-    }
+        return gs.suggestPhrase(phrase);
+   }
 
     /**
      * Create a GolangSuggest object for a specified language.
@@ -302,7 +148,7 @@ public class GolangSuggest
      * @return JSOnObject with resulting hints or null.
      */
     @Nullable
-    private JSONObject searchPhrase(String phrase)
+    private JSONObject suggestPhrase(String phrase)
     {
         if (!inited)
         {
@@ -368,7 +214,7 @@ public class GolangSuggest
 
             if (iscomplete) searchPhrase.append(" ");
 
-            JSONObject result = searchPhrase(searchPhrase.toString(), false);
+            JSONObject result = suggestPhrase(searchPhrase.toString(), false);
 
             if (result != null)
             {
@@ -391,7 +237,7 @@ public class GolangSuggest
      * @return JSOnObject with resulting hints or null.
      */
     @Nullable
-    private JSONObject searchPhrase(String phrase, boolean truncate)
+    private JSONObject suggestPhrase(String phrase, boolean truncate)
     {
         String prefix = phrase;
         String suffix = null;
@@ -550,7 +396,7 @@ public class GolangSuggest
                         // Retry with chopped off last token.
                         //
 
-                        return searchPhrase(prefix, true);
+                        return suggestPhrase(prefix, true);
                     }
 
                     //

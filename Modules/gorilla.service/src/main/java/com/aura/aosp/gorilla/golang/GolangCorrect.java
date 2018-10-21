@@ -7,6 +7,7 @@
 
 package com.aura.aosp.gorilla.golang;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import android.util.SparseLongArray;
@@ -46,7 +47,7 @@ public class GolangCorrect
     private String language;
 
     @Nullable
-    public static JSONObject correctWord(String language, String word)
+    public static JSONObject correctPhrase(String language, String phrase)
     {
         GolangCorrect gs = languages.get(language);
 
@@ -64,56 +65,7 @@ public class GolangCorrect
         // Look up phrase in desired language.
         //
 
-        JSONObject result = gs.correctWord(word);
-
-        if (result != null)
-        {
-            //
-            // Have results in desired language.
-            //
-
-            return result;
-        }
-
-        //
-        // Fallback into english.
-        //
-
-        if (language.equals("en"))
-        {
-            //
-            // Was already english.
-            //
-
-            return null;
-        }
-
-        return correctWord("en", word);
-    }
-
-    /**
-     * Dezi's test patterns.
-     */
-    public static void testDat()
-    {
-        Perf startTime;
-        JSONObject result;
-
-        startTime = new Perf();
-        result = correctWord("de", "");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
-
-        startTime = new Perf();
-        result = correctWord("de", "bltte");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
-
-        startTime = new Perf();
-        result = correctWord("de", "Visibilifät");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
-
-        startTime = new Perf();
-        result = correctWord("de", "Visibilitat");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        return gs.correctPhrase(phrase);
     }
 
     /**
@@ -244,7 +196,7 @@ public class GolangCorrect
     }
 
     @Nullable
-    private JSONObject correctWord(String word)
+    private JSONObject correctPhrase(String phrase)
     {
         if (!inited)
         {
@@ -252,15 +204,23 @@ public class GolangCorrect
             return null;
         }
 
+        String word = phrase.trim();
+
+        if (word.contains(" "))
+        {
+            int lastSpace = word.lastIndexOf(" ");
+            word = word.substring(lastSpace).trim();
+        }
+
         JSONObject result;
 
-        result = correctWord(word, topFile, topIndex, topFileSize);
+        result = correctPhrase(word, topFile, topIndex, topFileSize);
         if (result != null)
         {
             return result;
         }
 
-        result = correctWord(word, botFile, botIndex, botFileSize);
+        result = correctPhrase(word, botFile, botIndex, botFileSize);
         if (result != null)
         {
             return result;
@@ -270,7 +230,7 @@ public class GolangCorrect
     }
 
     @Nullable
-    private JSONObject correctWord(String word, RandomAccessFile raFile, SparseLongArray raIndex, long raSize)
+    private JSONObject correctPhrase(String word, RandomAccessFile raFile, SparseLongArray raIndex, long raSize)
     {
         if (word.length() < 3)
         {

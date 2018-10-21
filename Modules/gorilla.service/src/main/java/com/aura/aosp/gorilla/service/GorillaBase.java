@@ -19,6 +19,7 @@ import com.aura.aosp.aura.nat.hello.Hello;
 import com.aura.aosp.aura.nat.levenshtein.Levenshtein;
 import com.aura.aosp.aura.nat.prime.Prime;
 import com.aura.aosp.gorilla.golang.GolangCorrect;
+import com.aura.aosp.gorilla.golang.GolangHinting;
 import com.aura.aosp.gorilla.golang.GolangSuggest;
 import com.aura.aosp.gorilla.golang.GolangUtils;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
@@ -101,8 +102,7 @@ public class GorillaBase extends Application
         Log.d("cpp=%s", primeCpp.elapsedTimeMillis());
         */
 
-        //GolangSuggest.testDat();
-        GolangCorrect.testDat();
+        GolangHinting.testDat();
 
         GorillaTime.loadServerTime();
 
