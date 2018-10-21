@@ -65,7 +65,7 @@ public class GorillaBase extends Application
 
         Simple.initialize(this);
 
-        Log.d("########################## %s", Levenshtein.stringFromJNI());
+        Log.d("########################## %s", Levenshtein.helloFromJNI());
 
         //GolangSuggest.testDat();
         //GolangCorrect.testDat();
