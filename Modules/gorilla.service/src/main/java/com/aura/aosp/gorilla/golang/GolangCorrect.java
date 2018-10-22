@@ -43,7 +43,7 @@ public class GolangCorrect
     private String language;
 
     @Nullable
-    static JSONObject phrasecorrect(String language, String phrase)
+    static JSONObject phraseCorrect(String language, String phrase)
     {
         GolangCorrect gs = languages.get(language);
 
@@ -61,7 +61,7 @@ public class GolangCorrect
         // Look up phrase in desired language.
         //
 
-        return gs.phrasecorrect(phrase);
+        return gs.phraseCorrect(phrase);
     }
 
     /**
@@ -102,7 +102,7 @@ public class GolangCorrect
     }
 
     @Nullable
-    private JSONObject phrasecorrect(String phrase)
+    private JSONObject phraseCorrect(String phrase)
     {
         if (!inited)
         {
@@ -120,13 +120,13 @@ public class GolangCorrect
 
         JSONObject result;
 
-        result = phrasecorrect(word, topFile);
+        result = phraseCorrect(word, topFile);
         if (result != null)
         {
             return result;
         }
 
-        result = phrasecorrect(word, botFile);
+        result = phraseCorrect(word, botFile);
         if (result != null)
         {
             return result;
@@ -136,7 +136,7 @@ public class GolangCorrect
     }
 
     @Nullable
-    private JSONObject phrasecorrect(String word, CorrectFile raFile)
+    private JSONObject phraseCorrect(String word, CorrectFile raFile)
     {
         if (word.length() < 3)
         {

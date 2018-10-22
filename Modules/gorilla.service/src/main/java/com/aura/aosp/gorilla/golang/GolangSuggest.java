@@ -14,8 +14,8 @@ public class GolangSuggest
     {
         GolangPhrases.phraseSuggest(language, "");
         GolangPhrases.phraseSuggest("en", "");
-        GolangCorrect.phrasecorrect(language, "");
-        GolangCorrect.phrasecorrect("en", "");
+        GolangCorrect.phraseCorrect(language, "");
+        GolangCorrect.phraseCorrect("en", "");
     }
 
     @NonNull
@@ -30,7 +30,7 @@ public class GolangSuggest
             return result;
         }
 
-        result = GolangCorrect.phrasecorrect(language, phrase);
+        result = GolangCorrect.phraseCorrect(language, phrase);
 
         if (result != null)
         {
@@ -50,7 +50,7 @@ public class GolangSuggest
                 return result;
             }
 
-            result = GolangCorrect.phrasecorrect("en", phrase);
+            result = GolangCorrect.phraseCorrect("en", phrase);
 
             if (result != null)
             {
