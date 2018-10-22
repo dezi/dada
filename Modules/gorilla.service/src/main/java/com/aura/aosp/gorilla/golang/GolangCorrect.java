@@ -43,7 +43,7 @@ public class GolangCorrect
     private String language;
 
     @Nullable
-    static JSONObject correctPhrase(String language, String phrase)
+    static JSONObject phrasecorrect(String language, String phrase)
     {
         GolangCorrect gs = languages.get(language);
 
@@ -61,7 +61,7 @@ public class GolangCorrect
         // Look up phrase in desired language.
         //
 
-        return gs.correctPhrase(phrase);
+        return gs.phrasecorrect(phrase);
     }
 
     /**
@@ -77,7 +77,6 @@ public class GolangCorrect
 
         try
         {
-
             //
             // Read top file.
             //
@@ -103,7 +102,7 @@ public class GolangCorrect
     }
 
     @Nullable
-    private JSONObject correctPhrase(String phrase)
+    private JSONObject phrasecorrect(String phrase)
     {
         if (!inited)
         {
@@ -121,13 +120,13 @@ public class GolangCorrect
 
         JSONObject result;
 
-        result = correctPhrase(word, topFile);
+        result = phrasecorrect(word, topFile);
         if (result != null)
         {
             return result;
         }
 
-        result = correctPhrase(word, botFile);
+        result = phrasecorrect(word, botFile);
         if (result != null)
         {
             return result;
@@ -137,7 +136,7 @@ public class GolangCorrect
     }
 
     @Nullable
-    private JSONObject correctPhrase(String word, CorrectFile raFile)
+    private JSONObject phrasecorrect(String word, CorrectFile raFile)
     {
         if (word.length() < 3)
         {
@@ -326,7 +325,7 @@ public class GolangCorrect
         return resultJson;
     }
 
-    private static class CorrectFile
+    private class CorrectFile
     {
         final private File path;
         final private RandomAccessFile file;
@@ -341,25 +340,6 @@ public class GolangCorrect
             this.size = file.length();
             this.index = new SparseLongArray();
             this.cache = (this.size < MAXCACHESIZE) ? new byte[ (int) this.size ] : null;
-        }
-
-        /**
-         * Get last position of chunk for given word length.
-         *
-         * @param wordlenght given word length.
-         * @return end of chunk for given word length.
-         */
-        private long getLastPosition(int wordlenght)
-        {
-            for (int inx = 0; inx < 50; inx++)
-            {
-                wordlenght++;
-
-                long seekpos = index.get(wordlenght, -1);
-                if (seekpos >= 0) return seekpos;
-            }
-
-            return size;
         }
 
         @Nullable
@@ -449,6 +429,25 @@ public class GolangCorrect
             {
                 return Err.errp(ex);
             }
+        }
+
+        /**
+         * Get last position of chunk for given word length.
+         *
+         * @param wordlenght given word length.
+         * @return end of chunk for given word length.
+         */
+        private long getLastPosition(int wordlenght)
+        {
+            for (int inx = 0; inx < 50; inx++)
+            {
+                wordlenght++;
+
+                long seekpos = index.get(wordlenght, -1);
+                if (seekpos >= 0) return seekpos;
+            }
+
+            return size;
         }
     }
 }

@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.os.Environment;
 
 import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 
 import java.io.File;
