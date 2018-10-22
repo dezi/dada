@@ -7,7 +7,6 @@
 
 package com.aura.aosp.gorilla.golang;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import android.util.SparseLongArray;
@@ -27,27 +26,24 @@ import java.util.List;
 import java.util.Map;
 
 import java.io.RandomAccessFile;
+import java.io.IOException;
 import java.io.File;
 
 public class GolangCorrect
 {
     private final static int READSIZE = 16 * 1024;
+    private final static int MAXCACHESIZE = 256 * 1024;
 
     private final static Map<String, GolangCorrect> languages = new HashMap<>();
 
-    private SparseLongArray topIndex;
-    private RandomAccessFile topFile;
-    private long topFileSize;
-
-    private SparseLongArray botIndex;
-    private RandomAccessFile botFile;
-    private long botFileSize;
+    private CorrectFile topFile;
+    private CorrectFile botFile;
 
     private boolean inited;
     private String language;
 
     @Nullable
-    public static JSONObject correctPhrase(String language, String phrase)
+    static JSONObject phraseCorrect(String language, String phrase)
     {
         GolangCorrect gs = languages.get(language);
 
@@ -61,11 +57,22 @@ public class GolangCorrect
             languages.put(language, gs);
         }
 
+        if ((phrase == null) || phrase.isEmpty())
+        {
+            Err.err("null or empty phrase");
+            return null;
+        }
+
         //
         // Look up phrase in desired language.
         //
 
-        return gs.correctPhrase(phrase);
+        //Perf perf = new Perf();
+        //JSONObject result = gs.phraseCorrect(phrase);
+        //Log.d("perf=%d result=%s", perf.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        //return result;
+
+        return gs.phraseCorrect(phrase);
     }
 
     /**
@@ -81,30 +88,21 @@ public class GolangCorrect
 
         try
         {
-
             //
             // Read top file.
             //
 
             File correctTopFile = new File(suggestDir, "correct.top.json");
-
-            topFile = new RandomAccessFile(correctTopFile, "r");
-            topFileSize = topFile.length();
-            topIndex = new SparseLongArray();
-
-            Err errtop = readFile(correctTopFile, topFile, topIndex);
+            topFile = new CorrectFile(correctTopFile);
+            Err errtop = topFile.readFile();
 
             //
             // Read bot file.
             //
 
             File correctBotFile = new File(suggestDir, "correct.bot.json");
-
-            botFile = new RandomAccessFile(correctBotFile, "r");
-            botFileSize = botFile.length();
-            botIndex = new SparseLongArray();
-
-            Err errbot = readFile(correctBotFile, botFile, botIndex);
+            botFile = new CorrectFile(correctBotFile);
+            Err errbot = botFile.readFile();
 
             inited = (errtop == null) && (errbot == null);
         }
@@ -115,88 +113,7 @@ public class GolangCorrect
     }
 
     @Nullable
-    private Err readFile(File file, RandomAccessFile raFile, SparseLongArray raIndex)
-    {
-        try
-        {
-            byte[] buffer = new byte[READSIZE];
-            byte[] wrdbuf = new byte[READSIZE];
-
-            boolean inword = true;
-            boolean utfccc = false;
-
-            int wordsize = 0;
-            long wordpos = 0;
-            long seekpos = 0;
-
-            int lastsize = 0;
-            long total = 0;
-
-            Perf startTime = new Perf();
-
-            while (true)
-            {
-                int xfer = raFile.read(buffer);
-
-                for (int inx = 0; inx < xfer; inx++, seekpos++)
-                {
-                    if (buffer[inx] == ':')
-                    {
-                        if (utfccc)
-                        {
-                            //
-                            // Target word contained UTF-8 chars. Convert
-                            // to string to get correct rune string length.
-                            //
-
-                            String runeStr = new String(wrdbuf, 0, wordsize);
-                            wordsize = runeStr.length();
-                        }
-
-                        if (wordsize != lastsize)
-                        {
-                            raIndex.put(wordsize, wordpos);
-                            lastsize = wordsize;
-                        }
-
-                        inword = false;
-                        continue;
-                    }
-
-                    if (buffer[inx] == '\n')
-                    {
-                        wordsize = 0;
-                        wordpos = seekpos + 1;
-                        total += 1;
-
-                        inword = true;
-                        continue;
-                    }
-
-                    if (inword)
-                    {
-                        if (((wrdbuf[wordsize++] = buffer[inx]) & 0x80) == 0x80)
-                        {
-                            utfccc = true;
-                        }
-                    }
-                }
-
-                if (xfer != READSIZE) break;
-            }
-
-            Log.d("file=%s total=%d elapsed=%d", file.toString(), total, startTime.elapsedTimeMillis());
-
-            return null;
-        }
-        catch (Exception ex)
-        {
-            return Err.errp(ex);
-        }
-    }
-
-    @Nullable
-    private JSONObject correctPhrase(String phrase)
+    private JSONObject phraseCorrect(String phrase)
     {
         if (!inited)
         {
@@ -214,13 +131,13 @@ public class GolangCorrect
 
         JSONObject result;
 
-        result = correctPhrase(word, topFile, topIndex, topFileSize);
+        result = phraseCorrect(word, topFile);
         if (result != null)
         {
             return result;
         }
 
-        result = correctPhrase(word, botFile, botIndex, botFileSize);
+        result = phraseCorrect(word, botFile);
         if (result != null)
         {
             return result;
@@ -230,7 +147,7 @@ public class GolangCorrect
     }
 
     @Nullable
-    private JSONObject correctPhrase(String word, RandomAccessFile raFile, SparseLongArray raIndex, long raSize)
+    private JSONObject phraseCorrect(String word, CorrectFile raFile)
     {
         if (word.length() < 3)
         {
@@ -249,24 +166,73 @@ public class GolangCorrect
 
         for (int checklen = wordmin; checklen <= wordmax; checklen++)
         {
-            long seekPos = raIndex.get(checklen, -1);
-            if (seekPos < 0) continue;
 
-            long lastPos = getLastPosition(checklen, raIndex, raSize);
+            //
+            // Retrieve absolute file positions of requests word length words.
+            //
 
-            int chunkSize = (int) (lastPos - seekPos);
+            long seekPos = raFile.index.get(checklen, -1);
+            long lastPos = raFile.getLastPosition(checklen);
 
-            byte[] buffer = new byte[chunkSize];
-
-            try
+            if ((seekPos < 0) || (lastPos < 0))
             {
-                raFile.seek(seekPos);
-                raFile.read(buffer);
-            }
-            catch (Exception ex)
-            {
-                Err.errp(ex);
+                //
+                // No words with matching length in file.
+                //
+
                 continue;
+            }
+
+            //
+            // Provide in memory buffer of this range.
+            //
+
+            byte[] buffer;
+            int loopMin;
+            int loopMax;
+
+            if (raFile.cache == null)
+            {
+                //
+                // File is not cached.
+                //
+
+                int chunkSize = (int) (lastPos - seekPos);
+
+                buffer = new byte[chunkSize];
+
+                try
+                {
+                    raFile.file.seek(seekPos);
+                    raFile.file.read(buffer);
+                }
+                catch (Exception ex)
+                {
+                    Err.errp(ex);
+                    continue;
+                }
+
+                //Log.d("read word=%s checklen=%d chunkSize=%s", word, checklen, chunkSize);
+
+                //
+                // Modifiy loop parameters for
+                // read in buffer.
+                //
+
+                loopMin = 0;
+                loopMax = chunkSize;
+            }
+            else
+            {
+                //
+                // Directly use cache buffer with
+                // original loop parameters.
+                //
+
+                buffer = raFile.cache;
+
+                loopMin = (int) seekPos;
+                loopMax = (int) lastPos;
             }
 
             byte[] wbytes = new byte[100];
@@ -279,7 +245,7 @@ public class GolangCorrect
 
             Integer dist;
 
-            for (int inx = 0; inx < chunkSize; inx++)
+            for (int inx = loopMin; inx < loopMax; inx++)
             {
                 if (buffer[inx] == ':')
                 {
@@ -289,18 +255,19 @@ public class GolangCorrect
 
                 if (buffer[inx] == '\n')
                 {
+                    //dist = GolangUtils.levenshtein(word, new String(wbytes, 0, winx));
                     //dist = Levenshtein.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
-                    dist = GolangUtils.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
+                    dist = GolangUtils.levenshtein(wordBytes, wordBytes.length, wbytes, winx, 2);
 
-                    if ((dist != null) && (dist <= 2))
+                    if ((dist != null) && (0 <= dist) && (dist <= 2))
                     {
-                        String target = new String(wbytes, 0, winx);
-                        String pstring = new String(pbytes, 0, pinx);
+                        String wString = new String(wbytes, 0, winx);
+                        String pString = new String(pbytes, 0, pinx);
 
-                        int percent = Integer.parseInt(pstring);
+                        int percent = Integer.parseInt(pString);
                         if (dist > 1) percent /= dist;
 
-                        targetScores.add(new GolangUtils.Score(target, percent));
+                        targetScores.add(new GolangUtils.Score(wString, percent));
                         totalScore += percent;
                     }
 
@@ -327,6 +294,19 @@ public class GolangCorrect
             }
         }
 
+        if (targetScores.size() == 0)
+        {
+            //
+            // No valid hints found.
+            //
+
+            return null;
+        }
+
+        //
+        // We have a least one valid hint.
+        //
+
         Collections.sort(targetScores, new Comparator<GolangUtils.Score>()
         {
             @Override
@@ -341,7 +321,6 @@ public class GolangCorrect
         Json.put(resultJson, "language", language);
 
         JSONObject hintsJson = new JSONObject();
-        boolean valid = false;
 
         int limit = 0;
 
@@ -350,47 +329,143 @@ public class GolangCorrect
             //Log.d("word=%s target=%s percent=%d", word, targetScore.phrase, targetScore.score);
 
             Json.put(hintsJson, targetScore.phrase, targetScore.score);
-            valid = true;
 
             limit += targetScore.score;
             if (limit > (totalScore * 0.5f)) break;
         }
 
-        if (valid)
-        {
-            //
-            // We have a least one valid hint.
-            //
-
-            Json.put(resultJson, "hints", hintsJson);
-            return resultJson;
-        }
-
-        //
-        // We had no valid hints.
-        //
-
-        return null;
+        Json.put(resultJson, "hints", hintsJson);
+        return resultJson;
     }
 
-    /**
-     * Get last position of chunk for given word length.
-     *
-     * @param wordlenght given word length.
-     * @param indexArray file seek positions.
-     * @param fileSize   total file size.
-     * @return end of chunk for given word length.
-     */
-    private long getLastPosition(int wordlenght, SparseLongArray indexArray, long fileSize)
+    private class CorrectFile
     {
-        for (int inx = 0; inx < 50; inx++)
-        {
-            wordlenght++;
+        final private File path;
+        final private RandomAccessFile file;
+        final private long size;
+        final private SparseLongArray index;
+        final private byte[] cache;
 
-            long seekpos = indexArray.get(wordlenght, -1);
-            if (seekpos >= 0) return seekpos;
+        private CorrectFile(File path) throws IOException
+        {
+            this.path = path;
+            this.file = new RandomAccessFile(path, "r");
+            this.size = file.length();
+            this.index = new SparseLongArray();
+            this.cache = (this.size < MAXCACHESIZE) ? new byte[ (int) this.size ] : null;
         }
 
-        return fileSize;
+        @Nullable
+        private Err readFile()
+        {
+            try
+            {
+                byte[] buffer = (cache != null) ? cache : new byte[READSIZE];
+                byte[] wrdbuf = new byte[128];
+
+                boolean inword = true;
+
+                long wordpos = 0;
+                long seekpos = 0;
+
+                int wordsize = 0;
+                int lastsize = 0;
+                int runesize;
+
+                long total = 0;
+
+                Perf startTime = new Perf();
+
+                while (true)
+                {
+                    int xfer = file.read(buffer);
+
+                    for (int inx = 0; inx < xfer; inx++, seekpos++)
+                    {
+                        if (buffer[inx] == ':')
+                        {
+                            runesize = GolangUtils.getRuneLength(wrdbuf, wordsize);
+
+                            if (runesize != lastsize)
+                            {
+                                index.put(runesize, wordpos);
+                                lastsize = runesize;
+                            }
+
+                            inword = false;
+                            continue;
+                        }
+
+                        if (buffer[inx] == '\n')
+                        {
+                            wordsize = 0;
+                            wordpos = seekpos + 1;
+                            total += 1;
+
+                            inword = true;
+                            continue;
+                        }
+
+                        if (inword)
+                        {
+                            if (wordsize < wrdbuf.length)
+                            {
+                                wrdbuf[wordsize++] = buffer[inx];
+                            }
+                        }
+                    }
+
+                    if (cache != null)
+                    {
+                        //
+                        // File was read in one chunk.
+                        //
+
+                        break;
+                    }
+
+                    if (xfer != READSIZE)
+                    {
+                        //
+                        // File is at end.
+                        //
+
+                        break;
+                    }
+                }
+
+                Log.d("path=%s total=%d elapsed=%d", path.toString(), total, startTime.elapsedTimeMillis());
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                return Err.errp(ex);
+            }
+        }
+
+        /**
+         * Get last position of chunk for given word length.
+         *
+         * @param wordlenght given word length.
+         * @return end of chunk for given word length.
+         */
+        private long getLastPosition(int wordlenght)
+        {
+            if (wordlenght < 0)
+            {
+                return -1;
+            }
+
+            for (int inx = 0; inx < 50; inx++)
+            {
+                wordlenght++;
+
+                long seekpos = index.get(wordlenght, -1);
+                if (seekpos >= 0) return seekpos;
+            }
+
+            return size;
+        }
     }
 }
