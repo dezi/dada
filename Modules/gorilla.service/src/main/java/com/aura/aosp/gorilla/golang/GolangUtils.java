@@ -132,9 +132,9 @@ public class GolangUtils
                     d2 = dist[((i + 1) * coln) + j] + 1;
                     d3 = dist[(i * coln) + j] + 1;
 
-                    m1 = (d2 < d3) ? d2 : d3;
+                    m1 = (d1 < d2) ? d1 : d2;
 
-                    dist[((i + 1) * coln) + (j + 1)] = (d1 < m1) ? d1 : m1;
+                    dist[((i + 1) * coln) + (j + 1)] = (m1 < d3) ? m1 : d3;
                 }
             }
         }
@@ -244,9 +244,9 @@ public class GolangUtils
                     d2 = dist[((i + 1) * coln) + j] + 1;
                     d3 = dist[(i * coln) + j] + 1;
 
-                    m1 = (d2 < d3) ? d2 : d3;
+                    m1 = (d1 < d2) ? d1 : d2;
 
-                    dist[((i + 1) * coln) + (j + 1)] = (d1 < m1) ? d1 : m1;
+                    dist[((i + 1) * coln) + (j + 1)] = (m1 < d3) ? m1 : d3;
                 }
             }
         }

@@ -57,11 +57,20 @@ public class GolangCorrect
             languages.put(language, gs);
         }
 
+        if ((phrase == null) || phrase.isEmpty())
+        {
+            Err.err("null or empty phrase");
+            return null;
+        }
+
         //
         // Look up phrase in desired language.
         //
 
-        return gs.phraseCorrect(phrase);
+        Perf perf = new Perf();
+        JSONObject result = gs.phraseCorrect(phrase);
+        Log.d("perf=%d result=%s", perf.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        return result;
     }
 
     /**
@@ -163,7 +172,7 @@ public class GolangCorrect
             long seekPos = raFile.index.get(checklen, -1);
             long lastPos = raFile.getLastPosition(checklen);
 
-            if (seekPos < 0)
+            if ((seekPos < 0) || (lastPos < 0))
             {
                 //
                 // No words with matching length in file.
@@ -200,6 +209,8 @@ public class GolangCorrect
                     Err.errp(ex);
                     continue;
                 }
+
+                Log.d("read word=%s checklen=%d chunkSize=%s", word, checklen, chunkSize);
 
                 //
                 // Modifiy loop parameters for
@@ -439,6 +450,11 @@ public class GolangCorrect
          */
         private long getLastPosition(int wordlenght)
         {
+            if (wordlenght < 0)
+            {
+                return -1;
+            }
+
             for (int inx = 0; inx < 50; inx++)
             {
                 wordlenght++;

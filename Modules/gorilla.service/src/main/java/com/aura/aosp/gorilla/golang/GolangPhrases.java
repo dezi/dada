@@ -65,11 +65,20 @@ public class GolangPhrases
             languages.put(language, gs);
         }
 
+        if ((phrase == null) || phrase.isEmpty())
+        {
+            Err.err("null or empty phrase");
+            return null;
+        }
+
         //
         // Look up phrase in desired language.
         //
 
-        return gs.phraseSuggest(phrase);
+        Perf perf = new Perf();
+        JSONObject result = gs.phraseSuggest(phrase);
+        Log.d("perf=%d result=%s", perf.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        return result;
     }
 
     /**
@@ -201,6 +210,10 @@ public class GolangPhrases
 
         if (truncate)
         {
+            //
+            // Look up phrase with possible misspelled last token.
+            //
+
             int lastSpace = prefix.lastIndexOf(" ");
 
             if (lastSpace > 0)
