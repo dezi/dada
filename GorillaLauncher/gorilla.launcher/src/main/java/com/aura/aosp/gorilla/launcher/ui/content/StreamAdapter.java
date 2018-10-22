@@ -9,13 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.aura.aosp.gorilla.launcher.LauncherActivity;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.StreamActivity;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.stream.ContactStreamItem;
+import com.aura.aosp.gorilla.launcher.model.stream.FilteredStream;
 import com.aura.aosp.gorilla.launcher.model.stream.GenericStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.MessageStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.StreamItem;
+import com.aura.aosp.gorilla.launcher.model.user.User;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.ui.common.ImageShaper;
 
@@ -47,7 +50,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
      * @param context
      * @param activity
      */
-    public StreamAdapter(List<StreamItem> streamItems, Context context, StreamActivity activity) {
+    public StreamAdapter(FilteredStream streamItems, Context context, StreamActivity activity) {
         // Set initial items but Don't use setter: Until view holder isn't bound, we don't want to notify about changes
         this.streamItems = streamItems;
         this.context = context;
@@ -104,7 +107,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
             case TYPE_STREAMITEM_MESSAGE:
                 MessageStreamItem messageStreamItem = (MessageStreamItem) dataSet;
 
-                if (messageStreamItem.ieSentByOwner()) {
+                if (messageStreamItem.ownerMatchesUser(((LauncherActivity) activity).getMyUser())) {
                     itemType = ITEM_TYPE_PREVIEW_RIGHT;
                 } else {
                     itemType = ITEM_TYPE_PREVIEW_LEFT;

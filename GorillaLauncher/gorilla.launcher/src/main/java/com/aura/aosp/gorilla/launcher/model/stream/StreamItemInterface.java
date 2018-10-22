@@ -13,6 +13,10 @@ interface StreamItemInterface {
         TYPE_STREAMITEM_INVISIBLE
     }
 
+    ItemType getType();
+
+    void setType(ItemType type);
+
     User getOwnerUser();
 
     void setOwnerUser(User ownerUser);
@@ -29,9 +33,13 @@ interface StreamItemInterface {
 
     void setImageId(Integer imageId);
 
-    ItemType getType();
+    Long getCreateTime();
 
-    void setType(ItemType type);
+    void setCreateTime(Long createTime);
+
+    Long getModifyTime();
+
+    void setModifyTime(Long modifyTime);
 
     Float getAbsoluteScore();
 

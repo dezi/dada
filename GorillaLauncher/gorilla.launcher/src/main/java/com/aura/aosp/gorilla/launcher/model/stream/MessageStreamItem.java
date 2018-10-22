@@ -2,6 +2,7 @@ package com.aura.aosp.gorilla.launcher.model.stream;
 
 import android.support.annotation.NonNull;
 
+import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
@@ -10,25 +11,54 @@ import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.GorillaSharable;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 
-import java.util.List;
-
 /**
  * Message item
+ *
  * TODO: This may be subject to be merged with "DraftStreamItem"
  */
 public class MessageStreamItem extends DraftStreamItem implements GorillaSharable {
 
     final static String LOGTAG = MessageStreamItem.class.getSimpleName();
 
+    /**
+     * Create item with owner user and text
+     *
+     * @param ownerUser
+     * @param text
+     */
     public MessageStreamItem(@NonNull User ownerUser, @NonNull String text) {
         super(ownerUser, text);
         setImageId(R.drawable.ic_message_black_24dp);
+        setType(ItemType.TYPE_STREAMITEM_MESSAGE);
     }
 
+    /**
+     * Create item from gorilla message atom.
+     *
+     * @param gorillaMessage
+     */
+    public MessageStreamItem(GorillaMessage gorillaMessage) {
+        super(new User(Contacts.getContact(gorillaMessage.getUUIDBase64())), gorillaMessage.getMessageText());
+        setCreateTime(gorillaMessage.getTime());
+        setImageId(R.drawable.ic_message_black_24dp);
+        setType(ItemType.TYPE_STREAMITEM_MESSAGE);
+
+//        setCreateTime(gorillaMessage.getStatusTime("received"));
+//        setCreateTime(gorillaMessage.getStatusTime("queued"));
+    }
+
+    /**
+     * TODO: Decouple from model and move to separate service class
+     * @param remoteUser
+     */
     public void shareWith(User remoteUser) {
         shareWith(remoteUser.getIdentity());
     }
 
+    /**
+     * TODO: Decouple from model and move to separate service class
+     * @param remoteIdentity
+     */
     public void shareWith(Identity remoteIdentity) {
 
         // TODO: Replace with sendPayload(), this is just for testing.
@@ -50,18 +80,37 @@ public class MessageStreamItem extends DraftStreamItem implements GorillaSharabl
         GorillaClient.getInstance().putAtomSharedWith(remoteIdentity.getUserUUIDBase64(), message.getAtom());
     }
 
+    /**
+     * TODO: Decouple from model and move to separate service class
+     * @param remoteUser
+     */
     @Override
     public void unshareWith(User remoteUser) {
         // TODO: Implement
     }
 
+    /**
+     * TODO: Decouple from model and move to separate service class
+     * @return
+     */
     public boolean isReceivedByOwner() {
         return true;
         // TODO: Implement
     }
 
+    /**
+     * TODO: Decouple from model and move to separate service class
+     * @return
+     */
     public boolean ieSentByOwner() {
         return false;
         // TODO: Implement
+    }
+
+    /**
+     * @return
+     */
+    public boolean ownerMatchesUser(User user) {
+        return getOwnerUser().equals(user);
     }
 }

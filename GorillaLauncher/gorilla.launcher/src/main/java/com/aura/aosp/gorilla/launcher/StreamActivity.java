@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
@@ -32,8 +31,6 @@ import com.aura.aosp.gorilla.launcher.ui.content.StreamView;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterAdapter;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterView;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +42,8 @@ public class StreamActivity extends LauncherActivity {
     private final static String LOGTAG = StreamActivity.class.getSimpleName();
 
     //    public static List<ChatProfile> chatProfiles = new ArrayList<>();
+
+    private String currentAtomContext = "aura.uxstream.launcher.messages";
 
     private StreamStore streamStore;
 
@@ -104,16 +103,20 @@ public class StreamActivity extends LauncherActivity {
         // Create initial content stream items and specify adapter
         streamStore = new StreamStore(getApplicationContext());
 
-        refreshStreamItems();
+        refreshStreamItems(null);
     }
 
     /**
      * Create main stream items
      * TODO: Add "intelligent" refresh methods taking advantage of scoring
      */
-    protected void refreshStreamItems() {
+    protected void refreshStreamItems(@Nullable String atomContext) {
 
-        streamAdapter = new StreamAdapter(streamStore.getItemsForAtomContext("aura.uxtream.launcher", getOwnerUser()), this, this);
+        if (atomContext == null) {
+            atomContext = getCurrentAtomContext();
+        }
+
+        streamAdapter = new StreamAdapter(streamStore.getItemsForAtomContext(atomContext, getMyUser()), this, this);
         streamRecyclerView.setAdapter(streamAdapter);
     }
 
@@ -139,7 +142,7 @@ public class StreamActivity extends LauncherActivity {
         removeMainFuncView();
         deactivateAllActionsClusterViews();
         activateMainContentView();
-        refreshStreamItems();
+        refreshStreamItems(null);
     }
 
     /**
@@ -159,7 +162,7 @@ public class StreamActivity extends LauncherActivity {
 
         ConstraintLayout recipientListContainer = mainFuncView.findViewById(R.id.recipientListContainer);
 
-        // Create an avatar image manually
+        // Create avatar image manually
         UserAvatarImage contactAvatarImage = new UserAvatarImage(this, contactUser);
 
         recipientListContainer.addView(contactAvatarImage);
@@ -234,7 +237,7 @@ public class StreamActivity extends LauncherActivity {
     public void onSendMessage(User contactUser) {
 
         Log.d(LOGTAG, String.format("onSendMessage for contactUser <%s>", contactUser.getIdentity().getNick()));
-        Log.d(LOGTAG, String.format("onSendMessage ownerUser <%s>", getOwnerUser().getIdentity().getNick()));
+        Log.d(LOGTAG, String.format("onSendMessage myUser <%s>", getMyUser().getIdentity().getNick()));
 
         EditText editTextView = (EditText) findViewById(R.id.editText);
 
@@ -242,7 +245,7 @@ public class StreamActivity extends LauncherActivity {
 
         Log.d(LOGTAG, String.format("onSendMessage message <%s>", messageText));
 
-        MessageStreamItem messageStreamItem = new MessageStreamItem(getOwnerUser(), messageText);
+        MessageStreamItem messageStreamItem = new MessageStreamItem(getMyUser(), messageText);
         messageStreamItem.shareWith(contactUser);
 
         // TODO: CONTINNUE HERE! Read messages from goatoms and put into stream!
@@ -308,6 +311,14 @@ public class StreamActivity extends LauncherActivity {
         onOpenSimpleCalendar();
     }
 
+    public String getCurrentAtomContext() {
+        return currentAtomContext;
+    }
+
+    public void setCurrentAtomContext(String currentAtomContext) {
+        this.currentAtomContext = currentAtomContext;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -334,10 +345,10 @@ public class StreamActivity extends LauncherActivity {
 
             if (ownerIdentity != null) {
 
-                Log.d(LOGTAG, "onOwnerReceived: +++++ CONTACT +++++ nick=" + ownerIdentity.getNick());
+                myUser = new User(ownerIdentity);
+                String nick = myUser.getIdentity().getNick();
 
-                ownerUser = new User(ownerIdentity);
-                String nick = ownerUser.getIdentity().getNick();
+                Log.d(LOGTAG, "onOwnerReceived: +++++ CONTACT +++++ nick=" + nick);
 
                 createStream();
                 onOpenStream();
