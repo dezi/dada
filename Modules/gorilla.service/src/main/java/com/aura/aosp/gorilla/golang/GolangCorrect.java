@@ -15,7 +15,6 @@ import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Perf;
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Log;
-import com.aura.aosp.aura.nat.levenshtein.Levenshtein;
 
 import org.json.JSONObject;
 
@@ -377,8 +376,8 @@ public class GolangCorrect
                 long seekpos = 0;
 
                 int wordsize = 0;
-                int runesize = 0;
                 int lastsize = 0;
+                int runesize;
 
                 long total = 0;
 
