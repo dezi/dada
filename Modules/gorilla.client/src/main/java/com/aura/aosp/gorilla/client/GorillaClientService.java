@@ -178,4 +178,19 @@ class GorillaClientService extends IGorillaClientService.Stub
 
         return valid;
     }
+
+    @Override
+    public boolean receivePhraseSuggestions(String apkname, String resultJSON, String checksum)
+    {
+        boolean valid = GorillaConnect.validateSHASignatureBase64(checksum, apkname, resultJSON);
+
+        Log.d(LOGTAG, "receivePhraseSuggestions: result=" + resultJSON + " valid=" + valid);
+
+        if (valid)
+        {
+            // Todo: implement.
+        }
+
+        return valid;
+    }
 }

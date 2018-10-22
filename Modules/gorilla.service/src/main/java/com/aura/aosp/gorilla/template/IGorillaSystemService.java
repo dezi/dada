@@ -107,9 +107,9 @@ interface IGorillaSystemService
     /**
      * Request suggestions for possible actions on action domain level.
      *
-     * @param apkname  the apk name of requesting app.
+     * @param apkname      the apk name of requesting app.
      * @param actionDomain action domain in reversed order.
-     * @param checksum parameters checksum.
+     * @param checksum     parameters checksum.
      * @return JSON array string with GorillaAtomAction JSON objects.
      */
     String suggestActionsDomain(String apkname, String actionDomain, String checksum);
@@ -117,10 +117,10 @@ interface IGorillaSystemService
     /**
      * Request suggestions for possible actions on action domain with context level.
      *
-     * @param apkname  the apk name of requesting app.
+     * @param apkname      the apk name of requesting app.
      * @param actionDomain action domain in reversed order.
-     * @param subContext sub context in action domain.
-     * @param checksum parameters checksum.
+     * @param subContext   sub context in action domain.
+     * @param checksum     parameters checksum.
      * @return JSON array string with GorillaAtomAction JSON objects.
      */
     String suggestActionsDomainContext(String apkname, String actionDomain, String subContext, String checksum);
@@ -128,9 +128,9 @@ interface IGorillaSystemService
     /**
      * Register event on an action domain.
      *
-     * @param apkname  the apk name of requesting app.
+     * @param apkname      the apk name of requesting app.
      * @param actionDomain action domain in reversed order.
-     * @param checksum parameters checksum.
+     * @param checksum     parameters checksum.
      * @return true on success.
      */
     boolean registerActionEvent(String apkname, String actionDomain, String checksum);
@@ -138,10 +138,10 @@ interface IGorillaSystemService
     /**
      * Register event on a sub action in an action domain.
      *
-     * @param apkname  the apk name of requesting app.
+     * @param apkname      the apk name of requesting app.
      * @param actionDomain action domain in reversed order.
-     * @param subAction sub action executed.
-     * @param checksum parameters checksum.
+     * @param subAction    sub action executed.
+     * @param checksum     parameters checksum.
      * @return true on success.
      */
     boolean registerActionEventDomain(String apkname, String actionDomain, String subAction, String checksum);
@@ -149,11 +149,11 @@ interface IGorillaSystemService
     /**
      * Register event on a sub action in a sub context of an action domain.
      *
-     * @param apkname  the apk name of requesting app.
+     * @param apkname      the apk name of requesting app.
      * @param actionDomain action domain in reversed order.
-     * @param subContext sub context of action domain.
-     * @param subAction sub action executed.
-     * @param checksum parameters checksum.
+     * @param subContext   sub context of action domain.
+     * @param subAction    sub action executed.
+     * @param checksum     parameters checksum.
      * @return true on success.
      */
     boolean registerActionEventDomainContext(String apkname, String actionDomain, String subContext, String subAction, String checksum);
@@ -180,10 +180,32 @@ interface IGorillaSystemService
     String requestContacts(String apkname, String checksum);
 
     /**
+     * Request contact data of specified contact.
+     *
      * @param apkname     the apk name of requesting app.
      * @param contactUUID the contacts UUID.
      * @param checksum    parameters checksum.
      * @return JSON object string of type GorillaContact or null.
      */
     String requestContactData(String apkname, String contactUUID, String checksum);
+
+    /**
+     * Request suggestion for text phrase synchronously.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param phrase   the text phrase for suggestions.
+     * @param checksum parameters checksum.
+     * @return JSON object string of type GorillaSuggestions or null.
+     */
+    String requestPhraseSuggestionsSync(String apkname, String phrase, String checksum);
+
+    /**
+     * Request suggestion for text phrase via service callback.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param phrase   the text phrase for suggestions.
+     * @param checksum parameters checksum.
+     * @return true if request is beeing processed.
+     */
+    boolean requestPhraseSuggestionsAsync(String apkname, String phrase, String checksum);
 }

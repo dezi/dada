@@ -136,4 +136,24 @@ interface IGorillaSystemService
      * @return JSON object string of type GorillaContact or null.
      */
     String requestContactData(String apkname, String contactUUID, String checksum);
+
+    /**
+     * Request suggestion for text phrase synchronously.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param phrase   the text phrase for suggestions.
+     * @param checksum parameters checksum.
+     * @return JSON object string of type GorillaSuggestions or null.
+     */
+    String requestPhraseSuggestionsSync(String apkname, String phrase, String checksum);
+
+    /**
+     * Request suggestion for text phrase via service callback.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param phrase   the text phrase for suggestions.
+     * @param checksum parameters checksum.
+     * @return true if request is beeing processed.
+     */
+    boolean requestPhraseSuggestionsAsync(String apkname, String phrase, String checksum);
 }

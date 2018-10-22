@@ -402,4 +402,32 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
 
         return contactAtom.toString();
     }
+
+    /**
+     * Request suggestion for text phrase synchronously.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param phrase   the text phrase for suggestions.
+     * @param checksum parameters checksum.
+     * @return JSON object string of type GorillaSuggestions or null.
+     */
+    @Override
+    public String requestPhraseSuggestionsSync(String apkname, String phrase, String checksum)
+    {
+        return null;
+    }
+
+    /**
+     * Request suggestion for text phrase via service callback.
+     *
+     * @param apkname  the apk name of requesting app.
+     * @param phrase   the text phrase for suggestions.
+     * @param checksum parameters checksum.
+     * @return true if request is beeing processed.
+     */
+    @Override
+    public boolean requestPhraseSuggestionsAsync(String apkname, String phrase, String checksum)
+    {
+        return true;
+    }
 }
