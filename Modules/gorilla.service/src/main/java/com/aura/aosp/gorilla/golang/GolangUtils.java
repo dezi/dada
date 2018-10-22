@@ -234,9 +234,9 @@ public class GolangUtils
             Integer dist = null;
 
             //noinspection ConstantConditions
-            if ((dist == null) || (dist < 0)) dist = checkdist0(r1, r1len, r2, r2len);
-            if ((dist == null) || (dist < 0)) dist = checkdist1(r1, r1len, r2, r2len);
-            //if ((dist == null) || (dist < 0)) dist = checkdist2(r1, r1len, r2, r2len);
+            if (((dist == null) || (dist < 0)) && (maxdist >= 0)) dist = checkdist0(r1, r1len, r2, r2len);
+            if (((dist == null) || (dist < 0)) && (maxdist >= 1)) dist = checkdist1(r1, r1len, r2, r2len);
+            if (((dist == null) || (dist < 0)) && (maxdist >= 2)) dist = checkdist2(r1, r1len, r2, r2len);
 
             if (dist != null)
             {
@@ -315,7 +315,11 @@ public class GolangUtils
                 }
             }
 
-            return 1;
+            //
+            // Distance is either zero or one.
+            //
+
+            return dist;
         }
 
         if (ldiff == 1)
@@ -346,7 +350,7 @@ public class GolangUtils
             if ((matchfor + matchbak) >= max)
             {
                 //
-                // Distance is exactly one.
+                // Distance is exactly zero or one.
                 //
 
                 return 1;
@@ -393,10 +397,10 @@ public class GolangUtils
                 }
             }
 
-            if (dist == 2)
+            if (dist <= 2)
             {
                 //
-                // Distance is exactly two.
+                // Distance is exactly zero, one or two.
                 //
 
                 return 2;

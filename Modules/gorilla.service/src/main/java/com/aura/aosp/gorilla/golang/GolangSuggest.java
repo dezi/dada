@@ -76,6 +76,7 @@ public class GolangSuggest
 
         JSONObject result;
 
+        /*
         startTime = new Perf();
         result = hintPhrase("de", "Bit");
         Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
@@ -139,13 +140,32 @@ public class GolangSuggest
         startTime = new Perf();
         result = hintPhrase("de", "Messwiener");
         Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        */
 
         Integer dist;
 
-        byte[] s1 = "Messdiener".getBytes();
-        byte[] s2 = "Messdiene".getBytes();
+        byte[] s1;
+        byte[] s2;
 
-        dist = GolangUtils.levenshtein(s1, s1.length, s2, s2.length);
+        s1 = "Messdiener".getBytes();
+        s2 = "Messdiener".getBytes();
+
+        dist = GolangUtils.levenshtein(s1, s1.length, s2, s2.length, 2);
+        Log.d("s1=%s s2=%s dist=%d", new String(s1), new String(s2), dist);
+
+        s2 = "Messwiener".getBytes();
+
+        dist = GolangUtils.levenshtein(s1, s1.length, s2, s2.length, 2);
+        Log.d("s1=%s s2=%s dist=%d", new String(s1), new String(s2), dist);
+
+        s2 = "Messweener".getBytes();
+
+        dist = GolangUtils.levenshtein(s1, s1.length, s2, s2.length, 2);
+        Log.d("s1=%s s2=%s dist=%d", new String(s1), new String(s2), dist);
+
+        s2 = "Messwerte".getBytes();
+
+        dist = GolangUtils.levenshtein(s1, s1.length, s2, s2.length, 2);
         Log.d("s1=%s s2=%s dist=%d", new String(s1), new String(s2), dist);
     }
 }
