@@ -210,7 +210,7 @@ public class GolangCorrect
                     continue;
                 }
 
-                Log.d("read word=%s checklen=%d chunkSize=%s", word, checklen, chunkSize);
+                //Log.d("read word=%s checklen=%d chunkSize=%s", word, checklen, chunkSize);
 
                 //
                 // Modifiy loop parameters for
@@ -255,9 +255,9 @@ public class GolangCorrect
                 {
                     //dist = GolangUtils.levenshtein(word, new String(wbytes, 0, winx));
                     //dist = Levenshtein.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
-                    dist = GolangUtils.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
+                    dist = GolangUtils.levenshtein(wordBytes, wordBytes.length, wbytes, winx, 2);
 
-                    if ((dist != null) && (dist <= 2))
+                    if ((dist != null) && (0 <= dist) && (dist <= 2))
                     {
                         String wString = new String(wbytes, 0, winx);
                         String pString = new String(pbytes, 0, pinx);

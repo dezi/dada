@@ -81,7 +81,6 @@ public class GolangSuggest
 
         JSONObject result;
 
-        /*
         startTime = new Perf();
         result = hintPhrase("de", "Bit");
         Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
@@ -105,13 +104,11 @@ public class GolangSuggest
         startTime = new Perf();
         result = hintPhrase("en", "aspirations");
         Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-        */
 
         startTime = new Perf();
         result = hintPhrase("de", "aspirations");
         Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
 
-        /*
         startTime = new Perf();
         result = hintPhrase("de", "In folge der Demonstration würden wir gerne die Bitte");
         Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
@@ -155,6 +152,5 @@ public class GolangSuggest
 
         dist = GolangUtils.levenshtein(s1, s1.length, s2, s2.length);
         Log.d("s1=%s s2=%s dist=%d", new String(s1), new String(s2), dist);
-        */
     }
 }
