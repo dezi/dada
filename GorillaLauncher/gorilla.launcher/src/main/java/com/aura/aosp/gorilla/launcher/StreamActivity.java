@@ -317,6 +317,7 @@ public class StreamActivity extends LauncherActivity {
 
     public void setCurrentAtomContext(String currentAtomContext) {
         this.currentAtomContext = currentAtomContext;
+        onReturnToStream();
     }
 
     @Override
