@@ -1,14 +1,17 @@
 package com.aura.aosp.gorilla.golang;
 
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import android.os.Environment;
 
 import com.aura.aosp.aura.common.simple.Err;
 import com.aura.aosp.aura.common.simple.Simple;
 
 import java.io.File;
 import java.io.RandomAccessFile;
+
+import static java.lang.Math.min;
 
 public class GolangUtils
 {
@@ -249,6 +252,50 @@ public class GolangUtils
         }
 
         return dist[(coln * rown) - 1];
+    }
+
+    /**
+     * Get real UTF-8 rune length from byte array.
+     * <p>
+     * This method is faster than a call to
+     * <p>
+     * new String(byteString, 0, byteLength).length()
+     *
+     * @param byteString byte array with UTF-8 content.
+     * @param byteLength usable length of byte array.
+     * @return number of runes in string.
+     */
+    static int getRuneLength(byte[] byteString, int byteLength)
+    {
+        if (byteString == null)
+        {
+            Err.errp();
+            return 0;
+        }
+
+        if (byteString.length < byteLength)
+        {
+            Err.errp("wrong length!");
+            return 0;
+        }
+
+        int runeLenght = 0;
+
+        for (int inx = 0; inx < byteLength; inx++)
+        {
+            if ((byteString[inx] & 0xc0) == 0x80)
+            {
+                //
+                // Trailing UTF-8 character does not count.
+                //
+
+                continue;
+            }
+
+            runeLenght++;
+        }
+
+        return runeLenght;
     }
 
     /**

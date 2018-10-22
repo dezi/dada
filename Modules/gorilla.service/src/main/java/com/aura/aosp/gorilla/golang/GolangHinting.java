@@ -10,6 +10,11 @@ import org.json.JSONObject;
 
 public class GolangHinting
 {
+    public static void initializeLanguage(String language)
+    {
+        hintPhrase(language, "");
+    }
+
     @NonNull
     public static JSONObject hintPhrase(String language, String phrase)
     {
@@ -65,6 +70,8 @@ public class GolangHinting
      */
     public static void testDat()
     {
+        initializeLanguage("de");
+
         Perf startTime;
         JSONObject result;
 
@@ -126,6 +133,10 @@ public class GolangHinting
 
         startTime = new Perf();
         result = hintPhrase("de", "Visibilitat");
+        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+
+        startTime = new Perf();
+        result = hintPhrase("de", "Messwiener");
         Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
     }
 }
