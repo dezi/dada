@@ -27,24 +27,13 @@ public class DraftStreamItem extends StreamItem implements GorillaPersistable {
     }
 
 //    /**
-//     * Note item construction from Gorilla atom.
+//     * Create item from gorilla message atom.
 //     *
-//     * @param atom
+//     * @param gorillaAtom
 //     */
-//    public DraftStreamItem(GorillaAtom atom) {
-//
-//        String text = ((GorillaMessage) atom).getMessageText();
-//        User atomOwnerUser = new User(Contacts.getContact(atom.getUUIDBase64()));
-//
-//        if (text == null) {
-//            text = "";
-//        }
-//
-//        setOwnerUser(atomOwnerUser);
-//        setType(ItemType.TYPE_STREAMITEM_DRAFT);
-//        setTitle(extractTitle(text));
-//        setText(text);
-//        setImageId(R.drawable.ic_note_black_24dp);
+//    public DraftStreamItem(GorillaAtom gorillaAtom) {
+//        super(new User(Contacts.getContact(gorillaAtom.getUUIDBase64())), gorillaAtom.getLoad().get("text"));
+//        setCreateTime(gorillaAtom.getTime());
 //    }
 
     /**

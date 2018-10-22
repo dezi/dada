@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
-import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
@@ -43,8 +42,6 @@ import com.aura.aosp.gorilla.launcher.ui.navigation.ClusterButtonView;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ToggleClusterButton;
 import com.aura.aosp.gorilla.launcher.ui.status.StatusBar;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +56,7 @@ public class LauncherActivity extends AppCompatActivity {
     protected static Boolean svlink;
     protected static Boolean uplink;
 
-    public static User ownerUser;
+    public static User myUser;
 
     protected ActionClusterStore actionClusterStore;
 
@@ -90,14 +87,14 @@ public class LauncherActivity extends AppCompatActivity {
     protected static int blurTransisitionDuration;
 
     @Nullable
-    public static User getOwnerUser() {
-        return ownerUser;
+    public static User getMyUser() {
+        return myUser;
     }
 
     @Nullable
     public static String getOwnerDeviceBase64() {
-        if (ownerUser == null) return null;
-        return ownerUser.getIdentity().getDeviceUUIDBase64();
+        if (myUser == null) return null;
+        return myUser.getIdentity().getDeviceUUIDBase64();
     }
 
     @Override
@@ -660,7 +657,7 @@ public class LauncherActivity extends AppCompatActivity {
 
         // Check for owner contactIdentity and start "Gorilla SysApp" if not given yet
         // TODO: To be replaced by discovering UID from "Identity Manager" later on.
-        if (getOwnerUser() == null) {
+        if (getMyUser() == null) {
             Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.aura.aosp.gorilla.sysapp");
             Simple.startActivity(this, launchIntent);
         }
@@ -699,8 +696,8 @@ public class LauncherActivity extends AppCompatActivity {
 
                 Log.d(LOGTAG, "onOwnerReceived: +++++ CONTACT +++++ nick=" + ownerIdentity.getNick());
 
-                ownerUser = new User(ownerIdentity);
-                String nick = ownerUser.getIdentity().getNick();
+                myUser = new User(ownerIdentity);
+                String nick = myUser.getIdentity().getNick();
 
                 if (statusBar != null) {
                     statusBar.setProfileInfo(nick);

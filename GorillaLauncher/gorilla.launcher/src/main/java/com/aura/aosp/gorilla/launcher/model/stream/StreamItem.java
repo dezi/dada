@@ -16,6 +16,8 @@ public abstract class StreamItem implements StreamItemInterface {
     protected Integer imageId;
     protected ItemType type;
     protected Float absoluteScore = 1.0f;
+    protected Long createTime;
+    protected Long modifyTime;
 
     /**
      * Construct stream item of invocationType "unknown".
@@ -39,6 +41,26 @@ public abstract class StreamItem implements StreamItemInterface {
         setTitle(title);
         setText(text);
         setImageId(imageId);
+
+        Long currentDateTime = System.currentTimeMillis();
+
+        setCreateTime(currentDateTime);
+        setModifyTime(currentDateTime);
+    }
+
+    @Override
+    public void setType(ItemType type) {
+        this.type = type;
+    }
+
+    @Override
+    public ItemType getType() {
+        return type;
+    }
+
+    @Override
+    public Float getAbsoluteScore() {
+        return absoluteScore;
     }
 
     @Override
@@ -82,18 +104,23 @@ public abstract class StreamItem implements StreamItemInterface {
     }
 
     @Override
-    public ItemType getType() {
-        return type;
+    public Long getCreateTime() {
+        return createTime;
     }
 
     @Override
-    public void setType(ItemType type) {
-        this.type = type;
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
     }
 
     @Override
-    public Float getAbsoluteScore() {
-        return absoluteScore;
+    public Long getModifyTime() {
+        return modifyTime;
+    }
+
+    @Override
+    public void setModifyTime(Long modifyTime) {
+        this.modifyTime = modifyTime;
     }
 
     @Override
