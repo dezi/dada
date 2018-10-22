@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.os.Environment;
 
 import com.aura.aosp.aura.common.simple.Err;
-import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 
 import java.io.File;
@@ -234,9 +233,10 @@ public class GolangUtils
 
             Integer dist = null;
 
-            if (maxdist == 0) dist = checkdist0(r1, r1len, r2, r2len);
-            if (maxdist == 1) dist = checkdist1(r1, r1len, r2, r2len);
-            if (maxdist == 2) dist = checkdist2(r1, r1len, r2, r2len);
+            //noinspection ConstantConditions
+            if ((dist == null) || (dist < 0)) dist = checkdist0(r1, r1len, r2, r2len);
+            if ((dist == null) || (dist < 0)) dist = checkdist1(r1, r1len, r2, r2len);
+            //if ((dist == null) || (dist < 0)) dist = checkdist2(r1, r1len, r2, r2len);
 
             if (dist != null)
             {
