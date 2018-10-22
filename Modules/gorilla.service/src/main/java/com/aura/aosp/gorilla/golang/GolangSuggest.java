@@ -10,14 +10,6 @@ import org.json.JSONObject;
 
 public class GolangSuggest
 {
-    public static void initializeLanguage(String language)
-    {
-        GolangPhrases.phraseSuggest(language, "");
-        GolangPhrases.phraseSuggest("en", "");
-        GolangCorrect.phraseCorrect(language, "");
-        GolangCorrect.phraseCorrect("en", "");
-    }
-
     @NonNull
     public static JSONObject hintPhrase(String language, String phrase)
     {
@@ -76,7 +68,10 @@ public class GolangSuggest
         Perf startTime;
 
         startTime = new Perf();
-        initializeLanguage("de");
+        GolangPhrases.phraseSuggest("de", "");
+        GolangPhrases.phraseSuggest("en", "");
+        GolangCorrect.phraseCorrect("de", "");
+        GolangCorrect.phraseCorrect("en", "");
         Log.d("init=%d", startTime.elapsedTimeMillis());
 
         JSONObject result;
