@@ -222,10 +222,14 @@ public class GolangUtils
             r2[r2len++] = s2[inx];
         }
 
+        //
+        // If a max distance is give, we can speedup some special cases.
+        //
+
         if (maxdist >= 0)
         {
             //
-            // Check and avoid some special cases for speedup.
+            // Check and optimize some special cases for speedup.
             //
 
             Integer dist = null;
@@ -239,6 +243,10 @@ public class GolangUtils
                 return dist;
             }
         }
+
+        //
+        // Fall through into the real thing.
+        //
 
         return levenshtein(r1, r1len, r2, r2len);
     }
@@ -259,7 +267,7 @@ public class GolangUtils
         //
         // r1len == r2len
         //
-        // Only one rune can be different.
+        // No rune must be different.
         //
 
         for (int inx = 0; inx < r1len; inx++)
@@ -531,7 +539,7 @@ public class GolangUtils
      * @param s2len number of bytes to use.
      * @return distance or null on error.
      */
-    public static Integer levenshteinOld(byte[] s1, int s1len, byte[] s2, int s2len)
+    private static Integer levenshteinSlow(byte[] s1, int s1len, byte[] s2, int s2len)
     {
         if ((s1len > 48) || (s2len > 48))
         {
@@ -675,20 +683,8 @@ public class GolangUtils
         return runeLenght;
     }
 
-    private static String stringFromRunes(int[] runeInts, int runeSize)
-    {
-        byte[] strBytes = new byte[ runeSize ];
-
-        for (int inx = 0; inx < runeSize; inx++)
-        {
-            strBytes[ inx ] = (byte) runeInts[ inx];
-        }
-
-        return new String(strBytes);
-    }
-
     /**
-     * Helper class for maintaining a score.
+     * Package private helper class for maintaining a score.
      */
     static class Score
     {

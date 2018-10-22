@@ -67,10 +67,12 @@ public class GolangCorrect
         // Look up phrase in desired language.
         //
 
-        Perf perf = new Perf();
-        JSONObject result = gs.phraseCorrect(phrase);
-        Log.d("perf=%d result=%s", perf.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
-        return result;
+        //Perf perf = new Perf();
+        //JSONObject result = gs.phraseCorrect(phrase);
+        //Log.d("perf=%d result=%s", perf.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        //return result;
+
+        return gs.phraseCorrect(phrase);
     }
 
     /**

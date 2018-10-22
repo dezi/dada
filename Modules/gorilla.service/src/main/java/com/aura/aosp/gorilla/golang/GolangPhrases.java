@@ -75,10 +75,12 @@ public class GolangPhrases
         // Look up phrase in desired language.
         //
 
-        Perf perf = new Perf();
-        JSONObject result = gs.phraseSuggest(phrase);
-        Log.d("perf=%d result=%s", perf.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
-        return result;
+        //Perf perf = new Perf();
+        //JSONObject result = gs.phraseSuggest(phrase);
+        //Log.d("perf=%d result=%s", perf.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
+        //return result;
+
+        return gs.phraseSuggest(phrase);
     }
 
     /**
