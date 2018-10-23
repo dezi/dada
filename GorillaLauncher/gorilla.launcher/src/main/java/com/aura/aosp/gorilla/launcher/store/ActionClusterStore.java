@@ -88,11 +88,22 @@ public class ActionClusterStore {
                             getClusterForAction("func.content_composer", contactUser)
                     ));
 
-                    items.add(new ActionItem(
+                    items.add(new InvokerActionItem(
                             context.getResources().getString(R.string.actions_composeMessage),
                             R.drawable.ic_message_black_24dp,
                             0.98f,
-                            getActionDomainForFragment(actionPath + ".CREATE_NOTE")
+                            getContext(),
+                            StreamActivity.class.getMethod("setCurrentAtomContext", String.class),
+                            "aura.uxstream.launcher.messages"
+                    ));
+
+                    items.add(new InvokerActionItem(
+                            context.getResources().getString(R.string.actions_lookupContact),
+                            R.drawable.ic_person_black_24dp,
+                            0.98f,
+                            getContext(),
+                            StreamActivity.class.getMethod("setCurrentAtomContext", String.class),
+                            "aura.uxstream.launcher.contacts"
                     ));
 
                     // Special action "Switch Profile". TODO: Remove for 0.1:
