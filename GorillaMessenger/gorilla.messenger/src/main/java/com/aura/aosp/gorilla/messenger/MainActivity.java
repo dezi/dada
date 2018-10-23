@@ -374,7 +374,7 @@ public class MainActivity extends AppCompatActivity
         {
             Log.d(LOGTAG, "onPayloadReceived: payload=" + payload.toString());
 
-            GorillaMessage message = EventManager.convertPayloadToMessageAndPersist(payload);
+            GorillaMessage message = UtilJunk.convertPayloadToMessageAndPersist(payload);
             if (message == null) return;
 
             displayMessageInList(payload);

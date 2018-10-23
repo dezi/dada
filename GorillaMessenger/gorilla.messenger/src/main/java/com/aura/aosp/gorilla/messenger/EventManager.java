@@ -88,9 +88,9 @@ public class EventManager extends GorillaListener
     {
         Log.d(LOGTAG, "onPayloadReceived: message=" + payload.toString());
 
-        if (convertPayloadToMessageAndPersist(payload) != null)
+        if (UtilJunk.convertPayloadToMessageAndPersist(payload) != null)
         {
-            startMainActivity();
+            UtilJunk.startMainActivity(context);
         }
     }
 
@@ -115,61 +115,12 @@ public class EventManager extends GorillaListener
                     + " score=" + hint.getScore()
             );
         }
-    }
 
-    private void startMainActivity()
-    {
-        if (MainActivity.currentMainActivity == null)
+        ChatActivity activeChat = ChatActivity.activeChat;
+
+        if (activeChat != null)
         {
-            Log.d(LOGTAG, "startMainActivity: ...");
-
-            Intent startIntent = new Intent(context, MainActivity.class);
-
-            try
-            {
-                context.startActivity(startIntent);
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
+            activeChat.dispatchPhraseSuggestion(result);
         }
-    }
-
-    @Nullable
-    static GorillaMessage convertPayloadToMessageAndPersist(GorillaPayload payload)
-    {
-        Long time = payload.getTime();
-        String uuid = payload.getUUIDBase64();
-        String text = payload.getPayload();
-        String remoteUserUUID = payload.getSenderUUIDBase64();
-        String ownerDeviceUUID = getOwnerDeviceBase64();
-
-        if ((time == null) || (uuid == null) || (text == null) || (remoteUserUUID == null))
-        {
-            Log.e(LOGTAG, "invalid payload=" + payload.toString());
-            return null;
-        }
-
-        if (ownerDeviceUUID == null)
-        {
-            Log.e(LOGTAG, "unknown owner device");
-            return null;
-        }
-
-        GorillaMessage message = new GorillaMessage();
-
-        message.setType("aura.chat.message");
-        message.setTime(time);
-        message.setUUID(uuid);
-        message.setMessageText(text);
-        message.setStatusTime("received", ownerDeviceUUID, System.currentTimeMillis());
-
-        if (! GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, message.getAtom()))
-        {
-            return null;
-        }
-
-        return message;
     }
 }

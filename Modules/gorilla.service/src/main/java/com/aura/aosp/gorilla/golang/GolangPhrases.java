@@ -20,6 +20,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -682,43 +684,57 @@ public class GolangPhrases
             }
         }
 
-        if (total > 0)
+        if (total == 0)
         {
-            //
-            // We have some results.
-            //
-
-            StringBuilder prefixPhrases = new StringBuilder();
-
-            prefixPhrases.append("@:");
-            prefixPhrases.append(Long.toString(total));
-
-            for (GolangUtils.Score targetScore : targetScores)
-            {
-                //
-                // Normalize phrase count in percentage.
-                //
-
-                targetScore.score = Math.round((targetScore.score / (float) total) * 100);
-
-                if (prefixPhrases.length() > 0)
-                {
-                    prefixPhrases.append(",");
-                }
-
-                prefixPhrases.append(targetScore.phrase);
-                prefixPhrases.append(":");
-                prefixPhrases.append(targetScore.score);
-            }
-
-            //
-            // Poorly format the result into almost JSON string.
-            //
-
-            return phrase + ":{" + prefixPhrases.toString() + "}";
+            return null;
         }
 
-        return null;
+        Collections.sort(targetScores, new Comparator<GolangUtils.Score>()
+        {
+            @Override
+            public int compare(GolangUtils.Score score1, GolangUtils.Score score2)
+            {
+                return score2.score - score1.score;
+            }
+        });
+
+        //
+        // We have some results.
+        //
+
+        StringBuilder prefixPhrases = new StringBuilder();
+
+        prefixPhrases.append("@:");
+        prefixPhrases.append(Long.toString(total));
+
+        for (GolangUtils.Score targetScore : targetScores)
+        {
+            //
+            // Normalize phrase count in percentage.
+            //
+
+            targetScore.score = Math.round((targetScore.score / (float) total) * 100);
+
+            if (targetScore.score == 0)
+            {
+                continue;
+            }
+
+            if (prefixPhrases.length() > 0)
+            {
+                prefixPhrases.append(",");
+            }
+
+            prefixPhrases.append(targetScore.phrase);
+            prefixPhrases.append(":");
+            prefixPhrases.append(targetScore.score);
+        }
+
+        //
+        // Poorly format the result into almost JSON string.
+        //
+
+        return phrase + ":{" + prefixPhrases.toString() + "}";
     }
 
     private class PhrasesFile

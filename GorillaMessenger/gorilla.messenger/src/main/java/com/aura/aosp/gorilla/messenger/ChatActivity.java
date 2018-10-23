@@ -6,7 +6,10 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -19,23 +22,30 @@ import com.aura.aosp.aura.gui.views.GUIFrameLayout;
 import com.aura.aosp.aura.gui.views.GUIIconView;
 import com.aura.aosp.aura.gui.views.GUILinearLayout;
 import com.aura.aosp.aura.gui.views.GUIScrollView;
+import com.aura.aosp.aura.gui.views.GUITextView;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
+import com.aura.aosp.gorilla.atoms.GorillaPhraseSuggestion;
+import com.aura.aosp.gorilla.atoms.GorillaPhraseSuggestionHint;
 import com.aura.aosp.gorilla.client.GorillaClient;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class ChatActivity extends AppCompatActivity
 {
     private static final String LOGTAG = ChatActivity.class.getSimpleName();
 
+    public static ChatActivity activeChat;
+
     private GUIScrollView contentScroll;
     private GUILinearLayout chatContent;
     private GUIEditText editText;
     private GUIIconView sendButton;
+    private GUITextView suggestText;
 
     private ChatProfile chatProfile;
     private String remoteNick;
@@ -185,6 +195,34 @@ public class ChatActivity extends AppCompatActivity
         scrollDown();
     }
 
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+
+        MainActivity.delChatProfile(chatProfile);
+
+        Log.d(LOGTAG, "onDestroy: ended.....");
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        Log.d(LOGTAG, "onResume: ...");
+
+        activeChat = this;
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+
+        Log.d(LOGTAG, "onPause: ...");
+    }
+
     @Nullable
     public static Long getLoadTime(JSONObject load, String status)
     {
@@ -200,16 +238,6 @@ public class ChatActivity extends AppCompatActivity
         }
 
         return null;
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-
-        MainActivity.delChatProfile(chatProfile);
-
-        Log.d(LOGTAG, "onDestroy: ended.....");
     }
 
     private void createLayout()
@@ -245,7 +273,26 @@ public class ChatActivity extends AppCompatActivity
 
         editText = new GUIEditText(this);
         editText.setSizeDip(Simple.WC, Simple.WC, 1.0f);
-        editText.setText("boring merkel");
+        editText.setText("");
+
+        editText.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after)
+            {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+                postSuggestRequest(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+            }
+        });
 
         bottomBox.addView(editText);
 
@@ -290,6 +337,16 @@ public class ChatActivity extends AppCompatActivity
         });
 
         bottomBox.addView(sendButton);
+
+        suggestText = new GUITextView(this);
+        suggestText.setSizeDip(Simple.MP, Simple.WC);
+        suggestText.setPaddingDip(GUIDefs.PADDING_SMALL);
+        suggestText.setBackgroundColor(0xffffff00);
+        suggestText.setGravity(Gravity.CENTER);
+        suggestText.setTextSizeDip(24);
+        suggestText.setText("...");
+
+        centerFrame.addView(suggestText);
     }
 
     public void setStatus(Boolean svlink, Boolean uplink)
@@ -371,6 +428,55 @@ public class ChatActivity extends AppCompatActivity
                 contentScroll.fullScroll(ScrollView.FOCUS_DOWN);
             }
         }, 500);
+    }
+
+    private String wantedSuggestPhrase;
+
+    private void postSuggestRequest(String text)
+    {
+        wantedSuggestPhrase = text;
+
+        handler.removeCallbacks(requestPhraseSuggestions);
+        handler.postDelayed(requestPhraseSuggestions, 250);
+    }
+
+    private final Runnable requestPhraseSuggestions = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            String phrase = wantedSuggestPhrase;
+
+            Log.d(LOGTAG, "requestPhraseSuggestions: phrase=" + phrase);
+
+            if ((phrase == null) || (phrase.isEmpty()))
+            {
+                suggestText.setText("...");
+
+                return;
+            }
+
+            GorillaClient.getInstance().requestPhraseSuggestionsAsync(phrase);
+        }
+    };
+
+    public void dispatchPhraseSuggestion(GorillaPhraseSuggestion phraseSuggestion)
+    {
+        List<GorillaPhraseSuggestionHint> hints = phraseSuggestion.getHints();
+        if (hints == null) return;
+
+        String display = "";
+
+        for (int inx = 0; (inx < 5) && (inx < hints.size()); inx++)
+        {
+            GorillaPhraseSuggestionHint hint = hints.get(inx);
+
+            if (display.length() > 0) display += "      ";
+
+            display += hint.getHint();
+        }
+
+        suggestText.setText(display);
     }
 }
 
