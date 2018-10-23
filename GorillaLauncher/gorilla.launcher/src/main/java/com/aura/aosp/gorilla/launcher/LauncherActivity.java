@@ -427,15 +427,14 @@ public class LauncherActivity extends AppCompatActivity {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
-                    activateActionClusterView(actionClusterView);
+                    ActionClusterView actionClusterView = getBaseActionClusterView(true);
                     Effects.doClusterDemoAnimation(actionClusterView);
                 }
             }, 800);
             Handler handler2 = new Handler();
             handler2.postDelayed(new Runnable() {
                 public void run() {
-                    ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
+                    ActionClusterView actionClusterView = getBaseActionClusterView(true);
                     deactivateActionClusterView(actionClusterView);
                 }
             }, 2500);
