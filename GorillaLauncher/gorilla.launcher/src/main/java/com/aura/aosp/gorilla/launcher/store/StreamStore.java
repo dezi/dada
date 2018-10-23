@@ -82,7 +82,7 @@ public class StreamStore {
 
             case ATOMCONTEXT_UXSTREAM_MESSAGES:
 
-                String atomType = GorillaHelper.atomTypes.get("chatMessage");
+                String atomType = GorillaHelper.ATOMTYPE_CHAT_MESSAGE;
 
                 for (Identity contactIdentity : allContacts) {
 
