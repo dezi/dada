@@ -26,11 +26,11 @@ import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
+import com.aura.aosp.gorilla.atoms.GorillaPhraseSuggestion;
 import com.aura.aosp.gorilla.atoms.GorillaSuggestion;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -90,9 +90,30 @@ public class MainActivity extends AppCompatActivity
 
         currentMainActivity = this;
 
-        new Handler().postDelayed(getSuggest, 2000);
-        new Handler().postDelayed(getContacts, 2000);
+        //new Handler().postDelayed(getSuggest, 2000);
+        //new Handler().postDelayed(getContacts, 2000);
+        new Handler().postDelayed(getHints, 2000);
     }
+
+    private final Runnable getHints = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            GorillaPhraseSuggestion suggestion;
+            boolean valid;
+
+            suggestion = GorillaClient.getInstance().requestPhraseSuggestionsSync("bitte ein ");
+            Log.d(LOGTAG, "getHints: suggestions=" + ((suggestion == null) ? "null" : suggestion.toString()));
+
+            suggestion = GorillaClient.getInstance().requestPhraseSuggestionsSync("botte");
+            Log.d(LOGTAG, "getHints: suggestions=" + ((suggestion == null) ? "null" : suggestion.toString()));
+
+            valid = GorillaClient.getInstance().requestPhraseSuggestionsAsync("Superschnitte ");
+            Log.d(LOGTAG, "getHints: valid=" + valid);
+        }
+    };
+
 
     private final Runnable getContacts = new Runnable()
     {

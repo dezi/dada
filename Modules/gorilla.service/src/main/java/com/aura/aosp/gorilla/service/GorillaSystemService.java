@@ -417,7 +417,11 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     public String requestPhraseSuggestionsSync(String apkname, String phrase, String checksum)
     {
         JSONObject result = GolangSuggest.hintPhrase(Locale.getDefault().getLanguage(), phrase);
-        return Json.toString(result);
+        String resultStr = Json.toString(result);
+
+        Log.d("result=%s", resultStr);
+
+        return resultStr;
     }
 
     /**

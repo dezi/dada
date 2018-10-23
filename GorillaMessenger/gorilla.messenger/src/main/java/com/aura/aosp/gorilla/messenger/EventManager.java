@@ -12,6 +12,7 @@ import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
+import com.aura.aosp.gorilla.atoms.GorillaPhraseSuggestion;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 
@@ -94,6 +95,12 @@ public class EventManager extends GorillaListener
     public void onPayloadResultReceived(GorillaPayloadResult result)
     {
         Log.d(LOGTAG, "onPayloadResultReceived: result=" + result.toString());
+    }
+
+    @Override
+    public void onPhraseSuggestionsReceived(GorillaPhraseSuggestion result)
+    {
+        Log.d(LOGTAG, "onPhraseSuggestionsReceived: result=" + result.toString());
     }
 
     private void startMainActivity()

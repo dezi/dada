@@ -312,6 +312,19 @@ public abstract class GorillaAtom
     }
 
     @Nullable
+    Integer getJSONInt(@NonNull JSONObject json, @NonNull String key)
+    {
+        try
+        {
+            return json.getInt(key);
+        }
+        catch (Exception ignore)
+        {
+            return null;
+        }
+    }
+
+    @Nullable
     Long getJSONLong(@NonNull JSONObject json, @NonNull String key)
     {
         try

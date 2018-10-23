@@ -1077,6 +1077,47 @@ public class GorillaClient
         }
     }
 
+    @Nullable
+    public GorillaPhraseSuggestion requestPhraseSuggestionsSync(String phrase)
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return null;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, phrase);
+
+            String resultStr = gr.requestPhraseSuggestionsSync(apkname, phrase, checksum);
+
+            GorillaPhraseSuggestion suggestions = new GorillaPhraseSuggestion();
+            suggestions.setAtom(resultStr);
+
+            return suggestions;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean requestPhraseSuggestionsAsync(String phrase)
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return false;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, phrase);
+
+            return gr.requestPhraseSuggestionsAsync(apkname, phrase, checksum);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
+    }
 
     /**
      * Subscribe a {@code GorillaListener} for service connection.
