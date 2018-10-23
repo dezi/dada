@@ -457,8 +457,8 @@ public class GorillaClient
     }
 
     /**
-     * Package private handle a received payload. Build a JSON message object and dispatch
-     * to all subscribed listeners.
+     * Package private handle a received payload. Builds a GorillaPayload object
+     * and dispatches to all subscribed listeners.
      *
      * @param time       origin time in milliseconds of payload.
      * @param uuid       UUID of this payload.
@@ -496,7 +496,8 @@ public class GorillaClient
 
     /**
      * Package private handle a received payload result. Contains message UUID,
-     * timing and state information.
+     * timing and state information. Builds a GorillaPayloadResult object
+     * and dispatches to all subscribed listeners.
      *
      * @param resultJson result JSON object in string format.
      */
@@ -529,13 +530,20 @@ public class GorillaClient
         }
     }
 
-    void receivePhraseSuggestionsResult(String resultJson)
+    /**
+     * Package private handle a received phrase suggestion. Contains original,
+     * phrase and hint information. Builds a GorillaPhraseSuggestion object
+     * and dispatches to all subscribed listeners.
+     *
+     * @param resultJson phrase suggestion JSON object in string format.
+     */
+    void receivePhraseSuggestions(String resultJson)
     {
-        Log.d(LOGTAG, "receivePayloadResult: resultJson=" + resultJson);
+        Log.d(LOGTAG, "receivePhraseSuggestions: resultJson=" + resultJson);
 
-        final GorillaPhraseSuggestion result = new GorillaPhraseSuggestion();
+        final GorillaPhraseSuggestion gps = new GorillaPhraseSuggestion();
 
-        if (result.setLoad(resultJson))
+        if (gps.setLoad(resultJson))
         {
             handler.post(new Runnable()
             {
@@ -546,7 +554,7 @@ public class GorillaClient
                     {
                         for (GorillaListener gl : gorillaListeners)
                         {
-                            gl.onPhraseSuggestionsReceived(result);
+                            gl.onPhraseSuggestionsReceived(gps);
                         }
                     }
                 }
@@ -554,7 +562,7 @@ public class GorillaClient
         }
         else
         {
-            Log.e(LOGTAG, "receivePhraseSuggestionsResult: failed result=" + resultJson);
+            Log.e(LOGTAG, "receivePhraseSuggestions: failed result=" + resultJson);
         }
     }
 

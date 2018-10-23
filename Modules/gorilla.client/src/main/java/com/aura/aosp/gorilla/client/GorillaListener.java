@@ -60,18 +60,18 @@ public abstract class GorillaListener
     /**
      * Called whenever a payload result was received.
      *
-     * @param result JSON object containg the message result.
+     * @param payloadResult payload result.
      */
-    public void onPayloadResultReceived(GorillaPayloadResult result)
+    public void onPayloadResultReceived(GorillaPayloadResult payloadResult)
     {
     }
 
     /**
-     * Called whenever a phrase suggestion result was received.
+     * Called whenever a phrase suggestion was received.
      *
-     * @param result JSON object containg the phrase suggestion result.
+     * @param phraseSuggestion phrase suggestion.
      */
-    public void onPhraseSuggestionsReceived(GorillaPhraseSuggestion result)
+    public void onPhraseSuggestionsReceived(GorillaPhraseSuggestion phraseSuggestion)
     {
     }
 }

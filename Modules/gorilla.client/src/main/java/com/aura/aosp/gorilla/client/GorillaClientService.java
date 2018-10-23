@@ -188,7 +188,7 @@ class GorillaClientService extends IGorillaClientService.Stub
 
         if (valid)
         {
-            GorillaClient.getInstance().receivePhraseSuggestionsResult(resultJSON);
+            GorillaClient.getInstance().receivePhraseSuggestions(resultJSON);
         }
 
         return valid;
