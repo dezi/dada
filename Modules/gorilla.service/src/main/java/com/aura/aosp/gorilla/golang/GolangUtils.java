@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.os.Environment;
 
 import com.aura.aosp.aura.common.simple.Err;
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 
 import java.io.File;
@@ -153,6 +154,7 @@ public class GolangUtils
      * @param s2len number of bytes to use.
      * @return distance or null on error.
      */
+    @Nullable
     public static Integer levenshtein(byte[] s1, int s1len, byte[] s2, int s2len)
     {
         return levenshtein(s1, s1len, s2, s2len, -1);
@@ -168,54 +170,19 @@ public class GolangUtils
      * @param s1len   number of bytes to use.
      * @param s2      second byte array string.
      * @param s2len   number of bytes to use.
-     * @param maxdist maximum distance desired.
+     * @param maxdist maximum distance desired or -1.
      * @return distance or null on error.
      */
+    @Nullable
     public static Integer levenshtein(byte[] s1, int s1len, byte[] s2, int s2len, int maxdist)
     {
-        if ((s1len > 48) || (s2len > 48))
-        {
-            Err.errp("string length too big s1=%s s2=%d", s1len, s2len);
-
-            return null;
-        }
-
         int[] r1 = new int[s1len];
         int[] r2 = new int[s2len];
 
         int r1len = getRunesFromBytes(r1, s1, s1len);
         int r2len = getRunesFromBytes(r2, s2, s2len);
 
-        //
-        // If a max distance is give, we can speedup some special cases.
-        //
-
-        /*
-        if (maxdist >= 0)
-        {
-            //
-            // Check and optimize some special cases for speedup.
-            //
-
-            Integer dist = null;
-
-            //noinspection ConstantConditions
-            if (((dist == null) || (dist < 0)) && (maxdist >= 0)) dist = checkdist0(r1, r1len, r2, r2len);
-            if (((dist == null) || (dist < 0)) && (maxdist >= 1)) dist = checkdist1(r1, r1len, r2, r2len);
-            if (((dist == null) || (dist < 0)) && (maxdist >= 2)) dist = checkdist2(r1, r1len, r2, r2len);
-
-            if (dist != null)
-            {
-                return dist;
-            }
-        }
-        */
-
-        //
-        // Fall through into the real thing.
-        //
-
-        return levenshtein(r1, r1len, r2, r2len);
+        return levenshtein(r1, r1len, r2, r2len, maxdist);
     }
 
     /**
@@ -224,15 +191,24 @@ public class GolangUtils
      * Recommended method if data comes from byte arrays because converting
      * byte array to strings is expensive.
      *
-     * @param r1    first rune array string.
-     * @param r1len number of runes to use.
-     * @param r2    second rune array string.
-     * @param r2len number of runes to use.
+     * @param r1      first rune array string.
+     * @param r1len   number of runes to use.
+     * @param r2      second rune array string.
+     * @param r2len   number of runes to use.
+     * @param maxdist maximum distance desired or -1.
      * @return distance or null on error.
      */
+    @Nullable
     @SuppressWarnings("UnnecessaryLocalVariable")
-    public static Integer levenshtein(int[] r1, int r1len, int[] r2, int r2len)
+    public static Integer levenshtein(int[] r1, int r1len, int[] r2, int r2len, int maxdist)
     {
+        if ((r1len > 48) || (r2len > 48))
+        {
+            Err.errp("rune length too big s1=%s s2=%d", r1len, r2len);
+
+            return null;
+        }
+
         int rows = r1len;
         int cols = r2len;
 
@@ -246,12 +222,16 @@ public class GolangUtils
         }
 
         int m1;
+        int m2;
+        int m3;
         int dc;
         int ic;
         int sc;
 
         for (int i = 0; i < rows; i++)
         {
+            m3 = maxdist + 1;
+
             v1[0] = i + 1;
 
             for (int j = 0; j < cols; j++)
@@ -269,8 +249,19 @@ public class GolangUtils
                 }
 
                 m1 = (dc < ic) ? dc : ic;
+                m2 = (m1 < sc) ? m1 : sc;
+                m3 = (m3 < m2) ? m3 : m2;
 
-                v1[j + 1] = m1 < sc ? m1 : sc;
+                v1[j + 1] = m2;
+            }
+
+            if ((maxdist >= 0) && (m3 > maxdist))
+            {
+                //
+                // Things can only become worse.
+                //
+
+                return m3;
             }
 
             vt = v0;
@@ -279,223 +270,6 @@ public class GolangUtils
         }
 
         return v0[cols];
-    }
-
-    @Nullable
-    @SuppressWarnings("ConstantConditions")
-    private static Integer checkdist0(int[] r1, int r1len, int[] r2, int r2len)
-    {
-        if (r1len != r2len)
-        {
-            //
-            // Trivial.
-            //
-
-            return -1;
-        }
-
-        //
-        // r1len == r2len
-        //
-        // No rune must be different.
-        //
-
-        for (int inx = 0; inx < r1len; inx++)
-        {
-            if (r1[inx] != r2[inx])
-            {
-                return -1;
-            }
-        }
-
-        //
-        // Distance is zero.
-        //
-
-        return 0;
-    }
-
-    @Nullable
-    private static Integer checkdist1(int[] r1, int r1len, int[] r2, int r2len)
-    {
-        int ldiff = Math.abs(r1len - r2len);
-
-        if (ldiff == 0)
-        {
-            //
-            // Distance one can only be archived if:
-            //
-            // - exactly one rune needs replacement
-            //
-
-            int dist = 0;
-
-            for (int inx = 0; inx < r1len; inx++)
-            {
-                if (r1[inx] != r2[inx])
-                {
-                    if (++dist > 1)
-                    {
-                        //
-                        // Distance is larger than one.
-                        //
-
-                        return -1;
-                    }
-                }
-            }
-
-            //
-            // Distance is either zero or one.
-            //
-
-            return dist;
-        }
-
-        if (ldiff == 1)
-        {
-            //
-            // Distance one can only be archived if
-            //
-            // - exactly one rune is inserted.
-            //
-            // abc
-            //
-            // _bc
-            // a_c
-            // ab_
-            //
-
-            int max = Math.min(r1len, r2len);
-
-            int matchfor = 0;
-            int matchbak = 0;
-
-            for (int inx = 0; inx < max; inx++)
-            {
-                if (r1[ inx ] == r2[ inx ]) matchfor++;
-                if (r1[ r1len - inx - 1 ] == r2[ r2len - inx - 1 ]) matchbak++;
-            }
-
-            if ((matchfor + matchbak) >= max)
-            {
-                //
-                // Distance is exactly zero or one.
-                //
-
-                return 1;
-            }
-
-            //
-            // Distance is larger than one.
-            //
-
-            return -1;
-        }
-
-        //
-        // Dunno distance.
-        //
-
-        return null;
-    }
-
-    @Nullable
-    private static Integer checkdist2(int[] r1, int r1len, int[] r2, int r2len)
-    {
-        int ldiff = Math.abs(r1len - r2len);
-
-        if (ldiff == 0)
-        {
-            //
-            // Distance two only be archived if
-            //
-            // - exactly two runes need replacement
-            //
-            // or
-            //
-            // - one is deleted somewhere, another is inserted somewhere else
-            //
-
-            int dist = 0;
-
-            for (int inx = 0; inx < r1len; inx++)
-            {
-                if (r1[inx] != r2[inx])
-                {
-                    ++dist;
-                }
-            }
-
-            if (dist <= 2)
-            {
-                //
-                // Distance is exactly zero, one or two.
-                //
-
-                return 2;
-            }
-
-            //
-            // Dunno distance.
-            //
-
-            return null;
-        }
-
-        if (ldiff == 1)
-        {
-            //
-            // Distance two can only be archived if
-            //
-            // - exactly one rune is replaced
-            //
-            // and
-            //
-            // - exactly one rune is inserted
-            //
-            // abc
-            //
-            // *b_
-            // a*_
-            // *_c
-            // a_*
-            // _*c
-            // _b*
-            //
-
-            int max = Math.min(r1len, r2len);
-
-            int matchfor = 0;
-            int matchbak = 0;
-
-            for (int inx = 0; inx < max; inx++)
-            {
-                if (r1[ inx ] == r2[ inx ]) matchfor++;
-                if (r1[ r1len - inx - 1 ] == r2[ r2len - inx - 1 ]) matchbak++;
-            }
-
-            if ((matchfor + matchbak) >= (max - 1))
-            {
-                //
-                // Distance is exactly two.
-                //
-
-                return 2;
-            }
-
-            //
-            // Distance is larger than two.
-            //
-
-            return -1;
-        }
-
-        //
-        // Dunno distance.
-        //
-
-        return null;
     }
 
     /**
@@ -510,6 +284,7 @@ public class GolangUtils
      * @param s2len number of bytes to use.
      * @return distance or null on error.
      */
+    @Nullable
     private static Integer levenshteinSlow(byte[] s1, int s1len, byte[] s2, int s2len)
     {
         if ((s1len > 48) || (s2len > 48))
@@ -523,7 +298,8 @@ public class GolangUtils
         int[] r2 = new int[s2len];
 
         int rows = getRunesFromBytes(r1, s1, s1len);
-        int cols = getRunesFromBytes(r2, s2, s2len);;
+        int cols = getRunesFromBytes(r2, s2, s2len);
+        ;
 
         //
         // Start computing distance.
@@ -619,6 +395,16 @@ public class GolangUtils
         return runeLenght;
     }
 
+    /**
+     * Fill internal rune array from string bytes.
+     * <p>
+     * Watcha la sticky: This returns NOT the true UTF-8 character codes.
+     *
+     * @param runes    preallocated rune array.
+     * @param bytes    string bytes.
+     * @param bytesLen string bytes usable length.
+     * @return filled in runes length.
+     */
     static int getRunesFromBytes(int[] runes, byte[] bytes, int bytesLen)
     {
         //
@@ -656,6 +442,17 @@ public class GolangUtils
         return runesLen;
     }
 
+    /**
+     * Fill string bytes from internal rune array.
+     * <p>
+     * Watcha la sticky: Use only with runes made
+     * by methodgetRunesFromBytes.
+     *
+     * @param bytes    string bytes.
+     * @param runes    string runes.
+     * @param runesLen string runes usable length.
+     * @return filled in bytes length.
+     */
     @SuppressWarnings("PointlessBitwiseExpression")
     static int getBytesFromRunes(byte[] bytes, int[] runes, int runesLen)
     {

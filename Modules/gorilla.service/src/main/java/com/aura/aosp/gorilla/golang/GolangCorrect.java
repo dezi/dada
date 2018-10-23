@@ -277,7 +277,7 @@ public class GolangCorrect
 
                 if (buffer[inx] == '\n')
                 {
-                    dist = GolangUtils.levenshtein(wordRunes, wordRuneLen, wrunes, wlen);
+                    dist = GolangUtils.levenshtein(wordRunes, wordRuneLen, wrunes, wlen, 2);
 
                     if ((dist != null) && (0 <= dist) && (dist <= 2))
                     {
