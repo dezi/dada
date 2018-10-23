@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.service;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.aura.aosp.aura.common.crypter.UID;
@@ -172,5 +173,39 @@ public class GorillaSender
         }
 
         return null;
+    }
+
+    public static Err sendPhraseSuggestions(@NonNull String apkname, @NonNull JSONObject result)
+    {
+        IGorillaClientService remote = GorillaIntercon.getClientService(apkname);
+        if (remote == null) return unknownAPKErr(apkname);
+
+        String resultStr = result.toString();
+
+        String checksum = GorillaIntercon.createSHASignatureBase64(apkname, sysApkName, resultStr);
+
+        try
+        {
+            boolean valid = remote.receivePhraseSuggestions(sysApkName, resultStr, checksum);
+            if (! valid) return invalidServiceErr(apkname);
+        }
+        catch (Exception ex)
+        {
+            return Err.err(ex);
+        }
+
+        return null;
+    }
+
+    @NonNull
+    private static Err unknownAPKErr(@NonNull String apkname)
+    {
+        return Err.errp("unknown/unconnected apkname=%s", apkname);
+    }
+
+    @NonNull
+    private static Err invalidServiceErr(@NonNull String apkname)
+    {
+        return Err.errp("invalid service apkname=%s", apkname);
     }
 }

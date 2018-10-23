@@ -13,7 +13,7 @@ import android.support.annotation.Nullable;
 import org.json.JSONObject;
 
 /**
- * The class {@code GorillaOwner} extends to basic
+ * The class {@code GorillaOwner} extends the basic
  * {@code GorillaAtom} by owner values.
  *
  * @author Dennis Zierahn

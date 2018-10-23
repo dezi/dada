@@ -12,7 +12,7 @@ import android.support.annotation.Nullable;
 import org.json.JSONObject;
 
 /**
- * The class {@code GorillaContact} extends to basic
+ * The class {@code GorillaContact} extends the basic
  * {@code GorillaAtom} by contact values.
  *
  * @author Dennis Zierahn

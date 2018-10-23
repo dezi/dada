@@ -12,8 +12,12 @@ import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
+import com.aura.aosp.gorilla.atoms.GorillaPhraseSuggestion;
+import com.aura.aosp.gorilla.atoms.GorillaPhraseSuggestionHint;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
+
+import java.util.List;
 
 public class EventManager extends GorillaListener
 {
@@ -84,9 +88,9 @@ public class EventManager extends GorillaListener
     {
         Log.d(LOGTAG, "onPayloadReceived: message=" + payload.toString());
 
-        if (convertPayloadToMessageAndPersist(payload) != null)
+        if (UtilJunk.convertPayloadToMessageAndPersist(payload) != null)
         {
-            startMainActivity();
+            UtilJunk.startMainActivity(context);
         }
     }
 
@@ -96,59 +100,27 @@ public class EventManager extends GorillaListener
         Log.d(LOGTAG, "onPayloadResultReceived: result=" + result.toString());
     }
 
-    private void startMainActivity()
+    @Override
+    public void onPhraseSuggestionsReceived(GorillaPhraseSuggestion result)
     {
-        if (MainActivity.currentMainActivity == null)
+        Log.d(LOGTAG, "onPhraseSuggestionsReceived: result=" + result.toString());
+
+        List<GorillaPhraseSuggestionHint> hints = result.getHints();
+        if (hints == null) return;
+
+        for (GorillaPhraseSuggestionHint hint : hints)
         {
-            Log.d(LOGTAG, "startMainActivity: ...");
-
-            Intent startIntent = new Intent(context, MainActivity.class);
-
-            try
-            {
-                context.startActivity(startIntent);
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    @Nullable
-    static GorillaMessage convertPayloadToMessageAndPersist(GorillaPayload payload)
-    {
-        Long time = payload.getTime();
-        String uuid = payload.getUUIDBase64();
-        String text = payload.getPayload();
-        String remoteUserUUID = payload.getSenderUUIDBase64();
-        String ownerDeviceUUID = getOwnerDeviceBase64();
-
-        if ((time == null) || (uuid == null) || (text == null) || (remoteUserUUID == null))
-        {
-            Log.e(LOGTAG, "invalid payload=" + payload.toString());
-            return null;
+            Log.d(LOGTAG, "onPhraseSuggestionsReceived:"
+                    + " hint=" + hint.getHint()
+                    + " score=" + hint.getScore()
+            );
         }
 
-        if (ownerDeviceUUID == null)
+        ChatActivity activeChat = ChatActivity.activeChat;
+
+        if (activeChat != null)
         {
-            Log.e(LOGTAG, "unknown owner device");
-            return null;
+            activeChat.dispatchPhraseSuggestion(result);
         }
-
-        GorillaMessage message = new GorillaMessage();
-
-        message.setType("aura.chat.message");
-        message.setTime(time);
-        message.setUUID(uuid);
-        message.setMessageText(text);
-        message.setStatusTime("received", ownerDeviceUUID, System.currentTimeMillis());
-
-        if (! GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, message.getAtom()))
-        {
-            return null;
-        }
-
-        return message;
     }
 }

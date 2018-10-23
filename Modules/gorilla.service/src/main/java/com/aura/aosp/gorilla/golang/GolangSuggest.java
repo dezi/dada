@@ -13,12 +13,16 @@ public class GolangSuggest
     @NonNull
     public static JSONObject hintPhrase(String language, String phrase)
     {
+        Perf perf = new Perf();
+
         JSONObject result;
 
         result = GolangPhrases.phraseSuggest(language, phrase);
 
         if (result != null)
         {
+            Json.put(result, "totms", perf.elapsedTimeMillis());
+
             return result;
         }
 
@@ -26,6 +30,8 @@ public class GolangSuggest
 
         if (result != null)
         {
+            Json.put(result, "totms", perf.elapsedTimeMillis());
+
             return result;
         }
 
@@ -39,6 +45,8 @@ public class GolangSuggest
 
             if (result != null)
             {
+                Json.put(result, "totms", perf.elapsedTimeMillis());
+
                 return result;
             }
 
@@ -46,6 +54,8 @@ public class GolangSuggest
 
             if (result != null)
             {
+                Json.put(result, "totms", perf.elapsedTimeMillis());
+
                 return result;
             }
         }
@@ -55,7 +65,9 @@ public class GolangSuggest
         //
 
         result = new JSONObject();
+
         Json.put(result, "phrase", phrase);
+        Json.put(result, "totms", perf.elapsedTimeMillis());
 
         return result;
     }
@@ -76,72 +88,55 @@ public class GolangSuggest
 
         JSONObject result;
 
-        /*
-        startTime = new Perf();
         result = hintPhrase("de", "Bit");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("de", "Bitte");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("de", "Bitte ");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("de", "Bitte d");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("de", "Bärt");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("en", "aspirations");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("de", "aspirations");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("de", "In folge der Demonstration würden wir gerne die Bitte");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("de", "In folge der Demonstration würden wir gerne die Bitte ");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("de", "In folge der Demonstration würden wir gerne die Bitte d");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("de", "In folge der Demonstration würden wir gerne die Bitte dd");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("de", "Bltte");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("de", "bltte");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("de", "Visibilifät");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("de", "Visibilitat");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
+        Log.d("result=%s", result.toString());
 
-        startTime = new Perf();
         result = hintPhrase("de", "Messwiener");
-        Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-        */
+        Log.d("result=%s", result.toString());
 
+        /*
         Integer dist;
 
         byte[] s1;
@@ -167,5 +162,6 @@ public class GolangSuggest
 
         dist = GolangUtils.levenshtein(s1, s1.length, s2, s2.length, 2);
         Log.d("s1=%s s2=%s dist=%d", new String(s1), new String(s2), dist);
+        */
     }
 }

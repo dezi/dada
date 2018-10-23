@@ -20,6 +20,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,11 +76,6 @@ public class GolangPhrases
         //
         // Look up phrase in desired language.
         //
-
-        //Perf perf = new Perf();
-        //JSONObject result = gs.phraseSuggest(phrase);
-        //Log.d("perf=%d result=%s", perf.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
-        //return result;
 
         return gs.phraseSuggest(phrase);
     }
@@ -207,6 +204,8 @@ public class GolangPhrases
     @Nullable
     private JSONObject phraseSuggest(String phrase, boolean truncate)
     {
+        Perf perf = new Perf();
+
         String prefix = phrase;
         String suffix = null;
 
@@ -345,7 +344,7 @@ public class GolangPhrases
                     {
                         if (targetPhrase.startsWith(matchPhrase))
                         {
-                            return convertResult(phrase, suffix, targetPhrase);
+                            return convertResult(phrase, suffix, targetPhrase, perf);
                         }
                     }
                 }
@@ -377,7 +376,7 @@ public class GolangPhrases
 
                     phrasesFile.file.seek(middle + first.startBuff);
 
-                    return convertResult(phrase, null, scanPhrase(prefix));
+                    return convertResult(phrase, null, scanPhrase(prefix), perf);
                 }
 
                 break;
@@ -402,10 +401,11 @@ public class GolangPhrases
      * @param phrase       the searched phrase.
      * @param rest         a chopped of token at end or null.
      * @param resultPhrase the poorly formatted result phrase or null if no result.
+     * @param perf         Perf object or null.
      * @return JSONObject with result or null.
      */
     @Nullable
-    private JSONObject convertResult(@NonNull String phrase, @Nullable String rest, @Nullable String resultPhrase)
+    private JSONObject convertResult(@NonNull String phrase, @Nullable String rest, @Nullable String resultPhrase, Perf perf)
     {
         if (resultPhrase == null)
         {
@@ -440,6 +440,7 @@ public class GolangPhrases
 
         Json.put(resultJson, "phrase", phrase);
         Json.put(resultJson, "language", language);
+        Json.put(resultJson, "mode", "phrase");
 
         String hintsStr = resultPhrase.substring(firstBracket + 1, lastBracket);
         String[] hints = hintsStr.split(",");
@@ -460,7 +461,7 @@ public class GolangPhrases
                 // Hint "@" is the original phrase frequency.
                 //
 
-                Json.put(resultJson, "total", hintScore);
+                Json.put(resultJson, "frequency", hintScore);
                 continue;
             }
 
@@ -487,7 +488,9 @@ public class GolangPhrases
             // We have a least one valid hint.
             //
 
+            Json.put(resultJson, "algms", perf.elapsedTimeMillis());
             Json.put(resultJson, "hints", hintsJson);
+
             return resultJson;
         }
 
@@ -681,43 +684,57 @@ public class GolangPhrases
             }
         }
 
-        if (total > 0)
+        if (total == 0)
         {
-            //
-            // We have some results.
-            //
-
-            StringBuilder prefixPhrases = new StringBuilder();
-
-            prefixPhrases.append("@:");
-            prefixPhrases.append(Long.toString(total));
-
-            for (GolangUtils.Score targetScore : targetScores)
-            {
-                //
-                // Normalize phrase count in percentage.
-                //
-
-                targetScore.score = Math.round((targetScore.score / (float) total) * 100);
-
-                if (prefixPhrases.length() > 0)
-                {
-                    prefixPhrases.append(",");
-                }
-
-                prefixPhrases.append(targetScore.phrase);
-                prefixPhrases.append(":");
-                prefixPhrases.append(targetScore.score);
-            }
-
-            //
-            // Poorly format the result into almost JSON string.
-            //
-
-            return phrase + ":{" + prefixPhrases.toString() + "}";
+            return null;
         }
 
-        return null;
+        Collections.sort(targetScores, new Comparator<GolangUtils.Score>()
+        {
+            @Override
+            public int compare(GolangUtils.Score score1, GolangUtils.Score score2)
+            {
+                return score2.score - score1.score;
+            }
+        });
+
+        //
+        // We have some results.
+        //
+
+        StringBuilder prefixPhrases = new StringBuilder();
+
+        prefixPhrases.append("@:");
+        prefixPhrases.append(Long.toString(total));
+
+        for (GolangUtils.Score targetScore : targetScores)
+        {
+            //
+            // Normalize phrase count in percentage.
+            //
+
+            targetScore.score = Math.round((targetScore.score / (float) total) * 100);
+
+            if (targetScore.score == 0)
+            {
+                continue;
+            }
+
+            if (prefixPhrases.length() > 0)
+            {
+                prefixPhrases.append(",");
+            }
+
+            prefixPhrases.append(targetScore.phrase);
+            prefixPhrases.append(":");
+            prefixPhrases.append(targetScore.score);
+        }
+
+        //
+        // Poorly format the result into almost JSON string.
+        //
+
+        return phrase + ":{" + prefixPhrases.toString() + "}";
     }
 
     private class PhrasesFile

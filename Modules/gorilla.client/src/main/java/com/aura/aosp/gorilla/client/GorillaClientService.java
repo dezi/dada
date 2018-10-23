@@ -188,7 +188,7 @@ class GorillaClientService extends IGorillaClientService.Stub
 
         if (valid)
         {
-            // Todo: implement.
+            GorillaClient.getInstance().receivePhraseSuggestions(resultJSON);
         }
 
         return valid;

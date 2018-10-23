@@ -23,6 +23,7 @@ import com.aura.aosp.gorilla.atoms.GorillaContact;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
+import com.aura.aosp.gorilla.atoms.GorillaPhraseSuggestion;
 import com.aura.aosp.gorilla.atoms.GorillaSuggestion;
 
 import org.json.JSONArray;
@@ -456,8 +457,8 @@ public class GorillaClient
     }
 
     /**
-     * Package private handle a received payload. Build a JSON message object and dispatch
-     * to all subscribed listeners.
+     * Package private handle a received payload. Builds a GorillaPayload object
+     * and dispatches to all subscribed listeners.
      *
      * @param time       origin time in milliseconds of payload.
      * @param uuid       UUID of this payload.
@@ -495,7 +496,8 @@ public class GorillaClient
 
     /**
      * Package private handle a received payload result. Contains message UUID,
-     * timing and state information.
+     * timing and state information. Builds a GorillaPayloadResult object
+     * and dispatches to all subscribed listeners.
      *
      * @param resultJson result JSON object in string format.
      */
@@ -525,6 +527,42 @@ public class GorillaClient
         else
         {
             Log.e(LOGTAG, "receivePayloadResult: failed result=" + resultJson);
+        }
+    }
+
+    /**
+     * Package private handle a received phrase suggestion. Contains original,
+     * phrase and hint information. Builds a GorillaPhraseSuggestion object
+     * and dispatches to all subscribed listeners.
+     *
+     * @param resultJson phrase suggestion JSON object in string format.
+     */
+    void receivePhraseSuggestions(String resultJson)
+    {
+        Log.d(LOGTAG, "receivePhraseSuggestions: resultJson=" + resultJson);
+
+        final GorillaPhraseSuggestion gps = new GorillaPhraseSuggestion();
+
+        if (gps.setLoad(resultJson))
+        {
+            handler.post(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    synchronized (gorillaListeners)
+                    {
+                        for (GorillaListener gl : gorillaListeners)
+                        {
+                            gl.onPhraseSuggestionsReceived(gps);
+                        }
+                    }
+                }
+            });
+        }
+        else
+        {
+            Log.e(LOGTAG, "receivePhraseSuggestions: failed result=" + resultJson);
         }
     }
 
@@ -1047,6 +1085,47 @@ public class GorillaClient
         }
     }
 
+    @Nullable
+    public GorillaPhraseSuggestion requestPhraseSuggestionsSync(String phrase)
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return null;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, phrase);
+
+            String resultStr = gr.requestPhraseSuggestionsSync(apkname, phrase, checksum);
+
+            GorillaPhraseSuggestion suggestions = new GorillaPhraseSuggestion();
+            suggestions.setAtom(resultStr);
+
+            return suggestions;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean requestPhraseSuggestionsAsync(String phrase)
+    {
+        IGorillaSystemService gr = GorillaConnect.getSystemService();
+        if (gr == null) return false;
+
+        try
+        {
+            String checksum = GorillaConnect.createSHASignatureBase64(apkname, phrase);
+
+            return gr.requestPhraseSuggestionsAsync(apkname, phrase, checksum);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
+    }
 
     /**
      * Subscribe a {@code GorillaListener} for service connection.

@@ -7,6 +7,7 @@
 
 package com.aura.aosp.gorilla.golang;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import android.util.SparseLongArray;
@@ -34,17 +35,24 @@ public class GolangCorrect
     private final static int READSIZE = 16 * 1024;
     private final static int MAXCACHESIZE = 256 * 1024;
 
+    private final String language;
     private final static Map<String, GolangCorrect> languages = new HashMap<>();
 
     private CorrectFile topFile;
     private CorrectFile botFile;
 
     private boolean inited;
-    private String language;
 
     @Nullable
-    static JSONObject phraseCorrect(String language, String phrase)
+    static JSONObject phraseCorrect(@NonNull String language, @NonNull String phrase)
     {
+        //noinspection ConstantConditions
+        if ((language == null) || (phrase == null))
+        {
+            Err.errp();
+            return null;
+        }
+
         GolangCorrect gs = languages.get(language);
 
         if (gs == null)
@@ -57,20 +65,15 @@ public class GolangCorrect
             languages.put(language, gs);
         }
 
-        if ((phrase == null) || phrase.isEmpty())
+        if (phrase.isEmpty())
         {
-            Err.err("null or empty phrase");
+            Err.err("empty phrase");
             return null;
         }
 
         //
         // Look up phrase in desired language.
         //
-
-        //Perf perf = new Perf();
-        //JSONObject result = gs.phraseCorrect(phrase);
-        //Log.d("perf=%d result=%s", perf.elapsedTimeMillis(), (result == null) ? "null" : result.toString());
-        //return result;
 
         return gs.phraseCorrect(phrase);
     }
@@ -121,6 +124,8 @@ public class GolangCorrect
             return null;
         }
 
+        Perf perf = new Perf();
+
         String word = phrase.trim();
 
         if (word.contains(" "))
@@ -131,13 +136,13 @@ public class GolangCorrect
 
         JSONObject result;
 
-        result = phraseCorrect(word, topFile);
+        result = phraseCorrect(word, topFile, perf);
         if (result != null)
         {
             return result;
         }
 
-        result = phraseCorrect(word, botFile);
+        result = phraseCorrect(word, botFile, perf);
         if (result != null)
         {
             return result;
@@ -147,26 +152,45 @@ public class GolangCorrect
     }
 
     @Nullable
-    private JSONObject phraseCorrect(String word, CorrectFile raFile)
+    private JSONObject phraseCorrect(String word, CorrectFile raFile, Perf perf)
     {
-        if (word.length() < 3)
-        {
-            return null;
-        }
-
-        List<GolangUtils.Score> targetScores = new ArrayList<>();
-        int totalScore = 0;
+        //
+        // Check word length and compute minimum and
+        // maximum compare word lengths.
+        //
 
         int wordlen = word.length();
+
+        if (wordlen < 2)
+        {
+            Err.err("too short! word=%s", word);
+            return null;
+        }
 
         int wordmin = (wordlen > 3) ? wordlen - 1 : wordlen;
         int wordmax = wordlen + 1;
 
+        //
+        // Convert target word into rune format.
+        //
+
         byte[] wordBytes = word.getBytes();
+        int[] wordRunes = new int[wordBytes.length];
+        int wordRuneLen = GolangUtils.getRunesFromBytes(wordRunes, wordBytes, wordBytes.length);
+
+        //
+        // Allocate score array.
+        //
+
+        List<GolangUtils.Score> targetScores = new ArrayList<>();
+        int totalScore = 0;
+
+        //
+        // Start searching.
+        //
 
         for (int checklen = wordmin; checklen <= wordmax; checklen++)
         {
-
             //
             // Retrieve absolute file positions of requests word length words.
             //
@@ -235,15 +259,18 @@ public class GolangCorrect
                 loopMax = (int) lastPos;
             }
 
+            int[] wrunes = new int[100];
+
             byte[] wbytes = new byte[100];
             byte[] pbytes = new byte[100];
 
-            int winx = 0;
-            int pinx = 0;
+            int wlen = 0;
+            int plen = 0;
 
             boolean inword = true;
 
             Integer dist;
+            int rune;
 
             for (int inx = loopMin; inx < loopMax; inx++)
             {
@@ -255,14 +282,14 @@ public class GolangCorrect
 
                 if (buffer[inx] == '\n')
                 {
-                    //dist = GolangUtils.levenshtein(word, new String(wbytes, 0, winx));
-                    //dist = Levenshtein.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
-                    dist = GolangUtils.levenshtein(wordBytes, wordBytes.length, wbytes, winx, 2);
+                    dist = GolangUtils.levenshtein(wordRunes, wordRuneLen, wrunes, wlen, 2);
 
                     if ((dist != null) && (0 <= dist) && (dist <= 2))
                     {
-                        String wString = new String(wbytes, 0, winx);
-                        String pString = new String(pbytes, 0, pinx);
+                        wlen = GolangUtils.getBytesFromRunes(wbytes, wrunes, wlen);
+
+                        String wString = new String(wbytes, 0, wlen);
+                        String pString = new String(pbytes, 0, plen);
 
                         int percent = Integer.parseInt(pString);
                         if (dist > 1) percent /= dist;
@@ -271,24 +298,37 @@ public class GolangCorrect
                         totalScore += percent;
                     }
 
-                    winx = 0;
-                    pinx = 0;
+                    wlen = 0;
+                    plen = 0;
                     inword = true;
                     continue;
                 }
 
                 if (inword)
                 {
-                    if (winx < wbytes.length)
+                    if (wlen < wrunes.length)
                     {
-                        wbytes[winx++] = buffer[inx];
+                        //
+                        // Defuck signed byte.
+                        //
+
+                        rune = buffer[inx] & 0xff;
+
+                        if ((wlen > 0) && (rune & 0xc0) == 0x80)
+                        {
+                            wrunes[wlen - 1] = (wrunes[wlen - 1] << 8) + rune;
+                        }
+                        else
+                        {
+                            wrunes[wlen++] = rune;
+                        }
                     }
                 }
                 else
                 {
-                    if (pinx < pbytes.length)
+                    if (plen < pbytes.length)
                     {
-                        pbytes[pinx++] = buffer[inx];
+                        pbytes[plen++] = buffer[inx];
                     }
                 }
             }
@@ -319,6 +359,7 @@ public class GolangCorrect
         JSONObject resultJson = new JSONObject();
         Json.put(resultJson, "phrase", word);
         Json.put(resultJson, "language", language);
+        Json.put(resultJson, "mode", "correct");
 
         JSONObject hintsJson = new JSONObject();
 
@@ -334,7 +375,9 @@ public class GolangCorrect
             if (limit > (totalScore * 0.5f)) break;
         }
 
+        Json.put(resultJson, "algms", perf.elapsedTimeMillis());
         Json.put(resultJson, "hints", hintsJson);
+
         return resultJson;
     }
 

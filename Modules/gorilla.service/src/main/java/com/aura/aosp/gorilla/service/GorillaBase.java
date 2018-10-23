@@ -73,14 +73,14 @@ public class GorillaBase extends Application
 
         GorillaNetwork.logNetworkState();
 
-        Simple.getHandler().post(new Runnable()
+        Simple.getHandler().postDelayed(new Runnable()
         {
             @Override
             public void run()
             {
                 GolangSuggest.testDat();
             }
-        });
+        }, 1000);
     }
 
     private static void startCronJob()

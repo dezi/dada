@@ -230,6 +230,15 @@ public abstract class GorillaAtom
         putJSON(atom, "load", load);
     }
 
+    public boolean setLoad(String jsonstr)
+    {
+        JSONObject newload = fromStringJSONOBject(jsonstr);
+        if (newload == null) return false;
+
+        setLoad(newload);
+        return true;
+    }
+
     /**
      * Put an atom created by owner identity and shared with nobody into storage.
      *
@@ -304,6 +313,19 @@ public abstract class GorillaAtom
         try
         {
             return json.getJSONObject(key);
+        }
+        catch (Exception ignore)
+        {
+            return null;
+        }
+    }
+
+    @Nullable
+    Integer getJSONInt(@NonNull JSONObject json, @NonNull String key)
+    {
+        try
+        {
+            return json.getInt(key);
         }
         catch (Exception ignore)
         {
