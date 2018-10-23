@@ -287,6 +287,8 @@ public class ChatActivity extends AppCompatActivity
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count)
             {
+                Log.d(LOGTAG, "onTextChanged: <" + s.toString() + ">");
+
                 postSuggestRequest(s.toString(), 100);
             }
 
@@ -503,7 +505,7 @@ public class ChatActivity extends AppCompatActivity
         {
             String phrase = wantedSuggestPhrase;
 
-            Log.d(LOGTAG, "requestPhraseSuggestions: phrase=" + phrase);
+            Log.d(LOGTAG, "requestPhraseSuggestions: phrase=<" + phrase + ">");
 
             if ((phrase == null) || (phrase.isEmpty()))
             {
@@ -527,11 +529,10 @@ public class ChatActivity extends AppCompatActivity
         lastPhraseSuggestion = phraseSuggestion;
 
         List<GorillaPhraseSuggestionHint> hints = phraseSuggestion.getHints();
-        if (hints == null) return;
 
         for (int inx = 0; inx < suggestTexts.length; inx++)
         {
-            if (inx < hints.size())
+            if ((hints != null) && (inx < hints.size()))
             {
                 GorillaPhraseSuggestionHint hint = hints.get(inx);
                 suggestTexts[inx].setText(hint.getHint());

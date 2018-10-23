@@ -208,13 +208,16 @@ public class GolangPhrases
 
         if (results.size() == 1)
         {
+            //
+            // Return the only result set.
+            //
+
             return results.get(0);
         }
 
-        for (int inx = 0; inx < results.size(); inx++)
-        {
-            Log.d("############## inx=%d result=%s", inx, results.get(inx).toString());
-        }
+        //
+        // Return the less specific result set.
+        //
 
         return results.get(1);
     }

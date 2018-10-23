@@ -77,6 +77,17 @@ public class GorillaPhraseSuggestion extends GorillaAtom
     }
 
     /**
+     * Get hints count.
+     *
+     * @return hints count or null.
+     */
+    @Nullable
+    public Integer getCount()
+    {
+        return getJSONInt(getLoad(), "count");
+    }
+
+    /**
      * Get phrase frequency.
      *
      * @return phrase frequency or null.
