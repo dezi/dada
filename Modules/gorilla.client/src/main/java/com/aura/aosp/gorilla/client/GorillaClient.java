@@ -23,6 +23,7 @@ import com.aura.aosp.gorilla.atoms.GorillaContact;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
+import com.aura.aosp.gorilla.atoms.GorillaPhraseSuggestion;
 import com.aura.aosp.gorilla.atoms.GorillaSuggestion;
 
 import org.json.JSONArray;
@@ -525,6 +526,35 @@ public class GorillaClient
         else
         {
             Log.e(LOGTAG, "receivePayloadResult: failed result=" + resultJson);
+        }
+    }
+
+    void receivePhraseSuggestionsResult(String resultJson)
+    {
+        Log.d(LOGTAG, "receivePayloadResult: resultJson=" + resultJson);
+
+        final GorillaPhraseSuggestion result = new GorillaPhraseSuggestion();
+
+        if (result.setAtom(resultJson))
+        {
+            handler.post(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    synchronized (gorillaListeners)
+                    {
+                        for (GorillaListener gl : gorillaListeners)
+                        {
+                            gl.onPhraseSuggestionsReceived(result);
+                        }
+                    }
+                }
+            });
+        }
+        else
+        {
+            Log.e(LOGTAG, "receivePhraseSuggestionsResult: failed result=" + resultJson);
         }
     }
 

@@ -7,11 +7,10 @@
 
 package com.aura.aosp.gorilla.client;
 
-import android.util.Log;
-
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
+import com.aura.aosp.gorilla.atoms.GorillaPhraseSuggestion;
 
 /**
  * The class {@code GorillaListener} ist just a stub implementation
@@ -19,13 +18,9 @@ import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
  *
  * @author Dennis Zierahn
  */
+@SuppressWarnings({"EmptyMethod", "WeakerAccess"})
 public abstract class GorillaListener
 {
-    /**
-     * All purpose log tag.
-     */
-    private final static String LOGTAG = GorillaListener.class.getSimpleName();
-
     /**
      * Called whenever the current service connection state changes.
      *
@@ -33,7 +28,6 @@ public abstract class GorillaListener
      */
     public void onServiceChange(boolean connected)
     {
-        Log.d(LOGTAG, "onServiceChange: STUB!");
     }
 
     /**
@@ -43,7 +37,6 @@ public abstract class GorillaListener
      */
     public void onUplinkChange(boolean connected)
     {
-        Log.d(LOGTAG, "onUplinkChange: STUB!");
     }
 
     /**
@@ -53,7 +46,6 @@ public abstract class GorillaListener
      */
     public void onOwnerReceived(GorillaOwner owner)
     {
-        Log.d(LOGTAG, "onOwnerReceived: STUB!");
     }
 
     /**
@@ -63,7 +55,6 @@ public abstract class GorillaListener
      */
     public void onPayloadReceived(GorillaPayload payload)
     {
-        Log.d(LOGTAG, "onPayloadReceived: STUB!");
     }
 
     /**
@@ -73,6 +64,14 @@ public abstract class GorillaListener
      */
     public void onPayloadResultReceived(GorillaPayloadResult result)
     {
-        Log.d(LOGTAG, "onPayloadResultReceived: STUB!");
+    }
+
+    /**
+     * Called whenever a phrase suggestion result was received.
+     *
+     * @param result JSON object containg the phrase suggestion result.
+     */
+    public void onPhraseSuggestionsReceived(GorillaPhraseSuggestion result)
+    {
     }
 }

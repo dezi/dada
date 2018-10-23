@@ -14,6 +14,7 @@ import com.aura.aosp.gorilla.client.IGorillaSystemService;
 
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
 import com.aura.aosp.gorilla.goatoms.GorillaAtomContact;
+import com.aura.aosp.gorilla.golang.GolangSuggest;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 import com.aura.aosp.gorilla.gopoor.GopoorRegister;
 import com.aura.aosp.gorilla.gopoor.GopoorSuggest;
@@ -23,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Locale;
 
 public class GorillaSystemService extends IGorillaSystemService.Stub
 {
@@ -414,7 +416,8 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public String requestPhraseSuggestionsSync(String apkname, String phrase, String checksum)
     {
-        return null;
+        JSONObject result = GolangSuggest.hintPhrase(Locale.getDefault().getLanguage(), phrase);
+        return Json.toString(result);
     }
 
     /**
@@ -428,6 +431,9 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public boolean requestPhraseSuggestionsAsync(String apkname, String phrase, String checksum)
     {
-        return true;
+        JSONObject result = GolangSuggest.hintPhrase(Locale.getDefault().getLanguage(), phrase);
+        Err err = GorillaSender.sendPhraseSuggestions(apkname, result);
+
+        return (err == null);
     }
 }
