@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Log;
-import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
@@ -12,7 +11,6 @@ import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.launcher.model.GorillaHelper;
 import com.aura.aosp.gorilla.launcher.model.stream.FilteredStream;
 import com.aura.aosp.gorilla.launcher.model.stream.MessageStreamItem;
-import com.aura.aosp.gorilla.launcher.model.stream.StreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.ContactStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.InvisibleStreamItem;
 import com.aura.aosp.gorilla.launcher.model.user.User;
@@ -21,7 +19,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -31,7 +28,12 @@ public class StreamStore {
 
     public static String EXTRA_CHAT_PARTNER_UUID = "com.aura.aosp.gorilla.launcher.chat.partner_uuid";
 
+    public static final String ATOMCONTEXT_UXSTREAM_START = "aura.uxstream.start";
+    public static final String ATOMCONTEXT_UXSTREAM_MESSAGES = "aura.uxstream.messages";
+    public static final String ATOMCONTEXT_UXSTREAM_CONTACTS = "aura.uxstream.contacts";
+
     private static final String LOGTAG = StreamStore.class.getSimpleName();
+
     private GorillaClient gorillaClient = GorillaClient.getInstance();
     private Context context;
 
@@ -59,7 +61,7 @@ public class StreamStore {
 
         switch (atomContext) {
 
-            case "aura.uxstream.launcher":
+            case ATOMCONTEXT_UXSTREAM_START:
                 // TODO: Query every kind of atom in a time frame, sort and convert to stream item type
                 JSONArray launcherAtoms = gorillaClient.queryAtoms("aura.*", 0, 0);
 
@@ -78,9 +80,8 @@ public class StreamStore {
 
                 break;
 
-            case "aura.uxstream.launcher.messages":
+            case ATOMCONTEXT_UXSTREAM_MESSAGES:
 
-                // TODO: Hier weiter - glatt ziehen!
                 String atomType = GorillaHelper.atomTypes.get("chatMessage");
 
                 for (Identity contactIdentity : allContacts) {
@@ -88,6 +89,8 @@ public class StreamStore {
                     String remoteNick = contactIdentity.getNick();
                     String remoteUserUUID = contactIdentity.getUserUUIDBase64();
                     String remoteDeviceUUID = contactIdentity.getDeviceUUIDBase64();
+
+                    User contactUser = new User(contactIdentity);
 
 //                    String actionDomain = getContext().getPackageName();
 //                    String subAction = "chat=" + remoteUserUUID;
@@ -101,9 +104,9 @@ public class StreamStore {
                         for (int inx = 0; inx < recv.length(); inx++)
                         {
                             GorillaMessage gorillaMessage = new GorillaMessage(Json.getObject(recv, inx));
-                            filteredStream.add(new MessageStreamItem(gorillaMessage));
+                            filteredStream.add(new MessageStreamItem(contactUser, gorillaMessage));
 
-                            Log.d(LOGTAG, "recv=" + gorillaMessage.toPretty());
+                            Log.d("### recv=" + gorillaMessage.toPretty());
                         }
                     }
 
@@ -112,24 +115,18 @@ public class StreamStore {
                         for (int inx = 0; inx < send.length(); inx++)
                         {
                             GorillaMessage gorillaMessage = new GorillaMessage(Json.getObject(send, inx));
-                            filteredStream.add(new MessageStreamItem(gorillaMessage));
+                            filteredStream.add(new MessageStreamItem(ownUser, gorillaMessage));
 
-                            Log.d(LOGTAG, "send=" + gorillaMessage.toPretty());
+                            Log.d("### send=" + gorillaMessage.toPretty());
                         }
                     }
                 }
 
-//                combined = Json.sortNumber(combined, "sort_", false);
-                filteredStream.sort(new Comparator<StreamItem>() {
-                    @Override
-                    public int compare(StreamItem o1, StreamItem o2) {
-                        return Simple.compareTo(o1.getCreateTime(), o2.getCreateTime());
-                    }
-                });
+                filteredStream.sortyByCreateTime(true);
 
                 break;
 
-            case "aura.uxstream.launcher.contacts":
+            case ATOMCONTEXT_UXSTREAM_CONTACTS:
 
                 for (Identity contactIdentity : allContacts) {
 

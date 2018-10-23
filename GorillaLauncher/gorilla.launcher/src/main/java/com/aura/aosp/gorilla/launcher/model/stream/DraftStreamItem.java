@@ -3,7 +3,6 @@ package com.aura.aosp.gorilla.launcher.model.stream;
 import android.support.annotation.NonNull;
 
 import com.aura.aosp.aura.common.crypter.UID;
-import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.gorilla.atoms.GorillaAtom;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.client.GorillaClient;
@@ -15,6 +14,8 @@ import com.aura.aosp.gorilla.launcher.model.user.User;
  * Note item
  */
 public class DraftStreamItem extends StreamItem implements GorillaPersistable {
+
+    private static final int MAX_EXTRACT_LENGTH = 42;
 
     /**
      * Note item construction
@@ -44,31 +45,43 @@ public class DraftStreamItem extends StreamItem implements GorillaPersistable {
      */
     private static String extractTitle(String text) {
 
-        String tryTitle = null;
+        if (text.length() <= MAX_EXTRACT_LENGTH) {
+            return text;
+        }
+
+        String tryTitle = "";
         String useTitle = null;
 
         if (text.contains("\n")) {
 
-            tryTitle = text.substring(0, text.indexOf("\n") - 1);
-            if (tryTitle.length() < 32) {
+            tryTitle = text.substring(0, text.indexOf("\n"));
+
+            if (tryTitle.length() <= MAX_EXTRACT_LENGTH) {
                 useTitle = tryTitle;
             }
 
         } else if (text.contains(" ")) {
 
-            // TODO: Get some more words up to a max of 32 chars
-            tryTitle = text.substring(0, text.indexOf(" ") - 1);
-            if (tryTitle.length() < 32) {
-                useTitle = tryTitle;
+            int startPos = 0;
+
+            while (true) {
+
+                int endPos = text.indexOf(" ", startPos);
+
+                if (endPos >= 0 && startPos < MAX_EXTRACT_LENGTH - 2) {
+                    tryTitle += text.substring(startPos, endPos) + " ";
+                    startPos = endPos + 1;
+                    continue;
+                }
+
+                useTitle = tryTitle.trim();
+
+                break;
             }
         }
 
         if (useTitle == null) {
-            if (text.length() > 32) {
-                useTitle = text.substring(0, 31);
-            } else {
-                useTitle = text;
-            }
+            useTitle = text.substring(0, MAX_EXTRACT_LENGTH - 3) + "...";
         }
 
         return useTitle;

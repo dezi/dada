@@ -11,7 +11,6 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,6 +18,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
+import com.aura.aosp.aura.common.crypter.UID;
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
@@ -101,7 +102,7 @@ public class LauncherActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d(LOGTAG, "onCreate: ...");
+        Log.d("onCreate: ...");
 
         // Set outer base content view
         setContentView(R.layout.activity_launcher);
@@ -273,18 +274,18 @@ public class LauncherActivity extends AppCompatActivity {
 //                            Float addX = actionClusterView.getWidth() / 2.0f;
 //                            Float addY = actionClusterView.getHeight() / 2.0f;
 //
-//                            Log.d(LOGTAG, String.format("onGlobalLayout actionClusterWidth <%d>", actionClusterView.getWidth()));
-//                            Log.d(LOGTAG, String.format("onGlobalLayout actionClusterHeight <%d>", actionClusterView.getHeight()));
+//                            Log.d(String.format("onGlobalLayout actionClusterWidth <%d>", actionClusterView.getWidth()));
+//                            Log.d(String.format("onGlobalLayout actionClusterHeight <%d>", actionClusterView.getHeight()));
 //
 //                            switch (layoutManager.getOrientation()) {
 //
 //                                case LinearLayoutManager.VERTICAL:
-//                                    Log.d(LOGTAG, String.format("VERTICAL addY <%f>", addY));
+//                                    Log.d(String.format("VERTICAL addY <%f>", addY));
 ////                                    actionClusterView.setX(actionClusterView.getX() + addX);
 //                                    break;
 //
 //                                case LinearLayoutManager.HORIZONTAL:
-//                                    Log.d(LOGTAG, String.format("HORIZONTAL addX <%f>", addX));
+//                                    Log.d(String.format("HORIZONTAL addX <%f>", addX));
 ////                                    actionClusterView.setY(actionClusterView.getY() + addY);
 //                                    break;
 //                            }
@@ -304,7 +305,7 @@ public class LauncherActivity extends AppCompatActivity {
             activateActionClusterView(actionClusterView);
         }
 
-        Log.d(LOGTAG, String.format("Added action cluster <%s>", actionCluster.getName()));
+        Log.d(String.format("Added action cluster <%s>", actionCluster.getName()));
     }
 
 
@@ -378,9 +379,9 @@ public class LauncherActivity extends AppCompatActivity {
         ActionClusterAdapter actionClusterAdapter = new ActionClusterAdapter(actionCluster.getItemsByRelevance(), this, this);
         actionClusterView.setAdapter(actionClusterAdapter);
 
-        Log.d(LOGTAG, String.format("actionClusterView nextElevation <%f>", nextElevation));
-        Log.d(LOGTAG, String.format("actionClusterView nextXPos <%f>", nextXPos));
-        Log.d(LOGTAG, String.format("actionClusterView nextYPos <%f>", nextYPos));
+        Log.d("actionClusterView nextElevation <%f>", nextElevation);
+        Log.d("actionClusterView nextXPos <%f>", nextXPos);
+        Log.d("actionClusterView nextYPos <%f>", nextYPos);
 
         actionClusterView.setX(nextXPos);
         actionClusterView.setY(nextYPos);
@@ -392,7 +393,7 @@ public class LauncherActivity extends AppCompatActivity {
             activateActionClusterView(actionClusterView);
         }
 
-        Log.d(LOGTAG, String.format("Added action cluster <%s>", actionCluster.getName()));
+        Log.d("Added action cluster <%s>", actionCluster.getName());
 
         return actionClusterView;
     }
@@ -507,16 +508,16 @@ public class LauncherActivity extends AppCompatActivity {
             if (invokingActionButtonView instanceof ToggleClusterButton) {
                 ((ToggleClusterButton) invokingActionButtonView).maximize();
                 activateMainContentView();
-                Log.d(LOGTAG, String.format("Removed ROOT Action Cluster <%s>", actionClusterView.getId()));
+                Log.d("Removed ROOT Action Cluster <%s>", actionClusterView.getId());
             } else {
                 ((ActionClusterView) invokingActionButtonView.getParent()).restore();
-                Log.d(LOGTAG, String.format("Removed Action Cluster <%s>", actionClusterView.getId()));
+                Log.d("Removed Action Cluster <%s>", actionClusterView.getId());
             }
         }
         else {
 //            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_24dp, getTheme()));
             activateMainContentView();
-            Log.d(LOGTAG, String.format("Removed ROOT Action Cluster <%s>", actionClusterView.getId()));
+            Log.d("Removed ROOT Action Cluster <%s>", actionClusterView.getId());
         }
     }
 
@@ -565,7 +566,7 @@ public class LauncherActivity extends AppCompatActivity {
                     // Check for action button cluster layers and close the topmost if not sticky
                     if (activeActionClusterViews.size() > 0) {
 
-                        Log.d(LOGTAG, String.format("activeActionClusterViews.size() <%d>", activeActionClusterViews.size()));
+                        Log.d("activeActionClusterViews.size() <%d>", activeActionClusterViews.size());
 
                         ActionClusterView actionClusterView = activeActionClusterViews.get(activeActionClusterViews.size() - 1);
 
@@ -669,7 +670,7 @@ public class LauncherActivity extends AppCompatActivity {
     private final GorillaListener listener = new GorillaListener() {
         @Override
         public void onServiceChange(boolean connected) {
-            Log.d(LOGTAG, "onServiceChange: connected=" + connected);
+            Log.d("onServiceChange: connected=" + connected);
 
             if (statusBar != null) {
                 statusBar.setSvLink(connected);
@@ -678,7 +679,7 @@ public class LauncherActivity extends AppCompatActivity {
 
         @Override
         public void onUplinkChange(boolean connected) {
-            Log.d(LOGTAG, "onUplinkChange: connected=" + connected);
+            Log.d("onUplinkChange: connected=" + connected);
 
             if (statusBar != null) {
                 statusBar.setUplink(connected);
@@ -687,14 +688,15 @@ public class LauncherActivity extends AppCompatActivity {
 
         @Override
         public void onOwnerReceived(GorillaOwner owner) {
-            Log.d(LOGTAG, "onOwnerReceived: +++++ CURRENT +++++ owner=" + owner.toString());
+            Log.d("onOwnerReceived: owner=" + owner.toString());
 
             String ownerUUID = owner.getOwnerUUIDBase64();
             Identity ownerIdentity = Contacts.getContact(ownerUUID);
 
             if (ownerIdentity != null) {
 
-                Log.d(LOGTAG, "onOwnerReceived: +++++ CONTACT +++++ nick=" + ownerIdentity.getNick());
+                Log.d("onOwnerReceived: nick=" + ownerIdentity.getNick());
+                Log.d("onOwnerReceived: nick=" + UID.convertUUIDToString(ownerIdentity.getUserUUID()));
 
                 myUser = new User(ownerIdentity);
                 String nick = myUser.getIdentity().getNick();
@@ -706,94 +708,8 @@ public class LauncherActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onPayloadReceived(GorillaPayload payload) {
-
-            Log.d(LOGTAG, "onPayloadReceived: payload=" + payload.toString());
-
-            GorillaMessage message = convertPayloadToMessageAndPersist(payload);
-            if (message == null) return;
-
-//            displayMessageInList(payload);
-//
-//            String remoteUserUUID = payload.getSenderUUIDBase64();
-//            String remoteDeviceUUID = payload.getDeviceUUIDBase64();
-//
-//            for (ChatProfile chatProfile : chatProfiles)
-//            {
-//                if (!chatProfile.remoteUserUUID.equals(remoteUserUUID)) continue;
-//                if (!chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
-//
-//                chatProfile.activity.dispatchMessage(message);
-//
-//                break;
-//            }
-        }
-
-        @Nullable
-        private GorillaMessage convertPayloadToMessageAndPersist(GorillaPayload payload)
-        {
-            Long time = payload.getTime();
-            String uuid = payload.getUUIDBase64();
-            String text = payload.getPayload();
-            String remoteUserUUID = payload.getSenderUUIDBase64();
-            String ownerDeviceUUID = getOwnerDeviceBase64();
-
-            if ((time == null) || (uuid == null) || (text == null) || (remoteUserUUID == null))
-            {
-                Log.e(LOGTAG, "invalid payload=" + payload.toString());
-                return null;
-            }
-
-            if (ownerDeviceUUID == null)
-            {
-                Log.e(LOGTAG, "unknown owner device");
-                return null;
-            }
-
-            GorillaMessage message = new GorillaMessage();
-
-            message.setType("aura.chat.message");
-            message.setTime(time);
-            message.setUUID(uuid);
-            message.setMessageText(text);
-            message.setStatusTime("received", ownerDeviceUUID, System.currentTimeMillis());
-
-            if (! GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, message.getAtom()))
-            {
-                return null;
-            }
-
-            return message;
-        }
-
-//        private JSONObject convertMessageToAtomAndPersists(GorillaPayload payload) {
-//            Long time = payload.getTime();
-//            String uuid = payload.getUUIDBase64();
-//            String text = payload.getPayload();
-//            String remoteUserUUID = payload.getSenderUUIDBase64();
-//
-//            JSONObject atomLoad = new JSONObject();
-//            Json.put(atomLoad, "message", text);
-//
-//            JSONObject received = new JSONObject();
-//            Json.put(received, StreamActivity.getOwnerDeviceBase64(), System.currentTimeMillis());
-//            Json.put(atomLoad, "received", received);
-//
-//            JSONObject atom = new JSONObject();
-//
-//            Json.put(atom, "uuid", uuid);
-//            Json.put(atom, "time", time);
-//            Json.put(atom, "type", "aura.chat.message");
-//            Json.put(atom, "load", atomLoad);
-//
-//            GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, atom);
-//
-//            return atom;
-//        }
-
-        @Override
         public void onPayloadResultReceived(GorillaPayloadResult result) {
-            Log.d(LOGTAG, "onPayloadResultReceived: result=" + result.toString());
+            Log.d("onPayloadResultReceived: result=" + result.toString());
 //            for (ChatProfile chatProfile : chatProfiles)
 //            {
 //                chatProfile.activity.dispatchResult(result);

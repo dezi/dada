@@ -2,6 +2,7 @@ package com.aura.aosp.gorilla.launcher.model.stream;
 
 import android.support.annotation.NonNull;
 
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
@@ -37,8 +38,8 @@ public class MessageStreamItem extends DraftStreamItem implements GorillaSharabl
      *
      * @param gorillaMessage
      */
-    public MessageStreamItem(GorillaMessage gorillaMessage) {
-        super(new User(Contacts.getContact(gorillaMessage.getUUIDBase64())), gorillaMessage.getMessageText());
+    public MessageStreamItem(@NonNull User ownerUser, GorillaMessage gorillaMessage) {
+        super(ownerUser, gorillaMessage.getMessageText());
         setCreateTime(gorillaMessage.getTime());
         setImageId(R.drawable.ic_message_black_24dp);
         setType(ItemType.TYPE_STREAMITEM_MESSAGE);
@@ -61,9 +62,8 @@ public class MessageStreamItem extends DraftStreamItem implements GorillaSharabl
      */
     public void shareWith(Identity remoteIdentity) {
 
-        // TODO: Replace with sendPayload(), this is just for testing.
-        GorillaPayloadResult result = GorillaClient.getInstance().sendPayloadQuer("com.aura.aosp.gorilla.messenger", remoteIdentity.getUserUUIDBase64(),
-                remoteIdentity.getDeviceUUIDBase64(), getText());
+        GorillaPayloadResult result = GorillaClient.getInstance().sendPayload(
+                remoteIdentity.getUserUUIDBase64(), remoteIdentity.getDeviceUUIDBase64(), getText());
 
         // TODO: Result and result fields may be null, how to handle?
         Long time = result.getTime();

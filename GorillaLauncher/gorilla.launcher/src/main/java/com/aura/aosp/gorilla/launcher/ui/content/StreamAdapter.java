@@ -46,13 +46,13 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
     private static final int ITEM_TYPE_FULLVIEW_RIGHT = 21;
 
     /**
-     * @param streamItems
+     * @param filteredStream
      * @param context
      * @param activity
      */
-    public StreamAdapter(FilteredStream streamItems, Context context, StreamActivity activity) {
+    public StreamAdapter(FilteredStream filteredStream, Context context, StreamActivity activity) {
         // Set initial items but Don't use setter: Until view holder isn't bound, we don't want to notify about changes
-        this.streamItems = streamItems;
+        this.streamItems = filteredStream;
         this.context = context;
         this.activity = activity;
     }

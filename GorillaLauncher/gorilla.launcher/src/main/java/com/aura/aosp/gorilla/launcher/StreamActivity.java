@@ -4,14 +4,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
+import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
@@ -20,6 +22,7 @@ import com.aura.aosp.gorilla.client.GorillaListener;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionItem;
 import com.aura.aosp.gorilla.launcher.model.actions.InvokerActionItem;
+import com.aura.aosp.gorilla.launcher.model.stream.FilteredStream;
 import com.aura.aosp.gorilla.launcher.model.stream.MessageStreamItem;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 import com.aura.aosp.gorilla.launcher.store.StreamStore;
@@ -41,14 +44,13 @@ public class StreamActivity extends LauncherActivity {
 
     private final static String LOGTAG = StreamActivity.class.getSimpleName();
 
-    //    public static List<ChatProfile> chatProfiles = new ArrayList<>();
-
-    private String currentAtomContext = "aura.uxstream.launcher.messages";
+    private String currentAtomContext = StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES;
 
     private StreamStore streamStore;
 
     private StreamView streamView;
     private RecyclerView streamRecyclerView;
+    private FilteredStream filteredStream;
     private StreamAdapter streamAdapter;
     private SmartScrollableLayoutManager streamLayoutManager;
 
@@ -57,7 +59,7 @@ public class StreamActivity extends LauncherActivity {
 
         super.onCreate(savedInstanceState);
 
-        Log.d(LOGTAG, "onCreate: ...");
+        Log.d("onCreate: ...");
 
         // Register generic "launcher opened" event with Gorilla
         new Handler().postDelayed(new Runnable() {
@@ -83,6 +85,13 @@ public class StreamActivity extends LauncherActivity {
         // Get references to main child view components
         streamRecyclerView = launcherView.findViewById(R.id.streamRecycler);
 
+        // use a linear layout manager
+        streamLayoutManager = new SmartScrollableLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        streamRecyclerView.setLayoutManager(streamLayoutManager);
+
+        // Register layout manger with "main content smart scrollable layout managers"
+        mcSmartScrollableLayoutManagers.add(streamLayoutManager);
+
         // Subscribe to Gorilla listener
         GorillaClient.getInstance().subscribeGorillaListener(listener);
     }
@@ -92,32 +101,43 @@ public class StreamActivity extends LauncherActivity {
      */
     protected void createStream() {
 
-        // use a linear layout manager
-        streamLayoutManager = new SmartScrollableLayoutManager(this);
-        streamRecyclerView.setLayoutManager(streamLayoutManager);
-
-        // Register layout manger with "main content smart scrollable layout managers"
-        mcSmartScrollableLayoutManagers.add(streamLayoutManager);
-
         // TODO: Replace with aggregated stream items from "Gorilla Content Stream Atoms"
         // Create initial content stream items and specify adapter
         streamStore = new StreamStore(getApplicationContext());
 
-        refreshStreamItems(null);
+        reloadStreamItems(null);
     }
 
     /**
      * Create main stream items
      * TODO: Add "intelligent" refresh methods taking advantage of scoring
      */
-    protected void refreshStreamItems(@Nullable String atomContext) {
+    protected void reloadStreamItems(@Nullable String atomContext) {
 
         if (atomContext == null) {
             atomContext = getCurrentAtomContext();
         }
 
-        streamAdapter = new StreamAdapter(streamStore.getItemsForAtomContext(atomContext, getMyUser()), this, this);
+        filteredStream = streamStore.getItemsForAtomContext(atomContext, getMyUser());
+        streamAdapter = new StreamAdapter(filteredStream, this, this);
         streamRecyclerView.setAdapter(streamAdapter);
+
+        // TODO: Better find a way to smooth scroll to last inserted item!
+        if (getCurrentAtomContext().equals(StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES)) {
+            scrollToStreamEnd();
+        }
+    }
+
+    /**
+     * Scroll to end of stream view.
+     */
+    protected void scrollToStreamEnd() {
+        streamRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                streamRecyclerView.smoothScrollToPosition(streamAdapter.getItemCount() - 1);
+            }
+        }, 450);
     }
 
     /**
@@ -142,7 +162,7 @@ public class StreamActivity extends LauncherActivity {
         removeMainFuncView();
         deactivateAllActionsClusterViews();
         activateMainContentView();
-        refreshStreamItems(null);
+        reloadStreamItems(null);
     }
 
     /**
@@ -150,7 +170,7 @@ public class StreamActivity extends LauncherActivity {
      */
     public void onOpenContentComposer(@Nullable User contactUser) {
 
-        Log.d(LOGTAG, String.format("onOpenContentComposer for contactUser <%s>", contactUser.getIdentity().getNick()));
+        Log.d("onOpenContentComposer for contactUser <%s>", contactUser.getIdentity().getNick());
 
 //        Effects.fadeOutView(actionClusterContainer, this, null);
 //        ConstraintSet constraintSet = new ConstraintSet();
@@ -186,8 +206,8 @@ public class StreamActivity extends LauncherActivity {
             ));
         } catch (NoSuchMethodException e) {
 
-            Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>",
-                    e.getMessage()));
+            Log.e("No such action invocation invokeMethod found: <%s>",
+                    e.getMessage());
         }
 
         ActionCluster recipientActionCluster = new ActionCluster("recipients", recipientActionItems);
@@ -236,14 +256,14 @@ public class StreamActivity extends LauncherActivity {
      */
     public void onSendMessage(User contactUser) {
 
-        Log.d(LOGTAG, String.format("onSendMessage for contactUser <%s>", contactUser.getIdentity().getNick()));
-        Log.d(LOGTAG, String.format("onSendMessage myUser <%s>", getMyUser().getIdentity().getNick()));
+        Log.d("onSendMessage for contactUser <%s>", contactUser.getIdentity().getNick());
+        Log.d("onSendMessage myUser <%s>", getMyUser().getIdentity().getNick());
 
         EditText editTextView = (EditText) findViewById(R.id.editText);
 
         String messageText = editTextView.getText().toString();
 
-        Log.d(LOGTAG, String.format("onSendMessage message <%s>", messageText));
+        Log.d("onSendMessage message <%s>", messageText);
 
         MessageStreamItem messageStreamItem = new MessageStreamItem(getMyUser(), messageText);
         messageStreamItem.shareWith(contactUser);
@@ -339,17 +359,17 @@ public class StreamActivity extends LauncherActivity {
 
         @Override
         public void onOwnerReceived(GorillaOwner owner) {
-            Log.d(LOGTAG, "onOwnerReceived: +++++ CURRENT +++++ owner=" + owner.toString());
+            Log.d("onOwnerReceived: owner=" + owner.toString());
 
             String ownerUUID = owner.getOwnerUUIDBase64();
             Identity ownerIdentity = Contacts.getContact(ownerUUID);
 
             if (ownerIdentity != null) {
 
+                Log.d("onOwnerReceived: nick=" + ownerIdentity.getNick());
+
                 myUser = new User(ownerIdentity);
                 String nick = myUser.getIdentity().getNick();
-
-                Log.d(LOGTAG, "onOwnerReceived: +++++ CONTACT +++++ nick=" + nick);
 
                 createStream();
                 onOpenStream();
@@ -358,21 +378,37 @@ public class StreamActivity extends LauncherActivity {
 
         @Override
         public void onPayloadReceived(GorillaPayload payload) {
-            Log.d(LOGTAG, "onPayloadReceived: payload=" + payload.toString());
 
-            // TODO: Update stream!
+            Log.d("onPayloadReceived: payload=" + payload.toString());
 
-//            displayMessageInList(payload);
+            GorillaMessage message = convertPayloadToMessageAndPersist(payload);
+            if (message == null) return;
 
             String remoteUserUUID = payload.getSenderUUIDBase64();
             String remoteDeviceUUID = payload.getDeviceUUIDBase64();
 
+            User ownerUser = new User(Contacts.getContact(remoteUserUUID));
+
+            int nextPos = filteredStream.size() - 1;
+            filteredStream.add(nextPos, new MessageStreamItem(ownerUser, message));
+            filteredStream.sortyByCreateTime(true);
+            streamAdapter.notifyItemInserted(nextPos);
+
+            if (getCurrentAtomContext().equals(StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES)) {
+                scrollToStreamEnd();
+            }
+
+//            displayMessageInList(payload);
+//
+//            String remoteUserUUID = payload.getSenderUUIDBase64();
+//            String remoteDeviceUUID = payload.getDeviceUUIDBase64();
+//
 //            for (ChatProfile chatProfile : chatProfiles)
 //            {
-//                if (! chatProfile.remoteUserUUID.equals(remoteUserUUID)) continue;
-//                if (! chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
+//                if (!chatProfile.remoteUserUUID.equals(remoteUserUUID)) continue;
+//                if (!chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
 //
-//                chatProfile.activity.dispatchMessage(atom);
+//                chatProfile.activity.dispatchMessage(message);
 //
 //                break;
 //            }
@@ -380,12 +416,45 @@ public class StreamActivity extends LauncherActivity {
 
         @Override
         public void onPayloadResultReceived(GorillaPayloadResult result) {
-            Log.d(LOGTAG, "onPayloadResultReceived: result=" + result.toString());
+            Log.d("onPayloadResultReceived: result=" + result.toString());
 
 //            for (ChatProfile chatProfile : chatProfiles)
 //            {
 //                chatProfile.activity.dispatchResult(result);
 //            }
+        }
+
+        @Nullable
+        private GorillaMessage convertPayloadToMessageAndPersist(GorillaPayload payload) {
+            Long time = payload.getTime();
+            String uuid = payload.getUUIDBase64();
+            String text = payload.getPayload();
+            String remoteUserUUID = payload.getSenderUUIDBase64();
+            String ownerDeviceUUID = getOwnerDeviceBase64();
+
+            if ((time == null) || (uuid == null) || (text == null) || (remoteUserUUID == null)) {
+                Log.e(LOGTAG, "invalid payload=" + payload.toString());
+                return null;
+            }
+
+            if (ownerDeviceUUID == null) {
+                Log.e(LOGTAG, "unknown owner device");
+                return null;
+            }
+
+            GorillaMessage message = new GorillaMessage();
+
+            message.setType("aura.chat.message");
+            message.setTime(time);
+            message.setUUID(uuid);
+            message.setMessageText(text);
+            message.setStatusTime("received", ownerDeviceUUID, System.currentTimeMillis());
+
+            if (!GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, message.getAtom())) {
+                return null;
+            }
+
+            return message;
         }
     };
 }
