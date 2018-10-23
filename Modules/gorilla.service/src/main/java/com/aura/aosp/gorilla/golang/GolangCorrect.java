@@ -7,6 +7,7 @@
 
 package com.aura.aosp.gorilla.golang;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import android.util.SparseLongArray;
@@ -34,17 +35,24 @@ public class GolangCorrect
     private final static int READSIZE = 16 * 1024;
     private final static int MAXCACHESIZE = 256 * 1024;
 
+    private final String language;
     private final static Map<String, GolangCorrect> languages = new HashMap<>();
 
     private CorrectFile topFile;
     private CorrectFile botFile;
 
     private boolean inited;
-    private String language;
 
     @Nullable
-    static JSONObject phraseCorrect(String language, String phrase)
+    static JSONObject phraseCorrect(@NonNull String language, @NonNull String phrase)
     {
+        //noinspection ConstantConditions
+        if ((language == null) || (phrase == null))
+        {
+            Err.errp();
+            return null;
+        }
+
         GolangCorrect gs = languages.get(language);
 
         if (gs == null)
@@ -57,9 +65,9 @@ public class GolangCorrect
             languages.put(language, gs);
         }
 
-        if ((phrase == null) || phrase.isEmpty())
+        if (phrase.isEmpty())
         {
-            Err.err("null or empty phrase");
+            Err.err("empty phrase");
             return null;
         }
 
@@ -121,6 +129,8 @@ public class GolangCorrect
             return null;
         }
 
+        Perf perf = new Perf();
+
         String word = phrase.trim();
 
         if (word.contains(" "))
@@ -131,13 +141,13 @@ public class GolangCorrect
 
         JSONObject result;
 
-        result = phraseCorrect(word, topFile);
+        result = phraseCorrect(word, topFile, perf);
         if (result != null)
         {
             return result;
         }
 
-        result = phraseCorrect(word, botFile);
+        result = phraseCorrect(word, botFile, perf);
         if (result != null)
         {
             return result;
@@ -147,7 +157,7 @@ public class GolangCorrect
     }
 
     @Nullable
-    private JSONObject phraseCorrect(String word, CorrectFile raFile)
+    private JSONObject phraseCorrect(String word, CorrectFile raFile, Perf perf)
     {
         //
         // Check word length and compute minimum and
@@ -354,6 +364,7 @@ public class GolangCorrect
         JSONObject resultJson = new JSONObject();
         Json.put(resultJson, "phrase", word);
         Json.put(resultJson, "language", language);
+        Json.put(resultJson, "mode", "correct");
 
         JSONObject hintsJson = new JSONObject();
 
@@ -369,7 +380,9 @@ public class GolangCorrect
             if (limit > (totalScore * 0.5f)) break;
         }
 
+        Json.put(resultJson, "algms", perf.elapsedTimeMillis());
         Json.put(resultJson, "hints", hintsJson);
+
         return resultJson;
     }
 
