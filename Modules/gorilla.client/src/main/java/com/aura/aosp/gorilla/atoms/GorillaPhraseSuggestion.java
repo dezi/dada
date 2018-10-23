@@ -8,19 +8,17 @@
 package com.aura.aosp.gorilla.atoms;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * The class {@code GorillaPhraseSuggestion} extends to basic
+ * The class {@code GorillaPhraseSuggestion} extends the basic
  * {@code GorillaAtom} by phrase suggestion values.
  *
  * @author Dennis Zierahn
@@ -28,7 +26,7 @@ import java.util.List;
 public class GorillaPhraseSuggestion extends GorillaAtom
 {
     /**
-     * Create empty suggestion atom.
+     * Create empty phrase suggestion atom.
      */
     public GorillaPhraseSuggestion()
     {
@@ -36,13 +34,13 @@ public class GorillaPhraseSuggestion extends GorillaAtom
     }
 
     /**
-     * Create suggestion atom from JSONObject.
+     * Create phrase suggestion atom from JSONObject.
      *
-     * @param owner JSON owner atom object.
+     * @param phraseSuggestion JSON phrase suggestion atom object.
      */
-    public GorillaPhraseSuggestion(JSONObject owner)
+    public GorillaPhraseSuggestion(JSONObject phraseSuggestion)
     {
-        super(owner);
+        super(phraseSuggestion);
     }
 
     /**
@@ -129,8 +127,18 @@ public class GorillaPhraseSuggestion extends GorillaAtom
         while (keys.hasNext())
         {
             String hintKey = keys.next();
-            Integer hintScore = getJSONInt(hints, hintKey);
-            if (hintScore == null) continue;
+
+            //
+            // The hints are transported internally with
+            // percent scores for performance reasons.
+            //
+            // Convert to double scores on the fly.
+            //
+
+            Integer hintPercent = getJSONInt(hints, hintKey);
+            if (hintPercent == null) continue;
+
+            Double hintScore = hintPercent / 100.0;
 
             hintList.add(new GorillaPhraseSuggestionHint(hintKey, hintScore));
         }
@@ -140,7 +148,10 @@ public class GorillaPhraseSuggestion extends GorillaAtom
             @Override
             public int compare(GorillaPhraseSuggestionHint psh1, GorillaPhraseSuggestionHint psh2)
             {
-                return psh2.getScore() - psh1.getScore();
+                Double d1 = psh1.getScore();
+                Double d2 = psh2.getScore();
+
+                return ((d1 == null) || (d2 == null)) ? 0 : Double.compare(d2, d1);
             }
         });
 

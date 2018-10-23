@@ -1,26 +1,48 @@
+/*
+ * Copyright (C) 2018 Aura Software Inc.
+ *
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ */
+
 package com.aura.aosp.gorilla.atoms;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-public class GorillaPhraseSuggestionHint
+/**
+ * The class {@code GorillaPhraseSuggestionHint} extends the basic
+ * {@code GorillaAtom} by phrase suggestion hint values.
+ *
+ * @author Dennis Zierahn
+ */
+public class GorillaPhraseSuggestionHint extends GorillaAtom
 {
-    private final String hint;
-    private final int score;
-
-    public GorillaPhraseSuggestionHint(@NonNull String hint, int score)
+    public GorillaPhraseSuggestionHint(@NonNull String hint, @NonNull Double score)
     {
-        this.hint = hint;
-        this.score = score;
+        putJSON(getLoad(), "hint", hint);
+        putJSON(getLoad(), "score", score);
     }
 
-    @NonNull
+    /**
+     * Get hint phrase or word.
+     *
+     * @return hint phrase or word or null.
+     */
+    @Nullable
     public String getHint()
     {
-        return hint;
+        return getJSONString(getLoad(), "hint");
     }
 
-    public int getScore()
+    /**
+     * Get hint score as double number between 0 and 1.
+     *
+     * @return hint score as double or null.
+     */
+    @Nullable
+    public Double getScore()
     {
-        return score;
+        return getJSONDouble(getLoad(), "score");
     }
 }

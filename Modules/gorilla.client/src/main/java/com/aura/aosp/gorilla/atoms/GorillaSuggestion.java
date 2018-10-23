@@ -12,7 +12,7 @@ import android.support.annotation.Nullable;
 import org.json.JSONObject;
 
 /**
- * The class {@code GorillaSuggestion} extends to basic
+ * The class {@code GorillaSuggestion} extends the basic
  * {@code GorillaAtom} by suggestion values.
  *
  * @author Dennis Zierahn

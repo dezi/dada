@@ -15,7 +15,7 @@ import java.util.Iterator;
 import org.json.JSONObject;
 
 /**
- * The class {@code GorillaMessage} extends to basic
+ * The class {@code GorillaMessage} extends the basic
  * {@code GorillaAtom} by message values.
  *
  * @author Dennis Zierahn

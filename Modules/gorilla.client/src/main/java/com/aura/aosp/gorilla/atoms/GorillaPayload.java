@@ -13,7 +13,7 @@ import android.support.annotation.Nullable;
 import org.json.JSONObject;
 
 /**
- * The class {@code GorillaPayload} extends to basic
+ * The class {@code GorillaPayload} extends the basic
  * {@code GorillaAtom} by payload values.
  *
  * @author Dennis Zierahn
