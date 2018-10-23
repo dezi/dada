@@ -633,17 +633,24 @@ public class GolangUtils
         //
 
         int runesLen = 0;
+        int rune;
 
         for (int inx = 0; inx < bytesLen; inx++)
         {
-            if ((runesLen > 0) && (bytes[inx] & 0xc0) == 0x80)
+            //
+            // Defuck signed byte.
+            //
+
+            rune = bytes[inx] & 0xff;
+
+            if ((runesLen > 0) && (rune & 0xc0) == 0x80)
             {
-                runes[runesLen - 1] = (runes[runesLen - 1] << 8) + bytes[inx];
+                runes[runesLen - 1] = (runes[runesLen - 1] << 8) + rune;
 
                 continue;
             }
 
-            runes[runesLen++] = bytes[inx];
+            runes[runesLen++] = rune;
         }
 
         return runesLen;
@@ -658,43 +665,46 @@ public class GolangUtils
         {
             int rune = runes[inx];
 
-            if ((rune & 0xff000000) != 0)
+            if (rune >= 128)
             {
-                // formatter: off
+                if ((rune & 0xff000000) != 0)
+                {
+                    // formatter: off
 
-                bytes[bytesLen++] = (byte) ((rune >> 24) & 0xff);
-                bytes[bytesLen++] = (byte) ((rune >> 16) & 0xff);
-                bytes[bytesLen++] = (byte) ((rune >>  8) & 0xff);
-                bytes[bytesLen++] = (byte) ((rune >>  0) & 0xff);
+                    bytes[bytesLen++] = (byte) ((rune >> 24) & 0xff);
+                    bytes[bytesLen++] = (byte) ((rune >> 16) & 0xff);
+                    bytes[bytesLen++] = (byte) ((rune >> 8) & 0xff);
+                    bytes[bytesLen++] = (byte) ((rune >> 0) & 0xff);
 
-                // formatter: on
+                    // formatter: on
 
-                continue;
-            }
+                    continue;
+                }
 
-            if ((rune & 0x00ff0000) != 0)
-            {
-                // formatter: off
+                if ((rune & 0x00ff0000) != 0)
+                {
+                    // formatter: off
 
-                bytes[bytesLen++] = (byte) ((rune >> 16) & 0xff);
-                bytes[bytesLen++] = (byte) ((rune >>  8) & 0xff);
-                bytes[bytesLen++] = (byte) ((rune >>  0) & 0xff);
+                    bytes[bytesLen++] = (byte) ((rune >> 16) & 0xff);
+                    bytes[bytesLen++] = (byte) ((rune >> 8) & 0xff);
+                    bytes[bytesLen++] = (byte) ((rune >> 0) & 0xff);
 
-                // formatter: on
+                    // formatter: on
 
-                continue;
-            }
+                    continue;
+                }
 
-            if ((rune & 0x0000ff00) != 0)
-            {
-                // formatter: off
+                if ((rune & 0x0000ff00) != 0)
+                {
+                    // formatter: off
 
-                bytes[bytesLen++] = (byte) ((rune >>  8) & 0xff);
-                bytes[bytesLen++] = (byte) ((rune >>  0) & 0xff);
+                    bytes[bytesLen++] = (byte) ((rune >> 8) & 0xff);
+                    bytes[bytesLen++] = (byte) ((rune >> 0) & 0xff);
 
-                // formatter: on
+                    // formatter: on
 
-                continue;
+                    continue;
+                }
             }
 
             bytes[bytesLen++] = (byte) rune;
