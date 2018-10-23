@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.os.Environment;
 
 import com.aura.aosp.aura.common.simple.Err;
-import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 
 import java.io.File;
@@ -299,7 +298,6 @@ public class GolangUtils
 
         int rows = getRunesFromBytes(r1, s1, s1len);
         int cols = getRunesFromBytes(r2, s2, s2len);
-        ;
 
         //
         // Start computing distance.

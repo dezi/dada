@@ -140,6 +140,7 @@ public class GolangSuggest
         result = hintPhrase("de", "Messwiener");
         Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
 
+        /*
         Integer dist;
 
         byte[] s1;
@@ -165,5 +166,6 @@ public class GolangSuggest
 
         dist = GolangUtils.levenshtein(s1, s1.length, s2, s2.length, 2);
         Log.d("s1=%s s2=%s dist=%d", new String(s1), new String(s2), dist);
+        */
     }
 }
