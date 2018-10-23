@@ -32,6 +32,10 @@ interface StreamItemInterface {
 
     void setText(String text);
 
+    String getTextExcerpt();
+
+    void setTextExcerpt(String textExcerpt);
+
     Integer getImageId();
 
     void setImageId(Integer imageId);

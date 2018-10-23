@@ -76,7 +76,6 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 break;
         }
 
-
         StreamViewHolder viewHolder = new StreamViewHolder(itemView);
         return viewHolder;
     }
@@ -144,6 +143,8 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         final int useImageShapeBgRes;
         final int useShapeBgColor;
 
+        Integer avatarResId = null;
+
         // Modify some attributes based  on stream item type
         switch (dataSet.getType()) {
             case TYPE_STREAMITEM_GENERIC:
@@ -180,21 +181,16 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         }
 
 //        holder.title.setText(dataSet.title);
-        holder.previewText.setText(dataSet.getTitle());
+        // TODO: Fix layout issues with title/text
+//        holder.previewTitle.setText(dataSet.getTitle());
+        holder.previewText.setText(dataSet.getTextExcerpt());
 
         // Set color of background shape drawables
-        Drawable shapePreviewTextDrawable = holder.previewText.getBackground();
+        Drawable shapePreviewTextDrawable = holder.previewTextContainer.getBackground();
         DrawableCompat.setTint(shapePreviewTextDrawable, ContextCompat.getColor(context, useShapeBgColor));
 
         Drawable shapeImageContainerDrawable = holder.previewImageContainer.getBackground();
         DrawableCompat.setTint(shapeImageContainerDrawable, ContextCompat.getColor(context, useShapeBgColor));
-
-        // Set drawable images and color + alpha for placeholder image (background drawable)
-//        holder.previewImage.setBackgroundResource(usePlaceholderImageRes);
-        holder.previewImage.setBackground(context.getResources().getDrawable(usePlaceholderImageRes, context.getTheme()));
-        Drawable previewImageBgDrawable = holder.previewImage.getBackground();
-        previewImageBgDrawable.setAlpha(128);
-        DrawableCompat.setTint(previewImageBgDrawable, ContextCompat.getColor(context, usePlaceholderImageColor));
 
         // Adjust shape, content and visualization according to stream item type
         switch (dataSet.getType()) {
@@ -202,15 +198,30 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
             default:
                 break;
 
+            case TYPE_STREAMITEM_MESSAGE:
+
+                final MessageStreamItem messageStreamItem = (MessageStreamItem) dataSet;
+
+                avatarResId = messageStreamItem.getOwnerUser().getContactAvatarImageRes();
+
+                if (avatarResId != null) {
+                    ImageShaper.shape(context, avatarResId, useImageShapeBgRes, holder.previewImage, previewItemHeight, previewItemWidth);
+                    holder.previewImage.setImageAlpha(context.getResources().getInteger(R.integer.streamitem_message_preview_avatar_alpha));
+                }
+
+                // TODO: Add OnClick actions (see below). Important: OnClick should be captured for whole items, not only images/placeholders
+
+                break;
+
             case TYPE_STREAMITEM_CONTACT:
 
                 final ContactStreamItem contactStreamItem = (ContactStreamItem) dataSet;
 
-                Integer avatarResId = contactStreamItem.getContactUser().getContactAvatarImageRes();
+                avatarResId = contactStreamItem.getContactUser().getContactAvatarImageRes();
 
                 if (avatarResId != null) {
                     ImageShaper.shape(context, avatarResId, useImageShapeBgRes, holder.previewImage, previewItemHeight, previewItemWidth);
-                    holder.previewImage.setImageAlpha(224);
+                    holder.previewImage.setImageAlpha(context.getResources().getInteger(R.integer.streamitem_contact_preview_avatar_alpha));
                 }
 
                 // Invoke intent based action
@@ -218,8 +229,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                     @Override
                     public void onClick(View view) {
 
-                        // TODO: Create transition feedback and so on.
-
+                        // TODO: Create transition feedback etc.
                         // Create initial action button cluster (attach it to "root" container)
                         actionClusterStore = new ActionClusterStore(context);
 
@@ -231,6 +241,16 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 });
 
                 break;
+        }
+
+
+        if (avatarResId == null) {
+            // Set drawable images and color + alpha for placeholder image (background drawable)
+//            holder.previewImage.setBackgroundResource(usePlaceholderImageRes);
+            holder.previewImage.setBackground(context.getResources().getDrawable(usePlaceholderImageRes, context.getTheme()));
+            Drawable previewImageBgDrawable = holder.previewImage.getBackground();
+            previewImageBgDrawable.setAlpha(context.getResources().getInteger(R.integer.streamitem_generic_preview_placeholder_alpha));
+            DrawableCompat.setTint(previewImageBgDrawable, ContextCompat.getColor(context, usePlaceholderImageColor));
         }
     }
 

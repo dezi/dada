@@ -16,6 +16,8 @@ import com.aura.aosp.gorilla.launcher.R;
 public class StreamViewHolder extends RecyclerView.ViewHolder {
     public StreamItemView item;
 //    public TextView title;
+    public RelativeLayout previewTextContainer;
+    public TextView previewTitle;
     public TextView previewText;
     public RelativeLayout previewImageContainer;
     public ImageView previewImage;
@@ -23,8 +25,9 @@ public class StreamViewHolder extends RecyclerView.ViewHolder {
     public StreamViewHolder(View itemView) {
         super(itemView);
         item = itemView.findViewById(R.id.item);
-//        title = itemView.findViewById(R.id.title);
+        previewTitle = itemView.findViewById(R.id.previewTitle);
         previewText = itemView.findViewById(R.id.previewText);
+        previewTextContainer = itemView.findViewById(R.id.previewTextContainer);
         previewImage = itemView.findViewById(R.id.previewImage);
         previewImageContainer = itemView.findViewById(R.id.previewImageContainer);
     }

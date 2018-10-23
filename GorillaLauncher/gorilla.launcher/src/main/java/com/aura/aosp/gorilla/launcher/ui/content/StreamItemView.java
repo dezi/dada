@@ -20,6 +20,8 @@ public class StreamItemView extends ConstraintLayout {
     private static final String LOGTAG = StreamItemView.class.getSimpleName();
 
     public View item;
+    public RelativeLayout previewTextContainer;
+    public TextView previewTitle;
     public TextView previewText;
     public RelativeLayout previewImageContainer;
     public ImageView previewImage;
@@ -41,6 +43,8 @@ public class StreamItemView extends ConstraintLayout {
 
     public void init() {
         item = findViewById(R.id.item);
+        previewTextContainer = findViewById(R.id.previewTextContainer);
+        previewTitle = findViewById(R.id.previewTitle);
         previewText = findViewById(R.id.previewText);
         previewImageContainer = findViewById(R.id.previewImageContainer);
         previewImage = findViewById(R.id.previewImage);
