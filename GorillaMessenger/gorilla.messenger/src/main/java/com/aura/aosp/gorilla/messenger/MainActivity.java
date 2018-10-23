@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity
 
         //new Handler().postDelayed(getSuggest, 2000);
         //new Handler().postDelayed(getContacts, 2000);
-        new Handler().postDelayed(getHints, 2000);
+        //new Handler().postDelayed(getHints, 2000);
     }
 
     private final Runnable getHints = new Runnable()

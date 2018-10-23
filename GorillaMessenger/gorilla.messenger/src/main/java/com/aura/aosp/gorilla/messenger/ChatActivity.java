@@ -13,6 +13,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.aura.aosp.aura.common.simple.Json;
 import com.aura.aosp.aura.common.simple.Simple;
@@ -21,6 +22,7 @@ import com.aura.aosp.aura.gui.views.GUIEditText;
 import com.aura.aosp.aura.gui.views.GUIFrameLayout;
 import com.aura.aosp.aura.gui.views.GUIIconView;
 import com.aura.aosp.aura.gui.views.GUILinearLayout;
+import com.aura.aosp.aura.gui.views.GUIRelativeLayout;
 import com.aura.aosp.aura.gui.views.GUIScrollView;
 import com.aura.aosp.aura.gui.views.GUITextView;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
@@ -45,7 +47,7 @@ public class ChatActivity extends AppCompatActivity
     private GUILinearLayout chatContent;
     private GUIEditText editText;
     private GUIIconView sendButton;
-    private GUITextView suggestText;
+    private GUITextView[] suggestTexts = new GUITextView[ 5 ];
 
     private ChatProfile chatProfile;
     private String remoteNick;
@@ -285,7 +287,7 @@ public class ChatActivity extends AppCompatActivity
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count)
             {
-                postSuggestRequest(s.toString());
+                postSuggestRequest(s.toString(), 100);
             }
 
             @Override
@@ -338,16 +340,70 @@ public class ChatActivity extends AppCompatActivity
 
         bottomBox.addView(sendButton);
 
-        suggestText = new GUITextView(this);
-        suggestText.setSizeDip(Simple.MP, Simple.WC);
-        suggestText.setPaddingDip(GUIDefs.PADDING_SMALL);
-        suggestText.setBackgroundColor(0xffffff00);
-        suggestText.setGravity(Gravity.CENTER);
-        suggestText.setTextSizeDip(24);
-        suggestText.setText("...");
+        GUIRelativeLayout suggestCenter = new GUIRelativeLayout(this);
+        suggestCenter.setSizeDip(Simple.MP, Simple.WC);
+        suggestCenter.setGravity(Gravity.CENTER_HORIZONTAL);
 
-        centerFrame.addView(suggestText);
+        centerFrame.addView(suggestCenter);
+
+        GUILinearLayout suggestBox = new GUILinearLayout(this);
+        suggestBox.setSizeDip(Simple.WC, Simple.WC);
+        suggestBox.setOrientation(LinearLayout.HORIZONTAL);
+        suggestBox.setPaddingDip(GUIDefs.PADDING_SMALL);
+
+        suggestCenter.addView(suggestBox);
+
+        for (int inx = 0; inx < suggestTexts.length; inx++)
+        {
+            GUITextView suggestText = new GUITextView(this);
+
+            suggestText.setSizeDip(Simple.WC, Simple.WC);
+            suggestText.setBackgroundColor(0xffffff00);
+            suggestText.setTextSizeDip(24);
+            suggestText.setPaddingDip(0, 4, 0, 4);
+            suggestText.setMarginLeftDip(4);
+            suggestText.setMarginRightDip(4);
+
+            suggestText.setOnClickListener(onSuggestClick);
+
+            suggestBox.addView(suggestText);
+
+            suggestTexts[ inx ] = suggestText;
+        }
     }
+
+    private final View.OnClickListener onSuggestClick = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View view)
+        {
+            TextView textView = (TextView) view;
+            String current = editText.getText().toString();
+
+            if (current.endsWith(" "))
+            {
+                current += textView.getText();
+            }
+            else
+            {
+                int lastSpace = current.lastIndexOf(" ");
+
+                if (lastSpace < 0)
+                {
+                    current = textView.getText().toString();
+                }
+                else
+                {
+                    current = current.substring(0, lastSpace) + " " + textView.getText().toString();
+                }
+            }
+
+            current += " ";
+
+            editText.setText(current);
+            editText.setSelection(current.length());
+        }
+    };
 
     public void setStatus(Boolean svlink, Boolean uplink)
     {
@@ -432,12 +488,12 @@ public class ChatActivity extends AppCompatActivity
 
     private String wantedSuggestPhrase;
 
-    private void postSuggestRequest(String text)
+    private void postSuggestRequest(String text, int delay)
     {
         wantedSuggestPhrase = text;
 
         handler.removeCallbacks(requestPhraseSuggestions);
-        handler.postDelayed(requestPhraseSuggestions, 250);
+        handler.postDelayed(requestPhraseSuggestions, delay);
     }
 
     private final Runnable requestPhraseSuggestions = new Runnable()
@@ -451,7 +507,11 @@ public class ChatActivity extends AppCompatActivity
 
             if ((phrase == null) || (phrase.isEmpty()))
             {
-                suggestText.setText("...");
+                for (int inx = 0; inx < suggestTexts.length; inx++)
+                {
+                    suggestTexts[inx].setText("");
+                    suggestTexts[inx].setPaddingDip(0, 4, 0, 4);
+                }
 
                 return;
             }
@@ -460,23 +520,30 @@ public class ChatActivity extends AppCompatActivity
         }
     };
 
+    private GorillaPhraseSuggestion lastPhraseSuggestion;
+
     public void dispatchPhraseSuggestion(GorillaPhraseSuggestion phraseSuggestion)
     {
+        lastPhraseSuggestion = phraseSuggestion;
+
         List<GorillaPhraseSuggestionHint> hints = phraseSuggestion.getHints();
         if (hints == null) return;
 
-        String display = "";
-
-        for (int inx = 0; (inx < 5) && (inx < hints.size()); inx++)
+        for (int inx = 0; inx < suggestTexts.length; inx++)
         {
-            GorillaPhraseSuggestionHint hint = hints.get(inx);
+            if (inx < hints.size())
+            {
+                GorillaPhraseSuggestionHint hint = hints.get(inx);
+                suggestTexts[inx].setText(hint.getHint());
+                suggestTexts[inx].setPaddingDip(10, 4, 10, 4);
 
-            if (display.length() > 0) display += "      ";
-
-            display += hint.getHint();
-        }
-
-        suggestText.setText(display);
+            }
+            else
+            {
+                suggestTexts[inx].setText("");
+                suggestTexts[inx].setPaddingDip(0, 4, 0, 4);
+            }
+       }
     }
 }
 
