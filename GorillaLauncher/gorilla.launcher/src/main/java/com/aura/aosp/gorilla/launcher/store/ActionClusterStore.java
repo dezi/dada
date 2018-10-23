@@ -94,7 +94,7 @@ public class ActionClusterStore {
                             0.98f,
                             getContext(),
                             StreamActivity.class.getMethod("setCurrentAtomContext", String.class),
-                            "aura.uxstream.launcher.messages"
+                            StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES
                     ));
 
                     items.add(new InvokerActionItem(
@@ -103,7 +103,7 @@ public class ActionClusterStore {
                             0.98f,
                             getContext(),
                             StreamActivity.class.getMethod("setCurrentAtomContext", String.class),
-                            "aura.uxstream.launcher.contacts"
+                            StreamStore.ATOMCONTEXT_UXSTREAM_CONTACTS
                     ));
 
                     // Special action "Switch Profile". TODO: Remove for 0.1:
