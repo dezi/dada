@@ -535,7 +535,7 @@ public class GorillaClient
 
         final GorillaPhraseSuggestion result = new GorillaPhraseSuggestion();
 
-        if (result.setAtom(resultJson))
+        if (result.setLoad(resultJson))
         {
             handler.post(new Runnable()
             {

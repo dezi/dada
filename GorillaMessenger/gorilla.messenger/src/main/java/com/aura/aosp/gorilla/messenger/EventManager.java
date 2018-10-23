@@ -13,8 +13,11 @@ import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.atoms.GorillaPhraseSuggestion;
+import com.aura.aosp.gorilla.atoms.GorillaPhraseSuggestionHint;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
+
+import java.util.List;
 
 public class EventManager extends GorillaListener
 {
@@ -101,6 +104,17 @@ public class EventManager extends GorillaListener
     public void onPhraseSuggestionsReceived(GorillaPhraseSuggestion result)
     {
         Log.d(LOGTAG, "onPhraseSuggestionsReceived: result=" + result.toString());
+
+        List<GorillaPhraseSuggestionHint> hints = result.getHints();
+        if (hints == null) return;
+
+        for (GorillaPhraseSuggestionHint hint : hints)
+        {
+            Log.d(LOGTAG, "onPhraseSuggestionsReceived:"
+                    + " hint=" + hint.getHint()
+                    + " score=" + hint.getScore()
+            );
+        }
     }
 
     private void startMainActivity()

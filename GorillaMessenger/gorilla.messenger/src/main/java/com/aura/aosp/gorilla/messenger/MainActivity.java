@@ -109,6 +109,9 @@ public class MainActivity extends AppCompatActivity
             suggestion = GorillaClient.getInstance().requestPhraseSuggestionsSync("botte");
             Log.d(LOGTAG, "getHints: suggestions=" + ((suggestion == null) ? "null" : suggestion.toString()));
 
+            valid = GorillaClient.getInstance().requestPhraseSuggestionsAsync("botte");
+            Log.d(LOGTAG, "getHints: valid=" + valid);
+
             valid = GorillaClient.getInstance().requestPhraseSuggestionsAsync("Superschnitte ");
             Log.d(LOGTAG, "getHints: valid=" + valid);
         }

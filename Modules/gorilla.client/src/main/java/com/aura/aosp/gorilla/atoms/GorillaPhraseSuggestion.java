@@ -8,11 +8,14 @@
 package com.aura.aosp.gorilla.atoms;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -131,6 +134,15 @@ public class GorillaPhraseSuggestion extends GorillaAtom
 
             hintList.add(new GorillaPhraseSuggestionHint(hintKey, hintScore));
         }
+
+        Collections.sort(hintList, new Comparator<GorillaPhraseSuggestionHint>()
+        {
+            @Override
+            public int compare(GorillaPhraseSuggestionHint psh1, GorillaPhraseSuggestionHint psh2)
+            {
+                return psh2.getScore() - psh1.getScore();
+            }
+        });
 
         return hintList;
     }

@@ -4,8 +4,8 @@ import android.support.annotation.NonNull;
 
 public class GorillaPhraseSuggestionHint
 {
-    String hint;
-    int score;
+    private final String hint;
+    private final int score;
 
     public GorillaPhraseSuggestionHint(@NonNull String hint, int score)
     {
@@ -13,6 +13,7 @@ public class GorillaPhraseSuggestionHint
         this.score = score;
     }
 
+    @NonNull
     public String getHint()
     {
         return hint;
