@@ -180,51 +180,17 @@ public class GolangUtils
             return null;
         }
 
-        //
-        // Convert byte array string into UTF-8 runes array.
-        //
-        // UTF-8 encoding:
-        //
-        // 0000 0000 – 0000 007F 	0xxxxxxx
-        // 0000 0080 – 0000 07FF 	110xxxxx 10xxxxxx
-        // 0000 0800 – 0000 FFFF 	1110xxxx 10xxxxxx 10xxxxxx
-        // 0001 0000 – 0010 FFFF 	11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-        //
-
         int[] r1 = new int[s1len];
         int[] r2 = new int[s2len];
 
-        int r1len = 0;
-        int r2len = 0;
-
-        for (int inx = 0; inx < s1len; inx++)
-        {
-            if ((r1len > 0) && (s1[inx] & 0xc0) == 0x80)
-            {
-                r1[r1len - 1] = (r1[r1len - 1] << 8) + s1[inx];
-
-                continue;
-            }
-
-            r1[r1len++] = s1[inx];
-        }
-
-        for (int inx = 0; inx < s2len; inx++)
-        {
-            if ((r2len > 0) && (s2[inx] & 0xc0) == 0x80)
-            {
-                r2[r2len - 1] = (r2[r2len - 1] << 8) + s2[inx];
-
-                continue;
-            }
-
-            r2[r2len++] = s2[inx];
-        }
+        int r1len = getRunesFromBytes(r1, s1, s1len);
+        int r2len = getRunesFromBytes(r2, s2, s2len);
 
         //
         // If a max distance is give, we can speedup some special cases.
         //
 
+        /*
         if (maxdist >= 0)
         {
             //
@@ -243,12 +209,76 @@ public class GolangUtils
                 return dist;
             }
         }
+        */
 
         //
         // Fall through into the real thing.
         //
 
         return levenshtein(r1, r1len, r2, r2len);
+    }
+
+    /**
+     * Compute Levenshtein distance between two string in rune array form.
+     * <p>
+     * Recommended method if data comes from byte arrays because converting
+     * byte array to strings is expensive.
+     *
+     * @param r1    first rune array string.
+     * @param r1len number of runes to use.
+     * @param r2    second rune array string.
+     * @param r2len number of runes to use.
+     * @return distance or null on error.
+     */
+    @SuppressWarnings("UnnecessaryLocalVariable")
+    public static Integer levenshtein(int[] r1, int r1len, int[] r2, int r2len)
+    {
+        int rows = r1len;
+        int cols = r2len;
+
+        int[] v0 = new int[cols + 1];
+        int[] v1 = new int[cols + 1];
+        int[] vt;
+
+        for (int i = 0; i <= cols; i++)
+        {
+            v0[i] = i;
+        }
+
+        int m1;
+        int dc;
+        int ic;
+        int sc;
+
+        for (int i = 0; i < rows; i++)
+        {
+            v1[0] = i + 1;
+
+            for (int j = 0; j < cols; j++)
+            {
+                dc = v0[j + 1] + 1;
+                ic = v1[j] + 1;
+
+                if (r1[i] == r2[j])
+                {
+                    sc = v0[j];
+                }
+                else
+                {
+                    sc = v0[j] + 1;
+                }
+
+                m1 = (dc < ic) ? dc : ic;
+
+                v1[j + 1] = m1 < sc ? m1 : sc;
+            }
+
+            vt = v0;
+            v0 = v1;
+            v1 = vt;
+        }
+
+        return v0[cols];
     }
 
     @Nullable
@@ -469,69 +499,6 @@ public class GolangUtils
     }
 
     /**
-     * Compute Levenshtein distance between two string in rune array form.
-     * <p>
-     * Recommended method if data comes from byte arrays because converting
-     * byte array to strings is expensive.
-     *
-     * @param r1    first rune array string.
-     * @param r1len number of runes to use.
-     * @param r2    second rune array string.
-     * @param r2len number of runes to use.
-     * @return distance or null on error.
-     */
-    @SuppressWarnings("UnnecessaryLocalVariable")
-    public static Integer levenshtein(int[] r1, int r1len, int[] r2, int r2len)
-    {
-        int rows = r1len;
-        int cols = r2len;
-
-        int[] v0 = new int[cols + 1];
-        int[] v1 = new int[cols + 1];
-        int[] vt;
-
-        for (int i = 0; i <= cols; i++)
-        {
-            v0[i] = i;
-        }
-
-        int m1;
-        int dc;
-        int ic;
-        int sc;
-
-        for (int i = 0; i < rows; i++)
-        {
-            v1[0] = i + 1;
-
-            for (int j = 0; j < cols; j++)
-            {
-                dc = v0[j + 1] + 1;
-                ic = v1[j] + 1;
-
-                if (r1[i] == r2[j])
-                {
-                    sc = v0[j];
-                }
-                else
-                {
-                    sc = v0[j] + 1;
-                }
-
-                m1 = (dc < ic) ? dc : ic;
-
-                v1[j + 1] = m1 < sc ? m1 : sc;
-            }
-
-            vt = v0;
-            v0 = v1;
-            v1 = vt;
-        }
-
-        return v0[cols];
-    }
-
-    /**
      * Compute Levenshtein distance between two string in byte array form.
      * <p>
      * Recommended method if data comes from byte arrays because converting
@@ -552,46 +519,11 @@ public class GolangUtils
             return null;
         }
 
-        //
-        // Convert byte array string into UTF-8 runes array.
-        //
-        // UTF-8 encoding:
-        //
-        // 0000 0000 – 0000 007F 	0xxxxxxx
-        // 0000 0080 – 0000 07FF 	110xxxxx 10xxxxxx
-        // 0000 0800 – 0000 FFFF 	1110xxxx 10xxxxxx 10xxxxxx
-        // 0001 0000 – 0010 FFFF 	11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-        //
-
         int[] r1 = new int[s1len];
         int[] r2 = new int[s2len];
 
-        int rows = 0;
-        int cols = 0;
-
-        for (int inx = 0; inx < s1len; inx++)
-        {
-            if ((rows > 0) && (s1[inx] & 0xc0) == 0x80)
-            {
-                r1[rows - 1] = (r1[rows - 1] << 8) + s1[inx];
-
-                continue;
-            }
-
-            r1[rows++] = s1[inx];
-        }
-
-        for (int inx = 0; inx < s2len; inx++)
-        {
-            if ((cols > 0) && (s2[inx] & 0xc0) == 0x80)
-            {
-                r2[cols - 1] = (r2[cols - 1] << 8) + s2[inx];
-
-                continue;
-            }
-
-            r2[cols++] = s2[inx];
-        }
+        int rows = getRunesFromBytes(r1, s1, s1len);
+        int cols = getRunesFromBytes(r2, s2, s2len);;
 
         //
         // Start computing distance.
@@ -685,6 +617,90 @@ public class GolangUtils
         }
 
         return runeLenght;
+    }
+
+    static int getRunesFromBytes(int[] runes, byte[] bytes, int bytesLen)
+    {
+        //
+        // Convert byte array string into UTF-8 runes array.
+        //
+        // UTF-8 encoding:
+        //
+        // 0000 0000 – 0000 007F 	0xxxxxxx
+        // 0000 0080 – 0000 07FF 	110xxxxx 10xxxxxx
+        // 0000 0800 – 0000 FFFF 	1110xxxx 10xxxxxx 10xxxxxx
+        // 0001 0000 – 0010 FFFF 	11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+        //
+
+        int runesLen = 0;
+
+        for (int inx = 0; inx < bytesLen; inx++)
+        {
+            if ((runesLen > 0) && (bytes[inx] & 0xc0) == 0x80)
+            {
+                runes[runesLen - 1] = (runes[runesLen - 1] << 8) + bytes[inx];
+
+                continue;
+            }
+
+            runes[runesLen++] = bytes[inx];
+        }
+
+        return runesLen;
+    }
+
+    @SuppressWarnings("PointlessBitwiseExpression")
+    static int getBytesFromRunes(byte[] bytes, int[] runes, int runesLen)
+    {
+        int bytesLen = 0;
+
+        for (int inx = 0; inx < runesLen; inx++)
+        {
+            int rune = runes[inx];
+
+            if ((rune & 0xff000000) != 0)
+            {
+                // formatter: off
+
+                bytes[bytesLen++] = (byte) ((rune >> 24) & 0xff);
+                bytes[bytesLen++] = (byte) ((rune >> 16) & 0xff);
+                bytes[bytesLen++] = (byte) ((rune >>  8) & 0xff);
+                bytes[bytesLen++] = (byte) ((rune >>  0) & 0xff);
+
+                // formatter: on
+
+                continue;
+            }
+
+            if ((rune & 0x00ff0000) != 0)
+            {
+                // formatter: off
+
+                bytes[bytesLen++] = (byte) ((rune >> 16) & 0xff);
+                bytes[bytesLen++] = (byte) ((rune >>  8) & 0xff);
+                bytes[bytesLen++] = (byte) ((rune >>  0) & 0xff);
+
+                // formatter: on
+
+                continue;
+            }
+
+            if ((rune & 0x0000ff00) != 0)
+            {
+                // formatter: off
+
+                bytes[bytesLen++] = (byte) ((rune >>  8) & 0xff);
+                bytes[bytesLen++] = (byte) ((rune >>  0) & 0xff);
+
+                // formatter: on
+
+                continue;
+            }
+
+            bytes[bytesLen++] = (byte) rune;
+        }
+
+        return bytesLen;
     }
 
     /**

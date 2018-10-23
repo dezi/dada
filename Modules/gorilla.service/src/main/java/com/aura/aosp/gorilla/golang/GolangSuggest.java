@@ -76,7 +76,6 @@ public class GolangSuggest
 
         JSONObject result;
 
-        /*
         startTime = new Perf();
         result = hintPhrase("de", "Bit");
         Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
@@ -140,7 +139,6 @@ public class GolangSuggest
         startTime = new Perf();
         result = hintPhrase("de", "Messwiener");
         Log.d("perf=%d result=%s", startTime.elapsedTimeMillis(), result.toString());
-        */
 
         Integer dist;
 

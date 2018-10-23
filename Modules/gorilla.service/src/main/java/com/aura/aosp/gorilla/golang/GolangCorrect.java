@@ -149,24 +149,43 @@ public class GolangCorrect
     @Nullable
     private JSONObject phraseCorrect(String word, CorrectFile raFile)
     {
-        if (word.length() < 3)
-        {
-            return null;
-        }
-
-        List<GolangUtils.Score> targetScores = new ArrayList<>();
-        int totalScore = 0;
+        //
+        // Check word length and compute minimum and
+        // maximum compare word lengths.
+        //
 
         int wordlen = word.length();
+
+        if (wordlen < 2)
+        {
+            Err.err("too short! word=%s", word);
+            return null;
+        }
 
         int wordmin = (wordlen > 3) ? wordlen - 1 : wordlen;
         int wordmax = wordlen + 1;
 
+        //
+        // Convert target word into rune format.
+        //
+
         byte[] wordBytes = word.getBytes();
+        int[] wordRunes = new int[wordBytes.length];
+        int wordRuneLen = GolangUtils.getRunesFromBytes(wordRunes, wordBytes, wordBytes.length);
+
+        //
+        // Allocate score array.
+        //
+
+        List<GolangUtils.Score> targetScores = new ArrayList<>();
+        int totalScore = 0;
+
+        //
+        // Start searching.
+        //
 
         for (int checklen = wordmin; checklen <= wordmax; checklen++)
         {
-
             //
             // Retrieve absolute file positions of requests word length words.
             //
@@ -235,15 +254,18 @@ public class GolangCorrect
                 loopMax = (int) lastPos;
             }
 
+            int[] wrunes = new int[100];
+
             byte[] wbytes = new byte[100];
             byte[] pbytes = new byte[100];
 
-            int winx = 0;
-            int pinx = 0;
+            int wlen = 0;
+            int plen = 0;
 
             boolean inword = true;
 
             Integer dist;
+            int rune;
 
             for (int inx = loopMin; inx < loopMax; inx++)
             {
@@ -255,14 +277,14 @@ public class GolangCorrect
 
                 if (buffer[inx] == '\n')
                 {
-                    //dist = GolangUtils.levenshtein(word, new String(wbytes, 0, winx));
-                    //dist = Levenshtein.levenshtein(wordBytes, wordBytes.length, wbytes, winx);
-                    dist = GolangUtils.levenshtein(wordBytes, wordBytes.length, wbytes, winx, 2);
+                    dist = GolangUtils.levenshtein(wordRunes, wordRuneLen, wrunes, wlen);
 
                     if ((dist != null) && (0 <= dist) && (dist <= 2))
                     {
-                        String wString = new String(wbytes, 0, winx);
-                        String pString = new String(pbytes, 0, pinx);
+                        wlen = GolangUtils.getBytesFromRunes(wbytes, wrunes, wlen);
+
+                        String wString = new String(wbytes, 0, wlen);
+                        String pString = new String(pbytes, 0, plen);
 
                         int percent = Integer.parseInt(pString);
                         if (dist > 1) percent /= dist;
@@ -271,24 +293,37 @@ public class GolangCorrect
                         totalScore += percent;
                     }
 
-                    winx = 0;
-                    pinx = 0;
+                    wlen = 0;
+                    plen = 0;
                     inword = true;
                     continue;
                 }
 
                 if (inword)
                 {
-                    if (winx < wbytes.length)
+                    if (wlen < wrunes.length)
                     {
-                        wbytes[winx++] = buffer[inx];
+                        //
+                        // Defuck signed byte.
+                        //
+
+                        rune = buffer[inx] & 0xff;
+
+                        if ((wlen > 0) && (rune & 0xc0) == 0x80)
+                        {
+                            wrunes[wlen - 1] = (wrunes[wlen - 1] << 8) + rune;
+                        }
+                        else
+                        {
+                            wrunes[wlen++] = rune;
+                        }
                     }
                 }
                 else
                 {
-                    if (pinx < pbytes.length)
+                    if (plen < pbytes.length)
                     {
-                        pbytes[pinx++] = buffer[inx];
+                        pbytes[plen++] = buffer[inx];
                     }
                 }
             }
