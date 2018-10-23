@@ -2,16 +2,18 @@ package com.aura.aosp.gorilla.launcher.model.actions;
 
 import android.support.annotation.Nullable;
 
-import com.aura.aosp.gorilla.launcher.model.actions.ActionItem;
-import com.aura.aosp.gorilla.launcher.model.actions.ActionItemInterface;
-
 import java.lang.reflect.Method;
 
+/**
+ * Action item that invokes an generic invoker method identified by an object and method,
+ * and with an optional payload passed to it as argument.
+ */
 public class InvokerActionItem extends ActionItem {
 
     protected Object invokeObject;
     protected Method invokeMethod;
     protected Object invokePayload;
+    protected ActionCluster actionCluster;
 
     /**
      * @param name
@@ -61,5 +63,13 @@ public class InvokerActionItem extends ActionItem {
 
     public void setInvokePayload(Object invokePayload) {
         this.invokePayload = invokePayload;
+    }
+
+    public ActionCluster getActionCluster() {
+        return actionCluster;
+    }
+
+    public void setActionCluster(ActionCluster actionCluster) {
+        this.actionCluster = actionCluster;
     }
 }

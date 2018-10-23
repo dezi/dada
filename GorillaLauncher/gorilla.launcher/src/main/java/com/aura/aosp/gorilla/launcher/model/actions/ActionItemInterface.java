@@ -2,6 +2,9 @@ package com.aura.aosp.gorilla.launcher.model.actions;
 
 import android.support.annotation.Nullable;
 
+/**
+ * TODO: Refactor interface and implementations to fit API goals!
+ */
 public interface ActionItemInterface {
 
     public static enum invocationType {
@@ -22,6 +25,10 @@ public interface ActionItemInterface {
     invocationType getInvocationType();
 
     void setInvocationType(invocationType type);
+
+    invocationTarget getInvocationTarget();
+
+    void setInvocationTarget(invocationTarget invocationTarget);
 
     String getName();
 
