@@ -36,7 +36,7 @@ public class GolangPhrases
 {
     private final static int READSIZE = 2048;
     private final static int CACHEPOINTS = 32;
-    private final static int MAXPHRASELEN = 16;
+    private final static int MAXPHRASELEN = 24;
 
     private final static Map<String, GolangPhrases> languages = new HashMap<>();
 
@@ -167,6 +167,10 @@ public class GolangPhrases
         // possible, until we get a result.
         //
 
+        List<JSONObject> results = new ArrayList<>();
+
+        int hintCount = 0;
+
         for (int inx = startindex; inx < parts.length; inx++)
         {
             StringBuilder searchPhrase = new StringBuilder();
@@ -183,15 +187,36 @@ public class GolangPhrases
 
             if (result != null)
             {
-                //
-                // We have found somthing.
-                //
+                Integer count = Json.getInt(result, "count");
+                if (count == null) continue;
 
-                return result;
+                results.add(result);
+                hintCount += count;
+
+                if (hintCount > 10) break;
             }
         }
 
-        return null;
+        if (results.size() == 0)
+        {
+            //
+            // Nothing found.
+            //
+
+            return null;
+        }
+
+        if (results.size() == 1)
+        {
+            return results.get(0);
+        }
+
+        for (int inx = 0; inx < results.size(); inx++)
+        {
+            Log.d("############## inx=%d result=%s", inx, results.get(inx).toString());
+        }
+
+        return results.get(1);
     }
 
     /**
@@ -376,7 +401,7 @@ public class GolangPhrases
 
                     phrasesFile.file.seek(middle + first.startBuff);
 
-                    return convertResult(phrase, null, scanPhrase(prefix), perf);
+                    return convertResult(phrase, null, scanPhrase(prefix, iscomplete), perf);
                 }
 
                 break;
@@ -445,7 +470,7 @@ public class GolangPhrases
         String hintsStr = resultPhrase.substring(firstBracket + 1, lastBracket);
         String[] hints = hintsStr.split(",");
         JSONObject hintsJson = new JSONObject();
-        boolean valid = false;
+        int hintCount = 0;
 
         for (String hint : hints)
         {
@@ -479,16 +504,17 @@ public class GolangPhrases
             //
 
             Json.put(hintsJson, hintPhrase, hintScore);
-            valid = true;
+            hintCount++;
         }
 
-        if (valid)
+        if (hintCount > 0)
         {
             //
             // We have a least one valid hint.
             //
 
             Json.put(resultJson, "algms", perf.elapsedTimeMillis());
+            Json.put(resultJson, "count", hintCount);
             Json.put(resultJson, "hints", hintsJson);
 
             return resultJson;
@@ -624,7 +650,7 @@ public class GolangPhrases
      * @return poorly formatted JSON string.
      */
     @Nullable
-    private String scanPhrase(String phrase)
+    private String scanPhrase(String phrase, boolean iscomplete)
     {
         List<GolangUtils.Score> targetScores = new ArrayList<>();
         String targetPhrase;
@@ -654,6 +680,11 @@ public class GolangPhrases
                 if (colon < 0) continue;
 
                 String targetWord = targetPhrase.substring(0, colon);
+
+                if (iscomplete)
+                {
+                    targetWord = targetWord.substring(phrase.length()).trim();
+                }
 
                 int atchar = targetPhrase.indexOf("@:");
                 if (atchar < 0) continue;
