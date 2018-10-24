@@ -12,15 +12,20 @@
     <dimen name="stream_item_margin_bottom">8dp</dimen>
     <dimen name="stream_item_margin_left">0dp</dimen>
     <dimen name="stream_item_margin_right">0dp</dimen>
+    <dimen name="stream_item_text_size">14sp</dimen>
 
     <!-- Content Stream Item: Expansion state "preview" -->
-    <dimen name="stream_preview_item_height">48dp</dimen>
-    <dimen name="stream_preview_item_image_width">48dp</dimen>
-    <dimen name="stream_preview_item_image_height">48dp</dimen>
-    <dimen name="stream_preview_item_text_paddingStart">18dp</dimen>
-    <dimen name="stream_preview_item_text_paddingEnd">8dp</dimen>
-    <dimen name="stream_preview_item_text_maxWidth">160dp</dimen>
+    <dimen name="stream_preview_item_height">58dp</dimen>
+    <dimen name="stream_preview_item_image_width">58dp</dimen>
+    <dimen name="stream_preview_item_image_height">58dp</dimen>
+    <dimen name="stream_preview_item_corner_radius">16dp</dimen>
+    <dimen name="stream_preview_item_text_paddingVertical">4dp</dimen>
+    <dimen name="stream_preview_item_text_paddingCenter">14dp</dimen>
+    <dimen name="stream_preview_item_text_paddingEdge">18dp</dimen>
+    <dimen name="stream_preview_item_text_maxWidth">130dp</dimen>
     <dimen name="stream_preview_item_text_minWidth">40dp</dimen>
+    <dimen name="stream_preview_item_text_title_size">13sp</dimen>
+    <dimen name="stream_preview_item_text_main_size">14sp</dimen>
 
     <!-- Main Status Bar -->
     <dimen name="statusbar_padding_horizontal">8dp</dimen>

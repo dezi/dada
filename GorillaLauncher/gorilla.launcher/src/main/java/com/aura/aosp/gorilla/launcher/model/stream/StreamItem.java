@@ -47,7 +47,6 @@ public abstract class StreamItem implements StreamItemInterface {
         setImageId(imageId);
 
         Long currentDateTime = System.currentTimeMillis();
-
         setCreateTime(currentDateTime);
         setModifyTime(currentDateTime);
     }
@@ -83,20 +82,20 @@ public abstract class StreamItem implements StreamItemInterface {
 
                 int endPos = text.indexOf(" ", startPos);
 
-                if (endPos >= 0 && startPos < DEFAULT_MAX_EXCERPT_LENGTH - 2) {
+                if (endPos >= 0 && startPos < DEFAULT_MAX_EXCERPT_LENGTH - 4) {
                     tryTitle += text.substring(startPos, endPos) + " ";
                     startPos = endPos + 1;
                     continue;
                 }
 
-                useTitle = tryTitle.trim();
+                useTitle = tryTitle.trim() + " ...";
 
                 break;
             }
         }
 
         if (useTitle == null) {
-            useTitle = text.substring(0, DEFAULT_MAX_EXCERPT_LENGTH - 3) + "...";
+            useTitle = text.substring(0, DEFAULT_MAX_EXCERPT_LENGTH - 4) + " ...";
         }
 
         return useTitle;

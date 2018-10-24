@@ -35,6 +35,8 @@
     <color name="color_stream_preview_bg_generic">#774ec7</color>
     <color name="color_stream_preview_bg_contact">#676cf9</color>
     <color name="color_stream_preview_bg_message">#31b6a2</color>
+    <color name="color_stream_text_main">#ffffff</color>
+    <color name="color_stream_text_muted">#dedede</color>
 
     <!-- Action Cluster Container / Mask -->
     <color name="color_actioncluster_container_mask_bg">#000000</color>

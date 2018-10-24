@@ -9,8 +9,8 @@
         android:height="@dimen/stream_preview_item_image_height" />
 
     <corners
-        android:bottomLeftRadius="15dp"
-        android:topLeftRadius="15dp" />
+        android:bottomLeftRadius="@dimen/stream_preview_item_corner_radius"
+        android:topLeftRadius="@dimen/stream_preview_item_corner_radius" />
 
     <padding
         android:bottom="0dp"

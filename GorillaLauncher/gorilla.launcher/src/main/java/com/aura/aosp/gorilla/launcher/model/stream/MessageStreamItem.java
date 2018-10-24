@@ -2,6 +2,7 @@ package com.aura.aosp.gorilla.launcher.model.stream;
 
 import android.support.annotation.NonNull;
 
+import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
@@ -45,6 +46,7 @@ public class MessageStreamItem extends DraftStreamItem implements GorillaSharabl
         setCreateTime(gorillaMessage.getTime());
         setImageId(R.drawable.ic_message_black_24dp);
         setType(ItemType.TYPE_STREAMITEM_MESSAGE);
+
 //        setCreateTime(gorillaMessage.getStatusTime("received"));
 //        setCreateTime(gorillaMessage.getStatusTime("queued"));
     }

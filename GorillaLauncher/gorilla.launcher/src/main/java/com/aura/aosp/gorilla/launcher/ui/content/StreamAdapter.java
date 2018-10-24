@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.gorilla.launcher.LauncherActivity;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.StreamActivity;
@@ -196,8 +197,20 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 break;
         }
 
-        // Set title and text
-//        holder.previewTitle.setText(dataSet.getTitle());
+//        // Set title
+//        String title = dataSet.getTitle();
+//
+//        Long timeStamp = dataSet.getCreateTime();
+//
+//        if (timeStamp != null) {
+//            String datestring = Dates.getLocalDateAndTime(timeStamp);
+//            String timeTag = datestring.substring(8, 10) + ":" + datestring.substring(10, 12);
+//            title += " – " + timeTag;
+//        }
+//
+//        holder.previewTitle.setText(title);
+
+        // Set text
         holder.previewText.setText(dataSet.getTextExcerpt());
 
         // Set color of background shape drawables

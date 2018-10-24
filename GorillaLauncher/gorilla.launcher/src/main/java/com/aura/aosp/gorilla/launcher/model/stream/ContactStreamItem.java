@@ -15,7 +15,7 @@ public class ContactStreamItem extends StreamItem implements StreamItemInterface
     protected boolean isOwnerIdentity;
 
     public ContactStreamItem(@NonNull User ownerUser, @NonNull User contactUser) {
-        super(ownerUser, ItemType.TYPE_STREAMITEM_CONTACT, contactUser.getIdentity().getFull(), contactUser.getIdentity().getFull(), R.drawable.ic_person_black_24dp);
+        super(ownerUser, ItemType.TYPE_STREAMITEM_CONTACT, contactUser.getIdentity().getNick(), contactUser.getIdentity().getFull(), R.drawable.ic_person_black_24dp);
         setContactUser(contactUser);
     }
 
