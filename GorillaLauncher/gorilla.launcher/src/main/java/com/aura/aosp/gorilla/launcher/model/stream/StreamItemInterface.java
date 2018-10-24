@@ -2,6 +2,9 @@ package com.aura.aosp.gorilla.launcher.model.stream;
 
 import com.aura.aosp.gorilla.launcher.model.user.User;
 
+/**
+ * TODO: Refactor interface and implementations to fit API goals!
+ */
 interface StreamItemInterface {
 
     // TODO: Create rule for action domains, context, subactions: com.aura.notes...
@@ -28,6 +31,10 @@ interface StreamItemInterface {
     String getText();
 
     void setText(String text);
+
+    String getTextExcerpt();
+
+    void setTextExcerpt(String textExcerpt);
 
     Integer getImageId();
 

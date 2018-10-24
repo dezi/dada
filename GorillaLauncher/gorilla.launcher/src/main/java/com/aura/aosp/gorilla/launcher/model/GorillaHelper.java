@@ -16,16 +16,11 @@ import java.util.Map;
  */
 public class GorillaHelper {
 
-    public static final Map<String, String> atomTypes;
-
-    static {
-        atomTypes = new HashMap<String, String>();
-        atomTypes.put("state", "aura.event.state");
-        atomTypes.put("action", "aura.event.action");
-        atomTypes.put("context", "aura.event.context");
-        atomTypes.put("chatMessage", "aura.chat.message");
-        atomTypes.put("draft", "aura.draft");
-    }
+    public static final String ATOMTYPE_EVENT_STATE = "aura.event.state";
+    public static final String ATOMTYPE_EVENT_ACTION = "aura.event.action";
+    public static final String ATOMTYPE_EVENT_CONTEXT = "aura.event.action";
+    public static final String ATOMTYPE_CHAT_MESSAGE = "aura.chat.message";
+    public static final String ATOMTYPE_TEXT_DRAFT = "aura.text.draft";
 
     /**
      * Try to parse specific time fields from "load" segment of atom.

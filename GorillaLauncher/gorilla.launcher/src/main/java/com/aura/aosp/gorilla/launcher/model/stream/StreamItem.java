@@ -10,9 +10,12 @@ import com.aura.aosp.gorilla.launcher.model.user.User;
  */
 public abstract class StreamItem implements StreamItemInterface {
 
+    private static final int DEFAULT_MAX_EXCERPT_LENGTH = 42;
+
     protected User ownerUser;
     protected String title;
     protected String text;
+    protected String textExcerpt;
     protected Integer imageId;
     protected ItemType type;
     protected Float absoluteScore = 1.0f;
@@ -35,17 +38,68 @@ public abstract class StreamItem implements StreamItemInterface {
      * @param text
      * @param imageId
      */
-    public StreamItem(User ownerUser, @NonNull ItemType itemType, @NonNull String title, @NonNull String text, @NonNull Integer imageId) {
+    public StreamItem(User ownerUser, @NonNull ItemType itemType, @Nullable String title, @NonNull String text, @NonNull Integer imageId) {
         setOwnerUser(ownerUser);
         setType(itemType);
         setTitle(title);
         setText(text);
+        setTextExcerpt(extractExcerpt(text));
         setImageId(imageId);
 
         Long currentDateTime = System.currentTimeMillis();
 
         setCreateTime(currentDateTime);
         setModifyTime(currentDateTime);
+    }
+
+    /**
+     * TODO: Extract to util class
+     *
+     * @param text
+     * @return
+     */
+    private static String extractExcerpt(String text) {
+
+        if (text.length() <= DEFAULT_MAX_EXCERPT_LENGTH) {
+            return text;
+        }
+
+        String tryTitle = "";
+        String useTitle = null;
+
+        if (text.contains("\n")) {
+
+            tryTitle = text.substring(0, text.indexOf("\n"));
+
+            if (tryTitle.length() <= DEFAULT_MAX_EXCERPT_LENGTH) {
+                useTitle = tryTitle;
+            }
+
+        } else if (text.contains(" ")) {
+
+            int startPos = 0;
+
+            while (true) {
+
+                int endPos = text.indexOf(" ", startPos);
+
+                if (endPos >= 0 && startPos < DEFAULT_MAX_EXCERPT_LENGTH - 2) {
+                    tryTitle += text.substring(startPos, endPos) + " ";
+                    startPos = endPos + 1;
+                    continue;
+                }
+
+                useTitle = tryTitle.trim();
+
+                break;
+            }
+        }
+
+        if (useTitle == null) {
+            useTitle = text.substring(0, DEFAULT_MAX_EXCERPT_LENGTH - 3) + "...";
+        }
+
+        return useTitle;
     }
 
     @Override
@@ -79,8 +133,8 @@ public abstract class StreamItem implements StreamItemInterface {
     }
 
     @Override
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTitle(@Nullable String title) {
+        this.title = title != null ? title : "";
     }
 
     @Override
@@ -91,6 +145,16 @@ public abstract class StreamItem implements StreamItemInterface {
     @Override
     public void setText(String text) {
         this.text = text;
+    }
+
+    @Override
+    public String getTextExcerpt() {
+        return textExcerpt;
+    }
+
+    @Override
+    public void setTextExcerpt(String textExcerpt) {
+        this.textExcerpt = textExcerpt;
     }
 
     @Override

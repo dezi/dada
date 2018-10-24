@@ -17,7 +17,7 @@ import com.aura.aosp.gorilla.launcher.model.user.User;
  *
  * TODO: This may be subject to be merged with "DraftStreamItem"
  */
-public class MessageStreamItem extends DraftStreamItem implements GorillaSharable {
+public class MessageStreamItem extends DraftStreamItem implements GorillaSharable, StreamItemInterface {
 
     final static String LOGTAG = MessageStreamItem.class.getSimpleName();
 
@@ -29,6 +29,7 @@ public class MessageStreamItem extends DraftStreamItem implements GorillaSharabl
      */
     public MessageStreamItem(@NonNull User ownerUser, @NonNull String text) {
         super(ownerUser, text);
+        setTitle(ownerUser.getIdentity().getNick());
         setImageId(R.drawable.ic_message_black_24dp);
         setType(ItemType.TYPE_STREAMITEM_MESSAGE);
     }
@@ -40,10 +41,10 @@ public class MessageStreamItem extends DraftStreamItem implements GorillaSharabl
      */
     public MessageStreamItem(@NonNull User ownerUser, GorillaMessage gorillaMessage) {
         super(ownerUser, gorillaMessage.getMessageText());
+        setTitle(ownerUser.getIdentity().getNick());
         setCreateTime(gorillaMessage.getTime());
         setImageId(R.drawable.ic_message_black_24dp);
         setType(ItemType.TYPE_STREAMITEM_MESSAGE);
-
 //        setCreateTime(gorillaMessage.getStatusTime("received"));
 //        setCreateTime(gorillaMessage.getStatusTime("queued"));
     }

@@ -17,6 +17,8 @@ public class ImageShaper {
 
     /**
      * Apply a shape to an image and place result in given image view.
+     * TODO: Refactor to let shape return bitmap and add function which applies bitmap to image view
+     * TODO: (Adjust e.g. StreamAdapter to reuse bitmaps of already computes bitmaps -> performance!)
      *
      * @param context
      * @param originalImage

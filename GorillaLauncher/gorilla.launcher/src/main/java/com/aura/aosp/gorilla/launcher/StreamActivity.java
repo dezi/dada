@@ -141,20 +141,6 @@ public class StreamActivity extends LauncherActivity {
     }
 
     /**
-     * ACTION: "Stream"
-     */
-    public void onOpenStream() {
-
-        // Create and display stream items
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                streamView.fadeIn();
-            }
-        }, 600);
-    }
-
-    /**
      * Remove active func views and action cluster layers and start
      * with refreshed stream view.
      */
@@ -163,6 +149,18 @@ public class StreamActivity extends LauncherActivity {
         deactivateAllActionsClusterViews();
         activateMainContentView();
         reloadStreamItems(null);
+    }
+
+    /**
+     * ACTION: "Stream"
+     */
+    public void onOpenStream() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                streamView.fadeIn();
+            }
+        }, 600);
     }
 
     /**
@@ -260,7 +258,6 @@ public class StreamActivity extends LauncherActivity {
         Log.d("onSendMessage myUser <%s>", getMyUser().getIdentity().getNick());
 
         EditText editTextView = (EditText) findViewById(R.id.editText);
-
         String messageText = editTextView.getText().toString();
 
         Log.d("onSendMessage message <%s>", messageText);
@@ -272,6 +269,7 @@ public class StreamActivity extends LauncherActivity {
         // TODO: CONTINNUE HERE! Cleanup all this hide/show stuff!
         hideKeyboard(this);
         hideStatusAndActionBar();
+        setCurrentAtomContext(StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES);
         onReturnToStream();
     }
 

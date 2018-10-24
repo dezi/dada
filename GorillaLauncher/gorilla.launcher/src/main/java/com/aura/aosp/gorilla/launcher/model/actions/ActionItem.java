@@ -1,13 +1,10 @@
 package com.aura.aosp.gorilla.launcher.model.actions;
 
-import android.content.Intent;
 import android.support.annotation.Nullable;
 
 /**
  * The ActionItem model represents the universal action button found throughout all
  * navigation action button collections like the "action cluster".
- * <p>
- * TODO: Extract more subclasses: GenericActionItem, IntentActionItem, ClusterActionItem
  */
 public class ActionItem implements ActionItemInterface {
 
@@ -16,9 +13,6 @@ public class ActionItem implements ActionItemInterface {
 
     protected String name;
     protected Integer imageId;
-    protected String action = null;
-    protected Intent intent;
-    protected ActionCluster actionCluster;
     protected Float absoluteScore;
 
     /**
@@ -32,50 +26,6 @@ public class ActionItem implements ActionItemInterface {
         setAbsoluteScore(initialScore);
     }
 
-    /**
-     *
-     * @param name
-     * @param imageId
-     * @param initialScore
-     * @param action
-     */
-    public ActionItem(String name, Integer imageId, @Nullable Float initialScore, String action) {
-        setInvocationType(ActionItemInterface.invocationType.INVOCATION_TYPE_INTENTSTRING);
-        setName(name);
-        setImageId(imageId);
-        setAction(action);
-        setAbsoluteScore(initialScore);
-    }
-
-    /**
-     * @param name
-     * @param imageId
-     * @param initialScore
-     * @param intent
-     */
-    public ActionItem(String name, Integer imageId, @Nullable Float initialScore, Intent intent) {
-        setInvocationType(ActionItemInterface.invocationType.INVOCATION_TYPE_INTENT);
-        setName(name);
-        setImageId(imageId);
-        setIntent(intent);
-        setAbsoluteScore(initialScore);
-    }
-
-    /**
-     * @param name
-     * @param imageId
-     * @param initialScore
-     * @param actionCluster
-     */
-    public ActionItem(String name, Integer imageId, @Nullable Float initialScore, ActionCluster actionCluster) {
-        setInvocationType(ActionItemInterface.invocationType.INVOCATION_TYPE_CLUSTER);
-        setInvocationTarget(ActionItemInterface.invocationTarget.INVOCATION_TARGET_INTERN_CLUSTER);
-        setName(name);
-        setImageId(imageId);
-        setActionCluster(actionCluster);
-        setAbsoluteScore(initialScore);
-    }
-
     @Override
     public invocationType getInvocationType() {
         return invocationType;
@@ -86,10 +36,12 @@ public class ActionItem implements ActionItemInterface {
         this.invocationType = invocationType;
     }
 
+    @Override
     public invocationTarget getInvocationTarget() {
         return invocationTarget;
     }
 
+    @Override
     public void setInvocationTarget(invocationTarget invocationTarget) {
         this.invocationTarget = invocationTarget;
     }
@@ -122,29 +74,5 @@ public class ActionItem implements ActionItemInterface {
     @Override
     public void setAbsoluteScore(@Nullable Float absoluteScore) {
         this.absoluteScore = absoluteScore != null ? absoluteScore : 1.0f;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public Intent getIntent() {
-        return intent;
-    }
-
-    public void setIntent(Intent intent) {
-        this.intent = intent;
-    }
-
-    public ActionCluster getActionCluster() {
-        return actionCluster;
-    }
-
-    public void setActionCluster(ActionCluster actionCluster) {
-        this.actionCluster = actionCluster;
     }
 }

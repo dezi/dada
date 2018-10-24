@@ -2,14 +2,16 @@ package com.aura.aosp.gorilla.launcher.store;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-import com.aura.aosp.aura.common.univid.Identity;
-import com.aura.aosp.gorilla.launcher.StreamActivity;
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.launcher.R;
+import com.aura.aosp.gorilla.launcher.StreamActivity;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionItem;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionItemInterface;
+import com.aura.aosp.gorilla.launcher.model.actions.ClusterActionItem;
+import com.aura.aosp.gorilla.launcher.model.actions.IntentActionItem;
+import com.aura.aosp.gorilla.launcher.model.actions.IntentstringActionItem;
 import com.aura.aosp.gorilla.launcher.model.actions.InvokerActionItem;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 
@@ -54,9 +56,7 @@ public class ActionClusterStore {
 
                 case "start":
 
-                    Log.d(LOGTAG, "#### Inside start...");
-
-                    items.add(new ActionItem(
+                    items.add(new ClusterActionItem(
                             context.getResources().getString(R.string.actions_openCalendar),
                             R.drawable.ic_add_black_24dp,
                             1f,
@@ -74,14 +74,14 @@ public class ActionClusterStore {
                             StreamActivity.class.getMethod("onOpenSimpleCalendar")
                     ));
 
-                    items.add(new ActionItem(
+                    items.add(new IntentstringActionItem(
                             context.getResources().getString(R.string.actions_startPhoneCall),
                             R.drawable.ic_call_black_24dp,
                             0.95f,
                             getActionDomainForFragment(actionPath + ".START_PHONE_CALL")
                     ));
 
-                    items.add(new ActionItem(
+                    items.add(new ClusterActionItem(
                             context.getResources().getString(R.string.actions_composeMessage),
                             R.drawable.ic_sms_black_24dp,
                             0.92f,
@@ -107,7 +107,7 @@ public class ActionClusterStore {
                     ));
 
                     // Special action "Switch Profile". TODO: Remove for 0.1:
-                    ActionItem switchProfileActionItem = new ActionItem(
+                    IntentActionItem switchProfileActionItem = new IntentActionItem(
                             context.getResources().getString(R.string.actions_switchProfile),
                             R.drawable.ic_account_circle_black_24dp,
                             0.97f,
@@ -144,14 +144,14 @@ public class ActionClusterStore {
                             contactUser
                     ));
 
-                    items.add(new ActionItem(
+                    items.add(new IntentstringActionItem(
                             context.getResources().getString(R.string.actions_startPhoneCall),
                             R.drawable.ic_call_black_24dp,
                             0.95f,
                             getActionDomainForFragment(actionPath + ".START_PHONE_CALL")
                     ));
 
-                    items.add(new ActionItem(
+                    items.add(new IntentstringActionItem(
                             context.getResources().getString(R.string.actions_addPerson),
                             R.drawable.ic_person_add_black_24dp,
                             0.95f,
@@ -184,35 +184,35 @@ public class ActionClusterStore {
                                 StreamActivity.class.getMethod("onPickDate")
                         ));
 
-                        items.add(new ActionItem(
+                        items.add(new IntentstringActionItem(
                                 context.getResources().getString(R.string.actions_composeMessage),
                                 R.drawable.ic_sms_black_24dp,
                                 0.69f,
                                 getActionDomainForFragment("launcher.CREATE_NOTE")
                         ));
 
-                        items.add(new ActionItem(
+                        items.add(new IntentstringActionItem(
                                 context.getResources().getString(R.string.actions_newtextsharedwith),
                                 R.drawable.ic_contact_mail_black_24dp,
                                 0.99f,
                                 getActionDomainForFragment("launcher.CREATE_NOTE_SHARED_WITH")
                         ));
 
-                        items.add(new ActionItem(
+                        items.add(new IntentstringActionItem(
                                 context.getResources().getString(R.string.actions_lookupContact),
                                 R.drawable.ic_person_black_24dp,
                                 0.75f,
                                 getActionDomainForFragment("launcher.LOOKUP_CONTENT")
                         ));
 
-                        items.add(new ActionItem(
+                        items.add(new ClusterActionItem(
                                 context.getResources().getString(R.string.actions_editText),
                                 R.drawable.ic_mode_edit_black_24dp,
                                 0.80f,
                                 getClusterForAction(actionPath + ".SELECT_TEXT", contactUser)
                         ));
 
-                        items.add(new ActionItem(
+                        items.add(new IntentstringActionItem(
                                 context.getResources().getString(R.string.actions_share),
                                 R.drawable.ic_share_black_24dp,
                                 0.98f,
@@ -257,8 +257,7 @@ public class ActionClusterStore {
 
         } catch (NoSuchMethodException e) {
 
-            Log.e(LOGTAG, String.format("No such action invocation invokeMethod found: <%s>",
-                    e.getMessage()));
+            Log.e("No such action invocation invokeMethod found: <%s>", e.getMessage());
         }
 
         return new ActionCluster(actionPath, items);

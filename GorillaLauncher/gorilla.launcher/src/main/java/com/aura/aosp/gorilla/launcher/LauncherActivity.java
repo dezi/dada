@@ -23,9 +23,7 @@ import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
-import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
-import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
@@ -429,15 +427,14 @@ public class LauncherActivity extends AppCompatActivity {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
-                    activateActionClusterView(actionClusterView);
+                    ActionClusterView actionClusterView = getBaseActionClusterView(true);
                     Effects.doClusterDemoAnimation(actionClusterView);
                 }
             }, 800);
             Handler handler2 = new Handler();
             handler2.postDelayed(new Runnable() {
                 public void run() {
-                    ActionClusterView actionClusterView = findViewById(R.id.actionCluster);
+                    ActionClusterView actionClusterView = getBaseActionClusterView(true);
                     deactivateActionClusterView(actionClusterView);
                 }
             }, 2500);
