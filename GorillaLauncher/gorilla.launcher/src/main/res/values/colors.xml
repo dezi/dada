@@ -15,8 +15,8 @@
     <color name="color_text_secondary">#d0d0d0</color>
 
     <!-- Launcher -->
-    <color name="color_launcher_background">#000000</color>
-    <color name="color_launcher_background_debug">#393939</color>
+    <color name="color_launcher_bg">#000000</color>
+    <color name="color_launcher_bg_debug">#393939</color>
     <color name="color_launcher_overlay_text">#404040</color>
 
     <!-- Main Status Bar -->
@@ -30,21 +30,21 @@
     <color name="color_stream_dot">#cacaca</color>
     <color name="color_stream_button_highlight">#6b3efc</color>
     <color name="color_stream_hint">#8e6bff</color>
-    <color name="color_stream_image_background_primary">#f76dee</color>
-    <color name="color_stream_image_background_secondary">#f9a6f3</color>
-    <color name="color_stream_preview_generic">#774ec7</color>
-    <color name="color_stream_preview_contact">#676cf9</color>
-    <color name="color_stream_preview_message">#31b6a2</color>
+    <color name="color_stream_image_bg_primary">#f76dee</color>
+    <color name="color_stream_image_bg_secondary">#f9a6f3</color>
+    <color name="color_stream_preview_bg_generic">#774ec7</color>
+    <color name="color_stream_preview_bg_contact">#676cf9</color>
+    <color name="color_stream_preview_bg_message">#31b6a2</color>
 
     <!-- Action Cluster Container / Mask -->
-    <color name="color_actioncluster_container_mask_background">#000000</color>
-    <color name="color_actioncluster_container_mask_background_debug">#a7ba93</color>
+    <color name="color_actioncluster_container_mask_bg">#000000</color>
+    <color name="color_actioncluster_container_mask_bg_debug">#a7ba93</color>
 
     <!-- Action Cluster View -->
-    <color name="color_actioncluster_background">#b7ef8c</color>
+    <color name="color_actioncluster_bg">#b7ef8c</color>
 
     <!-- Action Cluster Toggle Button -->
-    <color name="color_togglebutton_enabled">@color/color_launcher_background</color>
+    <color name="color_togglebutton_enabled">@color/color_launcher_bg</color>
     <color name="color_togglebutton_pressed">#a173ce</color>
     <color name="color_togglebutton_icon">#ffffff</color>
 
@@ -63,7 +63,7 @@
     <color name="color_clusterbutton_icon_generic">@color/color_clusterbutton_icon_action_intern</color>
 
     <!-- Circle Images / Avatars -->
-    <color name="color_circleimage_background">#fafafa</color>
+    <color name="color_circleimage_bg">#fafafa</color>
     <color name="color_circleimage_avatar_border">#ffffff</color>
     <color name="color_circleimage_avatar_primary">#808080</color>
 
@@ -79,10 +79,10 @@
     <color name="color_helper_mask">#ffffff</color>
 
     <!-- Function: Calendar -->
-    <color name="color_function_calendar_background">#b9b9b9</color>
+    <color name="color_function_calendar_bg">#b9b9b9</color>
 
     <!-- Func: Content Composer -->
-    <color name="color_coco_background">#dcdcdc</color>
+    <color name="color_coco_bg">#dcdcdc</color>
     <color name="color_coco_text_primary">#222222</color>
     <color name="color_stream_image_drawable">#ffffff</color>
 </resources>

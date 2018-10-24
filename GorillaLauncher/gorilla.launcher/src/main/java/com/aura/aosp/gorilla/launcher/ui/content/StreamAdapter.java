@@ -149,15 +149,15 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         switch (dataSet.getType()) {
             case TYPE_STREAMITEM_GENERIC:
             default:
-                useShapeBgColor = R.color.color_stream_preview_generic;
+                useShapeBgColor = R.color.color_stream_preview_bg_generic;
                 break;
 
             case TYPE_STREAMITEM_CONTACT:
-                useShapeBgColor = R.color.color_stream_preview_contact;
+                useShapeBgColor = R.color.color_stream_preview_bg_contact;
                 break;
 
             case TYPE_STREAMITEM_MESSAGE:
-                useShapeBgColor = R.color.color_stream_preview_message;
+                useShapeBgColor = R.color.color_stream_preview_bg_message;
                 break;
 
             case TYPE_STREAMITEM_INVISIBLE:

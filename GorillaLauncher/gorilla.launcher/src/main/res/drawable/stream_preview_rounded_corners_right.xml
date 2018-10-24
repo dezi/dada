@@ -20,5 +20,5 @@
 
     <stroke
         android:width="0dp"
-        android:color="@color/color_launcher_background" />
+        android:color="@color/color_launcher_bg" />
 </shape>

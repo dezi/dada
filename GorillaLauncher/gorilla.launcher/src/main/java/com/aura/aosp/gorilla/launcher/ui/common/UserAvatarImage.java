@@ -48,7 +48,7 @@ public class UserAvatarImage extends RelativeLayout {
         circleImageView = findViewById(R.id.circle_image);
         textView = findViewById(R.id.text_overlay);
 
-        circleImageView.setCircleBackgroundColor(getContext().getColor(R.color.color_circleimage_background));
+        circleImageView.setCircleBackgroundColor(getContext().getColor(R.color.color_circleimage_bg));
 
         final Integer avatarImageRes = getUser().getContactAvatarImageRes();
 

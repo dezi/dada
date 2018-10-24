@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.8"
-        android:background="@color/color_coco_background"
+        android:background="@color/color_coco_bg"
         android:paddingTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -32,7 +32,7 @@
             android:paddingHorizontal="@dimen/coco_paddingHorizontal"
             android:paddingVertical="@dimen/coco_paddingVertical"
             android:textColor="@color/color_coco_text_primary"
-            android:textColorLink="@color/color_coco_background"
+            android:textColorLink="@color/color_coco_bg"
             android:textSize="@dimen/coco_textsize"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

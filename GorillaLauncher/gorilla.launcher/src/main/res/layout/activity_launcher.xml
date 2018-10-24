@@ -5,7 +5,7 @@
     android:id="@+id/launcher"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_launcher_background_debug"
+    android:background="@color/color_launcher_bg_debug"
     android:keepScreenOn="true"
     tools:context=".LauncherActivity">
 
@@ -66,7 +66,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:alpha="0.1"
-            android:background="@color/color_actioncluster_container_mask_background_debug" />
+            android:background="@color/color_actioncluster_container_mask_bg_debug" />
 
     </FrameLayout>
 

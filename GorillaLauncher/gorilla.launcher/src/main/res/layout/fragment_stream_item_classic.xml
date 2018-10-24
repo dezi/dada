@@ -8,7 +8,7 @@
     android:layout_marginEnd="@dimen/stream_item_margin_right"
     android:layout_marginStart="@dimen/stream_item_margin_left"
     android:layout_marginTop="@dimen/stream_item_margin_top"
-    android:background="@color/color_launcher_background_debug"
+    android:background="@color/color_launcher_bg_debug"
     android:clickable="true"
     android:focusable="true"
     android:layout_gravity="end"
