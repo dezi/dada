@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.launcher.model.stream;
 
+import com.aura.aosp.gorilla.launcher.model.GorillaPersistable;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 
 /**

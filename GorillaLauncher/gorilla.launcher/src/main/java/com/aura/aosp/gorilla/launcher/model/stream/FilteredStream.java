@@ -33,6 +33,7 @@ public class FilteredStream extends ArrayList<StreamItem> {
 
     /**
      * Called if item was fully visible to user.
+     * TODO: Extract listener object: ItemInteractionListener
      *
      * @param pos
      */

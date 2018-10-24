@@ -11,6 +11,8 @@ import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.GorillaPersistable;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 
+import org.json.JSONException;
+
 /**
  * Note item
  */
@@ -29,15 +31,15 @@ public class DraftStreamItem extends StreamItem implements GorillaPersistable, S
     /**
      * Create item from gorilla atom.
      *
-     * @param gorillaAtom
+     * @param gorillaMessage
      */
-    public DraftStreamItem(@NonNull User ownerUser, @NonNull GorillaAtom gorillaAtom) {
+    public DraftStreamItem(@NonNull User ownerUser, @NonNull GorillaMessage gorillaMessage) {
 
-        super(ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE);
+        super(ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), gorillaMessage.getMessageText(), R.drawable.ic_note_black_24dp);
 
         setTitle(ownerUser.getIdentity().getNick());
         setImageId(R.drawable.ic_note_black_24dp);
-        setTimeCreated(gorillaAtom.getTime());
+        setTimeCreated(gorillaMessage.getTime());
     }
 
     @Override

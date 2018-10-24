@@ -17,7 +17,7 @@ import com.aura.aosp.gorilla.launcher.model.user.User;
  * <p>
  * TODO: This may be subject to be merged with "DraftStreamItem"
  */
-public class MessageStreamItem extends DraftStreamItem implements GorillaSharable, StreamItemInterface {
+public class MessageStreamItem extends StreamItem implements GorillaSharable, StreamItemInterface {
 
     final static String LOGTAG = MessageStreamItem.class.getSimpleName();
 
@@ -38,12 +38,7 @@ public class MessageStreamItem extends DraftStreamItem implements GorillaSharabl
      * @param text
      */
     public MessageStreamItem(@NonNull User ownerUser, @NonNull String text) {
-
-        super(ownerUser, text);
-
-        setTitle(ownerUser.getIdentity().getNick());
-        setImageId(R.drawable.ic_message_black_24dp);
-        setType(ItemType.TYPE_STREAMITEM_MESSAGE);
+        super(ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), text, R.drawable.ic_message_black_24dp);
     }
 
     /**
@@ -53,15 +48,9 @@ public class MessageStreamItem extends DraftStreamItem implements GorillaSharabl
      * @param gorillaMessage
      */
     public MessageStreamItem(@NonNull User ownerUser, @NonNull GorillaMessage gorillaMessage) {
-
-        super(ownerUser, gorillaMessage.getMessageText());
+        super(ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), gorillaMessage.getMessageText(), R.drawable.ic_message_black_24dp);
 
         setGorillaMessage(gorillaMessage);
-
-        setTitle(ownerUser.getIdentity().getNick());
-        setImageId(R.drawable.ic_message_black_24dp);
-        setType(ItemType.TYPE_STREAMITEM_MESSAGE);
-
         setTimeCreated(gorillaMessage.getTime());
 
 //        setTimeReceived(gorillaMessage.getStatusTime("received"));
@@ -124,6 +113,19 @@ public class MessageStreamItem extends DraftStreamItem implements GorillaSharabl
         }
 
         setAtomTimeRead(System.currentTimeMillis());
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String remoteUserUUID = getSharedWithUser().getIdentity().getUserUUIDBase64();
+                String remoteDeviceUUID = getSharedWithUser().getIdentity().getDeviceUUIDBase64();
+
+                if (gorillaClient.sendPayloadRead(remoteUserUUID, remoteDeviceUUID, getGorillaMessage().getUUIDBase64())) {
+                    gorillaClient.putAtomSharedBy(remoteUserUUID, getGorillaMessage().getAtom());
+                }
+            }
+
+        }, 1000);
     }
 
     @Override
@@ -182,21 +184,6 @@ public class MessageStreamItem extends DraftStreamItem implements GorillaSharabl
         String ownerDeviceUUID = getOwnerUser().getIdentity().getDeviceUUIDBase64();
 
         getGorillaMessage().setStatusTime("read", ownerDeviceUUID, timeRead);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                String remoteUserUUID = getSharedWithUser().getIdentity().getUserUUIDBase64();
-                String remoteDeviceUUID = getSharedWithUser().getIdentity().getDeviceUUIDBase64();
-
-                boolean ok = gorillaClient.sendPayloadRead(remoteUserUUID, remoteDeviceUUID, uuid);
-
-                if (ok) {
-                    gorillaClient.putAtomSharedBy(remoteUserUUID, getGorillaMessage().getAtom());
-                }
-            }
-
-        }, 1000);
     }
 
 //    public Long getTimeReceived() {

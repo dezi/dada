@@ -120,35 +120,6 @@ public class StreamActivity extends LauncherActivity {
 
         if (getCurrentAtomContext().equals(StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES)) {
             scrollToStreamEnd();
-
-//            cf.setContent(false, chatProfile.remoteNick, message);
-//
-//            Long readStatus = message.getStatusTime("read");
-//
-//            if (readStatus == null)
-//            {
-//                String ownerDeviceUUID = EventManager.getOwnerDeviceBase64();
-//
-//                if (ownerDeviceUUID != null)
-//                {
-//                    message.setStatusTime("read", ownerDeviceUUID, System.currentTimeMillis());
-//                }
-//
-//                handler.postDelayed(new Runnable()
-//                {
-//                    @Override
-//                    public void run()
-//                    {
-//                        boolean ok = GorillaClient.getInstance().sendPayloadRead(remoteUserUUID, remoteDeviceUUID, uuid);
-//
-//                        if (ok)
-//                        {
-//                            GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, message.getAtom());
-//                        }
-//                    }
-//
-//                }, 1000);
-//            }
         }
     }
 
@@ -168,11 +139,14 @@ public class StreamActivity extends LauncherActivity {
      * Remove active func views and action cluster layers and start
      * with refreshed stream view.
      */
-    public void onReturnToStream() {
+    public void onReturnToStream(boolean reloadItems) {
         removeMainFuncView();
         deactivateAllActionsClusterViews();
         activateMainContentView();
-        reloadStreamItems(null);
+
+        if (reloadItems) {
+            reloadStreamItems(null);
+        }
     }
 
     /**
@@ -287,11 +261,17 @@ public class StreamActivity extends LauncherActivity {
         MessageStreamItem messageStreamItem = new MessageStreamItem(getMyUser(), messageText);
         messageStreamItem.shareWith(contactUser);
 
+        int nextPos = filteredStream.size() - 1;
+        filteredStream.add(nextPos, messageStreamItem);
+        filteredStream.sortyByCreateTime(true);
+        streamAdapter.notifyDataSetChanged();
+
         // TODO: Cleanup (generalize) all this hide/show stuff for SDK default control/status views!
         hideKeyboard(this);
         hideStatusAndActionBar();
+
         setCurrentAtomContext(StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES);
-        onReturnToStream();
+        onReturnToStream(false);
     }
 
     /**
@@ -355,8 +335,12 @@ public class StreamActivity extends LauncherActivity {
     }
 
     public void setCurrentAtomContext(String currentAtomContext) {
-        this.currentAtomContext = currentAtomContext;
-        onReturnToStream();
+        if (! getCurrentAtomContext().equals(currentAtomContext)) {
+            this.currentAtomContext = currentAtomContext;
+            onReturnToStream(true);
+        } else {
+            onReturnToStream(false);
+        }
     }
 
     @Override
@@ -410,7 +394,6 @@ public class StreamActivity extends LauncherActivity {
 
             int nextPos = filteredStream.size() - 1;
             filteredStream.add(nextPos, new MessageStreamItem(ownerUser, message));
-            filteredStream.add(nextPos, new MessageStreamItem(ownerUser, message));
             filteredStream.sortyByCreateTime(true);
 //            streamAdapter.notifyItemInserted(nextPos);
             streamAdapter.notifyDataSetChanged();
@@ -419,15 +402,15 @@ public class StreamActivity extends LauncherActivity {
                 scrollToStreamEnd();
             }
 
-            new Handler().postDelayed(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    GorillaClient.getInstance().sendPayloadRead(remoteUserUUID, remoteDeviceUUID, messageUUID);
-                }
-
-            }, 1000);
+//            new Handler().postDelayed(new Runnable()
+//            {
+//                @Override
+//                public void run()
+//                {
+//                    GorillaClient.getInstance().sendPayloadRead(remoteUserUUID, remoteDeviceUUID, messageUUID);
+//                }
+//
+//            }, 1000);
         }
 
         @Override
