@@ -49,7 +49,6 @@ public class StreamActivity extends LauncherActivity {
     private StreamStore streamStore;
 
     private StreamView streamView;
-    private RecyclerView streamRecyclerView;
     private FilteredStream filteredStream;
     private StreamAdapter streamAdapter;
     private SmartScrollableLayoutManager streamLayoutManager;
@@ -73,6 +72,7 @@ public class StreamActivity extends LauncherActivity {
         // and attach it to main content container
         LayoutInflater inflater = LayoutInflater.from(this);
         streamView = (StreamView) inflater.inflate(R.layout.func_stream, mainContentContainer, false);
+        streamView.setMyUser(getMyUser());
         streamView.setVisibility(View.INVISIBLE);
 
         // use this setting to improve performance if you know that changes
@@ -82,12 +82,9 @@ public class StreamActivity extends LauncherActivity {
         // Add view to container
         mainContentContainer.addView(streamView);
 
-        // Get references to main child view components
-        streamRecyclerView = launcherView.findViewById(R.id.streamRecycler);
-
         // use a linear layout manager
         streamLayoutManager = new SmartScrollableLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        streamRecyclerView.setLayoutManager(streamLayoutManager);
+        streamView.setLayoutManager(streamLayoutManager);
 
         // Register layout manger with "main content smart scrollable layout managers"
         mcSmartScrollableLayoutManagers.add(streamLayoutManager);
@@ -104,7 +101,6 @@ public class StreamActivity extends LauncherActivity {
         // TODO: Replace with aggregated stream items from "Gorilla Content Stream Atoms"
         // Create initial content stream items and specify adapter
         streamStore = new StreamStore(getApplicationContext());
-
         reloadStreamItems(null);
     }
 
@@ -120,11 +116,39 @@ public class StreamActivity extends LauncherActivity {
 
         filteredStream = streamStore.getItemsForAtomContext(atomContext, getMyUser());
         streamAdapter = new StreamAdapter(filteredStream, this, this);
-        streamRecyclerView.setAdapter(streamAdapter);
+        streamView.setAdapter(streamAdapter);
 
-        // TODO: Better find a way to smooth scroll to last inserted item!
         if (getCurrentAtomContext().equals(StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES)) {
             scrollToStreamEnd();
+
+//            cf.setContent(false, chatProfile.remoteNick, message);
+//
+//            Long readStatus = message.getStatusTime("read");
+//
+//            if (readStatus == null)
+//            {
+//                String ownerDeviceUUID = EventManager.getOwnerDeviceBase64();
+//
+//                if (ownerDeviceUUID != null)
+//                {
+//                    message.setStatusTime("read", ownerDeviceUUID, System.currentTimeMillis());
+//                }
+//
+//                handler.postDelayed(new Runnable()
+//                {
+//                    @Override
+//                    public void run()
+//                    {
+//                        boolean ok = GorillaClient.getInstance().sendPayloadRead(remoteUserUUID, remoteDeviceUUID, uuid);
+//
+//                        if (ok)
+//                        {
+//                            GorillaClient.getInstance().putAtomSharedBy(remoteUserUUID, message.getAtom());
+//                        }
+//                    }
+//
+//                }, 1000);
+//            }
         }
     }
 
@@ -132,10 +156,10 @@ public class StreamActivity extends LauncherActivity {
      * Scroll to end of stream view.
      */
     protected void scrollToStreamEnd() {
-        streamRecyclerView.postDelayed(new Runnable() {
+        streamView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                streamRecyclerView.smoothScrollToPosition(streamAdapter.getItemCount() - 1);
+                streamView.smoothScrollToPosition(streamAdapter.getItemCount() - 1);
             }
         }, 450);
     }
@@ -246,7 +270,7 @@ public class StreamActivity extends LauncherActivity {
 //        createActionClusterView(cocoActionCluster, null, true);
 
         // TODO: This is hacked! Use e.g. constraints to reposition and/or perform a view transition
-        activeActionClusterView.setY(40f);
+        activeActionClusterView.setY(42f);
     }
 
     /**
@@ -254,19 +278,16 @@ public class StreamActivity extends LauncherActivity {
      */
     public void onSendMessage(User contactUser) {
 
-        Log.d("onSendMessage for contactUser <%s>", contactUser.getIdentity().getNick());
-        Log.d("onSendMessage myUser <%s>", getMyUser().getIdentity().getNick());
-
         EditText editTextView = (EditText) findViewById(R.id.editText);
         String messageText = editTextView.getText().toString();
 
+        Log.d("onSendMessage for contactUser <%s>", contactUser.getIdentity().getNick());
         Log.d("onSendMessage message <%s>", messageText);
 
         MessageStreamItem messageStreamItem = new MessageStreamItem(getMyUser(), messageText);
         messageStreamItem.shareWith(contactUser);
 
-        // TODO: CONTINNUE HERE! Read messages from goatoms and put into stream!
-        // TODO: CONTINNUE HERE! Cleanup all this hide/show stuff!
+        // TODO: Cleanup (generalize) all this hide/show stuff for SDK default control/status views!
         hideKeyboard(this);
         hideStatusAndActionBar();
         setCurrentAtomContext(StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES);
@@ -376,40 +397,37 @@ public class StreamActivity extends LauncherActivity {
 
         @Override
         public void onPayloadReceived(GorillaPayload payload) {
-
             Log.d("onPayloadReceived: payload=" + payload.toString());
 
             GorillaMessage message = convertPayloadToMessageAndPersist(payload);
             if (message == null) return;
 
-            String remoteUserUUID = payload.getSenderUUIDBase64();
-            String remoteDeviceUUID = payload.getDeviceUUIDBase64();
+            final String messageUUID = payload.getUUIDBase64();
+            final String remoteUserUUID = payload.getSenderUUIDBase64();
+            final String remoteDeviceUUID = payload.getDeviceUUIDBase64();
 
             User ownerUser = new User(Contacts.getContact(remoteUserUUID));
 
             int nextPos = filteredStream.size() - 1;
             filteredStream.add(nextPos, new MessageStreamItem(ownerUser, message));
+            filteredStream.add(nextPos, new MessageStreamItem(ownerUser, message));
             filteredStream.sortyByCreateTime(true);
-            streamAdapter.notifyItemInserted(nextPos);
+//            streamAdapter.notifyItemInserted(nextPos);
+            streamAdapter.notifyDataSetChanged();
 
             if (getCurrentAtomContext().equals(StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES)) {
                 scrollToStreamEnd();
             }
 
-//            displayMessageInList(payload);
-//
-//            String remoteUserUUID = payload.getSenderUUIDBase64();
-//            String remoteDeviceUUID = payload.getDeviceUUIDBase64();
-//
-//            for (ChatProfile chatProfile : chatProfiles)
-//            {
-//                if (!chatProfile.remoteUserUUID.equals(remoteUserUUID)) continue;
-//                if (!chatProfile.remoteDeviceUUID.equals(remoteDeviceUUID)) continue;
-//
-//                chatProfile.activity.dispatchMessage(message);
-//
-//                break;
-//            }
+            new Handler().postDelayed(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    GorillaClient.getInstance().sendPayloadRead(remoteUserUUID, remoteDeviceUUID, messageUUID);
+                }
+
+            }, 1000);
         }
 
         @Override

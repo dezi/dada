@@ -3,7 +3,7 @@ package com.aura.aosp.gorilla.launcher.model.stream;
 import android.support.annotation.NonNull;
 
 import com.aura.aosp.aura.common.crypter.UID;
-import com.aura.aosp.aura.common.simple.Dates;
+import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.gorilla.atoms.GorillaAtom;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.client.GorillaClient;
@@ -26,15 +26,19 @@ public class DraftStreamItem extends StreamItem implements GorillaPersistable, S
         super(ownerUser, ItemType.TYPE_STREAMITEM_DRAFT, null, text, R.drawable.ic_note_black_24dp);
     }
 
-//    /**
-//     * Create item from gorilla message atom.
-//     *
-//     * @param gorillaAtom
-//     */
-//    public DraftStreamItem(GorillaAtom gorillaAtom) {
-//        super(new User(Contacts.getContact(gorillaAtom.getUUIDBase64())), gorillaAtom.getLoad().get("text"));
-//        setCreateTime(gorillaAtom.getTime());
-//    }
+    /**
+     * Create item from gorilla atom.
+     *
+     * @param gorillaAtom
+     */
+    public DraftStreamItem(@NonNull User ownerUser, @NonNull GorillaAtom gorillaAtom) {
+
+        super(ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE);
+
+        setTitle(ownerUser.getIdentity().getNick());
+        setImageId(R.drawable.ic_note_black_24dp);
+        setTimeCreated(gorillaAtom.getTime());
+    }
 
     @Override
     public GorillaAtom persist() {
@@ -49,5 +53,17 @@ public class DraftStreamItem extends StreamItem implements GorillaPersistable, S
         GorillaClient.getInstance().putAtom(noteMessage.getAtom());
 
         return noteMessage;
+    }
+
+    @Override
+    public void onPreviewViewed(User viewedByUser) {
+        // TODO: Implement!
+        // e.g.: Write as event to PMAI!
+    }
+
+    @Override
+    public void onFullyViewed(User viewedByUser) {
+        // TODO: Implement!
+        // e.g.: Write as event to PMAI!
     }
 }

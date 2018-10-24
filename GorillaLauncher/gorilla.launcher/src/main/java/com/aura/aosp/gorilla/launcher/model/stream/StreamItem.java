@@ -3,6 +3,7 @@ package com.aura.aosp.gorilla.launcher.model.stream;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 
 /**
@@ -19,14 +20,27 @@ public abstract class StreamItem implements StreamItemInterface {
     protected Integer imageId;
     protected ItemType type;
     protected Float absoluteScore = 1.0f;
-    protected Long createTime;
-    protected Long modifyTime;
+    protected Long timeCreated;
+    protected Long timeModified;
+    protected String uuid;
 
     /**
      * Construct stream item of invocationType "unknown".
      */
     public StreamItem(ItemType itemType) {
         setType(itemType);
+        setUuid(UID.randomUUIDBase64());
+        setCurrentTime();
+    }
+
+    /**
+     * Construct stream item of invocationType "unknown".
+     */
+    public StreamItem(@NonNull User ownerUser, ItemType itemType) {
+        setOwnerUser(ownerUser);
+        setType(itemType);
+        setUuid(UID.randomUUIDBase64());
+        setCurrentTime();
     }
 
     /**
@@ -38,17 +52,26 @@ public abstract class StreamItem implements StreamItemInterface {
      * @param text
      * @param imageId
      */
-    public StreamItem(User ownerUser, @NonNull ItemType itemType, @Nullable String title, @NonNull String text, @NonNull Integer imageId) {
+    public StreamItem(@NonNull User ownerUser, @NonNull ItemType itemType, @Nullable String title, @NonNull String text, @NonNull Integer imageId) {
         setOwnerUser(ownerUser);
         setType(itemType);
         setTitle(title);
         setText(text);
         setTextExcerpt(extractExcerpt(text));
         setImageId(imageId);
+        setUuid(UID.randomUUIDBase64());
+        setCurrentTime();
+    }
 
+
+    /**
+     * Set created and modified timestamps to current system time
+     */
+    protected void setCurrentTime() {
         Long currentDateTime = System.currentTimeMillis();
-        setCreateTime(currentDateTime);
-        setModifyTime(currentDateTime);
+
+        setTimeCreated(currentDateTime);
+        setTimeModified(currentDateTime);
     }
 
     /**
@@ -167,27 +190,37 @@ public abstract class StreamItem implements StreamItemInterface {
     }
 
     @Override
-    public Long getCreateTime() {
-        return createTime;
+    public Long getTimeCreated() {
+        return timeCreated;
     }
 
     @Override
-    public void setCreateTime(Long createTime) {
-        this.createTime = createTime;
+    public void setTimeCreated(Long timeCreated) {
+        this.timeCreated = timeCreated;
     }
 
     @Override
-    public Long getModifyTime() {
-        return modifyTime;
+    public Long getTimeModified() {
+        return timeModified;
     }
 
     @Override
-    public void setModifyTime(Long modifyTime) {
-        this.modifyTime = modifyTime;
+    public void setTimeModified(Long timeModified) {
+        this.timeModified = timeModified;
     }
 
     @Override
     public void setAbsoluteScore(@Nullable Float absoluteScore) {
         this.absoluteScore = absoluteScore != null ? absoluteScore : 1.0f;
+    }
+
+    @Override
+    public String getUuid() {
+        return uuid;
+    }
+
+    @Override
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

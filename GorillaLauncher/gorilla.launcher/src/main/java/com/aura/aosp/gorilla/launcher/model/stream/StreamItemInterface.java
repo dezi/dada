@@ -40,15 +40,23 @@ interface StreamItemInterface {
 
     void setImageId(Integer imageId);
 
-    Long getCreateTime();
+    Long getTimeCreated();
 
-    void setCreateTime(Long createTime);
+    void setTimeCreated(Long timeCreated);
 
-    Long getModifyTime();
+    Long getTimeModified();
 
-    void setModifyTime(Long modifyTime);
+    void setTimeModified(Long timeModified);
 
     Float getAbsoluteScore();
 
     void setAbsoluteScore(Float absoluteScore);
+
+    String getUuid();
+
+    void setUuid(String uuid);
+
+    void onPreviewViewed(User viewedByUser);
+
+    void onFullyViewed(User viewedByUser);
 }

@@ -30,4 +30,16 @@ public class ContactStreamItem extends StreamItem implements StreamItemInterface
     public boolean isOwnerUser() {
         return contactUser.getIdentity().equals(ownerUser.getIdentity());
     }
+
+    @Override
+    public void onPreviewViewed(User viewedByUser) {
+        // TODO: Implement!
+        // e.g.: Write as event to PMAI!
+    }
+
+    @Override
+    public void onFullyViewed(User viewedByUser) {
+        // TODO: Implement!
+        // e.g.: Write as event to PMAI!
+    }
 }

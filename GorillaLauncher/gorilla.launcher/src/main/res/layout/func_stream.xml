@@ -3,19 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/stream"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/streamRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fadingEdge="horizontal"
-        android:fadingEdgeLength="@dimen/stream_fading_edge_length"
-        android:requiresFadingEdge="vertical"
-        android:scrollbars="none"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    android:layout_height="match_parent"
+    android:fadingEdge="horizontal"
+    android:fadingEdgeLength="@dimen/stream_fading_edge_length"
+    android:requiresFadingEdge="vertical"
+    android:scrollbars="none"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
 
 </com.aura.aosp.gorilla.launcher.ui.content.StreamView>

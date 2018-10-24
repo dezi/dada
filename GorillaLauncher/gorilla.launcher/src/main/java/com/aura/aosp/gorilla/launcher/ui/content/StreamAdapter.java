@@ -2,6 +2,7 @@ package com.aura.aosp.gorilla.launcher.ui.content;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
@@ -118,7 +119,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
             case TYPE_STREAMITEM_MESSAGE:
                 MessageStreamItem messageStreamItem = (MessageStreamItem) dataSet;
 
-                if (messageStreamItem.ownerMatchesUser(((LauncherActivity) activity).getMyUser())) {
+                if (messageStreamItem.getOwnerUser().equals(((LauncherActivity) activity).getMyUser())) {
                     itemType = ITEM_TYPE_PREVIEW_RIGHT;
                 } else {
                     itemType = ITEM_TYPE_PREVIEW_LEFT;
@@ -132,6 +133,11 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         }
 
         return itemType;
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull StreamViewHolder holder) {
+        super.onViewRecycled(holder);
     }
 
     /**
@@ -200,7 +206,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 //        // Set title
 //        String title = dataSet.getTitle();
 //
-//        Long timeStamp = dataSet.getCreateTime();
+//        Long timeStamp = dataSet.getTimeCreated();
 //
 //        if (timeStamp != null) {
 //            String datestring = Dates.getLocalDateAndTime(timeStamp);

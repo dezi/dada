@@ -21,4 +21,16 @@ public class GenericStreamItem extends StreamItem implements StreamItemInterface
     public GenericStreamItem(User ownerUser, @NonNull String title, @NonNull String text) {
         super(ownerUser, ItemType.TYPE_STREAMITEM_GENERIC, title, text, R.drawable.ic_blur_on_black_24dp);
     }
+
+    @Override
+    public void onPreviewViewed(User viewedByUser) {
+        // TODO: Implement!
+        // e.g.: Write as event to PMAI!
+    }
+
+    @Override
+    public void onFullyViewed(User viewedByUser) {
+        // TODO: Implement!
+        // e.g.: Write as event to PMAI!
+    }
 }

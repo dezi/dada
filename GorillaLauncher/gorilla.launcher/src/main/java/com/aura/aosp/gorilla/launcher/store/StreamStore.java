@@ -96,25 +96,25 @@ public class StreamStore {
 //                    String subAction = "chat=" + remoteUserUUID;
 //                    gorillaClient.registerActionEventDomain(actionDomain, subAction);
 
-                    JSONArray recv = gorillaClient.queryAtomsSharedBy(remoteUserUUID, atomType, 0, 0);
-                    JSONArray send = gorillaClient.queryAtomsSharedWith(remoteUserUUID, atomType, 0, 0);
+                    JSONArray recvMessages = gorillaClient.queryAtomsSharedBy(remoteUserUUID, atomType, 0, 0);
+                    JSONArray sentMessages = gorillaClient.queryAtomsSharedWith(remoteUserUUID, atomType, 0, 0);
 
-                    if (recv != null)
+                    if (recvMessages != null)
                     {
-                        for (int inx = 0; inx < recv.length(); inx++)
+                        for (int inx = 0; inx < recvMessages.length(); inx++)
                         {
-                            GorillaMessage gorillaMessage = new GorillaMessage(Json.getObject(recv, inx));
+                            GorillaMessage gorillaMessage = new GorillaMessage(Json.getObject(recvMessages, inx));
                             filteredStream.add(new MessageStreamItem(contactUser, gorillaMessage));
 
                             Log.d("recv=" + gorillaMessage.toPretty());
                         }
                     }
 
-                    if (send != null)
+                    if (sentMessages != null)
                     {
-                        for (int inx = 0; inx < send.length(); inx++)
+                        for (int inx = 0; inx < sentMessages.length(); inx++)
                         {
-                            GorillaMessage gorillaMessage = new GorillaMessage(Json.getObject(send, inx));
+                            GorillaMessage gorillaMessage = new GorillaMessage(Json.getObject(sentMessages, inx));
                             filteredStream.add(new MessageStreamItem(ownUser, gorillaMessage));
 
                             Log.d("send=" + gorillaMessage.toPretty());
