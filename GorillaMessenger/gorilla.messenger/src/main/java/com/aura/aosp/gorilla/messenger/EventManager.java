@@ -108,14 +108,6 @@ public class EventManager extends GorillaListener
         List<GorillaPhraseSuggestionHint> hints = result.getHints();
         if (hints == null) return;
 
-        for (GorillaPhraseSuggestionHint hint : hints)
-        {
-            Log.d(LOGTAG, "onPhraseSuggestionsReceived:"
-                    + " hint=" + hint.getHint()
-                    + " score=" + hint.getScore()
-            );
-        }
-
         ChatActivity activeChat = ChatActivity.activeChat;
 
         if (activeChat != null)
