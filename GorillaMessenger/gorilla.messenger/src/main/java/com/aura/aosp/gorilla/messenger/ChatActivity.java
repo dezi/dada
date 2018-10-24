@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
@@ -365,6 +366,8 @@ public class ChatActivity extends AppCompatActivity
             suggestText.setPaddingDip(0, 4, 0, 4);
             suggestText.setMarginLeftDip(4);
             suggestText.setMarginRightDip(4);
+            suggestText.setSingleLine();
+            suggestText.setEllipsize(TextUtils.TruncateAt.END);
 
             suggestText.setOnClickListener(onSuggestClick);
 
