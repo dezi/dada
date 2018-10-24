@@ -5,8 +5,8 @@ import android.support.annotation.Nullable;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.View;
-import android.util.Log;
 
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.gui.base.GUIDefs;
 import com.aura.aosp.aura.gui.views.GUIEditText;
@@ -130,7 +130,7 @@ public class GUICanFocusDelegate
                     GUICanToastDelegate.displayToast(gt.getToastHighlight());
                 }
 
-                Log.d(LOGTAG, "adjustHighlightState: onHighlightStarted.");
+                Log.d("adjustHighlightState: onHighlightStarted.");
             }
             else
             {
@@ -148,7 +148,7 @@ public class GUICanFocusDelegate
                     gf.restoreBackground();
                 }
 
-                Log.d(LOGTAG, "adjustHighlightState: onHighlightFinished.");
+                Log.d("adjustHighlightState: onHighlightFinished.");
             }
 
             gf.onHighlightChanged(view, gf.getHighlight());

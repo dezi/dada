@@ -2,9 +2,9 @@ package com.aura.aosp.gorilla.launcher;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.aura.aosp.aura.common.crypter.UID;
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.atoms.GorillaOwner;
 import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
@@ -25,13 +25,13 @@ public class EventManager extends GorillaListener
     @Override
     public void onServiceChange(boolean connected)
     {
-        Log.d(LOGTAG, "onServiceChange: connected=" + connected);
+        Log.d("onServiceChange: connected=" + connected);
     }
 
     @Override
     public void onUplinkChange(boolean connected)
     {
-        Log.d(LOGTAG, "onUplinkChange: connected=" + connected);
+        Log.d("onUplinkChange: connected=" + connected);
 
         if (connected) GorillaClient.getInstance().getAtom(UID.randomUUIDBase64());
     }
@@ -39,13 +39,13 @@ public class EventManager extends GorillaListener
     @Override
     public void onOwnerReceived(GorillaOwner owner)
     {
-        Log.d(LOGTAG, "onOwnerReceived: owner=" + owner.toString());
+        Log.d("onOwnerReceived: owner=" + owner.toString());
     }
 
     @Override
     public void onPayloadReceived(GorillaPayload payload)
     {
-        Log.d(LOGTAG, "onPayloadReceived: message=" + payload.toString());
+        Log.d("onPayloadReceived: message=" + payload.toString());
 
         //startMainActivity();
     }
@@ -53,12 +53,12 @@ public class EventManager extends GorillaListener
     @Override
     public void onPayloadResultReceived(GorillaPayloadResult result)
     {
-        Log.d(LOGTAG, "onPayloadResultReceived: result=" + result.toString());
+        Log.d("onPayloadResultReceived: result=" + result.toString());
     }
 
     private void startMainActivity()
     {
-        Log.d(LOGTAG, "startMainActivity: ...");
+        Log.d("startMainActivity: ...");
 
         Intent startIntent = new Intent(context, StreamActivity.class);
 

@@ -7,11 +7,11 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
@@ -19,6 +19,7 @@ import com.aura.aosp.gorilla.launcher.ui.common.SmartScrollableLayoutManager;
 
 /**
  * Main view which holds and manages the "Action Cluster"
+ * TODO: Finalize and cleanup!
  */
 public class ActionClusterView extends RecyclerView implements View.OnTouchListener {
 
@@ -134,9 +135,9 @@ public class ActionClusterView extends RecyclerView implements View.OnTouchListe
         setY(nextYPos);
         setElevation(nextElevation);
 
-        Log.d(LOGTAG, String.format("actionClusterView nextElevation <%f>", nextElevation));
-        Log.d(LOGTAG, String.format("actionClusterView nextXPos <%f>", nextXPos));
-        Log.d(LOGTAG, String.format("actionClusterView nextYPos <%f>", nextYPos));
+        Log.d("actionClusterView nextElevation <%f>", nextElevation);
+        Log.d("actionClusterView nextXPos <%f>", nextXPos);
+        Log.d("actionClusterView nextYPos <%f>", nextYPos);
 
 //        // Add events for additional layers
 //        if (invokingActionButtonView != null) {
@@ -150,18 +151,18 @@ public class ActionClusterView extends RecyclerView implements View.OnTouchListe
 //                            Float addX = actionClusterView.getWidth() / 2.0f;
 //                            Float addY = actionClusterView.getHeight() / 2.0f;
 //
-//                            Log.d(LOGTAG, String.format("onGlobalLayout actionClusterWidth <%d>", actionClusterView.getWidth()));
-//                            Log.d(LOGTAG, String.format("onGlobalLayout actionClusterHeight <%d>", actionClusterView.getHeight()));
+//                            Log.d("onGlobalLayout actionClusterWidth <%d>", actionClusterView.getWidth());
+//                            Log.d("onGlobalLayout actionClusterHeight <%d>", actionClusterView.getHeight());
 //
 //                            switch (layoutManager.getOrientation()) {
 //
 //                                case LinearLayoutManager.VERTICAL:
-//                                    Log.d(LOGTAG, String.format("VERTICAL addY <%f>", addY));
+//                                    Log.d("VERTICAL addY <%f>", addY);
 ////                                    actionClusterView.setX(actionClusterView.getX() + addX);
 //                                    break;
 //
 //                                case LinearLayoutManager.HORIZONTAL:
-//                                    Log.d(LOGTAG, String.format("HORIZONTAL addX <%f>", addX));
+//                                    Log.d("HORIZONTAL addX <%f>", addX);
 ////                                    actionClusterView.setY(actionClusterView.getY() + addY);
 //                                    break;
 //                            }

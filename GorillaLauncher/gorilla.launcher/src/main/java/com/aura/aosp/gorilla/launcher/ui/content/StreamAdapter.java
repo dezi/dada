@@ -56,9 +56,15 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         this.activity = activity;
     }
 
+    /**
+     * Create new views (invoked by the layout manager)
+     *
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @Override
     public StreamViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // Create new views (invoked by the layout manager)
 
         StreamItemView itemView;
 
@@ -80,6 +86,12 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         return viewHolder;
     }
 
+    /**
+     * Retrieve item view type based on dataset of passed position.
+     *
+     * @param position
+     * @return
+     */
     @Override
     public int getItemViewType(int position) {
         final StreamItem dataSet = streamItems.get(position);
@@ -121,17 +133,21 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         return itemType;
     }
 
+    /**
+     * Replace the contents of a view (invoked by the layout manager)
+     * Uses the provided View Holder on the onCreateViewHolder invokeMethod
+     * to populate the current row on the RecyclerView
+     *
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(final StreamViewHolder holder, int position) {
-        // Replace the contents of a view (invoked by the layout manager)
-        // Use the provided View Holder on the onCreateViewHolder invokeMethod
-        // to populate the current row on the RecyclerView
 
         final StreamItem dataSet = streamItems.get(position);
 
         // TODO: Initialize item directly through implementing class.
-        // TODO: Probably it makes sense to initialize child views of the
-        // TODO: StreamItemView independently
+        // TODO: Probably it makes sense to initialize child views of the StreamItemView independently
 //        holder.item.initWithItem(dataSet);
 
         final int usePlaceholderImageRes = dataSet.getImageId();
@@ -180,8 +196,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 break;
         }
 
-//        holder.title.setText(dataSet.title);
-        // TODO: Fix layout issues with title/text
+        // Set title and text
 //        holder.previewTitle.setText(dataSet.getTitle());
         holder.previewText.setText(dataSet.getTextExcerpt());
 

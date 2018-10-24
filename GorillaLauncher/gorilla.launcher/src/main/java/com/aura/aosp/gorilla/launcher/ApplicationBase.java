@@ -14,7 +14,7 @@ public class ApplicationBase extends Application
     {
         super.onCreate();
 
-        Log.d(LOGTAG, "onCreate: ...");
+        Log.d("onCreate: ...");
 
         EventManager eventManager = new EventManager(this);
 

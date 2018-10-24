@@ -23,6 +23,9 @@ import com.aura.aosp.gorilla.launcher.model.actions.InvokerActionItem;
 
 import java.lang.reflect.Method;
 
+/**
+ * Main view component representing an action button within an "action cluster".
+ */
 public class ClusterButtonView extends FloatingActionButton {
 
     private static final String LOGTAG = ClusterButtonView.class.getSimpleName();

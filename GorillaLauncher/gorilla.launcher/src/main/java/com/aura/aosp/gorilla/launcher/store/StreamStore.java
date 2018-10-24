@@ -70,7 +70,7 @@ public class StreamStore {
                         for (int inx = 0; inx < launcherAtoms.length(); inx++) {
                             JSONObject launcherAtom = Json.getObject(launcherAtoms, inx);
                             if (launcherAtom == null) continue;
-                            Log.d("#### launcherAtom type is <%s>", launcherAtom.get("type"));
+                            Log.d("launcherAtom type is <%s>", launcherAtom.get("type"));
                         }
                     } catch (JSONException e) {
                         Log.e("Cannot read JSON object: <%s>", e.getMessage());
@@ -106,7 +106,7 @@ public class StreamStore {
                             GorillaMessage gorillaMessage = new GorillaMessage(Json.getObject(recv, inx));
                             filteredStream.add(new MessageStreamItem(contactUser, gorillaMessage));
 
-                            Log.d("### recv=" + gorillaMessage.toPretty());
+                            Log.d("recv=" + gorillaMessage.toPretty());
                         }
                     }
 
@@ -117,7 +117,7 @@ public class StreamStore {
                             GorillaMessage gorillaMessage = new GorillaMessage(Json.getObject(send, inx));
                             filteredStream.add(new MessageStreamItem(ownUser, gorillaMessage));
 
-                            Log.d("### send=" + gorillaMessage.toPretty());
+                            Log.d("send=" + gorillaMessage.toPretty());
                         }
                     }
                 }

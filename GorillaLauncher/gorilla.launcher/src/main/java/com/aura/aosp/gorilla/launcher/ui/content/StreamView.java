@@ -3,9 +3,9 @@ package com.aura.aosp.gorilla.launcher.ui.content;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.ui.common.FuncBaseView;
 
@@ -40,9 +40,9 @@ public class StreamView extends FuncBaseView {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        Log.d(LOGTAG, String.format("onTouchEvent Action: |%10d|", ev.getAction()));
-        Log.d(LOGTAG, String.format("onTouchEvent Axis X: |%10f|", ev.getAxisValue(MotionEvent.AXIS_X)));
-        Log.d(LOGTAG, String.format("onTouchEvent Axis Y: |%10f|", ev.getAxisValue(MotionEvent.AXIS_Y)));
+        Log.d("onTouchEvent Action: |%10d|", ev.getAction());
+        Log.d("onTouchEvent Axis X: |%10f|", ev.getAxisValue(MotionEvent.AXIS_X));
+        Log.d("onTouchEvent Axis Y: |%10f|", ev.getAxisValue(MotionEvent.AXIS_Y));
         return super.onTouchEvent(ev);
     }
 }

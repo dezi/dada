@@ -431,12 +431,12 @@ public class StreamActivity extends LauncherActivity {
             String ownerDeviceUUID = getOwnerDeviceBase64();
 
             if ((time == null) || (uuid == null) || (text == null) || (remoteUserUUID == null)) {
-                Log.e(LOGTAG, "invalid payload=" + payload.toString());
+                Log.e("invalid payload=" + payload.toString());
                 return null;
             }
 
             if (ownerDeviceUUID == null) {
-                Log.e(LOGTAG, "unknown owner device");
+                Log.e("unknown owner device");
                 return null;
             }
 

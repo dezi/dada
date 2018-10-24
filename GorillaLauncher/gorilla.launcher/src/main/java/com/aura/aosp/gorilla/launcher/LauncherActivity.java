@@ -272,18 +272,18 @@ public class LauncherActivity extends AppCompatActivity {
 //                            Float addX = actionClusterView.getWidth() / 2.0f;
 //                            Float addY = actionClusterView.getHeight() / 2.0f;
 //
-//                            Log.d(String.format("onGlobalLayout actionClusterWidth <%d>", actionClusterView.getWidth()));
-//                            Log.d(String.format("onGlobalLayout actionClusterHeight <%d>", actionClusterView.getHeight()));
+//                            Log.d("onGlobalLayout actionClusterWidth <%d>", actionClusterView.getWidth());
+//                            Log.d("onGlobalLayout actionClusterHeight <%d>", actionClusterView.getHeight());
 //
 //                            switch (layoutManager.getOrientation()) {
 //
 //                                case LinearLayoutManager.VERTICAL:
-//                                    Log.d(String.format("VERTICAL addY <%f>", addY));
+//                                    Log.d("VERTICAL addY <%f>", addY);
 ////                                    actionClusterView.setX(actionClusterView.getX() + addX);
 //                                    break;
 //
 //                                case LinearLayoutManager.HORIZONTAL:
-//                                    Log.d(String.format("HORIZONTAL addX <%f>", addX));
+//                                    Log.d("HORIZONTAL addX <%f>", addX);
 ////                                    actionClusterView.setY(actionClusterView.getY() + addY);
 //                                    break;
 //                            }
@@ -303,7 +303,7 @@ public class LauncherActivity extends AppCompatActivity {
             activateActionClusterView(actionClusterView);
         }
 
-        Log.d(String.format("Added action cluster <%s>", actionCluster.getName()));
+        Log.d("Added action cluster <%s>", actionCluster.getName());
     }
 
 

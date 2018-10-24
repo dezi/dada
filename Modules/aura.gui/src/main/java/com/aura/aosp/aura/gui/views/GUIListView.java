@@ -3,8 +3,8 @@ package com.aura.aosp.aura.gui.views;
 import android.widget.LinearLayout;
 import android.content.Context;
 import android.view.View;
-import android.util.Log;
 
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.aura.gui.skills.GUICanFocusDelegate;
 
@@ -117,6 +117,6 @@ public class GUIListView extends GUILinearLayout
 
     public void onSelectionChanged(GUIListEntry entry, boolean selected)
     {
-        Log.d(LOGTAG, "onSelectionChanged: entry=" + entry.idtag + " selected=" + selected);
+        Log.d("onSelectionChanged: entry=" + entry.idtag + " selected=" + selected);
     }
 }
