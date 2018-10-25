@@ -3,7 +3,6 @@ package com.aura.aosp.gorilla.launcher.model.stream;
 import android.support.annotation.NonNull;
 
 import com.aura.aosp.aura.common.crypter.UID;
-import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.gorilla.atoms.GorillaAtom;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.client.GorillaClient;
@@ -11,12 +10,10 @@ import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.GorillaPersistable;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 
-import org.json.JSONException;
-
 /**
  * Note item
  */
-public class DraftStreamItem extends StreamItem implements GorillaPersistable, StreamItemInterface {
+public class DraftStreamItem extends AbstractStreamItem implements GorillaPersistable, StreamItemInterface {
 
     /**
      * Note item construction
@@ -38,7 +35,7 @@ public class DraftStreamItem extends StreamItem implements GorillaPersistable, S
         super(ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), gorillaMessage.getMessageText(), R.drawable.ic_note_black_24dp);
 
         setTitle(ownerUser.getIdentity().getNick());
-        setImageId(R.drawable.ic_note_black_24dp);
+        setImagePlaceholderId(R.drawable.ic_note_black_24dp);
         setTimeCreated(gorillaMessage.getTime());
     }
 
@@ -55,6 +52,11 @@ public class DraftStreamItem extends StreamItem implements GorillaPersistable, S
         GorillaClient.getInstance().putAtom(noteMessage.getAtom());
 
         return noteMessage;
+    }
+
+    @Override
+    public Integer getImageId() {
+        return null;
     }
 
     @Override

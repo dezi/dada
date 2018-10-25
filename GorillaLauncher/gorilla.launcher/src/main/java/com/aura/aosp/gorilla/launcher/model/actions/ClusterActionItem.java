@@ -16,12 +16,12 @@ public class ClusterActionItem extends ActionItem {
 
     /**
      * @param name
-     * @param imageId
+     * @param imagePlaceholderId
      * @param initialScore
      * @param actionCluster
      */
-    public ClusterActionItem(String name, Integer imageId, @Nullable Float initialScore, ActionCluster actionCluster) {
-        super(name, imageId, initialScore);
+    public ClusterActionItem(String name, Integer imagePlaceholderId, @Nullable Float initialScore, ActionCluster actionCluster) {
+        super(name, imagePlaceholderId, initialScore);
         setInvocationType(ActionItemInterface.invocationType.INVOCATION_TYPE_CLUSTER);
         setInvocationTarget(ActionItemInterface.invocationTarget.INVOCATION_TARGET_INTERN_CLUSTER);
         setActionCluster(actionCluster);

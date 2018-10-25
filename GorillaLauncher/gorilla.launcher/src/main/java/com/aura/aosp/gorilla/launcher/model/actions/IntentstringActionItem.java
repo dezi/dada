@@ -12,12 +12,12 @@ public class IntentstringActionItem extends ActionItem {
     /**
      *
      * @param name
-     * @param imageId
+     * @param imagePlaceholderId
      * @param initialScore
      * @param action
      */
-    public IntentstringActionItem(String name, Integer imageId, @Nullable Float initialScore, String action) {
-        super(name, imageId, initialScore);
+    public IntentstringActionItem(String name, Integer imagePlaceholderId, @Nullable Float initialScore, String action) {
+        super(name, imagePlaceholderId, initialScore);
         setInvocationType(ActionItemInterface.invocationType.INVOCATION_TYPE_INTENTSTRING);
         setAction(action);
     }

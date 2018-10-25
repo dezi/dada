@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Content Stream -->
+    <dimen name="stream_padding_top">0dp</dimen>
+    <dimen name="stream_padding_bottom">0dp</dimen>
     <dimen name="stream_fading_edge_length">80dp</dimen>
 
     <!-- Content Stream Item: Generic layout -->

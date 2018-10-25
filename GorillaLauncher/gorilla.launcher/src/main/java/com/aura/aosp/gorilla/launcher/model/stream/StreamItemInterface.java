@@ -1,12 +1,14 @@
 package com.aura.aosp.gorilla.launcher.model.stream;
 
+import android.support.annotation.Nullable;
+
 import com.aura.aosp.gorilla.launcher.model.GorillaPersistable;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 
 /**
  * TODO: Refactor interface and implementations to fit API goals!
  */
-interface StreamItemInterface {
+public interface StreamItemInterface {
 
     // TODO: Create rule for action domains, context, subactions: com.aura.notes...
     public static enum ItemType {
@@ -19,43 +21,26 @@ interface StreamItemInterface {
 
     ItemType getType();
 
-    void setType(ItemType type);
-
     User getOwnerUser();
-
-    void setOwnerUser(User ownerUser);
 
     String getTitle();
 
-    void setTitle(String title);
-
     String getText();
-
-    void setText(String text);
 
     String getTextExcerpt();
 
-    void setTextExcerpt(String textExcerpt);
-
+    @Nullable
     Integer getImageId();
 
-    void setImageId(Integer imageId);
+    Integer getImagePlaceholderId();
 
     Long getTimeCreated();
 
-    void setTimeCreated(Long timeCreated);
-
     Long getTimeModified();
-
-    void setTimeModified(Long timeModified);
 
     Float getAbsoluteScore();
 
-    void setAbsoluteScore(Float absoluteScore);
-
     String getUuid();
-
-    void setUuid(String uuid);
 
     void onPreviewViewed(User viewedByUser);
 

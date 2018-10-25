@@ -9,7 +9,7 @@ import com.aura.aosp.gorilla.launcher.model.user.User;
  * Generic Stream Item: the topmost container for every kind of data items that might
  * be displayed within the UI stream component.
  */
-public class GenericStreamItem extends StreamItem implements StreamItemInterface {
+public class GenericStreamItem extends AbstractStreamItem implements StreamItemInterface {
 
     /**
      * Construct generic stream item.
@@ -20,6 +20,11 @@ public class GenericStreamItem extends StreamItem implements StreamItemInterface
      */
     public GenericStreamItem(User ownerUser, @NonNull String title, @NonNull String text) {
         super(ownerUser, ItemType.TYPE_STREAMITEM_GENERIC, title, text, R.drawable.ic_blur_on_black_24dp);
+    }
+
+    @Override
+    public Integer getImageId() {
+        return null;
     }
 
     @Override

@@ -10,9 +10,9 @@ import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.launcher.model.GorillaHelper;
 import com.aura.aosp.gorilla.launcher.model.stream.FilteredStream;
+import com.aura.aosp.gorilla.launcher.model.stream.InvisibleStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.MessageStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.ContactStreamItem;
-import com.aura.aosp.gorilla.launcher.model.stream.InvisibleStreamItem;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 
 import org.json.JSONArray;

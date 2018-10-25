@@ -17,7 +17,7 @@ import com.aura.aosp.gorilla.launcher.model.user.User;
  * <p>
  * TODO: This may be subject to be merged with "DraftStreamItem"
  */
-public class MessageStreamItem extends StreamItem implements GorillaSharable, StreamItemInterface {
+public class MessageStreamItem extends AbstractStreamItem implements GorillaSharable, StreamItemInterface {
 
     final static String LOGTAG = MessageStreamItem.class.getSimpleName();
 
@@ -100,6 +100,11 @@ public class MessageStreamItem extends StreamItem implements GorillaSharable, St
         setSharedWithUser(new User(remoteIdentity));
     }
 
+    @Override
+    public Integer getImageId() {
+        return getOwnerUser().getContactAvatarImageRes();
+    }
+
     /**
      * Mark messages as "read" on "preview viewed" event
      *
@@ -143,19 +148,19 @@ public class MessageStreamItem extends StreamItem implements GorillaSharable, St
         // TODO: it in WhatsApp style: revokable for 2 min or so...)
     }
 
-    public GorillaMessage getGorillaMessage() {
+    protected GorillaMessage getGorillaMessage() {
         return gorillaMessage;
     }
 
-    public void setGorillaMessage(GorillaMessage gorillaMessage) {
+    protected void setGorillaMessage(GorillaMessage gorillaMessage) {
         this.gorillaMessage = gorillaMessage;
     }
 
-    public User getSharedWithUser() {
+    protected User getSharedWithUser() {
         return sharedWithUser;
     }
 
-    public void setSharedWithUser(User sharedWithUser) {
+    protected void setSharedWithUser(User sharedWithUser) {
         this.sharedWithUser = sharedWithUser;
     }
 
@@ -163,7 +168,7 @@ public class MessageStreamItem extends StreamItem implements GorillaSharable, St
      * @return
      */
     @Nullable
-    public Long getAtomTimeReadFrom() {
+    protected Long getAtomTimeReadFrom() {
 
         if (getGorillaMessage() == null) {
             return null;
@@ -175,7 +180,7 @@ public class MessageStreamItem extends StreamItem implements GorillaSharable, St
     /**
      * @param timeRead
      */
-    public void setAtomTimeRead(Long timeRead) {
+    protected void setAtomTimeRead(Long timeRead) {
 
         if (getGorillaMessage() == null || getAtomTimeReadFrom() != null) {
             return;

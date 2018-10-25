@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
 public class ImageShaper {
@@ -29,20 +30,34 @@ public class ImageShaper {
      */
     public static void shape(Context context, int originalImage, int shapedImage, ImageView imgView, float expectedHeight, float expectedWidth) {
 
+        Bitmap shapedBitmap = getShapedBitmap(context, originalImage, shapedImage, expectedHeight, expectedWidth);
+        placeBitmapInView(shapedBitmap, imgView, null, null);
+    }
+
+    /**
+     * Get a shape as bitmap using a shape image on a target image.
+     *
+     * @param context
+     * @param originalImage
+     * @param shapedImage
+     * @param expectedHeight
+     * @param expectedWidth
+     */
+    public static Bitmap getShapedBitmap(Context context, int originalImage, int shapedImage, float expectedHeight, float expectedWidth) {
+
         Bitmap oImageBitmap = BitmapFactory.decodeResource(context.getResources(), originalImage);
         Bitmap sImageBitmap = BitmapFactory.decodeResource(context.getResources(), shapedImage);
 
         if (sImageBitmap == null) {
             sImageBitmap = getBitmap(context, shapedImage);
-            sImageBitmap.getHeight();
         }
 
         Bitmap mask = sImageBitmap;
 
         oImageBitmap = getResizedBitmap(oImageBitmap, expectedHeight, expectedWidth);
 
-        int bitmapHeight = sImageBitmap.getHeight();
-        int bitmapWidth = sImageBitmap.getWidth();
+//        int bitmapHeight = sImageBitmap.getHeight();
+//        int bitmapWidth = sImageBitmap.getWidth();
 
         Bitmap resultBitmap = Bitmap.createBitmap(mask.getWidth(), mask.getHeight(), Bitmap.Config.ARGB_8888);
 
@@ -62,12 +77,32 @@ public class ImageShaper {
 
         paint.setXfermode(null);
 
-        imgView.getLayoutParams().height = bitmapHeight;
-        imgView.getLayoutParams().width = bitmapWidth;
+        return resultBitmap;
+    }
+
+    /**
+     * Place bitmap in image view
+     *
+     * @param bitmap
+     * @param imgView
+     * @param width
+     * @param height
+     */
+    public static void placeBitmapInView(Bitmap bitmap, ImageView imgView, @Nullable Integer width, @Nullable Integer height) {
+
+        if (width != null) {
+            imgView.getLayoutParams().width = width;
+        }
+
+        if (height != null) {
+            imgView.getLayoutParams().height = height;
+        }
+
         imgView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imgView.setImageBitmap(resultBitmap);
+        imgView.setImageBitmap(bitmap);
         imgView.setAdjustViewBounds(true);
     }
+
 
     /**
      * Resize bitmaps.

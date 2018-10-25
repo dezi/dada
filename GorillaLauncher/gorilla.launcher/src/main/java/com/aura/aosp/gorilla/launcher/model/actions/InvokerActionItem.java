@@ -17,24 +17,24 @@ public class InvokerActionItem extends ActionItem {
 
     /**
      * @param name
-     * @param imageId
+     * @param imagePlaceholderId
      * @param invokedMethod
      */
-    public InvokerActionItem(String name, Integer imageId, @Nullable Float initialScore, Method invokedMethod) {
-        super(name, imageId, initialScore);
+    public InvokerActionItem(String name, Integer imagePlaceholderId, @Nullable Float initialScore, Method invokedMethod) {
+        super(name, imagePlaceholderId, initialScore);
         setInvocationType(ActionItemInterface.invocationType.INVOCATION_TYPE_INVOKER);
         setInvokeMethod(invokedMethod);
     }
 
     /**
      * @param name
-     * @param imageId
+     * @param imagePlaceholderId
      * @param invokedObject
      * @param invokedMethod
      * @param invokedPayload
      */
-    public InvokerActionItem(String name, Integer imageId, @Nullable Float initialScore, Object invokedObject, Method invokedMethod, Object invokedPayload) {
-        super(name, imageId, initialScore);
+    public InvokerActionItem(String name, Integer imagePlaceholderId, @Nullable Float initialScore, Object invokedObject, Method invokedMethod, Object invokedPayload) {
+        super(name, imagePlaceholderId, initialScore);
         setInvocationType(ActionItemInterface.invocationType.INVOCATION_TYPE_INVOKER);
         setInvokeObject(invokedObject);
         setInvokeMethod(invokedMethod);

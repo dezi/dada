@@ -12,17 +12,17 @@ public class ActionItem implements ActionItemInterface {
     protected invocationTarget invocationTarget = ActionItemInterface.invocationTarget.INVOCATION_TARGET_INTERN_VIEW;
 
     protected String name;
-    protected Integer imageId;
+    protected Integer imagePlaceholderId;
     protected Float absoluteScore;
 
     /**
      * @param name
-     * @param imageId
+     * @param imagePlaceholderId
      * @param initialScore
      */
-    public ActionItem(String name, Integer imageId, @Nullable Float initialScore) {
+    public ActionItem(String name, Integer imagePlaceholderId, @Nullable Float initialScore) {
         setName(name);
-        setImageId(imageId);
+        setImagePlaceholderId(imagePlaceholderId);
         setAbsoluteScore(initialScore);
     }
 
@@ -57,13 +57,13 @@ public class ActionItem implements ActionItemInterface {
     }
 
     @Override
-    public Integer getImageId() {
-        return imageId;
+    public Integer getImagePlaceholderId() {
+        return imagePlaceholderId;
     }
 
     @Override
-    public void setImageId(Integer imageId) {
-        this.imageId = imageId;
+    public void setImagePlaceholderId(Integer imagePlaceholderId) {
+        this.imagePlaceholderId = imagePlaceholderId;
     }
 
     @Override

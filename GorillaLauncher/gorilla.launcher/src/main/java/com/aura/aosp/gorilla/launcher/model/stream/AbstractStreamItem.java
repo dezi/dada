@@ -9,7 +9,7 @@ import com.aura.aosp.gorilla.launcher.model.user.User;
 /**
  * Stream item base class.
  */
-public abstract class StreamItem implements StreamItemInterface {
+public abstract class AbstractStreamItem implements StreamItemInterface {
 
     private static final int DEFAULT_MAX_EXCERPT_LENGTH = 42;
 
@@ -17,7 +17,7 @@ public abstract class StreamItem implements StreamItemInterface {
     protected String title;
     protected String text;
     protected String textExcerpt;
-    protected Integer imageId;
+    protected Integer imagePlaceholderId;
     protected ItemType type;
     protected Float absoluteScore = 1.0f;
     protected Long timeCreated;
@@ -27,7 +27,7 @@ public abstract class StreamItem implements StreamItemInterface {
     /**
      * Construct stream item of invocationType "unknown".
      */
-    public StreamItem(ItemType itemType) {
+    public AbstractStreamItem(ItemType itemType) {
         setType(itemType);
         setUuid(UID.randomUUIDBase64());
         setCurrentTime();
@@ -36,7 +36,7 @@ public abstract class StreamItem implements StreamItemInterface {
     /**
      * Construct stream item of invocationType "unknown".
      */
-    public StreamItem(@NonNull User ownerUser, ItemType itemType) {
+    public AbstractStreamItem(@NonNull User ownerUser, ItemType itemType) {
         setOwnerUser(ownerUser);
         setType(itemType);
         setUuid(UID.randomUUIDBase64());
@@ -50,19 +50,18 @@ public abstract class StreamItem implements StreamItemInterface {
      * @param itemType
      * @param title
      * @param text
-     * @param imageId
+     * @param imagePlaceholderId
      */
-    public StreamItem(@NonNull User ownerUser, @NonNull ItemType itemType, @Nullable String title, @NonNull String text, @NonNull Integer imageId) {
+    public AbstractStreamItem(@NonNull User ownerUser, @NonNull ItemType itemType, @Nullable String title, @NonNull String text, @NonNull Integer imagePlaceholderId) {
         setOwnerUser(ownerUser);
         setType(itemType);
         setTitle(title);
         setText(text);
         setTextExcerpt(extractExcerpt(text));
-        setImageId(imageId);
+        setImagePlaceholderId(imagePlaceholderId);
         setUuid(UID.randomUUIDBase64());
         setCurrentTime();
     }
-
 
     /**
      * Set created and modified timestamps to current system time
@@ -124,7 +123,6 @@ public abstract class StreamItem implements StreamItemInterface {
         return useTitle;
     }
 
-    @Override
     public void setType(ItemType type) {
         this.type = type;
     }
@@ -144,17 +142,14 @@ public abstract class StreamItem implements StreamItemInterface {
         return ownerUser;
     }
 
-    @Override
     public void setOwnerUser(User ownerUser) {
         this.ownerUser = ownerUser;
     }
 
-    @Override
     public String getTitle() {
         return title;
     }
 
-    @Override
     public void setTitle(@Nullable String title) {
         this.title = title != null ? title : "";
     }
@@ -164,7 +159,6 @@ public abstract class StreamItem implements StreamItemInterface {
         return text;
     }
 
-    @Override
     public void setText(String text) {
         this.text = text;
     }
@@ -174,19 +168,17 @@ public abstract class StreamItem implements StreamItemInterface {
         return textExcerpt;
     }
 
-    @Override
     public void setTextExcerpt(String textExcerpt) {
         this.textExcerpt = textExcerpt;
     }
 
     @Override
-    public Integer getImageId() {
-        return imageId;
+    public Integer getImagePlaceholderId() {
+        return imagePlaceholderId;
     }
 
-    @Override
-    public void setImageId(Integer imageId) {
-        this.imageId = imageId;
+    public void setImagePlaceholderId(Integer imagePlaceholderId) {
+        this.imagePlaceholderId = imagePlaceholderId;
     }
 
     @Override
@@ -194,7 +186,6 @@ public abstract class StreamItem implements StreamItemInterface {
         return timeCreated;
     }
 
-    @Override
     public void setTimeCreated(Long timeCreated) {
         this.timeCreated = timeCreated;
     }
@@ -204,12 +195,10 @@ public abstract class StreamItem implements StreamItemInterface {
         return timeModified;
     }
 
-    @Override
     public void setTimeModified(Long timeModified) {
         this.timeModified = timeModified;
     }
 
-    @Override
     public void setAbsoluteScore(@Nullable Float absoluteScore) {
         this.absoluteScore = absoluteScore != null ? absoluteScore : 1.0f;
     }
@@ -219,7 +208,6 @@ public abstract class StreamItem implements StreamItemInterface {
         return uuid;
     }
 
-    @Override
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }

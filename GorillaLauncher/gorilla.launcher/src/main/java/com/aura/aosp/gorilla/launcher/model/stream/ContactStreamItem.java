@@ -9,7 +9,7 @@ import com.aura.aosp.gorilla.launcher.model.user.User;
  * Contact item
  * TODO: Implement peristable/sharable interfaces!
  */
-public class ContactStreamItem extends StreamItem implements StreamItemInterface {
+public class ContactStreamItem extends AbstractStreamItem implements StreamItemInterface {
 
     protected User contactUser;
     protected boolean isOwnerIdentity;
@@ -29,6 +29,11 @@ public class ContactStreamItem extends StreamItem implements StreamItemInterface
 
     public boolean isOwnerUser() {
         return contactUser.getIdentity().equals(ownerUser.getIdentity());
+    }
+
+    @Override
+    public Integer getImageId() {
+        return getContactUser().getContactAvatarImageRes();
     }
 
     @Override

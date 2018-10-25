@@ -262,7 +262,7 @@ public class ClusterButtonView extends FloatingActionButton {
         setBackgroundTintList(fabColorList);
 
         // Set action icon
-        setImageDrawable(getContext().getResources().getDrawable(actionItem.getImageId(), getContext().getTheme()));
+        setImageDrawable(getContext().getResources().getDrawable(actionItem.getImagePlaceholderId(), getContext().getTheme()));
     }
 
     public String getLabel() {

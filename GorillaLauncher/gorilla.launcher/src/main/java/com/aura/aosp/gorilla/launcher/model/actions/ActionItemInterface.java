@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.launcher.model.actions;
 
+import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 
 /**
@@ -34,9 +35,9 @@ public interface ActionItemInterface {
 
     void setName(String name);
 
-    Integer getImageId();
+    Integer getImagePlaceholderId();
 
-    void setImageId(Integer imageId);
+    void setImagePlaceholderId(Integer imagePlaceholderId);
 
     Float getAbsoluteScore();
 

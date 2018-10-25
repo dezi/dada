@@ -1,16 +1,17 @@
 package com.aura.aosp.gorilla.launcher.ui.content;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.gorilla.launcher.LauncherActivity;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.StreamActivity;
@@ -19,12 +20,15 @@ import com.aura.aosp.gorilla.launcher.model.stream.ContactStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.FilteredStream;
 import com.aura.aosp.gorilla.launcher.model.stream.GenericStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.MessageStreamItem;
-import com.aura.aosp.gorilla.launcher.model.stream.StreamItem;
+import com.aura.aosp.gorilla.launcher.model.stream.AbstractStreamItem;
+import com.aura.aosp.gorilla.launcher.model.stream.StreamItemInterface;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.ui.common.ImageShaper;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Adapter which handles the mapping of stream data to the content stream item view
@@ -34,7 +38,9 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
     private static final String LOGTAG = StreamAdapter.class.getSimpleName();
 
-    private List<StreamItem> streamItems = Collections.emptyList();
+    private List<AbstractStreamItem> streamItems = Collections.emptyList();
+    private Map<Integer, Bitmap> imageLeftShapeCache = new HashMap<>();
+    private Map<Integer, Bitmap> imageRightShapeCache = new HashMap<>();
     private Context context;
     private StreamActivity activity;
     private ActionClusterStore actionClusterStore;
@@ -96,7 +102,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
      */
     @Override
     public int getItemViewType(int position) {
-        final StreamItem dataSet = streamItems.get(position);
+        final AbstractStreamItem dataSet = streamItems.get(position);
         int itemType;
 
         switch (dataSet.getType()) {
@@ -151,13 +157,13 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
     @Override
     public void onBindViewHolder(final StreamViewHolder holder, int position) {
 
-        final StreamItem dataSet = streamItems.get(position);
+        final StreamItemInterface streamItem = streamItems.get(position);
 
         // TODO: Initialize item directly through implementing class.
         // TODO: Probably it makes sense to initialize child views of the StreamItemView independently
-//        holder.item.initWithItem(dataSet);
+//        holder.item.initWithItem(streamItem);
 
-        final int usePlaceholderImageRes = dataSet.getImageId();
+        final int usePlaceholderImageRes = streamItem.getImagePlaceholderId();
         final int usePlaceholderImageColor = R.color.color_stream_image_drawable;
 
         float previewItemHeight = context.getResources().getDimension(R.dimen.stream_preview_item_image_height);
@@ -166,10 +172,8 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         final int useImageShapeBgRes;
         final int useShapeBgColor;
 
-        Integer avatarResId = null;
-
         // Modify some attributes based  on stream item type
-        switch (dataSet.getType()) {
+        switch (streamItem.getType()) {
             case TYPE_STREAMITEM_GENERIC:
             default:
                 useShapeBgColor = R.color.color_stream_preview_bg_generic;
@@ -190,11 +194,8 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
         switch (holder.getItemViewType()) {
 
-            default:
-                useImageShapeBgRes = R.drawable.stream_preview_rounded_corners_right;
-                break;
-
             case ITEM_TYPE_PREVIEW_LEFT:
+            default:
                 useImageShapeBgRes = R.drawable.stream_preview_rounded_corners_right;
                 break;
 
@@ -204,9 +205,9 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         }
 
 //        // Set title
-//        String title = dataSet.getTitle();
+//        String title = streamItem.getTitle();
 //
-//        Long timeStamp = dataSet.getTimeCreated();
+//        Long timeStamp = streamItem.getTimeCreated();
 //
 //        if (timeStamp != null) {
 //            String datestring = Dates.getLocalDateAndTime(timeStamp);
@@ -217,31 +218,70 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 //        holder.previewTitle.setText(title);
 
         // Set text
-        holder.previewText.setText(dataSet.getTextExcerpt());
+        holder.previewText.setText(streamItem.getTextExcerpt());
 
-        // Set color of background shape drawables
+        // Set color of background shape drawables (by now reflecting item state like "unread", "unopened")
         Drawable shapePreviewTextDrawable = holder.previewTextContainer.getBackground();
         DrawableCompat.setTint(shapePreviewTextDrawable, ContextCompat.getColor(context, useShapeBgColor));
 
         Drawable shapeImageContainerDrawable = holder.previewImageContainer.getBackground();
         DrawableCompat.setTint(shapeImageContainerDrawable, ContextCompat.getColor(context, useShapeBgColor));
 
+        //
+        // Get image or placeholder image to insert for item (preview + full view)
+        //
+        Integer imageId = streamItem.getImageId();
+
+        if (imageId != null) {
+            // Create or get shaped bitmap from cache and place as previewImage
+            Bitmap imageBitmap;
+
+            switch (holder.getItemViewType()) {
+
+                case ITEM_TYPE_PREVIEW_LEFT:
+                default:
+
+                    if (imageLeftShapeCache.get(imageId) == null) {
+                        imageBitmap = ImageShaper.getShapedBitmap(context, imageId, useImageShapeBgRes, previewItemHeight, previewItemWidth);
+                        imageLeftShapeCache.put(imageId, imageBitmap);
+                    } else {
+                        imageBitmap = imageLeftShapeCache.get(imageId);
+                    }
+
+                    break;
+
+                case ITEM_TYPE_PREVIEW_RIGHT:
+
+                    if (imageRightShapeCache.get(imageId) == null) {
+                        imageBitmap = ImageShaper.getShapedBitmap(context, imageId, useImageShapeBgRes, previewItemHeight, previewItemWidth);
+                        imageRightShapeCache.put(imageId, imageBitmap);
+                    } else {
+                        imageBitmap = imageRightShapeCache.get(imageId);
+                    }
+
+                    break;
+            }
+
+            ImageShaper.placeBitmapInView(imageBitmap, holder.previewImage, null, null);
+            holder.previewImage.setImageAlpha(context.getResources().getInteger(R.integer.streamitem_message_preview_avatar_alpha));
+
+        } else {
+
+            // Set drawable images and color + alpha for placeholder image (background drawable)
+//            holder.previewImage.setBackgroundResource(usePlaceholderImageRes);
+            holder.previewImage.setBackground(context.getResources().getDrawable(usePlaceholderImageRes, context.getTheme()));
+            Drawable previewImageBgDrawable = holder.previewImage.getBackground();
+            previewImageBgDrawable.setAlpha(context.getResources().getInteger(R.integer.streamitem_generic_preview_placeholder_alpha));
+            DrawableCompat.setTint(previewImageBgDrawable, ContextCompat.getColor(context, usePlaceholderImageColor));
+        }
+
         // Adjust shape, content and visualization according to stream item type
-        switch (dataSet.getType()) {
+        switch (streamItem.getType()) {
 
             default:
                 break;
 
             case TYPE_STREAMITEM_MESSAGE:
-
-                final MessageStreamItem messageStreamItem = (MessageStreamItem) dataSet;
-
-                avatarResId = messageStreamItem.getOwnerUser().getContactAvatarImageRes();
-
-                if (avatarResId != null) {
-                    ImageShaper.shape(context, avatarResId, useImageShapeBgRes, holder.previewImage, previewItemHeight, previewItemWidth);
-                    holder.previewImage.setImageAlpha(context.getResources().getInteger(R.integer.streamitem_message_preview_avatar_alpha));
-                }
 
                 // TODO: Add OnClick actions (see below). Important: OnClick should be captured for whole items, not only images/placeholders
 
@@ -249,14 +289,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
             case TYPE_STREAMITEM_CONTACT:
 
-                final ContactStreamItem contactStreamItem = (ContactStreamItem) dataSet;
-
-                avatarResId = contactStreamItem.getContactUser().getContactAvatarImageRes();
-
-                if (avatarResId != null) {
-                    ImageShaper.shape(context, avatarResId, useImageShapeBgRes, holder.previewImage, previewItemHeight, previewItemWidth);
-                    holder.previewImage.setImageAlpha(context.getResources().getInteger(R.integer.streamitem_contact_preview_avatar_alpha));
-                }
+                final ContactStreamItem contactStreamItem = (ContactStreamItem) streamItem;
 
                 // Invoke intent based action
                 holder.previewImage.setOnClickListener(new View.OnClickListener() {
@@ -276,21 +309,11 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
                 break;
         }
-
-
-        if (avatarResId == null) {
-            // Set drawable images and color + alpha for placeholder image (background drawable)
-//            holder.previewImage.setBackgroundResource(usePlaceholderImageRes);
-            holder.previewImage.setBackground(context.getResources().getDrawable(usePlaceholderImageRes, context.getTheme()));
-            Drawable previewImageBgDrawable = holder.previewImage.getBackground();
-            previewImageBgDrawable.setAlpha(context.getResources().getInteger(R.integer.streamitem_generic_preview_placeholder_alpha));
-            DrawableCompat.setTint(previewImageBgDrawable, ContextCompat.getColor(context, usePlaceholderImageColor));
-        }
     }
 
     @Override
     public int getItemCount() {
-        // Return the size of your dataset (invoked by the layout manager)
+        // Return the size of your streamItem (invoked by the layout manager)
         return streamItems.size();
     }
 
@@ -312,11 +335,11 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         notifyItemRemoved(position);
     }
 
-    public List<StreamItem> getStreamItems() {
+    public List<AbstractStreamItem> getStreamItems() {
         return streamItems;
     }
 
-    public void setStreamItems(List<StreamItem> streamItems) {
+    public void setStreamItems(List<AbstractStreamItem> streamItems) {
         this.streamItems = streamItems;
         notifyDataSetChanged();
     }

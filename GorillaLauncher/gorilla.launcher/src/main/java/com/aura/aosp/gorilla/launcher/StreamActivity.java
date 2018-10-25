@@ -264,7 +264,7 @@ public class StreamActivity extends LauncherActivity {
         int nextPos = filteredStream.size() - 1;
         filteredStream.add(nextPos, messageStreamItem);
         filteredStream.sortyByCreateTime(true);
-        streamAdapter.notifyDataSetChanged();
+        streamAdapter.notifyItemInserted(nextPos);
 
         // TODO: Cleanup (generalize) all this hide/show stuff for SDK default control/status views!
         hideKeyboard(this);
@@ -395,8 +395,8 @@ public class StreamActivity extends LauncherActivity {
             int nextPos = filteredStream.size() - 1;
             filteredStream.add(nextPos, new MessageStreamItem(ownerUser, message));
             filteredStream.sortyByCreateTime(true);
-//            streamAdapter.notifyItemInserted(nextPos);
-            streamAdapter.notifyDataSetChanged();
+            streamAdapter.notifyItemInserted(nextPos);
+//            streamAdapter.notifyDataSetChanged();
 
             if (getCurrentAtomContext().equals(StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES)) {
                 scrollToStreamEnd();

@@ -1,6 +1,5 @@
 package com.aura.aosp.gorilla.launcher.model.stream;
 
-import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 
@@ -10,7 +9,7 @@ import java.util.Comparator;
 /**
  * The filtered stream model.
  */
-public class FilteredStream extends ArrayList<StreamItem> {
+public class FilteredStream extends ArrayList<AbstractStreamItem> {
 
     /**
      * Sort stream items by creation time.
@@ -38,7 +37,7 @@ public class FilteredStream extends ArrayList<StreamItem> {
      * @param pos
      */
     public void onItemViewed(final int pos, User viewedByUser) {
-        StreamItem streamItem = get(pos);
+        AbstractStreamItem streamItem = get(pos);
 
         // TODO: Hier weiter, knallt noch weil viewedByUser null ist:
 //        streamItem.onFullyViewed(viewedByUser);
@@ -47,7 +46,7 @@ public class FilteredStream extends ArrayList<StreamItem> {
     /**
      * Comparator for sorting by creation date asc/desc.
      */
-    class TimeComparator implements Comparator<StreamItem> {
+    class TimeComparator implements Comparator<AbstractStreamItem> {
 
         boolean asc = true;
         boolean created = true;
@@ -58,7 +57,7 @@ public class FilteredStream extends ArrayList<StreamItem> {
         }
 
         @Override
-        public int compare(StreamItem o1, StreamItem o2) {
+        public int compare(AbstractStreamItem o1, AbstractStreamItem o2) {
 
             Long time1;
             Long time2;
