@@ -19,6 +19,11 @@
     <!-- Stream -->
     <integer name="streamview_fadein_transition_duration">600</integer>
     <integer name="streamview_fadeout_transition_duration">400</integer>
+    <integer name="streamview_scrollto_delay">400</integer>
+    <integer name="streamview_scrollto_speed">400</integer>
+    <integer name="streamview_onopen_effects_delay">600</integer>
+
+    <!-- Stream Items -->
     <integer name="streamitem_contact_preview_avatar_alpha">255</integer>
     <integer name="streamitem_message_preview_avatar_alpha">192</integer>
     <integer name="streamitem_generic_preview_placeholder_alpha">224</integer>

@@ -57,8 +57,6 @@ public class StreamStore {
 
         allContacts = Contacts.getAllContacts();
 
-        filteredStream.add(emptyItem);
-
         switch (atomContext) {
 
             case ATOMCONTEXT_UXSTREAM_START:

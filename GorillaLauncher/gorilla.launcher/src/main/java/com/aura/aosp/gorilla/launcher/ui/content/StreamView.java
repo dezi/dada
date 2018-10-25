@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.stream.FilteredStream;
 import com.aura.aosp.gorilla.launcher.model.user.User;
@@ -75,6 +76,21 @@ public class StreamView extends RecyclerView {
         Integer duration = getContext().getResources().getInteger(R.integer.streamview_fadeout_transition_duration);
         Effects.fadeOutView(this, getContext(), duration);
     }
+
+    /**
+     * Scroll to end of stream view.
+     */
+    public void smoothScrollToStreamEnd() {
+        smoothScrollToPosition(getAdapter().getItemCount() - 1);
+    }
+
+    /**
+     * Scroll to end of stream view.
+     */
+    public void scrollToStreamEnd() {
+        scrollToPosition(getAdapter().getItemCount() - 1);
+    }
+
 //    @Override
 //    public boolean onTouchEvent(MotionEvent ev) {
 //        Log.d("onTouchEvent Action: |%10d|", ev.getAction());
