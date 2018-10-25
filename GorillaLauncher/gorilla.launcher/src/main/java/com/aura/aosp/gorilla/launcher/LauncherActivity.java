@@ -90,10 +90,8 @@ public class LauncherActivity extends AppCompatActivity {
         return myUser;
     }
 
-    @Nullable
-    public static String getOwnerDeviceBase64() {
-        if (myUser == null) return null;
-        return myUser.getIdentity().getDeviceUUIDBase64();
+    public static void setMyUser(User myUser) {
+        LauncherActivity.myUser = myUser;
     }
 
     @Override
@@ -325,7 +323,7 @@ public class LauncherActivity extends AppCompatActivity {
 
         float nextElevation = clusterElevationPerLevel;
 
-        if (invokingActionButtonView != null && ! (invokingActionButtonView instanceof ToggleClusterButton)) {
+        if (invokingActionButtonView != null && !(invokingActionButtonView instanceof ToggleClusterButton)) {
             // Position new cluster on top of invoking button
             nextXPos = invokingActionButtonView.getX();
             nextYPos = invokingActionButtonView.getY();
@@ -475,8 +473,7 @@ public class LauncherActivity extends AppCompatActivity {
             } else {
                 ((ActionClusterView) invokingActionButtonView.getParent()).fadeToBack();
             }
-        }
-        else {
+        } else {
             deactivateMainContentView();
             toggleClusterButton.minimize();
 //            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_forward_black_24dp, getTheme()));
@@ -490,7 +487,7 @@ public class LauncherActivity extends AppCompatActivity {
      */
     public void deactivateActionClusterView(ActionClusterView actionClusterView) {
 
-        if (! activeActionClusterViews.contains(actionClusterView)) {
+        if (!activeActionClusterViews.contains(actionClusterView)) {
             return;
         }
 
@@ -510,8 +507,7 @@ public class LauncherActivity extends AppCompatActivity {
                 ((ActionClusterView) invokingActionButtonView.getParent()).restore();
                 Log.d("Removed Action Cluster <%s>", actionClusterView.getId());
             }
-        }
-        else {
+        } else {
 //            toggleClusterButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_24dp, getTheme()));
             activateMainContentView();
             Log.d("Removed ROOT Action Cluster <%s>", actionClusterView.getId());
@@ -667,7 +663,7 @@ public class LauncherActivity extends AppCompatActivity {
     private final GorillaListener listener = new GorillaListener() {
         @Override
         public void onServiceChange(boolean connected) {
-            Log.d("onServiceChange: connected=" + connected);
+            Log.d("connected=" + connected);
 
             if (statusBar != null) {
                 statusBar.setSvLink(connected);
@@ -676,7 +672,7 @@ public class LauncherActivity extends AppCompatActivity {
 
         @Override
         public void onUplinkChange(boolean connected) {
-            Log.d("onUplinkChange: connected=" + connected);
+            Log.d("connected=" + connected);
 
             if (statusBar != null) {
                 statusBar.setUplink(connected);
@@ -684,29 +680,8 @@ public class LauncherActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onOwnerReceived(GorillaOwner owner) {
-            Log.d("onOwnerReceived: owner=" + owner.toString());
-
-            String ownerUUID = owner.getOwnerUUIDBase64();
-            Identity ownerIdentity = Contacts.getContact(ownerUUID);
-
-            if (ownerIdentity != null) {
-
-                Log.d("onOwnerReceived: nick=" + ownerIdentity.getNick());
-                Log.d("onOwnerReceived: nick=" + UID.convertUUIDToString(ownerIdentity.getUserUUID()));
-
-                myUser = new User(ownerIdentity);
-                String nick = myUser.getIdentity().getNick();
-
-                if (statusBar != null) {
-                    statusBar.setProfileInfo(nick);
-                }
-            }
-        }
-
-        @Override
         public void onPayloadResultReceived(GorillaPayloadResult result) {
-            Log.d("onPayloadResultReceived: result=" + result.toString());
+            Log.d("result=" + result.toString());
 //            for (ChatProfile chatProfile : chatProfiles)
 //            {
 //                chatProfile.activity.dispatchResult(result);

@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.ArrayMap;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,15 +20,12 @@ import com.aura.aosp.gorilla.launcher.model.stream.ContactStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.FilteredStream;
 import com.aura.aosp.gorilla.launcher.model.stream.GenericStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.MessageStreamItem;
-import com.aura.aosp.gorilla.launcher.model.stream.AbstractStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.StreamItemInterface;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.ui.common.ImageShaper;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Adapter which handles the mapping of stream data to the content stream item view
@@ -38,9 +35,9 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
     private static final String LOGTAG = StreamAdapter.class.getSimpleName();
 
-    private List<AbstractStreamItem> streamItems = Collections.emptyList();
-    private Map<Integer, Bitmap> imageLeftShapeCache = new HashMap<>();
-    private Map<Integer, Bitmap> imageRightShapeCache = new HashMap<>();
+    private List<StreamItemInterface> streamItems = Collections.emptyList();
+    private SparseArray<Bitmap> imageLeftShapeCache = new SparseArray<Bitmap>();
+    private SparseArray<Bitmap> imageRightShapeCache = new SparseArray<Bitmap>();
     private Context context;
     private StreamActivity activity;
     private ActionClusterStore actionClusterStore;
@@ -102,7 +99,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
      */
     @Override
     public int getItemViewType(int position) {
-        final AbstractStreamItem dataSet = streamItems.get(position);
+        final StreamItemInterface dataSet = streamItems.get(position);
         int itemType;
 
         switch (dataSet.getType()) {
@@ -172,6 +169,9 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         final int useImageShapeBgRes;
         final int useShapeBgColor;
 
+        Drawable shapeTextContainerBgDrawable = holder.previewTextContainer.getBackground();
+        Drawable shapeImageContainerBgDrawable = holder.previewImageContainer.getBackground();
+
         // Modify some attributes based  on stream item type
         switch (streamItem.getType()) {
             case TYPE_STREAMITEM_GENERIC:
@@ -184,7 +184,12 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 break;
 
             case TYPE_STREAMITEM_MESSAGE:
-                useShapeBgColor = R.color.color_stream_preview_bg_message;
+                if (streamItem.isPreviewViewed()) {
+                    useShapeBgColor = R.color.color_stream_preview_bg_message;
+                } else {
+                    useShapeBgColor = R.color.color_stream_preview_bg_message_new;
+                }
+
                 break;
 
             case TYPE_STREAMITEM_INVISIBLE:
@@ -220,12 +225,13 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         // Set text
         holder.previewText.setText(streamItem.getTextExcerpt());
 
-        // Set color of background shape drawables (by now reflecting item state like "unread", "unopened")
-        Drawable shapePreviewTextDrawable = holder.previewTextContainer.getBackground();
-        DrawableCompat.setTint(shapePreviewTextDrawable, ContextCompat.getColor(context, useShapeBgColor));
+        // Cleanup resources applied to preview image before applying new ones
+        holder.previewImage.setBackground(null);
+        holder.previewImage.setImageBitmap(null);
 
-        Drawable shapeImageContainerDrawable = holder.previewImageContainer.getBackground();
-        DrawableCompat.setTint(shapeImageContainerDrawable, ContextCompat.getColor(context, useShapeBgColor));
+        // Set color of background shape drawables for text and image part (by now reflecting item state like "unread", "unopened")
+        DrawableCompat.setTint(shapeTextContainerBgDrawable, ContextCompat.getColor(context, useShapeBgColor));
+        DrawableCompat.setTint(shapeImageContainerBgDrawable, ContextCompat.getColor(context, useShapeBgColor));
 
         //
         // Get image or placeholder image to insert for item (preview + full view)
@@ -233,6 +239,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         Integer imageId = streamItem.getImageId();
 
         if (imageId != null) {
+
             // Create or get shaped bitmap from cache and place as previewImage
             Bitmap imageBitmap;
 
@@ -267,9 +274,9 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
         } else {
 
-            // Set drawable images and color + alpha for placeholder image (background drawable)
-//            holder.previewImage.setBackgroundResource(usePlaceholderImageRes);
+            // Set drawable image, color and alpha for placeholder image (background drawable)
             holder.previewImage.setBackground(context.getResources().getDrawable(usePlaceholderImageRes, context.getTheme()));
+
             Drawable previewImageBgDrawable = holder.previewImage.getBackground();
             previewImageBgDrawable.setAlpha(context.getResources().getInteger(R.integer.streamitem_generic_preview_placeholder_alpha));
             DrawableCompat.setTint(previewImageBgDrawable, ContextCompat.getColor(context, usePlaceholderImageColor));
@@ -335,11 +342,11 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         notifyItemRemoved(position);
     }
 
-    public List<AbstractStreamItem> getStreamItems() {
+    public List<StreamItemInterface> getStreamItems() {
         return streamItems;
     }
 
-    public void setStreamItems(List<AbstractStreamItem> streamItems) {
+    public void setStreamItems(List<StreamItemInterface> streamItems) {
         this.streamItems = streamItems;
         notifyDataSetChanged();
     }

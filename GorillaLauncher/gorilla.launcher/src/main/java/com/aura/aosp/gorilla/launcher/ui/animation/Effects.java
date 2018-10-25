@@ -30,20 +30,22 @@ public class Effects {
      */
     public static void fadeInView(View view, Context context, @Nullable Integer duration) {
 
-        if (duration == null) {
-            duration = context.getResources().getInteger(R.integer.effects_default_view_fadein_transition_duration);
+        if (view.getVisibility() == View.INVISIBLE || view.getVisibility() == View.GONE || view.getAlpha() == 0f) {
+            if (duration == null) {
+                duration = context.getResources().getInteger(R.integer.effects_default_view_fadein_transition_duration);
+            }
+
+            view.setAlpha(0f);
+            view.setScaleX(0f);
+            view.setScaleY(0f);
+            view.setVisibility(View.VISIBLE);
+
+            view.animate()
+                    .alpha(1f)
+                    .scaleX(1f).scaleY(1f)
+                    .setDuration(duration)
+                    .start();
         }
-
-        view.setAlpha(0f);
-        view.setScaleX(0f);
-        view.setScaleY(0f);
-        view.setVisibility(View.VISIBLE);
-
-        view.animate()
-                .alpha(1f)
-                .scaleX(1f).scaleY(1f)
-                .setDuration(duration)
-                .start();
     }
 
     /**
@@ -55,21 +57,23 @@ public class Effects {
      */
     public static void fadeOutView(final View view, Context context, @Nullable Integer duration) {
 
-        if (duration == null) {
-            duration = context.getResources().getInteger(R.integer.effects_default_view_fadeout_transition_duration);
-        }
+        if (view.getVisibility() == View.VISIBLE || view.getAlpha() > 0f) {
+            if (duration == null) {
+                duration = context.getResources().getInteger(R.integer.effects_default_view_fadeout_transition_duration);
+            }
 
-        view.animate()
-                .alpha(0.f)
-                .scaleX(0.f).scaleY(0.f)
-                .setDuration(duration)
-                .withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        view.setVisibility(View.GONE);
-                    }
-                })
-                .start();
+            view.animate()
+                    .alpha(0.f)
+                    .scaleX(0.f).scaleY(0.f)
+                    .setDuration(duration)
+                    .withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            view.setVisibility(View.GONE);
+                        }
+                    })
+                    .start();
+        }
     }
 
     /**

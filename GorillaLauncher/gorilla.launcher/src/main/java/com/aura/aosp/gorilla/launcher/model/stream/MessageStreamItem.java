@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
@@ -69,20 +70,22 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
     }
 
     /**
+     * Share current message with given remote identity
      * TODO: Decouple from model and move to separate service class
      *
      * @param remoteIdentity
      */
     protected void shareWith(Identity remoteIdentity) {
 
-        GorillaPayloadResult result = gorillaClient.sendPayload(
-                remoteIdentity.getUserUUIDBase64(), remoteIdentity.getDeviceUUIDBase64(), getText());
+        String remoteUserUUID = remoteIdentity.getUserUUIDBase64();
+        String remoteUserDeviceUUID = remoteIdentity.getDeviceUUIDBase64();
+
+        GorillaPayloadResult result = gorillaClient.sendPayload(remoteUserUUID, remoteUserDeviceUUID, getText());
 
         // TODO: Result and result fields may be null, how to handle?
         Long time = result.getTime();
         String uuid = result.getUUIDBase64();
 
-        // TODO: How to convert an note atom into a shared atom?
         GorillaMessage message = new GorillaMessage();
 
         message.setUUID(uuid);
@@ -90,7 +93,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
         message.setType("aura.chat.message");
         message.setMessageText(getText());
 
-        gorillaClient.putAtomSharedWith(remoteIdentity.getUserUUIDBase64(), message.getAtom());
+        gorillaClient.putAtomSharedWith(remoteUserUUID, message.getAtom());
 
         setGorillaMessage(message);
 
@@ -100,24 +103,56 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
         setSharedWithUser(new User(remoteIdentity));
     }
 
+    /**
+     * Dispatch payload result received from a gorilla send/receive event
+     *
+     * @param result
+     */
+    public void dispatchResult(GorillaPayloadResult result)
+    {
+        Long time = result.getTime();
+        String uuid = result.getUUIDBase64();
+        String status = result.getStatus();
+
+        if ((time == null) || (uuid == null) || (status == null)) return;
+        Log.d( "uuid=" + uuid + " status=" + status + " owner nick=" + getOwnerUser().getIdentity().getNick() + " message text=" + getText());
+
+        String remoteUserUUID = getSharedWithUser().getIdentity().getUserUUIDBase64();
+        String ownerDeviceUUID = getOwnerUser().getIdentity().getDeviceUUIDBase64();
+
+        getGorillaMessage().setStatusTime(status, ownerDeviceUUID, time);
+
+        gorillaClient.putAtomSharedWith(remoteUserUUID, getGorillaMessage().getAtom());
+    }
+
     @Override
     public Integer getImageId() {
         return getOwnerUser().getContactAvatarImageRes();
     }
 
+    @Override
+    public boolean isPreviewViewed() {
+        // TODO: Adjust!
+        return getAtomStatusTime("read") != null;
+    }
+
+    @Override
+    public boolean isFullyViewed() {
+        // TODO: Adjust!
+        return isPreviewViewed();
+    }
+
     /**
      * Mark messages as "read" on "preview viewed" event
-     *
-     * @param user
      */
     @Override
-    public void onPreviewViewed(User user) {
-
-        if (getGorillaMessage() == null || user.equals(getOwnerUser())) {
+    public void onPreviewViewed() {
+        // TODO: Adjust!
+        if (getGorillaMessage() == null || !getSharedWithUser().equals(getOwnerUser())) {
             return;
         }
 
-        setAtomTimeRead(System.currentTimeMillis());
+        setAtomStatusTime("read", System.currentTimeMillis());
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -134,9 +169,9 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
     }
 
     @Override
-    public void onFullyViewed(User user) {
-        // TODO: Fix, differentiate!
-        onPreviewViewed(user);
+    public void onFullyViewed() {
+        // TODO: Adjust!
+        onPreviewViewed();
     }
 
     /**
@@ -156,70 +191,60 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
         this.gorillaMessage = gorillaMessage;
     }
 
-    protected User getSharedWithUser() {
+    public User getSharedWithUser() {
         return sharedWithUser;
     }
 
-    protected void setSharedWithUser(User sharedWithUser) {
+    public void setSharedWithUser(User sharedWithUser) {
         this.sharedWithUser = sharedWithUser;
     }
 
     /**
+     * Get UUID of atom
+     *
      * @return
      */
     @Nullable
-    protected Long getAtomTimeReadFrom() {
+    public String getAtomUUID() {
 
         if (getGorillaMessage() == null) {
             return null;
         }
 
-        return getGorillaMessage().getStatusTime("read");
+        return getGorillaMessage().getUUIDBase64();
     }
 
     /**
-     * @param timeRead
+     * Get time for a specific status from atom
+     *
+     * @param status
+     * @return
      */
-    protected void setAtomTimeRead(Long timeRead) {
+    @Nullable
+    public Long getAtomStatusTime(String status) {
 
-        if (getGorillaMessage() == null || getAtomTimeReadFrom() != null) {
+        if (getGorillaMessage() == null) {
+            return null;
+        }
+
+        return getGorillaMessage().getStatusTime(status);
+    }
+
+    /**
+     * Set time for a specific status in atom
+     *
+     * @param status
+     * @param time
+     */
+    public void setAtomStatusTime(@NonNull String status, @NonNull Long time) {
+
+        if (getGorillaMessage() == null || getAtomStatusTime(status) != null) {
             return;
         }
 
         String ownerDeviceUUID = getOwnerUser().getIdentity().getDeviceUUIDBase64();
 
-        getGorillaMessage().setStatusTime("read", ownerDeviceUUID, timeRead);
-    }
+        getGorillaMessage().setStatusTime(status, ownerDeviceUUID, time);
 
-//    public Long getTimeReceived() {
-//        return timeReceived;
-//    }
-//
-//    public void setTimeReceived(Long timeReceived) {
-//        this.timeReceived = timeReceived;
-//    }
-//
-//    public Long getTimePersisted() {
-//        return timePersisted;
-//    }
-//
-//    public void setTimePersisted(Long timePersisted) {
-//        this.timePersisted = timePersisted;
-//    }
-//
-//    public Long getTimeSent() {
-//        return timeSent;
-//    }
-//
-//    public void setTimeSent(Long timeSent) {
-//        this.timeSent = timeSent;
-//    }
-//
-//    public Long getTimeQeueud() {
-//        return timeQeueud;
-//    }
-//
-//    public void setTimeQeueud(Long timeQeueud) {
-//        this.timeQeueud = timeQeueud;
-//    }
+    }
 }

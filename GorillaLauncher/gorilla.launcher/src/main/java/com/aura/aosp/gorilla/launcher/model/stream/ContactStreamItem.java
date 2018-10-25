@@ -37,13 +37,23 @@ public class ContactStreamItem extends AbstractStreamItem implements StreamItemI
     }
 
     @Override
-    public void onPreviewViewed(User viewedByUser) {
+    public boolean isFullyViewed() {
+        return true;
+    }
+
+    @Override
+    public boolean isPreviewViewed() {
+        return true;
+    }
+
+    @Override
+    public void onPreviewViewed() {
         // TODO: Implement!
         // e.g.: Write as event to PMAI!
     }
 
     @Override
-    public void onFullyViewed(User viewedByUser) {
+    public void onFullyViewed() {
         // TODO: Implement!
         // e.g.: Write as event to PMAI!
     }

@@ -58,7 +58,7 @@ public class StreamView extends RecyclerView {
                 int fvItemPosition = layoutmanager.findFirstCompletelyVisibleItemPosition();
                 int lvItemPosition = layoutmanager.findLastCompletelyVisibleItemPosition();
 
-                for (int pos = fvItemPosition; pos <= lvItemPosition; pos++) {
+                for (int pos = fvItemPosition; pos < lvItemPosition; pos++) {
                     filteredStream.onItemViewed(pos, getMyUser());
                 }
             }
@@ -81,14 +81,14 @@ public class StreamView extends RecyclerView {
      * Scroll to end of stream view.
      */
     public void smoothScrollToStreamEnd() {
-        smoothScrollToPosition(getAdapter().getItemCount() - 1);
+        smoothScrollToPosition(getAdapter().getItemCount());
     }
 
     /**
      * Scroll to end of stream view.
      */
     public void scrollToStreamEnd() {
-        scrollToPosition(getAdapter().getItemCount() - 1);
+        scrollToPosition(getAdapter().getItemCount());
     }
 
 //    @Override

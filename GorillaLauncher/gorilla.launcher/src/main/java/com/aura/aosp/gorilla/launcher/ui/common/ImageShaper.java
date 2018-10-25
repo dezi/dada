@@ -52,28 +52,25 @@ public class ImageShaper {
             sImageBitmap = getBitmap(context, shapedImage);
         }
 
-        Bitmap mask = sImageBitmap;
+        Bitmap maskBitmap = sImageBitmap;
 
         oImageBitmap = getResizedBitmap(oImageBitmap, expectedHeight, expectedWidth);
 
-//        int bitmapHeight = sImageBitmap.getHeight();
-//        int bitmapWidth = sImageBitmap.getWidth();
-
-        Bitmap resultBitmap = Bitmap.createBitmap(mask.getWidth(), mask.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap resultBitmap = Bitmap.createBitmap(maskBitmap.getWidth(), maskBitmap.getHeight(), Bitmap.Config.ARGB_8888);
 
         final Canvas maskCanvas = new Canvas(resultBitmap);
 
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
 
-        int maskWidth = mask.getWidth();
-        int maskHeight = mask.getHeight();
+        int maskWidth = maskBitmap.getWidth();
+        int maskHeight = maskBitmap.getHeight();
 
         float centerX = (maskWidth - oImageBitmap.getWidth()) * 0.5f;
         float centerY = (maskHeight - oImageBitmap.getHeight()) * 0.5f;
 
         maskCanvas.drawBitmap(oImageBitmap, centerX, centerY, null);
-        maskCanvas.drawBitmap(mask, 0, 0, paint);
+        maskCanvas.drawBitmap(maskBitmap, 0, 0, paint);
 
         paint.setXfermode(null);
 
@@ -90,14 +87,16 @@ public class ImageShaper {
      */
     public static void placeBitmapInView(Bitmap bitmap, ImageView imgView, @Nullable Integer width, @Nullable Integer height) {
 
-        if (width != null) {
-            imgView.getLayoutParams().width = width;
+        if (width == null) {
+            width = bitmap.getWidth();
         }
 
-        if (height != null) {
-            imgView.getLayoutParams().height = height;
+        if (height == null) {
+            height = bitmap.getHeight();
         }
 
+        imgView.getLayoutParams().width = width;
+        imgView.getLayoutParams().height = height;
         imgView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imgView.setImageBitmap(bitmap);
         imgView.setAdjustViewBounds(true);

@@ -18,7 +18,7 @@ public class GenericStreamItem extends AbstractStreamItem implements StreamItemI
      * @param title
      * @param text
      */
-    public GenericStreamItem(User ownerUser, @NonNull String title, @NonNull String text) {
+    public GenericStreamItem(@NonNull User ownerUser, @NonNull String title, @NonNull String text) {
         super(ownerUser, ItemType.TYPE_STREAMITEM_GENERIC, title, text, R.drawable.ic_blur_on_black_24dp);
     }
 
@@ -28,13 +28,23 @@ public class GenericStreamItem extends AbstractStreamItem implements StreamItemI
     }
 
     @Override
-    public void onPreviewViewed(User viewedByUser) {
+    public boolean isFullyViewed() {
+        return false;
+    }
+
+    @Override
+    public boolean isPreviewViewed() {
+        return false;
+    }
+
+    @Override
+    public void onPreviewViewed() {
         // TODO: Implement!
         // e.g.: Write as event to PMAI!
     }
 
     @Override
-    public void onFullyViewed(User viewedByUser) {
+    public void onFullyViewed() {
         // TODO: Implement!
         // e.g.: Write as event to PMAI!
     }

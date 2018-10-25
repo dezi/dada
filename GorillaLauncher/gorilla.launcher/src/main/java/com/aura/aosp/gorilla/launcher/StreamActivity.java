@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
@@ -21,8 +22,10 @@ import com.aura.aosp.gorilla.client.GorillaListener;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionItem;
 import com.aura.aosp.gorilla.launcher.model.actions.InvokerActionItem;
+import com.aura.aosp.gorilla.launcher.model.stream.AbstractStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.FilteredStream;
 import com.aura.aosp.gorilla.launcher.model.stream.MessageStreamItem;
+import com.aura.aosp.gorilla.launcher.model.stream.StreamItemInterface;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 import com.aura.aosp.gorilla.launcher.store.StreamStore;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
@@ -92,7 +95,8 @@ public class StreamActivity extends LauncherActivity {
         streamStore = new StreamStore(getApplicationContext());
 
         // Create initial content stream items (empty list)
-        filteredStream = streamStore.getItemsForAtomContext(getCurrentAtomContext(), getMyUser());
+//        filteredStream = streamStore.getItemsForAtomContext(getCurrentAtomContext(), getMyUser());
+        filteredStream = new FilteredStream();
 
         // Create list view adapter and attach to stream view
         streamAdapter = new StreamAdapter(filteredStream, this, this);
@@ -114,6 +118,15 @@ public class StreamActivity extends LauncherActivity {
 
         filteredStream = streamStore.getItemsForAtomContext(atomContext, getMyUser());
         streamAdapter.setStreamItems(filteredStream);
+        streamView.setAdapter(streamAdapter);
+//        streamAdapter = new StreamAdapter(filteredStream, this, this);
+//        streamView.setAdapter(streamAdapter);
+        streamAdapter.notifyDataSetChanged();
+
+        Log.d("#### my user is now <%s>", getMyUser().getIdentity().getNick());
+        Log.d("#### current atom context is now <%s>", getCurrentAtomContext());
+        Log.d("#### adapter item count is now <%d>", streamAdapter.getItemCount());
+
 
         if (getCurrentAtomContext().equals(StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES)) {
             streamView.scrollToStreamEnd();
@@ -138,6 +151,7 @@ public class StreamActivity extends LauncherActivity {
      * ACTION: "Stream"
      */
     public void onOpenStream() {
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -247,7 +261,7 @@ public class StreamActivity extends LauncherActivity {
         MessageStreamItem messageStreamItem = new MessageStreamItem(getMyUser(), messageText);
         messageStreamItem.shareWith(contactUser);
 
-        int nextPos = filteredStream.size() - 1;
+        int nextPos = filteredStream.size();
         filteredStream.add(nextPos, messageStreamItem);
 //        filteredStream.sortyByCreateTime(true);
         streamAdapter.notifyItemInserted(nextPos);
@@ -258,6 +272,7 @@ public class StreamActivity extends LauncherActivity {
 
         setCurrentAtomContext(StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES);
         onReturnToStream(false);
+        streamView.smoothScrollToStreamEnd();
     }
 
     /**
@@ -332,13 +347,28 @@ public class StreamActivity extends LauncherActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        onOpenStream();
+        streamView.fadeIn();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         streamView.fadeOut();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (getMyUser() != null) {
+            reloadStreamItems(null);
+            onOpenStream();
+        }
     }
 
     /**
@@ -348,37 +378,40 @@ public class StreamActivity extends LauncherActivity {
 
         @Override
         public void onOwnerReceived(GorillaOwner owner) {
-            Log.d("onOwnerReceived: owner=" + owner.toString());
+            Log.d("owner=" + owner.toString());
 
             String ownerUUID = owner.getOwnerUUIDBase64();
             Identity ownerIdentity = Contacts.getContact(ownerUUID);
 
-            if (ownerIdentity != null) {
+            if (getMyUser() == null || (!getMyUser().getIdentity().equals(ownerIdentity))) {
 
-                Log.d("onOwnerReceived: nick=" + ownerIdentity.getNick());
+                Log.d("nick=" + ownerIdentity.getNick());
+                Log.d("uuid=" + UID.convertUUIDToString(ownerIdentity.getUserUUID()));
 
-                myUser = new User(ownerIdentity);
+                setMyUser(new User(ownerIdentity));
                 String nick = myUser.getIdentity().getNick();
 
-                reloadStreamItems(null);
-                onOpenStream();
+                if (statusBar != null) {
+                    statusBar.setProfileInfo(nick);
+                }
             }
+
+            reloadStreamItems(null);
+            onOpenStream();
         }
 
         @Override
         public void onPayloadReceived(GorillaPayload payload) {
-            Log.d("onPayloadReceived: payload=" + payload.toString());
+            Log.d("payload=" + payload.toString());
 
             GorillaMessage message = convertPayloadToMessageAndPersist(payload);
             if (message == null) return;
 
-            final String messageUUID = payload.getUUIDBase64();
             final String remoteUserUUID = payload.getSenderUUIDBase64();
-            final String remoteDeviceUUID = payload.getDeviceUUIDBase64();
 
             User ownerUser = new User(Contacts.getContact(remoteUserUUID));
 
-            int nextPos = filteredStream.size() - 1;
+            int nextPos = filteredStream.size();
             filteredStream.add(nextPos, new MessageStreamItem(ownerUser, message));
 //            filteredStream.sortyByCreateTime(true);
             streamAdapter.notifyItemInserted(nextPos);
@@ -390,21 +423,41 @@ public class StreamActivity extends LauncherActivity {
 
         @Override
         public void onPayloadResultReceived(GorillaPayloadResult result) {
-            Log.d("onPayloadResultReceived: result=" + result.toString());
+            Log.d("result=" + result.toString());
 
-//            for (ChatProfile chatProfile : chatProfiles)
-//            {
-//                chatProfile.activity.dispatchResult(result);
-//            }
+            Long time = result.getTime();
+            String uuid = result.getUUIDBase64();
+            String status = result.getStatus();
+
+            FilteredStream shadowFilteredStream;
+
+            if (getCurrentAtomContext() != StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES) {
+                shadowFilteredStream = streamStore.getItemsForAtomContext(StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES, getMyUser());
+            } else {
+                shadowFilteredStream = filteredStream;
+            }
+
+            // TODO: Hier weiter: Testen!
+            for (StreamItemInterface streamItem : shadowFilteredStream) {
+                if (streamItem.getType() == StreamItemInterface.ItemType.TYPE_STREAMITEM_MESSAGE)
+                {
+                    MessageStreamItem messageStreamItem = (MessageStreamItem) streamItem;
+                    if (messageStreamItem.getAtomUUID().equals(uuid)) {
+                        messageStreamItem.dispatchResult(result);
+                        break;
+                    }
+                }
+            }
         }
 
         @Nullable
         private GorillaMessage convertPayloadToMessageAndPersist(GorillaPayload payload) {
+
             Long time = payload.getTime();
             String uuid = payload.getUUIDBase64();
             String text = payload.getPayload();
             String remoteUserUUID = payload.getSenderUUIDBase64();
-            String ownerDeviceUUID = getOwnerDeviceBase64();
+            String ownerDeviceUUID = getMyUser().getIdentity().getDeviceUUIDBase64();
 
             if ((time == null) || (uuid == null) || (text == null) || (remoteUserUUID == null)) {
                 Log.e("invalid payload=" + payload.toString());

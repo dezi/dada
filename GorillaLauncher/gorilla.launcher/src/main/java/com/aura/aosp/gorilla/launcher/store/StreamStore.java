@@ -41,21 +41,23 @@ public class StreamStore {
         this.setContext(context);
     }
 
-    public static final InvisibleStreamItem emptyItem = new InvisibleStreamItem();
-
     /**
      * Get content stream items for given atom context
      *
      * @param atomContext
-     * @param ownUser
+     * @param myUser
      * @return
      */
-    public FilteredStream getItemsForAtomContext(String atomContext, User ownUser) {
+    public FilteredStream getItemsForAtomContext(String atomContext, User myUser) {
 
         FilteredStream filteredStream = new FilteredStream();
         List<Identity> allContacts;
 
+        final InvisibleStreamItem emptyItem = new InvisibleStreamItem(myUser);
+
         allContacts = Contacts.getAllContacts();
+
+        Log.d("#### atomContext is now <%s>", atomContext);
 
         switch (atomContext) {
 
@@ -84,9 +86,8 @@ public class StreamStore {
 
                 for (Identity contactIdentity : allContacts) {
 
-                    String remoteNick = contactIdentity.getNick();
                     String remoteUserUUID = contactIdentity.getUserUUIDBase64();
-                    String remoteDeviceUUID = contactIdentity.getDeviceUUIDBase64();
+//                    String remoteDeviceUUID = contactIdentity.getDeviceUUIDBase64();
 
                     User contactUser = new User(contactIdentity);
 
@@ -102,9 +103,10 @@ public class StreamStore {
                         for (int inx = 0; inx < recvMessages.length(); inx++)
                         {
                             GorillaMessage gorillaMessage = new GorillaMessage(Json.getObject(recvMessages, inx));
-                            filteredStream.add(new MessageStreamItem(contactUser, gorillaMessage));
-
-                            Log.d("recv=" + gorillaMessage.toPretty());
+                            MessageStreamItem messageStreamItem = new MessageStreamItem(contactUser, gorillaMessage);
+                            messageStreamItem.setSharedWithUser(myUser);
+                            filteredStream.add(messageStreamItem);
+//                            Log.d("recv=" + gorillaMessage.toPretty());
                         }
                     }
 
@@ -113,9 +115,10 @@ public class StreamStore {
                         for (int inx = 0; inx < sentMessages.length(); inx++)
                         {
                             GorillaMessage gorillaMessage = new GorillaMessage(Json.getObject(sentMessages, inx));
-                            filteredStream.add(new MessageStreamItem(ownUser, gorillaMessage));
-
-                            Log.d("send=" + gorillaMessage.toPretty());
+                            MessageStreamItem messageStreamItem = new MessageStreamItem(myUser, gorillaMessage);
+                            messageStreamItem.setSharedWithUser(contactUser);
+                            filteredStream.add(messageStreamItem);
+//                            Log.d("send=" + gorillaMessage.toPretty());
                         }
                     }
                 }
@@ -134,7 +137,7 @@ public class StreamStore {
 
                     User contactUser = new User(contactIdentity);
 
-                    ContactStreamItem contactStreamItem = new ContactStreamItem(ownUser, contactUser);
+                    ContactStreamItem contactStreamItem = new ContactStreamItem(myUser, contactUser);
                     contactStreamItem.setAbsoluteScore(1f);
 
                     filteredStream.add(contactStreamItem);
@@ -143,7 +146,7 @@ public class StreamStore {
                 break;
         }
 
-        filteredStream.add(emptyItem);
+//        filteredStream.add(emptyItem);
 
         return filteredStream;
     }

@@ -42,7 +42,11 @@ public interface StreamItemInterface {
 
     String getUuid();
 
-    void onPreviewViewed(User viewedByUser);
+    boolean isFullyViewed();
 
-    void onFullyViewed(User viewedByUser);
+    boolean isPreviewViewed();
+
+    void onPreviewViewed();
+
+    void onFullyViewed();
 }

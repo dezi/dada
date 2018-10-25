@@ -9,7 +9,7 @@ import java.util.Comparator;
 /**
  * The filtered stream model.
  */
-public class FilteredStream extends ArrayList<AbstractStreamItem> {
+public class FilteredStream extends ArrayList<StreamItemInterface> {
 
     /**
      * Sort stream items by creation time.
@@ -37,16 +37,16 @@ public class FilteredStream extends ArrayList<AbstractStreamItem> {
      * @param pos
      */
     public void onItemViewed(final int pos, User viewedByUser) {
-        AbstractStreamItem streamItem = get(pos);
+        StreamItemInterface streamItem = get(pos);
 
         // TODO: Hier weiter, knallt noch weil viewedByUser null ist:
-//        streamItem.onFullyViewed(viewedByUser);
+        streamItem.onFullyViewed();
     }
 
     /**
      * Comparator for sorting by creation date asc/desc.
      */
-    class TimeComparator implements Comparator<AbstractStreamItem> {
+    class TimeComparator implements Comparator<StreamItemInterface> {
 
         boolean asc = true;
         boolean created = true;
@@ -57,7 +57,7 @@ public class FilteredStream extends ArrayList<AbstractStreamItem> {
         }
 
         @Override
-        public int compare(AbstractStreamItem o1, AbstractStreamItem o2) {
+        public int compare(StreamItemInterface o1, StreamItemInterface o2) {
 
             Long time1;
             Long time2;

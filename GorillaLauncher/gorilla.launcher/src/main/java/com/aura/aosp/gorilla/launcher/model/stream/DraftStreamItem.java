@@ -60,13 +60,23 @@ public class DraftStreamItem extends AbstractStreamItem implements GorillaPersis
     }
 
     @Override
-    public void onPreviewViewed(User viewedByUser) {
+    public boolean isFullyViewed() {
+        return false;
+    }
+
+    @Override
+    public boolean isPreviewViewed() {
+        return false;
+    }
+
+    @Override
+    public void onPreviewViewed() {
         // TODO: Implement!
         // e.g.: Write as event to PMAI!
     }
 
     @Override
-    public void onFullyViewed(User viewedByUser) {
+    public void onFullyViewed() {
         // TODO: Implement!
         // e.g.: Write as event to PMAI!
     }
