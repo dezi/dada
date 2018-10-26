@@ -128,7 +128,7 @@ public class ActionClusterStore {
                             context.getResources().getString(R.string.actions_openStream),
                             R.drawable.stream_oval_24dp,
                             0.93f,
-                            StreamActivity.class.getMethod("onReturnToStream")
+                            StreamActivity.class.getMethod("onReturnToStream", boolean.class)
                     ));
 
                     break;

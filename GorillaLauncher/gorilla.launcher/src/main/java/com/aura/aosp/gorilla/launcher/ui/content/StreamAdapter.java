@@ -122,7 +122,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
             case TYPE_STREAMITEM_MESSAGE:
                 MessageStreamItem messageStreamItem = (MessageStreamItem) dataSet;
 
-                if (messageStreamItem.getOwnerUser().equals(((LauncherActivity) activity).getMyUser())) {
+                if (messageStreamItem.isMyMessage()) {
                     itemType = ITEM_TYPE_PREVIEW_RIGHT;
                 } else {
                     itemType = ITEM_TYPE_PREVIEW_LEFT;
@@ -184,7 +184,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 break;
 
             case TYPE_STREAMITEM_MESSAGE:
-                if (streamItem.isPreviewViewed()) {
+                if (streamItem.isFullyViewed()) {
                     useShapeBgColor = R.color.color_stream_preview_bg_message;
                 } else {
                     useShapeBgColor = R.color.color_stream_preview_bg_message_new;

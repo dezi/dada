@@ -14,12 +14,13 @@ public class GenericStreamItem extends AbstractStreamItem implements StreamItemI
     /**
      * Construct generic stream item.
      *
+     * @param myUser
      * @param ownerUser
      * @param title
      * @param text
      */
-    public GenericStreamItem(@NonNull User ownerUser, @NonNull String title, @NonNull String text) {
-        super(ownerUser, ItemType.TYPE_STREAMITEM_GENERIC, title, text, R.drawable.ic_blur_on_black_24dp);
+    public GenericStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull String title, @NonNull String text) {
+        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_GENERIC, title, text, R.drawable.ic_blur_on_black_24dp);
     }
 
     @Override

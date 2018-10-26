@@ -42,25 +42,30 @@ public class StreamView extends RecyclerView {
     protected void init() {
 
         RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+            }
 
-                LinearLayoutManager layoutmanager = (LinearLayoutManager)recyclerView.getLayoutManager();
-                StreamAdapter streamAdapter = (StreamAdapter) recyclerView.getAdapter();
-                FilteredStream filteredStream = (FilteredStream) streamAdapter.getStreamItems();
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
 
-                int fvItemPosition = layoutmanager.findFirstCompletelyVisibleItemPosition();
-                int lvItemPosition = layoutmanager.findLastCompletelyVisibleItemPosition();
+                if (newState == SCROLL_STATE_IDLE) {
+                    LinearLayoutManager layoutmanager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    StreamAdapter streamAdapter = (StreamAdapter) recyclerView.getAdapter();
+                    FilteredStream filteredStream = (FilteredStream) streamAdapter.getStreamItems();
 
-                for (int pos = fvItemPosition; pos < lvItemPosition; pos++) {
-                    filteredStream.onItemViewed(pos, getMyUser());
+                    int fvItemPosition = layoutmanager.findFirstCompletelyVisibleItemPosition();
+                    int lvItemPosition = layoutmanager.findLastCompletelyVisibleItemPosition();
+
+                    for (int pos = fvItemPosition; pos < lvItemPosition; pos++) {
+                        filteredStream.onItemViewed(pos, getMyUser());
+                    }
                 }
+
+
             }
         };
 

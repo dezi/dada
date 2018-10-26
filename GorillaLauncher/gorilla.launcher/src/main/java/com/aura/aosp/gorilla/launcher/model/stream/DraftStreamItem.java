@@ -18,21 +18,23 @@ public class DraftStreamItem extends AbstractStreamItem implements GorillaPersis
     /**
      * Note item construction
      *
+     * @param myUser
      * @param ownerUser
      * @param text
      */
-    public DraftStreamItem(@NonNull User ownerUser, @NonNull String text) {
-        super(ownerUser, ItemType.TYPE_STREAMITEM_DRAFT, null, text, R.drawable.ic_note_black_24dp);
+    public DraftStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull String text) {
+        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_DRAFT, null, text, R.drawable.ic_note_black_24dp);
     }
 
     /**
      * Create item from gorilla atom.
      *
+     * @param myUser
      * @param gorillaMessage
      */
-    public DraftStreamItem(@NonNull User ownerUser, @NonNull GorillaMessage gorillaMessage) {
+    public DraftStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull GorillaMessage gorillaMessage) {
 
-        super(ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), gorillaMessage.getMessageText(), R.drawable.ic_note_black_24dp);
+        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), gorillaMessage.getMessageText(), R.drawable.ic_note_black_24dp);
 
         setTitle(ownerUser.getIdentity().getNick());
         setImagePlaceholderId(R.drawable.ic_note_black_24dp);

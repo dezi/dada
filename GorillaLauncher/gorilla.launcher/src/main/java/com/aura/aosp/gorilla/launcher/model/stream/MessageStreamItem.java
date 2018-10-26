@@ -10,58 +10,49 @@ import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.launcher.R;
+import com.aura.aosp.gorilla.launcher.model.GorillaHelper;
 import com.aura.aosp.gorilla.launcher.model.GorillaSharable;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 
 /**
- * Message item
- * <p>
- * TODO: This may be subject to be merged with "DraftStreamItem"
+ * Message item (chat messages shared via Gorilla)
  */
 public class MessageStreamItem extends AbstractStreamItem implements GorillaSharable, StreamItemInterface {
 
     final static String LOGTAG = MessageStreamItem.class.getSimpleName();
 
-    protected final GorillaClient gorillaClient = GorillaClient.getInstance();
+    private final GorillaClient gorillaClient = GorillaClient.getInstance();
 
-    protected GorillaMessage gorillaMessage;
-    protected User sharedWithUser;
-
-//    protected Long timeReceived;
-//    protected Long timePersisted;
-//    protected Long timeSent;
-//    protected Long timeQeueud;
+    private GorillaMessage gorillaMessage;
+    private User sharedWithUser;
 
     /**
      * Create item with owner user and text
      *
+     * @param myUser
      * @param ownerUser
      * @param text
      */
-    public MessageStreamItem(@NonNull User ownerUser, @NonNull String text) {
-        super(ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), text, R.drawable.ic_message_black_24dp);
+    public MessageStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull String text) {
+        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), text, R.drawable.ic_message_black_24dp);
     }
 
     /**
      * Create item from gorilla message atom.
      *
+     * @param myUser
      * @param ownerUser
      * @param gorillaMessage
      */
-    public MessageStreamItem(@NonNull User ownerUser, @NonNull GorillaMessage gorillaMessage) {
-        super(ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), gorillaMessage.getMessageText(), R.drawable.ic_message_black_24dp);
+    public MessageStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull GorillaMessage gorillaMessage) {
+        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), gorillaMessage.getMessageText(), R.drawable.ic_message_black_24dp);
 
         setGorillaMessage(gorillaMessage);
         setTimeCreated(gorillaMessage.getTime());
-
-//        setTimeReceived(gorillaMessage.getStatusTime("received"));
-//        setTimePersisted(gorillaMessage.getStatusTime("persisted"));
-//        setTimeSent(gorillaMessage.getStatusTime("send"));
-//        setTimeQeueud(gorillaMessage.getStatusTime("queued"));
     }
 
     /**
-     * TODO: Decouple from model and move to separate service class
+     * Share message with given remote user.
      *
      * @param remoteUser
      */
@@ -70,52 +61,72 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
     }
 
     /**
-     * Share current message with given remote identity
-     * TODO: Decouple from model and move to separate service class
+     * Share current message with given remote identity.
+     * Don't allow sharing with own identity.
      *
      * @param remoteIdentity
      */
-    protected void shareWith(Identity remoteIdentity) {
+    private void shareWith(Identity remoteIdentity) {
+
+        if (!isMyMessage()) {
+            return;
+        }
 
         String remoteUserUUID = remoteIdentity.getUserUUIDBase64();
         String remoteUserDeviceUUID = remoteIdentity.getDeviceUUIDBase64();
 
         GorillaPayloadResult result = gorillaClient.sendPayload(remoteUserUUID, remoteUserDeviceUUID, getText());
+        if (result == null) return;
 
-        // TODO: Result and result fields may be null, how to handle?
         Long time = result.getTime();
+        if (time == null) return;
+
         String uuid = result.getUUIDBase64();
+        if (uuid == null) return;
 
         GorillaMessage message = new GorillaMessage();
 
         message.setUUID(uuid);
         message.setTime(time);
-        message.setType("aura.chat.message");
+        message.setType(GorillaHelper.ATOMTYPE_CHAT_MESSAGE);
         message.setMessageText(getText());
 
         gorillaClient.putAtomSharedWith(remoteUserUUID, message.getAtom());
 
         setGorillaMessage(message);
-
-        // Note shared with is not peristed within atom or some related json file yet
-        // but only identifiable through directory structure reflecting ownership and share state
-        // Will probably change as soon as the underlying storage concept is reworked.
         setSharedWithUser(new User(remoteIdentity));
+
+        dispatchShareWithResult(result);
     }
 
     /**
-     * Dispatch payload result received from a gorilla send/receive event
+     * Unshare current message with given remote identity (revoke).
+     *
+     * @param remoteUser
+     */
+    @Override
+    public void unshareWith(User remoteUser) {
+        // TODO: Implement (for instant "chat" messages we should probably solve
+        // TODO: it in WhatsApp style: revokable for 2 min or so...)
+    }
+
+    /**
+     * Dispatch payload result received from a gorilla send (share) action.
      *
      * @param result
      */
-    public void dispatchResult(GorillaPayloadResult result)
-    {
+    public void dispatchShareWithResult(GorillaPayloadResult result) {
+
+        if (!isMyMessage()) {
+            return;
+        }
+
         Long time = result.getTime();
         String uuid = result.getUUIDBase64();
         String status = result.getStatus();
 
         if ((time == null) || (uuid == null) || (status == null)) return;
-        Log.d( "uuid=" + uuid + " status=" + status + " owner nick=" + getOwnerUser().getIdentity().getNick() + " message text=" + getText());
+        Log.d("uuid=" + uuid + " status=" + status + " owner nick=" + getOwnerUser().getIdentity().getNick() + " message text=" + getText());
 
         String remoteUserUUID = getSharedWithUser().getIdentity().getUserUUIDBase64();
         String ownerDeviceUUID = getOwnerUser().getIdentity().getDeviceUUIDBase64();
@@ -133,7 +144,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
     @Override
     public boolean isPreviewViewed() {
         // TODO: Adjust!
-        return getAtomStatusTime("read") != null;
+        return isRead();
     }
 
     @Override
@@ -142,13 +153,10 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
         return isPreviewViewed();
     }
 
-    /**
-     * Mark messages as "read" on "preview viewed" event
-     */
     @Override
     public void onPreviewViewed() {
-        // TODO: Adjust!
-        if (getGorillaMessage() == null || !getSharedWithUser().equals(getOwnerUser())) {
+
+        if (isRead()) {
             return;
         }
 
@@ -157,8 +165,8 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                String remoteUserUUID = getSharedWithUser().getIdentity().getUserUUIDBase64();
-                String remoteDeviceUUID = getSharedWithUser().getIdentity().getDeviceUUIDBase64();
+                String remoteUserUUID = getOwnerUser().getIdentity().getUserUUIDBase64();
+                String remoteDeviceUUID = getOwnerUser().getIdentity().getDeviceUUIDBase64();
 
                 if (gorillaClient.sendPayloadRead(remoteUserUUID, remoteDeviceUUID, getGorillaMessage().getUUIDBase64())) {
                     gorillaClient.putAtomSharedBy(remoteUserUUID, getGorillaMessage().getAtom());
@@ -174,29 +182,33 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
         onPreviewViewed();
     }
 
-    /**
-     * @param remoteUser
-     */
-    @Override
-    public void unshareWith(User remoteUser) {
-        // TODO: Implement (for instant "chat" messages we should probably solve
-        // TODO: it in WhatsApp style: revokable for 2 min or so...)
-    }
-
-    protected GorillaMessage getGorillaMessage() {
+    private GorillaMessage getGorillaMessage() {
         return gorillaMessage;
     }
 
-    protected void setGorillaMessage(GorillaMessage gorillaMessage) {
+    private void setGorillaMessage(GorillaMessage gorillaMessage) {
         this.gorillaMessage = gorillaMessage;
     }
 
-    public User getSharedWithUser() {
-        return sharedWithUser;
+    /**
+     * Check if message is marked as read or assumed to be read due to ownership of device user identity.
+     *
+     * @return
+     */
+    public boolean isMyMessage() {
+        return getMyUser().getIdentity().getUserUUIDBase64().equals(getOwnerUser().getIdentity().getUserUUIDBase64());
     }
 
-    public void setSharedWithUser(User sharedWithUser) {
-        this.sharedWithUser = sharedWithUser;
+    /**
+     * Check if message is marked as read or assumed to be read due to ownership of device user identity.
+     *
+     * @return
+     */
+    public boolean isRead() {
+
+        return isMyMessage()
+                || getSharedWithUser() == null
+                || getAtomStatusTime("read") != null;
     }
 
     /**
@@ -221,7 +233,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      * @return
      */
     @Nullable
-    public Long getAtomStatusTime(String status) {
+    private Long getAtomStatusTime(@NonNull String status) {
 
         if (getGorillaMessage() == null) {
             return null;
@@ -236,7 +248,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      * @param status
      * @param time
      */
-    public void setAtomStatusTime(@NonNull String status, @NonNull Long time) {
+    private void setAtomStatusTime(@NonNull String status, @NonNull Long time) {
 
         if (getGorillaMessage() == null || getAtomStatusTime(status) != null) {
             return;
@@ -245,6 +257,22 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
         String ownerDeviceUUID = getOwnerUser().getIdentity().getDeviceUUIDBase64();
 
         getGorillaMessage().setStatusTime(status, ownerDeviceUUID, time);
+    }
 
+    private User getSharedWithUser() {
+        return sharedWithUser;
+    }
+
+    /**
+     * Set the user this message is shared with via Gorilla.
+     * <p>
+     * Note: shared with is not peristed within atom or some related json file yet
+     * but only identifiable through directory structure reflecting ownership and share state
+     * Will probably change as soon as the underlying storage concept is reworked.
+     *
+     * @param sharedWithUser
+     */
+    public void setSharedWithUser(User sharedWithUser) {
+        this.sharedWithUser = sharedWithUser;
     }
 }

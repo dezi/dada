@@ -2,11 +2,10 @@ package com.aura.aosp.gorilla.launcher.model.stream;
 
 import android.support.annotation.Nullable;
 
-import com.aura.aosp.gorilla.launcher.model.GorillaPersistable;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 
 /**
- * TODO: Refactor interface and implementations to fit API goals!
+ * The stream item interface.
  */
 public interface StreamItemInterface {
 
@@ -21,6 +20,8 @@ public interface StreamItemInterface {
 
     ItemType getType();
 
+    User getMyUser();
+
     User getOwnerUser();
 
     String getTitle();
@@ -29,9 +30,16 @@ public interface StreamItemInterface {
 
     String getTextExcerpt();
 
+    /**
+     * Get the image drawablewhich is added the item stream.
+     */
     @Nullable
     Integer getImageId();
 
+    /**
+     * Get the placeholder drawable image which is added to
+     * the item stream if no specific image id is provided.
+     */
     Integer getImagePlaceholderId();
 
     Long getTimeCreated();
@@ -46,7 +54,15 @@ public interface StreamItemInterface {
 
     boolean isPreviewViewed();
 
+    /**
+     * This method gets called if the preview (e.g. text excerpt) of
+     * this item has been visually exposed to the device user.
+     */
     void onPreviewViewed();
 
+    /**
+     * This method gets called if the full content of this
+     * item has been visually exposed to the device user.
+     */
     void onFullyViewed();
 }

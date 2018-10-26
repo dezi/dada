@@ -14,8 +14,8 @@ public class ContactStreamItem extends AbstractStreamItem implements StreamItemI
     protected User contactUser;
     protected boolean isOwnerIdentity;
 
-    public ContactStreamItem(@NonNull User ownerUser, @NonNull User contactUser) {
-        super(ownerUser, ItemType.TYPE_STREAMITEM_CONTACT, contactUser.getIdentity().getNick(), contactUser.getIdentity().getFull(), R.drawable.ic_person_black_24dp);
+    public ContactStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull User contactUser) {
+        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_CONTACT, contactUser.getIdentity().getNick(), contactUser.getIdentity().getFull(), R.drawable.ic_person_black_24dp);
         setContactUser(contactUser);
     }
 
@@ -28,7 +28,7 @@ public class ContactStreamItem extends AbstractStreamItem implements StreamItemI
     }
 
     public boolean isOwnerUser() {
-        return contactUser.getIdentity().equals(ownerUser.getIdentity());
+        return contactUser.getIdentity().getUserUUIDBase64().equals(ownerUser.getIdentity().getUserUUIDBase64());
     }
 
     @Override

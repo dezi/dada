@@ -684,7 +684,7 @@ public class LauncherActivity extends AppCompatActivity {
             Log.d("result=" + result.toString());
 //            for (ChatProfile chatProfile : chatProfiles)
 //            {
-//                chatProfile.activity.dispatchResult(result);
+//                chatProfile.activity.dispatchShareWithResult(result);
 //            }
         }
     };

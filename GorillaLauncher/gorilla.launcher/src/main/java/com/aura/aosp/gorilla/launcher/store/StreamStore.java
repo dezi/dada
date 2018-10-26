@@ -53,11 +53,9 @@ public class StreamStore {
         FilteredStream filteredStream = new FilteredStream();
         List<Identity> allContacts;
 
-        final InvisibleStreamItem emptyItem = new InvisibleStreamItem(myUser);
+        final InvisibleStreamItem emptyItem = new InvisibleStreamItem(myUser, myUser);
 
         allContacts = Contacts.getAllContacts();
-
-        Log.d("#### atomContext is now <%s>", atomContext);
 
         switch (atomContext) {
 
@@ -91,6 +89,7 @@ public class StreamStore {
 
                     User contactUser = new User(contactIdentity);
 
+                    // TODO: Use this fragment to write certain actions (e.g. on stream filtering to specific chat)
 //                    String actionDomain = getContext().getPackageName();
 //                    String subAction = "chat=" + remoteUserUUID;
 //                    gorillaClient.registerActionEventDomain(actionDomain, subAction);
@@ -103,7 +102,7 @@ public class StreamStore {
                         for (int inx = 0; inx < recvMessages.length(); inx++)
                         {
                             GorillaMessage gorillaMessage = new GorillaMessage(Json.getObject(recvMessages, inx));
-                            MessageStreamItem messageStreamItem = new MessageStreamItem(contactUser, gorillaMessage);
+                            MessageStreamItem messageStreamItem = new MessageStreamItem(myUser, contactUser, gorillaMessage);
                             messageStreamItem.setSharedWithUser(myUser);
                             filteredStream.add(messageStreamItem);
 //                            Log.d("recv=" + gorillaMessage.toPretty());
@@ -115,7 +114,7 @@ public class StreamStore {
                         for (int inx = 0; inx < sentMessages.length(); inx++)
                         {
                             GorillaMessage gorillaMessage = new GorillaMessage(Json.getObject(sentMessages, inx));
-                            MessageStreamItem messageStreamItem = new MessageStreamItem(myUser, gorillaMessage);
+                            MessageStreamItem messageStreamItem = new MessageStreamItem(myUser, myUser, gorillaMessage);
                             messageStreamItem.setSharedWithUser(contactUser);
                             filteredStream.add(messageStreamItem);
 //                            Log.d("send=" + gorillaMessage.toPretty());
@@ -131,13 +130,13 @@ public class StreamStore {
 
                 for (Identity contactIdentity : allContacts) {
 
-//                    if (contactIdentity.equals(ownUser.getIdentity())) {
+//                    if (contactIdentity.getUserUUIDBase64().equals(myUser.getIdentity().getUserUUIDBase64())) {
 //                        continue;
 //                    }
 
                     User contactUser = new User(contactIdentity);
 
-                    ContactStreamItem contactStreamItem = new ContactStreamItem(myUser, contactUser);
+                    ContactStreamItem contactStreamItem = new ContactStreamItem(myUser, myUser, contactUser);
                     contactStreamItem.setAbsoluteScore(1f);
 
                     filteredStream.add(contactStreamItem);

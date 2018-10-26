@@ -10,8 +10,8 @@ import com.aura.aosp.gorilla.launcher.model.user.User;
  */
 public class InvisibleStreamItem extends AbstractStreamItem implements StreamItemInterface {
 
-    public InvisibleStreamItem(@NonNull User ownerUser) {
-        super(ownerUser, ItemType.TYPE_STREAMITEM_INVISIBLE);
+    public InvisibleStreamItem(@NonNull User myUser, @NonNull User ownerUser) {
+        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_INVISIBLE);
         setImagePlaceholderId(R.drawable.stream_oval_transparent_24dp);
     }
 

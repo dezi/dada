@@ -13,6 +13,7 @@ public abstract class AbstractStreamItem implements StreamItemInterface {
 
     private static final int DEFAULT_MAX_EXCERPT_LENGTH = 42;
 
+    protected User myUser;
     protected User ownerUser;
     protected String title;
     protected String text;
@@ -27,16 +28,8 @@ public abstract class AbstractStreamItem implements StreamItemInterface {
     /**
      * Construct stream item of invocationType "unknown".
      */
-    public AbstractStreamItem(ItemType itemType) {
-        setType(itemType);
-        setUuid(UID.randomUUIDBase64());
-        setCurrentTime();
-    }
-
-    /**
-     * Construct stream item of invocationType "unknown".
-     */
-    public AbstractStreamItem(@NonNull User ownerUser, ItemType itemType) {
+    public AbstractStreamItem(@NonNull User myUser, @NonNull User ownerUser, ItemType itemType) {
+        setMyUser(myUser);
         setOwnerUser(ownerUser);
         setType(itemType);
         setUuid(UID.randomUUIDBase64());
@@ -46,13 +39,15 @@ public abstract class AbstractStreamItem implements StreamItemInterface {
     /**
      * Construct stream item with or without owner user.
      *
+     * @param myUser
      * @param ownerUser
      * @param itemType
      * @param title
      * @param text
      * @param imagePlaceholderId
      */
-    public AbstractStreamItem(@NonNull User ownerUser, @NonNull ItemType itemType, @Nullable String title, @NonNull String text, @NonNull Integer imagePlaceholderId) {
+    public AbstractStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull ItemType itemType, @Nullable String title, @NonNull String text, @NonNull Integer imagePlaceholderId) {
+        setMyUser(myUser);
         setOwnerUser(ownerUser);
         setType(itemType);
         setTitle(title);
@@ -123,18 +118,13 @@ public abstract class AbstractStreamItem implements StreamItemInterface {
         return useTitle;
     }
 
-    public void setType(ItemType type) {
-        this.type = type;
+    @Override
+    public User getMyUser() {
+        return myUser;
     }
 
-    @Override
-    public ItemType getType() {
-        return type;
-    }
-
-    @Override
-    public Float getAbsoluteScore() {
-        return absoluteScore;
+    public void setMyUser(User myUser) {
+        this.myUser = myUser;
     }
 
     @Override
@@ -144,6 +134,20 @@ public abstract class AbstractStreamItem implements StreamItemInterface {
 
     public void setOwnerUser(User ownerUser) {
         this.ownerUser = ownerUser;
+    }
+
+    @Override
+    public ItemType getType() {
+        return type;
+    }
+
+    public void setType(ItemType type) {
+        this.type = type;
+    }
+
+    @Override
+    public Float getAbsoluteScore() {
+        return absoluteScore;
     }
 
     public String getTitle() {
