@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <solid android:color="@color/color_stream_dot" />
+
+    <size
+        android:width="@dimen/stream_dot_item_image_width"
+        android:height="@dimen/stream_dot_item_image_height" />
+
+    <padding
+        android:bottom="0dp"
+        android:left="0dp"
+        android:right="0dp"
+        android:top="0dp" />
+
+    <stroke
+        android:width="0dp"
+        android:color="@color/color_launcher_bg" />
+
+</shape>

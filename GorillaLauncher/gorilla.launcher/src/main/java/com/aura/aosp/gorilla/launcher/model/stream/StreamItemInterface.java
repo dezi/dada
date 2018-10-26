@@ -50,6 +50,18 @@ public interface StreamItemInterface {
 
     String getUuid();
 
+    boolean isMyItem();
+
+    boolean shareIsQueued();
+
+    boolean shareIsSent();
+
+    boolean shareIsPersisted();
+
+    boolean shareIsReceived();
+
+    boolean shareIsRead();
+
     boolean isFullyViewed();
 
     boolean isPreviewViewed();

@@ -46,6 +46,18 @@ public class StreamView extends RecyclerView {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+
+//                LinearLayoutManager layoutmanager = (LinearLayoutManager) recyclerView.getLayoutManager();
+//                StreamAdapter streamAdapter = (StreamAdapter) recyclerView.getAdapter();
+//                FilteredStream filteredStream = (FilteredStream) streamAdapter.getStreamItems();
+//
+//                int fvItemPosition = layoutmanager.findFirstCompletelyVisibleItemPosition();
+//                int lvItemPosition = layoutmanager.findLastCompletelyVisibleItemPosition();
+//
+//                for (int pos = fvItemPosition; pos < lvItemPosition; pos++) {
+//                    filteredStream.onItemViewed(pos, getMyUser());
+//                    streamAdapter.notifyItemChanged(pos);
+//                }
             }
 
             @Override
@@ -62,10 +74,9 @@ public class StreamView extends RecyclerView {
 
                     for (int pos = fvItemPosition; pos < lvItemPosition; pos++) {
                         filteredStream.onItemViewed(pos, getMyUser());
+                        streamAdapter.notifyItemChanged(pos);
                     }
                 }
-
-
             }
         };
 
@@ -86,14 +97,14 @@ public class StreamView extends RecyclerView {
      * Scroll to end of stream view.
      */
     public void smoothScrollToStreamEnd() {
-        smoothScrollToPosition(getAdapter().getItemCount());
+        smoothScrollToPosition(getAdapter().getItemCount() - 1);
     }
 
     /**
      * Scroll to end of stream view.
      */
     public void scrollToStreamEnd() {
-        scrollToPosition(getAdapter().getItemCount());
+        scrollToPosition(getAdapter().getItemCount() - 1);
     }
 
 //    @Override

@@ -14,7 +14,6 @@ import android.view.animation.ScaleAnimation;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.ui.animation.easing.Easing;
 import com.aura.aosp.gorilla.launcher.ui.animation.easing.EasingInterpolator;
-import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterView;
 
 /**
  * Effects collection

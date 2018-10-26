@@ -658,7 +658,7 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     /**
-     * Gorilla Listener for receiving/sending actions and atoms
+     * Gorilla Listener: Listen for connectivity changes
      */
     private final GorillaListener listener = new GorillaListener() {
         @Override
@@ -677,15 +677,6 @@ public class LauncherActivity extends AppCompatActivity {
             if (statusBar != null) {
                 statusBar.setUplink(connected);
             }
-        }
-
-        @Override
-        public void onPayloadResultReceived(GorillaPayloadResult result) {
-            Log.d("result=" + result.toString());
-//            for (ChatProfile chatProfile : chatProfiles)
-//            {
-//                chatProfile.activity.dispatchShareWithResult(result);
-//            }
         }
     };
 }

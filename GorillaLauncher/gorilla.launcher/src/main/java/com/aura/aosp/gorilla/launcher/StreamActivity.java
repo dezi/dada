@@ -37,6 +37,7 @@ import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterAdapter;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -53,7 +54,6 @@ public class StreamActivity extends LauncherActivity {
     private StreamView streamView;
     private FilteredStream filteredStream;
     private StreamAdapter streamAdapter;
-    private SmartScrollableLayoutManager streamLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +85,9 @@ public class StreamActivity extends LauncherActivity {
         mainContentContainer.addView(streamView);
 
         // use a linear layout manager
-        streamLayoutManager = new SmartScrollableLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        SmartScrollableLayoutManager streamLayoutManager = new SmartScrollableLayoutManager(
+                this, LinearLayoutManager.VERTICAL, false);
+
         streamView.setLayoutManager(streamLayoutManager);
 
         // Register layout manger with "main content smart scrollable layout managers"
@@ -162,7 +164,7 @@ public class StreamActivity extends LauncherActivity {
      */
     public void onOpenContentComposer(@Nullable User contactUser) {
 
-        Log.d("onOpenContentComposer for contactUser <%s>", contactUser.getIdentity().getNick());
+        Log.d("contactUser <%s>", contactUser.getIdentity().getNick());
 
 //        Effects.fadeOutView(actionClusterContainer, this, null);
 //        ConstraintSet constraintSet = new ConstraintSet();
@@ -207,6 +209,7 @@ public class StreamActivity extends LauncherActivity {
 
         final ActionClusterView recipientAvatarClusterView = (ActionClusterView) getLayoutInflater().inflate(
                 R.layout.fragment_actioncluster_horizontal, recipientListContainer, false);
+
         recipientAvatarClusterView.setVisibility(View.INVISIBLE);
 
 //        // use a linear layout manager
@@ -216,9 +219,11 @@ public class StreamActivity extends LauncherActivity {
         // specify adapter
         ActionClusterAdapter recipientActionClusterAdapter = new ActionClusterAdapter(
                 recipientActionCluster.getItemsByRelevance(), this, this);
+
         recipientAvatarClusterView.setAdapter(recipientActionClusterAdapter);
 
         recipientListContainer.addView(recipientAvatarClusterView);
+
         recipientAvatarClusterView.fadeIn();
 
 
@@ -251,8 +256,8 @@ public class StreamActivity extends LauncherActivity {
         EditText editTextView = (EditText) findViewById(R.id.editText);
         String messageText = editTextView.getText().toString();
 
-        Log.d("onSendMessage for contactUser <%s>", contactUser.getIdentity().getNick());
-        Log.d("onSendMessage message <%s>", messageText);
+        Log.d("contactUser <%s>", contactUser.getIdentity().getNick());
+        Log.d("message <%s>", messageText);
 
         MessageStreamItem messageStreamItem = new MessageStreamItem(getMyUser() , getMyUser(), messageText);
         messageStreamItem.shareWith(contactUser);
@@ -360,10 +365,11 @@ public class StreamActivity extends LauncherActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        onReturnToStream(false);
     }
 
     /**
-     * Gorilla Listener for receiving/sending actions and atoms
+     * Gorilla Listener: Listen for owner change (my identity) and atom send + receive events
      */
     private final GorillaListener listener = new GorillaListener() {
 
@@ -392,6 +398,7 @@ public class StreamActivity extends LauncherActivity {
 
         @Override
         public void onPayloadReceived(GorillaPayload payload) {
+
             Log.d("payload=" + payload.toString());
 
             GorillaMessage message = convertPayloadToMessageAndPersist(payload);
@@ -427,9 +434,11 @@ public class StreamActivity extends LauncherActivity {
 //                shadowFilteredStream = filteredStream;
 //            }
 
-            // TODO: Load atom via store, modify (database/file) item and
+            // TODO: Encapsulate: Load atom via store, modify (database/file) item and
             // TODO: look for current stream item occurences for refresh!
-            for (StreamItemInterface streamItem : shadowFilteredStream) {
+            for (int i = 0; i < shadowFilteredStream.size(); i++) {
+                StreamItemInterface streamItem = shadowFilteredStream.get(i);
+
                 if (streamItem.getType() == StreamItemInterface.ItemType.TYPE_STREAMITEM_MESSAGE)
                 {
                     MessageStreamItem messageStreamItem = (MessageStreamItem) streamItem;
@@ -438,6 +447,8 @@ public class StreamActivity extends LauncherActivity {
                         messageStreamItem.dispatchShareWithResult(result);
                         break;
                     }
+
+                    streamAdapter.notifyItemChanged(i);
                 }
             }
         }

@@ -28,7 +28,7 @@ public abstract class AbstractStreamItem implements StreamItemInterface {
     /**
      * Construct stream item of invocationType "unknown".
      */
-    public AbstractStreamItem(@NonNull User myUser, @NonNull User ownerUser, ItemType itemType) {
+    AbstractStreamItem(@NonNull User myUser, @NonNull User ownerUser, ItemType itemType) {
         setMyUser(myUser);
         setOwnerUser(ownerUser);
         setType(itemType);
@@ -46,7 +46,7 @@ public abstract class AbstractStreamItem implements StreamItemInterface {
      * @param text
      * @param imagePlaceholderId
      */
-    public AbstractStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull ItemType itemType, @Nullable String title, @NonNull String text, @NonNull Integer imagePlaceholderId) {
+    AbstractStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull ItemType itemType, @Nullable String title, @NonNull String text, @NonNull Integer imagePlaceholderId) {
         setMyUser(myUser);
         setOwnerUser(ownerUser);
         setType(itemType);
@@ -61,7 +61,7 @@ public abstract class AbstractStreamItem implements StreamItemInterface {
     /**
      * Set created and modified timestamps to current system time
      */
-    protected void setCurrentTime() {
+    private void setCurrentTime() {
         Long currentDateTime = System.currentTimeMillis();
 
         setTimeCreated(currentDateTime);
@@ -210,6 +210,42 @@ public abstract class AbstractStreamItem implements StreamItemInterface {
     @Override
     public String getUuid() {
         return uuid;
+    }
+
+
+    /**
+     * Check if item is owned by current user identity.
+     *
+     * @return
+     */
+    @Override
+    public boolean isMyItem() {
+        return getMyUser().getIdentity().getUserUUIDBase64().equals(getOwnerUser().getIdentity().getUserUUIDBase64());
+    }
+
+    @Override
+    public boolean shareIsQueued() {
+        return false;
+    }
+
+    @Override
+    public boolean shareIsSent() {
+        return false;
+    }
+
+    @Override
+    public boolean shareIsPersisted() {
+        return false;
+    }
+
+    @Override
+    public boolean shareIsReceived() {
+        return false;
+    }
+
+    @Override
+    public boolean shareIsRead() {
+        return false;
     }
 
     public void setUuid(String uuid) {

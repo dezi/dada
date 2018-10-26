@@ -68,7 +68,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      */
     private void shareWith(Identity remoteIdentity) {
 
-        if (!isMyMessage()) {
+        if (!isMyItem()) {
             return;
         }
 
@@ -117,7 +117,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      */
     public void dispatchShareWithResult(GorillaPayloadResult result) {
 
-        if (!isMyMessage()) {
+        if (!isMyItem()) {
             return;
         }
 
@@ -144,7 +144,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
     @Override
     public boolean isPreviewViewed() {
         // TODO: Adjust!
-        return isRead();
+        return shareIsRead();
     }
 
     @Override
@@ -156,7 +156,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
     @Override
     public void onPreviewViewed() {
 
-        if (isRead()) {
+        if (shareIsRead()) {
             return;
         }
 
@@ -195,8 +195,11 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      *
      * @return
      */
-    public boolean isMyMessage() {
-        return getMyUser().getIdentity().getUserUUIDBase64().equals(getOwnerUser().getIdentity().getUserUUIDBase64());
+    public boolean shareIsQueued() {
+
+        return isMyItem()
+                || getSharedWithUser() == null
+                || getAtomStatusTime("queued") != null;
     }
 
     /**
@@ -204,9 +207,45 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      *
      * @return
      */
-    public boolean isRead() {
+    public boolean shareIsSent() {
 
-        return isMyMessage()
+        return isMyItem()
+                || getSharedWithUser() == null
+                || getAtomStatusTime("send") != null;
+    }
+
+    /**
+     * Check if message is marked as read or assumed to be read due to ownership of device user identity.
+     *
+     * @return
+     */
+    public boolean shareIsPersisted() {
+
+        return isMyItem()
+                || getSharedWithUser() == null
+                || getAtomStatusTime("persisted") != null;
+    }
+
+    /**
+     * Check if message is marked as read or assumed to be read due to ownership of device user identity.
+     *
+     * @return
+     */
+    public boolean shareIsReceived() {
+
+        return isMyItem()
+                || getSharedWithUser() == null
+                || getAtomStatusTime("received") != null;
+    }
+
+    /**
+     * Check if message is marked as read or assumed to be read due to ownership of device user identity.
+     *
+     * @return
+     */
+    public boolean shareIsRead() {
+
+        return isMyItem()
                 || getSharedWithUser() == null
                 || getAtomStatusTime("read") != null;
     }

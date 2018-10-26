@@ -37,9 +37,9 @@ public class FilteredStream extends ArrayList<StreamItemInterface> {
      * @param pos
      */
     public void onItemViewed(final int pos, User viewedByUser) {
+
         StreamItemInterface streamItem = get(pos);
 
-        // TODO: Hier weiter, knallt noch weil viewedByUser null ist:
         streamItem.onFullyViewed();
     }
 

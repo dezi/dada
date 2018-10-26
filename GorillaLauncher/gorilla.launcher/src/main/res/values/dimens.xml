@@ -6,18 +6,31 @@
     <dimen name="stream_fading_edge_length">80dp</dimen>
 
     <!-- Content Stream Item: Generic layout -->
-    <dimen name="stream_item_padding_top">0dp</dimen>
-    <dimen name="stream_item_padding_bottom">0dp</dimen>
-    <dimen name="stream_item_padding_left">0dp</dimen>
-    <dimen name="stream_item_padding_right">0dp</dimen>
-    <dimen name="stream_item_margin_top">8dp</dimen>
-    <dimen name="stream_item_margin_bottom">8dp</dimen>
-    <dimen name="stream_item_margin_left">0dp</dimen>
-    <dimen name="stream_item_margin_right">0dp</dimen>
     <dimen name="stream_item_text_size">14sp</dimen>
+
+    <!-- Content Stream Item: State "dot" -->
+    <dimen name="stream_dot_item_height">20dp</dimen>
+    <dimen name="stream_dot_item_padding_top">0dp</dimen>
+    <dimen name="stream_dot_item_padding_bottom">0dp</dimen>
+    <dimen name="stream_dot_item_padding_left">0dp</dimen>
+    <dimen name="stream_dot_item_padding_right">0dp</dimen>
+    <dimen name="stream_dot_item_margin_top">3dp</dimen>
+    <dimen name="stream_dot_item_margin_bottom">3dp</dimen>
+    <dimen name="stream_dot_item_margin_left">0dp</dimen>
+    <dimen name="stream_dot_item_margin_right">0dp</dimen>
+    <dimen name="stream_dot_item_image_width">20dp</dimen>
+    <dimen name="stream_dot_item_image_height">20dp</dimen>
 
     <!-- Content Stream Item: Expansion state "preview" -->
     <dimen name="stream_preview_item_height">58dp</dimen>
+    <dimen name="stream_preview_item_padding_top">0dp</dimen>
+    <dimen name="stream_preview_item_padding_bottom">0dp</dimen>
+    <dimen name="stream_preview_item_padding_left">0dp</dimen>
+    <dimen name="stream_preview_item_padding_right">0dp</dimen>
+    <dimen name="stream_preview_item_margin_top">8dp</dimen>
+    <dimen name="stream_preview_item_margin_bottom">8dp</dimen>
+    <dimen name="stream_preview_item_margin_left">0dp</dimen>
+    <dimen name="stream_preview_item_margin_right">0dp</dimen>
     <dimen name="stream_preview_item_image_width">58dp</dimen>
     <dimen name="stream_preview_item_image_height">58dp</dimen>
     <dimen name="stream_preview_item_corner_radius">16dp</dimen>

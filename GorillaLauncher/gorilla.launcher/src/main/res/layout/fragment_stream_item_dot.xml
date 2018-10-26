@@ -3,27 +3,74 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="end"
-    android:layout_marginBottom="@dimen/stream_item_margin_bottom"
-    android:layout_marginEnd="@dimen/stream_item_margin_right"
-    android:layout_marginStart="@dimen/stream_item_margin_left"
-    android:layout_marginTop="@dimen/stream_item_margin_top"
-    android:background="@color/color_launcher_bg_debug"
+    android:layout_height="@dimen/stream_dot_item_height"
+    android:layout_marginStart="@dimen/stream_preview_item_margin_left"
+    android:layout_marginTop="@dimen/stream_preview_item_margin_top"
+    android:layout_marginEnd="@dimen/stream_preview_item_margin_right"
+    android:layout_marginBottom="@dimen/stream_preview_item_margin_bottom"
     android:clickable="true"
     android:focusable="true"
-    android:paddingBottom="@dimen/stream_item_padding_bottom"
-    android:paddingEnd="@dimen/stream_item_padding_right"
-    android:paddingStart="@dimen/stream_item_padding_left"
-    android:paddingTop="@dimen/stream_item_padding_top">
+    android:paddingStart="@dimen/stream_preview_item_padding_left"
+    android:paddingTop="@dimen/stream_preview_item_padding_top"
+    android:paddingEnd="@dimen/stream_preview_item_padding_right"
+    android:paddingBottom="@dimen/stream_preview_item_padding_bottom">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/container"
-        android:layout_width="200dp"
+    <RelativeLayout
+        android:id="@+id/previewTextContainer"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:padding="0dp"
+        android:background="@drawable/stream_preview_rounded_corners_left"
+        android:gravity="start|center_vertical"
+        android:paddingStart="@dimen/stream_preview_item_text_paddingEdge"
+        android:paddingTop="@dimen/stream_preview_item_text_paddingVertical"
+        android:paddingEnd="@dimen/stream_preview_item_text_paddingCenter"
+        android:paddingBottom="@dimen/stream_preview_item_text_paddingVertical"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/previewImageContainer"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/previewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:gravity="start|top"
+            android:maxWidth="@dimen/stream_preview_item_text_maxWidth"
+            android:minWidth="@dimen/stream_preview_item_text_minWidth"
+            android:text=""
+            android:visibility="invisible"
+            android:textAlignment="textStart"
+            android:textColor="@color/color_stream_text_muted"
+            android:textSize="@dimen/stream_preview_item_text_title_size"
+            android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/previewText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/previewTitle"
+            android:gravity="start|center_vertical"
+            android:maxWidth="@dimen/stream_preview_item_text_maxWidth"
+            android:minWidth="@dimen/stream_preview_item_text_minWidth"
+            android:text="@string/_dotdotdot"
+            android:textAlignment="textStart"
+            android:textColor="@color/color_stream_text_main"
+            android:textSize="@dimen/stream_preview_item_text_main_size"
+            android:textStyle="normal" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/previewImageContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
+        android:background="@drawable/stream_dot"
+        android:gravity="center_horizontal|center_vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -32,31 +79,12 @@
             android:id="@+id/previewImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:clickable="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="0dp"
             android:contentDescription="@string/image_preview"
-            android:src="@drawable/ic_blur_on_black_24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/previewText"
-            android:layout_width="0dp"
-            android:layout_height="30dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/_dotdotdot"
-            android:textAlignment="textEnd"
-            android:textColor="@color/color_text_secondary"
-            android:textSize="@dimen/stream_preview_item_text_title_size"
-            android:textStyle="normal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/previewImage"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </android.support.constraint.ConstraintLayout>
+            android:gravity="center_horizontal|center_vertical" />
+    </RelativeLayout>
 
 </com.aura.aosp.gorilla.launcher.ui.content.StreamItemView>
