@@ -36,6 +36,12 @@ android {
             path "CMakeLists.txt"
         }
     }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ["src/main/cppLibs/dlib/lib"]
+        }
+    }
 }
 
 dependencies {
