@@ -102,7 +102,6 @@ public class ImageShaper {
         imgView.setAdjustViewBounds(true);
     }
 
-
     /**
      * Resize bitmaps.
      *

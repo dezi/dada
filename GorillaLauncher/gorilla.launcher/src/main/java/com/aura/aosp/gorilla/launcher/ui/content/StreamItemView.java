@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -54,5 +56,16 @@ public class StreamItemView extends ConstraintLayout {
      */
     public void initWithItem(final ContactStreamItem contactStreamItem) {
         // TODO: Implement (extract from StreamAdapter)
+    }
+
+    public void setFadeAnimation() {
+        AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+        anim.setDuration(500);
+        startAnimation(anim);
+    }
+
+    public void setResizeAnimation() {
+        this.setScaleX(1.2f);
+        this.setScaleY(1.2f);
     }
 }

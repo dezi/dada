@@ -64,19 +64,19 @@ public class StreamView extends RecyclerView {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
-                if (newState == SCROLL_STATE_IDLE) {
-                    LinearLayoutManager layoutmanager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                    StreamAdapter streamAdapter = (StreamAdapter) recyclerView.getAdapter();
-                    FilteredStream filteredStream = (FilteredStream) streamAdapter.getStreamItems();
-
-                    int fvItemPosition = layoutmanager.findFirstCompletelyVisibleItemPosition();
-                    int lvItemPosition = layoutmanager.findLastCompletelyVisibleItemPosition();
-
-                    for (int pos = fvItemPosition; pos < lvItemPosition; pos++) {
-                        filteredStream.onItemViewed(pos, getMyUser());
-                        streamAdapter.notifyItemChanged(pos);
-                    }
-                }
+//                if (newState == SCROLL_STATE_IDLE) {
+//                    LinearLayoutManager layoutmanager = (LinearLayoutManager) recyclerView.getLayoutManager();
+//                    StreamAdapter streamAdapter = (StreamAdapter) recyclerView.getAdapter();
+//                    FilteredStream filteredStream = (FilteredStream) streamAdapter.getStreamItems();
+//
+//                    int fvItemPosition = layoutmanager.findFirstCompletelyVisibleItemPosition();
+//                    int lvItemPosition = layoutmanager.findLastCompletelyVisibleItemPosition();
+//
+//                    for (int pos = fvItemPosition; pos < lvItemPosition; pos++) {
+//                        filteredStream.onItemViewed(pos, getMyUser());
+//                        streamAdapter.notifyItemChanged(pos);
+//                    }
+//                }
             }
         };
 

@@ -11,6 +11,9 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
 
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.launcher.R;
@@ -50,6 +53,8 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
     private static final int ITEM_TYPE_PREVIEW_RIGHT = 11;
     private static final int ITEM_TYPE_FULLVIEW_LEFT = 20;
     private static final int ITEM_TYPE_FULLVIEW_RIGHT = 21;
+
+    private int lastPosition = - 1;
 
     /**
      * @param filteredStream
@@ -130,7 +135,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
             case TYPE_STREAMITEM_MESSAGE:
 
-                if (position < getStreamItems().size() - 7) {
+                if (false && position < getStreamItems().size() - 7) {
                     itemType = ITEM_TYPE_DOT;
                 } else {
                     if (dataSet.isMyItem()) {
@@ -185,6 +190,41 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
         final Drawable shapeTextContainerBgDrawable = holder.previewTextContainer.getBackground();
         Drawable shapeImageContainerBgDrawable = holder.previewImageContainer.getBackground();
+
+        // Do animations
+
+//        holder.item.setResizeAnimation();
+        Animation moveAnimation = AnimationUtils.loadAnimation(context,
+                (position > lastPosition) ? R.anim.ip_up_from_bottom
+                        : R.anim.ip_down_from_top);
+
+        moveAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                return;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        holder.item.startAnimation(moveAnimation);
+
+//        // Animations after updating content
+//        if (position > lastPosition) {
+//            ScaleAnimation scaleAnimation = new ScaleAnimation(1f, 1.5f, 1f, 1.5f);
+//            scaleAnimation.setDuration(200);
+//            holder.item.startAnimation(scaleAnimation);
+//        }
+
+        lastPosition = position;
 
         // Modify some attributes based  on stream item type
         switch (streamItem.getType()) {
@@ -405,6 +445,18 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(@NonNull StreamViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        holder.itemView.clearAnimation();
+    }
+
+    @Override
+    public void registerAdapterDataObserver(@NonNull RecyclerView.AdapterDataObserver observer) {
+        super.registerAdapterDataObserver(observer);
+        // TODO: Register own observer with special handling for various stream item data types!
     }
 
     public void addItem(int position, GenericStreamItem streamItem) {
