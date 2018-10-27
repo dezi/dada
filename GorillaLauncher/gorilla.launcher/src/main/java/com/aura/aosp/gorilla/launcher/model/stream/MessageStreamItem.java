@@ -174,7 +174,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
                 }
             }
 
-        }, 2000);
+        }, 5000);
     }
 
     @Override

@@ -261,7 +261,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                     }
 
                     if (streamItem.shareIsRead()) {
-                        useIconImageRes =  R.drawable.ic_check_black_24dp;
+                        useIconImageRes =  R.drawable.ic_check_circle_black_24dp;
                         useIconImageColor = R.color.color_stream_icon_drawable_state_success;
                     }
 
