@@ -249,6 +249,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
                     if (streamItem.shareIsQueued()) {
                         useIconImageRes =  R.drawable.ic_access_time_black_24dp;
+                        useIconImageColor = R.color.color_stream_icon_drawable_state_default;
                     }
 
                     if (streamItem.shareIsSent()) {
@@ -257,7 +258,8 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                     }
 
                     if (streamItem.shareIsReceived()) {
-                        useIconImageRes =  R.drawable.ic_check_black_24dp;
+                        useIconImageRes =  R.drawable.ic_check_circle_black_24dp;
+                        useIconImageColor = R.color.color_stream_icon_drawable_state_default;
                     }
 
                     if (streamItem.shareIsRead()) {

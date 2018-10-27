@@ -160,11 +160,11 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
             return;
         }
 
+        setAtomStatusTime("read", System.currentTimeMillis());
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
-                setAtomStatusTime("read", System.currentTimeMillis());
 
                 String remoteUserUUID = getOwnerUser().getIdentity().getUserUUIDBase64();
                 String remoteDeviceUUID = getOwnerUser().getIdentity().getDeviceUUIDBase64();
@@ -173,8 +173,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
                     gorillaClient.putAtomSharedBy(remoteUserUUID, getGorillaMessage().getAtom());
                 }
             }
-
-        }, 5000);
+        }, 2000);
     }
 
     @Override
