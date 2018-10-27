@@ -409,7 +409,9 @@ public class StreamActivity extends LauncherActivity {
             User ownerUser = new User(Contacts.getContact(remoteUserUUID));
 
             int nextPos = filteredStream.size();
-            filteredStream.add(nextPos, new MessageStreamItem(getMyUser(), ownerUser, message));
+            MessageStreamItem messageStreamItem = new MessageStreamItem(getMyUser(), ownerUser, message);
+            messageStreamItem.setSharedWithUser(getMyUser());
+            filteredStream.add(messageStreamItem);
 //            filteredStream.sortyByCreateTime(true);
             streamAdapter.notifyItemInserted(nextPos);
 
