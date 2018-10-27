@@ -37,11 +37,9 @@
     <color name="color_stream_preview_bg_generic">#774ec7</color>
     <color name="color_stream_preview_bg_contact">#b7248e</color>
     <color name="color_stream_preview_bg_message">#676cf9</color>
-    <color name="color_stream_preview_bg_message_unread">#31b6a2</color>
-    <color name="color_stream_preview_bg_mymessage_queued">#cacaca</color>
-    <color name="color_stream_preview_bg_mymessage_sent">#e4b083</color>
-    <color name="color_stream_preview_bg_mymessage_received">@color/color_stream_preview_bg_message_unread</color>
-    <color name="color_stream_preview_bg_mymessage_read">@color/color_stream_preview_bg_message</color>
+    <color name="color_stream_preview_bg_message_default">#31b6a2</color>
+    <color name="color_stream_preview_bg_message_read">#838383</color>
+    <color name="color_stream_preview_bg_mymessage_default">@color/color_stream_preview_bg_message</color>
 
     <color name="color_stream_text_main">#ffffff</color>
     <color name="color_stream_text_muted">#dedede</color>

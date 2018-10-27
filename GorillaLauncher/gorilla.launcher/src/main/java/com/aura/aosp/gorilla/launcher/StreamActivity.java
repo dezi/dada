@@ -140,7 +140,7 @@ public class StreamActivity extends LauncherActivity {
             reloadStreamItems(null);
 
             if (getCurrentAtomContext().equals(StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES)) {
-                streamView.smoothScrollToStreamEnd();
+                streamView.scrollToStreamEnd();
             }
         }
     }
@@ -154,7 +154,7 @@ public class StreamActivity extends LauncherActivity {
             @Override
             public void run() {
                 streamView.fadeIn();
-                streamView.smoothScrollToStreamEnd();
+                streamView.scrollToStreamEnd();
             }
         }, getResources().getInteger(R.integer.streamview_onopen_effects_delay));
     }

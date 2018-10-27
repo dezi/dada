@@ -13,9 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.ScaleAnimation;
 
-import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.StreamActivity;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
@@ -244,7 +242,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
                 if (streamItem.isMyItem()) {
 
-                    useShapeBgColor = R.color.color_stream_preview_bg_mymessage_read;
+                    useShapeBgColor = R.color.color_stream_preview_bg_mymessage_default;
 
                     if (streamItem.shareIsQueued()) {
                         useIconImageRes =  R.drawable.ic_access_time_black_24dp;
@@ -269,9 +267,9 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 } else {
 
                     if (streamItem.isFullyViewed()) {
-                        useShapeBgColor = R.color.color_stream_preview_bg_message_unread;
+                        useShapeBgColor = R.color.color_stream_preview_bg_message_read;
                     } else {
-                        useShapeBgColor = R.color.color_stream_preview_bg_mymessage_read;
+                        useShapeBgColor = R.color.color_stream_preview_bg_message_default;
                     }
                 }
 
