@@ -197,9 +197,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      */
     public boolean shareIsQueued() {
 
-        return isMyItem()
-                || getSharedWithUser() == null
-                || getAtomStatusTime("queued") != null;
+        return getSharedWithUser() == null || getAtomStatusTime("queued") != null;
     }
 
     /**
@@ -209,9 +207,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      */
     public boolean shareIsSent() {
 
-        return isMyItem()
-                || getSharedWithUser() == null
-                || getAtomStatusTime("send") != null;
+        return getSharedWithUser() == null || getAtomStatusTime("send") != null;
     }
 
     /**
@@ -221,9 +217,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      */
     public boolean shareIsPersisted() {
 
-        return isMyItem()
-                || getSharedWithUser() == null
-                || getAtomStatusTime("persisted") != null;
+        return getSharedWithUser() == null || getAtomStatusTime("persisted") != null;
     }
 
     /**
@@ -233,9 +227,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      */
     public boolean shareIsReceived() {
 
-        return isMyItem()
-                || getSharedWithUser() == null
-                || getAtomStatusTime("received") != null;
+        return getSharedWithUser() == null || getAtomStatusTime("received") != null;
     }
 
     /**
@@ -245,9 +237,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      */
     public boolean shareIsRead() {
 
-        return isMyItem()
-                || getSharedWithUser() == null
-                || getAtomStatusTime("read") != null;
+        return getSharedWithUser() == null || getAtomStatusTime("read") != null;
     }
 
     /**
