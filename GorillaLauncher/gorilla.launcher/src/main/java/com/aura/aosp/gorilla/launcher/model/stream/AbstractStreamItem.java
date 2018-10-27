@@ -11,7 +11,7 @@ import com.aura.aosp.gorilla.launcher.model.user.User;
  */
 public abstract class AbstractStreamItem implements StreamItemInterface {
 
-    private static final int DEFAULT_MAX_EXCERPT_LENGTH = 42;
+    private static final int DEFAULT_MAX_EXCERPT_LENGTH = 38;
 
     protected User myUser;
     protected User ownerUser;

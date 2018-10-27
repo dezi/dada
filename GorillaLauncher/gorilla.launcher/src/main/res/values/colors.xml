@@ -30,18 +30,24 @@
     <color name="color_stream_dot">#cacaca</color>
     <color name="color_stream_button_highlight">#6b3efc</color>
     <color name="color_stream_hint">#8e6bff</color>
+
     <color name="color_stream_image_bg_primary">#f76dee</color>
     <color name="color_stream_image_bg_secondary">#f9a6f3</color>
+
     <color name="color_stream_preview_bg_generic">#774ec7</color>
     <color name="color_stream_preview_bg_contact">#b7248e</color>
     <color name="color_stream_preview_bg_message">#676cf9</color>
-    <color name="color_stream_preview_bg_message_new">#31b6a2</color>
+    <color name="color_stream_preview_bg_message_unread">#31b6a2</color>
     <color name="color_stream_preview_bg_mymessage_queued">#cacaca</color>
     <color name="color_stream_preview_bg_mymessage_sent">#e4b083</color>
-    <color name="color_stream_preview_bg_mymessage_received">@color/color_stream_preview_bg_message_new</color>
+    <color name="color_stream_preview_bg_mymessage_received">@color/color_stream_preview_bg_message_unread</color>
     <color name="color_stream_preview_bg_mymessage_read">@color/color_stream_preview_bg_message</color>
+
     <color name="color_stream_text_main">#ffffff</color>
     <color name="color_stream_text_muted">#dedede</color>
+
+    <color name="color_stream_icon_drawable_state_default">@color/color_stream_image_drawable</color>
+    <color name="color_stream_icon_drawable_state_success">#31b6a2</color>
 
     <!-- Action Cluster Container / Mask -->
     <color name="color_actioncluster_container_mask_bg">#000000</color>

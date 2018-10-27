@@ -8,7 +8,8 @@
     <string name="_dotdotdot">...</string>
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Send</string>
-    <string name="image_preview">Bildvorschau</string>
+    <string name="image_preview">Image Preview</string>
+    <string name="stream_item_type">Stream Item Type and State</string>
     <string name="cluster_icon">Cluster Icon</string>
 
     <string name="actions_composeMessage">Compose New Message</string>

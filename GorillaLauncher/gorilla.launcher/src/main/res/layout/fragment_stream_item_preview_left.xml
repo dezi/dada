@@ -15,7 +15,7 @@
     android:paddingEnd="@dimen/stream_preview_item_padding_right"
     android:paddingBottom="@dimen/stream_preview_item_padding_bottom">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/previewTextContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,37 +29,33 @@
         app:layout_constraintEnd_toStartOf="@id/previewImageContainer"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/previewTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:gravity="start|top"
-            android:maxWidth="@dimen/stream_preview_item_text_maxWidth"
-            android:minWidth="@dimen/stream_preview_item_text_minWidth"
-            android:text=""
-            android:visibility="invisible"
-            android:textAlignment="textStart"
-            android:textColor="@color/color_stream_text_muted"
-            android:textSize="@dimen/stream_preview_item_text_title_size"
-            android:textStyle="normal" />
+        <ImageView
+            android:id="@+id/previewIcon"
+            android:layout_width="@dimen/stream_preview_item_icon_width"
+            android:layout_height="@dimen/stream_preview_item_icon_height"
+            android:layout_marginStart="@dimen/stream_preview_item_icon_marginEdge"
+            android:layout_marginEnd="@dimen/stream_preview_item_icon_marginCenter"
+            android:contentDescription="@string/stream_item_type"
+            android:gravity="start|center_vertical"
+            android:background="@drawable/ic_more_vert_black_24dp"
+            android:tint="@color/color_stream_image_drawable" />
 
         <TextView
             android:id="@+id/previewText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/previewTitle"
-            android:gravity="start|center_vertical"
+            android:gravity="end|center_vertical"
             android:maxWidth="@dimen/stream_preview_item_text_maxWidth"
             android:minWidth="@dimen/stream_preview_item_text_minWidth"
             android:text="@string/_dotdotdot"
-            android:textAlignment="textStart"
+            android:textAlignment="textEnd"
             android:textColor="@color/color_stream_text_main"
             android:textSize="@dimen/stream_preview_item_text_main_size"
             android:textStyle="normal" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/previewImageContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -84,6 +80,6 @@
             android:layout_marginBottom="0dp"
             android:contentDescription="@string/image_preview"
             android:gravity="center_horizontal|center_vertical" />
-    </RelativeLayout>
+    </LinearLayout>
 
 </com.aura.aosp.gorilla.launcher.ui.content.StreamItemView>

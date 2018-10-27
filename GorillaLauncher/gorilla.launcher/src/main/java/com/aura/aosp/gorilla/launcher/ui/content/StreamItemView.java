@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,10 +22,11 @@ public class StreamItemView extends ConstraintLayout {
     private static final String LOGTAG = StreamItemView.class.getSimpleName();
 
     public View item;
-    public RelativeLayout previewTextContainer;
+    public LinearLayout previewTextContainer;
+    public ImageView previewIcon;
     public TextView previewTitle;
     public TextView previewText;
-    public RelativeLayout previewImageContainer;
+    public LinearLayout previewImageContainer;
     public ImageView previewImage;
 
     public StreamItemView(Context context) {
@@ -45,6 +47,7 @@ public class StreamItemView extends ConstraintLayout {
     public void init() {
         item = findViewById(R.id.item);
         previewTextContainer = findViewById(R.id.previewTextContainer);
+        previewIcon = findViewById(R.id.previewIcon);
         previewTitle = findViewById(R.id.previewTitle);
         previewText = findViewById(R.id.previewText);
         previewImageContainer = findViewById(R.id.previewImageContainer);

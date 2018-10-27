@@ -26,6 +26,7 @@
     <!-- Stream Items -->
     <integer name="streamitem_contact_preview_avatar_alpha">255</integer>
     <integer name="streamitem_message_preview_avatar_alpha">224</integer>
+    <integer name="streamitem_generic_preview_icon_alpha">164</integer>
     <integer name="streamitem_generic_preview_placeholder_alpha">224</integer>
 
     <!-- Effect defaults -->

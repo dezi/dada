@@ -180,18 +180,21 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         final int usePlaceholderImageRes = streamItem.getImagePlaceholderId();
         final int usePlaceholderImageColor = R.color.color_stream_image_drawable;
 
+        int useIconImageRes = streamItem.getImagePlaceholderId();
+        int useIconImageColor = R.color.color_stream_icon_drawable_state_default;
+
         float previewItemHeight;
         float previewItemWidth;
 
         final Integer useImageShapeBgRes;
         int useShapeBgColor = R.color.color_transparent;
 
-        Log.d("##### holder.getLayoutPosition: <%d>", holder.getLayoutPosition());
-
         final Drawable shapeTextContainerBgDrawable = holder.previewTextContainer.getBackground();
         Drawable shapeImageContainerBgDrawable = holder.previewImageContainer.getBackground();
 
         // Do animations
+
+//        Log.d("##### holder.getLayoutPosition: <%d>", holder.getLayoutPosition());
 
 //        holder.item.setResizeAnimation();
         Animation moveAnimation = AnimationUtils.loadAnimation(context,
@@ -241,30 +244,33 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
                 if (streamItem.isMyItem()) {
 
-                    useShapeBgColor = R.color.color_stream_preview_bg_mymessage_queued;
+                    useShapeBgColor = R.color.color_stream_preview_bg_mymessage_read;
+
 
                     if (streamItem.shareIsQueued()) {
-                        useShapeBgColor = R.color.color_stream_preview_bg_mymessage_queued;
+                        useIconImageRes =  R.drawable.ic_access_time_black_24dp;
                     }
 
                     if (streamItem.shareIsSent()) {
-                        useShapeBgColor = R.color.color_stream_preview_bg_mymessage_sent;
+                        useIconImageRes =  R.drawable.ic_access_time_black_24dp;
+                        useIconImageColor = R.color.color_stream_icon_drawable_state_success;
                     }
 
                     if (streamItem.shareIsReceived()) {
-                        useShapeBgColor = R.color.color_stream_preview_bg_mymessage_received;
+                        useIconImageRes =  R.drawable.ic_check_black_24dp;
                     }
 
                     if (streamItem.shareIsRead()) {
-                        useShapeBgColor = R.color.color_stream_preview_bg_mymessage_read;
+                        useIconImageRes =  R.drawable.ic_check_black_24dp;
+                        useIconImageColor = R.color.color_stream_icon_drawable_state_success;
                     }
 
                 } else {
 
                     if (streamItem.isFullyViewed()) {
-                        useShapeBgColor = R.color.color_stream_preview_bg_message_new;
+                        useShapeBgColor = R.color.color_stream_preview_bg_message_unread;
                     } else {
-                        useShapeBgColor = R.color.color_stream_preview_bg_message;
+                        useShapeBgColor = R.color.color_stream_preview_bg_mymessage_read;
                     }
                 }
 
@@ -380,6 +386,14 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
             previewImageBgDrawable.setAlpha(context.getResources().getInteger(R.integer.streamitem_generic_preview_placeholder_alpha));
             DrawableCompat.setTint(previewImageBgDrawable, ContextCompat.getColor(context, usePlaceholderImageColor));
         }
+
+
+        // Set drawable image, color and alpha for icon image (background drawable)
+        holder.previewIcon.setBackground(context.getResources().getDrawable(useIconImageRes, context.getTheme()));
+
+        Drawable previewIconBgDrawable = holder.previewIcon.getBackground();
+        previewIconBgDrawable.setAlpha(context.getResources().getInteger(R.integer.streamitem_generic_preview_icon_alpha));
+        DrawableCompat.setTint(previewIconBgDrawable, ContextCompat.getColor(context, useIconImageColor));
 
         // Adjust shape, content and visualization according to stream item type
         switch (streamItem.getType()) {

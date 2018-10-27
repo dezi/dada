@@ -34,7 +34,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      * @param text
      */
     public MessageStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull String text) {
-        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), text, R.drawable.ic_message_black_24dp);
+        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), text, R.drawable.ic_chat_bubble_outline_black_24dp);
     }
 
     /**
@@ -45,7 +45,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      * @param gorillaMessage
      */
     public MessageStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull GorillaMessage gorillaMessage) {
-        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), gorillaMessage.getMessageText(), R.drawable.ic_message_black_24dp);
+        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), gorillaMessage.getMessageText(), R.drawable.ic_chat_bubble_outline_black_24dp);
 
         setGorillaMessage(gorillaMessage);
         setTimeCreated(gorillaMessage.getTime());
@@ -160,11 +160,12 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
             return;
         }
 
-        setAtomStatusTime("read", System.currentTimeMillis());
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+
+                setAtomStatusTime("read", System.currentTimeMillis());
+
                 String remoteUserUUID = getOwnerUser().getIdentity().getUserUUIDBase64();
                 String remoteDeviceUUID = getOwnerUser().getIdentity().getDeviceUUIDBase64();
 
@@ -173,7 +174,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
                 }
             }
 
-        }, 1000);
+        }, 2000);
     }
 
     @Override

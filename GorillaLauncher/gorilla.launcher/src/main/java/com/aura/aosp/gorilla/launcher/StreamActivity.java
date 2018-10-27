@@ -140,7 +140,7 @@ public class StreamActivity extends LauncherActivity {
             reloadStreamItems(null);
 
             if (getCurrentAtomContext().equals(StreamStore.ATOMCONTEXT_UXSTREAM_MESSAGES)) {
-                streamView.scrollToStreamEnd();
+                streamView.smoothScrollToStreamEnd();
             }
         }
     }

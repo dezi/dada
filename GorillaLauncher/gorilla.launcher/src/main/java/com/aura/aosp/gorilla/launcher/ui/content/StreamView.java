@@ -97,14 +97,18 @@ public class StreamView extends RecyclerView {
      * Scroll to end of stream view.
      */
     public void smoothScrollToStreamEnd() {
-        smoothScrollToPosition(getAdapter().getItemCount() - 1);
+        if (getAdapter().getItemCount() > 0) {
+            smoothScrollToPosition(getAdapter().getItemCount() - 1);
+        }
     }
 
     /**
      * Scroll to end of stream view.
      */
     public void scrollToStreamEnd() {
-        scrollToPosition(getAdapter().getItemCount() - 1);
+        if (getAdapter().getItemCount() > 0) {
+            scrollToPosition(getAdapter().getItemCount() - 1);
+        }
     }
 
 //    @Override
