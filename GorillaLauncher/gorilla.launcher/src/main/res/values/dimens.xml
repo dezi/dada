@@ -43,9 +43,9 @@
     <dimen name="stream_preview_item_text_main_size">14sp</dimen>
 
     <!-- Main Status Bar -->
-    <dimen name="statusbar_padding_horizontal">8dp</dimen>
+    <dimen name="statusbar_padding_horizontal">11dp</dimen>
     <dimen name="statusbar_padding_vertical">5dp</dimen>
-    <dimen name="statusbar_statusimage_padding_horizontal">2dp</dimen>
+    <dimen name="statusbar_statusimage_padding_horizontal">1dp</dimen>
     <dimen name="statusbar_statusimage_padding_vertical">0dp</dimen>
 
     <!-- Action Cluster Toggle Button -->

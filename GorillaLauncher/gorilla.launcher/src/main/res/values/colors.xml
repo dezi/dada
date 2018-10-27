@@ -23,7 +23,7 @@
     <color name="color_statusbar_statusimage_active">#78cf5f</color>
     <color name="color_statusbar_statusimage_inactive">#f2dd7e</color>
     <color name="color_statusbar_statusimage_disabled">#404040</color>
-    <color name="color_statusbar_profileinfo">#535353</color>
+    <color name="color_statusbar_profileinfo">#5e5e5e</color>
 
     <!-- Stream -->
     <color name="color_stream_button">#cacaca</color>
