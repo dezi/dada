@@ -246,7 +246,6 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
                     useShapeBgColor = R.color.color_stream_preview_bg_mymessage_read;
 
-
                     if (streamItem.shareIsQueued()) {
                         useIconImageRes =  R.drawable.ic_access_time_black_24dp;
                         useIconImageColor = R.color.color_stream_icon_drawable_state_default;
@@ -409,8 +408,8 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 // TODO: actions and action clusters
 
                 if (! streamItem.isMyItem()) {
-                    // Invoke intent based action
-                    holder.previewImage.setOnClickListener(new View.OnClickListener() {
+
+                    holder.previewImageContainer.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
 
@@ -422,6 +421,13 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                                     "stream.contacts", streamItem.getOwnerUser());
 
                             activity.createActionClusterView(itemActionCluster, null, true);
+                        }
+                    });
+
+                    holder.previewTextContainer.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            streamItem.onFullyViewed();
                         }
                     });
                 }

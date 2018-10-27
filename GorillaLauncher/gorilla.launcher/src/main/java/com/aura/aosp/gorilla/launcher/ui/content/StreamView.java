@@ -74,7 +74,6 @@ public class StreamView extends RecyclerView {
 //
 //                    for (int pos = fvItemPosition; pos < lvItemPosition; pos++) {
 //                        filteredStream.onItemViewed(pos, getMyUser());
-//                        streamAdapter.notifyItemChanged(pos);
 //                    }
 //                }
             }

@@ -438,8 +438,8 @@ public class StreamActivity extends LauncherActivity {
 
             // TODO: Encapsulate: Load atom via store, modify (database/file) item and
             // TODO: look for current stream item occurences for refresh!
-            for (int i = 0; i < shadowFilteredStream.size(); i++) {
-                StreamItemInterface streamItem = shadowFilteredStream.get(i);
+            for (int i = 0; i < filteredStream.size(); i++) {
+                StreamItemInterface streamItem = filteredStream.get(i);
 
                 if (streamItem.getType() == StreamItemInterface.ItemType.TYPE_STREAMITEM_MESSAGE)
                 {
@@ -450,7 +450,7 @@ public class StreamActivity extends LauncherActivity {
                         break;
                     }
 
-                    streamAdapter.notifyItemChanged(i);
+                    streamAdapter.notifyDataSetChanged();
                 }
             }
         }

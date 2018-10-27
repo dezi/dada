@@ -39,7 +39,6 @@ public class FilteredStream extends ArrayList<StreamItemInterface> {
     public void onItemViewed(final int pos, User viewedByUser) {
 
         StreamItemInterface streamItem = get(pos);
-
         streamItem.onFullyViewed();
     }
 
