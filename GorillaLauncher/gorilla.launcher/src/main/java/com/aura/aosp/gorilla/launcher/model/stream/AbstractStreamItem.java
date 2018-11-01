@@ -28,6 +28,15 @@ public abstract class AbstractStreamItem implements StreamItemInterface {
     /**
      * Construct stream item of invocationType "unknown".
      */
+    AbstractStreamItem(ItemType itemType) {
+        setType(itemType);
+        setUuid(UID.randomUUIDBase64());
+        setCurrentTime();
+    }
+
+    /**
+     * Construct stream item of invocationType "unknown".
+     */
     AbstractStreamItem(@NonNull User myUser, @NonNull User ownerUser, ItemType itemType) {
         setMyUser(myUser);
         setOwnerUser(ownerUser);

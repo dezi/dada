@@ -8,11 +8,15 @@ import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.client.GorillaClient;
+import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.GorillaHelper;
+import com.aura.aosp.gorilla.launcher.model.stream.BoundaryStreamItem;
+import com.aura.aosp.gorilla.launcher.model.stream.ContactStreamItem;
+import com.aura.aosp.gorilla.launcher.model.stream.DraftStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.FilteredStream;
+import com.aura.aosp.gorilla.launcher.model.stream.ImageStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.InvisibleStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.MessageStreamItem;
-import com.aura.aosp.gorilla.launcher.model.stream.ContactStreamItem;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 
 import org.json.JSONArray;
@@ -53,7 +57,7 @@ public class StreamStore {
         FilteredStream filteredStream = new FilteredStream();
         List<Identity> allContacts;
 
-        final InvisibleStreamItem emptyItem = new InvisibleStreamItem(myUser, myUser);
+        final BoundaryStreamItem boundaryStreamItem = new BoundaryStreamItem();
 
         allContacts = Contacts.getAllContacts();
 
@@ -97,10 +101,8 @@ public class StreamStore {
                     JSONArray recvMessages = gorillaClient.queryAtomsSharedBy(remoteUserUUID, atomType, 0, 0);
                     JSONArray sentMessages = gorillaClient.queryAtomsSharedWith(remoteUserUUID, atomType, 0, 0);
 
-                    if (recvMessages != null)
-                    {
-                        for (int inx = 0; inx < recvMessages.length(); inx++)
-                        {
+                    if (recvMessages != null) {
+                        for (int inx = 0; inx < recvMessages.length(); inx++) {
                             GorillaMessage gorillaMessage = new GorillaMessage(Json.getObject(recvMessages, inx));
                             MessageStreamItem messageStreamItem = new MessageStreamItem(myUser, contactUser, gorillaMessage);
                             messageStreamItem.setSharedWithUser(myUser);
@@ -109,10 +111,8 @@ public class StreamStore {
                         }
                     }
 
-                    if (sentMessages != null)
-                    {
-                        for (int inx = 0; inx < sentMessages.length(); inx++)
-                        {
+                    if (sentMessages != null) {
+                        for (int inx = 0; inx < sentMessages.length(); inx++) {
                             GorillaMessage gorillaMessage = new GorillaMessage(Json.getObject(sentMessages, inx));
                             MessageStreamItem messageStreamItem = new MessageStreamItem(myUser, myUser, gorillaMessage);
                             messageStreamItem.setSharedWithUser(contactUser);
@@ -145,7 +145,13 @@ public class StreamStore {
                 break;
         }
 
-//        filteredStream.add(emptyItem);
+        filteredStream.add(0, boundaryStreamItem);
+
+        if (filteredStream.size() == 1) {
+            filteredStream.add(new DraftStreamItem(myUser, myUser, "Welcome to Aura! Thia is your stream, bring it to life!"));
+        }
+
+        filteredStream.add(filteredStream.size(), boundaryStreamItem);
 
         return filteredStream;
     }

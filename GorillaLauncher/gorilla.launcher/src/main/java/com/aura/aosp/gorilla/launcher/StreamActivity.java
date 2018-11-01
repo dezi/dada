@@ -262,7 +262,7 @@ public class StreamActivity extends LauncherActivity {
         MessageStreamItem messageStreamItem = new MessageStreamItem(getMyUser() , getMyUser(), messageText);
         messageStreamItem.shareWith(contactUser);
 
-        int nextPos = filteredStream.size();
+        int nextPos = filteredStream.getInsertToEndPos();
         filteredStream.add(nextPos, messageStreamItem);
 //        filteredStream.sortyByCreateTime(true);
         streamAdapter.notifyItemInserted(nextPos);
@@ -408,10 +408,10 @@ public class StreamActivity extends LauncherActivity {
 
             User ownerUser = new User(Contacts.getContact(remoteUserUUID));
 
-            int nextPos = filteredStream.size();
+            int nextPos = filteredStream.getInsertToEndPos();
             MessageStreamItem messageStreamItem = new MessageStreamItem(getMyUser(), ownerUser, message);
             messageStreamItem.setSharedWithUser(getMyUser());
-            filteredStream.add(messageStreamItem);
+            filteredStream.add(nextPos, messageStreamItem);
 //            filteredStream.sortyByCreateTime(true);
             streamAdapter.notifyItemInserted(nextPos);
 

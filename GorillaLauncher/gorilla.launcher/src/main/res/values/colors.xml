@@ -34,12 +34,15 @@
     <color name="color_stream_image_bg_primary">#f76dee</color>
     <color name="color_stream_image_bg_secondary">#f9a6f3</color>
 
-    <color name="color_stream_preview_bg_generic">#774ec7</color>
-    <color name="color_stream_preview_bg_contact">#b7248e</color>
-    <color name="color_stream_preview_bg_message">#676cf9</color>
-    <color name="color_stream_preview_bg_message_default">#31b6a2</color>
-    <color name="color_stream_preview_bg_message_read">#838383</color>
-    <color name="color_stream_preview_bg_mymessage_default">@color/color_stream_preview_bg_message</color>
+    <color name="color_stream_item_shape_bg">#cacaca</color>
+
+    <color name="color_stream_item_bg_aura_ai">#f252e0</color>
+    <color name="color_stream_item_bg_contact">#b7248e</color>
+    <color name="color_stream_item_bg_draft">#774ec7</color>
+    <color name="color_stream_item_bg_message">#676cf9</color>
+    <color name="color_stream_item_bg_message_default">#31b6a2</color>
+    <color name="color_stream_item_bg_message_read">#838383</color>
+    <color name="color_stream_item_bg_mymessage_default">@color/color_stream_item_bg_message</color>
 
     <color name="color_stream_text_main">#ffffff</color>
     <color name="color_stream_text_muted">#dedede</color>

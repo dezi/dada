@@ -55,7 +55,7 @@ public class UserAvatarImage extends RelativeLayout {
         if (avatarImageRes != null) {
             circleImageView.setImageResource(avatarImageRes);
         } else {
-            circleImageView.setImageDrawable(getResources().getDrawable(R.drawable.stream_oval_transparent_24dp, getContext().getTheme()));
+            circleImageView.setImageDrawable(getResources().getDrawable(R.drawable.vector_oval_transparent_24dp, getContext().getTheme()));
             textView.setText(user.getInitials());
         }
     }

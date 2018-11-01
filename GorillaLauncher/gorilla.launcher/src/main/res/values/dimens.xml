@@ -2,52 +2,67 @@
 <resources>
     <!-- Content Stream -->
     <dimen name="stream_padding_top">0dp</dimen>
-    <dimen name="stream_padding_bottom">0dp</dimen>
-    <dimen name="stream_fading_edge_length">80dp</dimen>
+    <dimen name="stream_padding_bottom">20dp</dimen>
+    <dimen name="stream_fading_edge_length">40dp</dimen>
 
     <!-- Content Stream Item: Generic layout -->
     <dimen name="stream_item_text_size">14sp</dimen>
 
     <!-- Content Stream Item: State "dot" -->
-    <dimen name="stream_dot_item_height">20dp</dimen>
-    <dimen name="stream_dot_item_padding_top">0dp</dimen>
-    <dimen name="stream_dot_item_padding_bottom">0dp</dimen>
-    <dimen name="stream_dot_item_padding_left">0dp</dimen>
-    <dimen name="stream_dot_item_padding_right">0dp</dimen>
-    <dimen name="stream_dot_item_margin_top">3dp</dimen>
-    <dimen name="stream_dot_item_margin_bottom">3dp</dimen>
-    <dimen name="stream_dot_item_margin_left">0dp</dimen>
-    <dimen name="stream_dot_item_margin_right">0dp</dimen>
-    <dimen name="stream_dot_item_image_width">20dp</dimen>
-    <dimen name="stream_dot_item_image_height">20dp</dimen>
+    <dimen name="stream_item_dot_height">20dp</dimen>
+    <dimen name="stream_item_dot_padding_top">0dp</dimen>
+    <dimen name="stream_item_dot_padding_bottom">0dp</dimen>
+    <dimen name="stream_item_dot_padding_left">0dp</dimen>
+    <dimen name="stream_item_dot_padding_right">0dp</dimen>
+    <dimen name="stream_item_dot_margin_top">3dp</dimen>
+    <dimen name="stream_item_dot_margin_bottom">3dp</dimen>
+    <dimen name="stream_item_dot_margin_left">0dp</dimen>
+    <dimen name="stream_item_dot_margin_right">0dp</dimen>
+    <dimen name="stream_item_dot_image_width">20dp</dimen>
+    <dimen name="stream_item_dot_image_height">20dp</dimen>
+
+    <!-- Content Stream Item: Expansion state "circle" -->
+    <dimen name="stream_item_circle_height">44dp</dimen>
+    <dimen name="stream_item_circle_corner_radius">22dp</dimen>
+    <dimen name="stream_item_circle_padding_top">0dp</dimen>
+    <dimen name="stream_item_circle_padding_bottom">0dp</dimen>
+    <dimen name="stream_item_circle_padding_left">0dp</dimen>
+    <dimen name="stream_item_circle_padding_right">0dp</dimen>
+    <dimen name="stream_item_circle_margin_top">6dp</dimen>
+    <dimen name="stream_item_circle_margin_bottom">6dp</dimen>
+    <dimen name="stream_item_circle_margin_left">0dp</dimen>
+    <dimen name="stream_item_circle_margin_right">0dp</dimen>
+
+    <dimen name="stream_item_circle_image_width">44dp</dimen>
+    <dimen name="stream_item_circle_image_height">44dp</dimen>
 
     <!-- Content Stream Item: Expansion state "preview" -->
-    <dimen name="stream_preview_item_height">44dp</dimen>
-    <dimen name="stream_preview_item_corner_radius">16dp</dimen>
-    <dimen name="stream_preview_item_padding_top">0dp</dimen>
-    <dimen name="stream_preview_item_padding_bottom">0dp</dimen>
-    <dimen name="stream_preview_item_padding_left">0dp</dimen>
-    <dimen name="stream_preview_item_padding_right">0dp</dimen>
-    <dimen name="stream_preview_item_margin_top">6dp</dimen>
-    <dimen name="stream_preview_item_margin_bottom">6dp</dimen>
-    <dimen name="stream_preview_item_margin_left">0dp</dimen>
-    <dimen name="stream_preview_item_margin_right">0dp</dimen>
+    <dimen name="stream_item_preview_height">44dp</dimen>
+    <dimen name="stream_item_preview_corner_radius">16dp</dimen>
+    <dimen name="stream_item_preview_padding_top">0dp</dimen>
+    <dimen name="stream_item_preview_padding_bottom">0dp</dimen>
+    <dimen name="stream_item_preview_padding_left">0dp</dimen>
+    <dimen name="stream_item_preview_padding_right">0dp</dimen>
+    <dimen name="stream_item_preview_margin_top">6dp</dimen>
+    <dimen name="stream_item_preview_margin_bottom">6dp</dimen>
+    <dimen name="stream_item_preview_margin_left">0dp</dimen>
+    <dimen name="stream_item_preview_margin_right">0dp</dimen>
 
-    <dimen name="stream_preview_item_icon_width">14dp</dimen>
-    <dimen name="stream_preview_item_icon_height">14dp</dimen>
-    <dimen name="stream_preview_item_icon_marginCenter">8dp</dimen>
-    <dimen name="stream_preview_item_icon_marginEdge">0dp</dimen>
+    <dimen name="stream_item_preview_icon_width">14dp</dimen>
+    <dimen name="stream_item_preview_icon_height">14dp</dimen>
+    <dimen name="stream_item_preview_marginCenter">8dp</dimen>
+    <dimen name="stream_item_preview_icon_marginEdge">0dp</dimen>
 
-    <dimen name="stream_preview_item_text_paddingVertical">4dp</dimen>
-    <dimen name="stream_preview_item_text_paddingCenter">14dp</dimen>
-    <dimen name="stream_preview_item_text_paddingEdge">12dp</dimen>
-    <dimen name="stream_preview_item_text_maxWidth">90dp</dimen>
-    <dimen name="stream_preview_item_text_minWidth">40dp</dimen>
-    <dimen name="stream_preview_item_text_title_size">13sp</dimen>
-    <dimen name="stream_preview_item_text_main_size">14sp</dimen>
+    <dimen name="stream_item_preview_text_paddingVertical">4dp</dimen>
+    <dimen name="stream_item_preview_text_paddingCenter">14dp</dimen>
+    <dimen name="stream_item_preview_text_paddingEdge">12dp</dimen>
+    <dimen name="stream_item_preview_text_maxWidth">90dp</dimen>
+    <dimen name="stream_item_preview_text_minWidth">40dp</dimen>
+    <dimen name="stream_item_preview_text_title_size">13sp</dimen>
+    <dimen name="stream_item_preview_text_main_size">14sp</dimen>
 
-    <dimen name="stream_preview_item_image_width">44dp</dimen>
-    <dimen name="stream_preview_item_image_height">44dp</dimen>
+    <dimen name="stream_item_preview_image_width">44dp</dimen>
+    <dimen name="stream_item_preview_image_height">44dp</dimen>
 
     <!-- Main Status Bar -->
     <dimen name="statusbar_padding_horizontal">11dp</dimen>

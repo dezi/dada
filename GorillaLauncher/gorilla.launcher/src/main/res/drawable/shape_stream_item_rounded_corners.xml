@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <solid android:color="@color/color_stream_item_shape_bg" />
+
+    <size
+        android:width="@dimen/stream_item_preview_image_width"
+        android:height="@dimen/stream_item_preview_image_height" />
+
+    <corners
+        android:bottomLeftRadius="@dimen/stream_item_preview_corner_radius"
+        android:bottomRightRadius="@dimen/stream_item_preview_corner_radius"
+        android:topLeftRadius="@dimen/stream_item_preview_corner_radius"
+        android:topRightRadius="@dimen/stream_item_preview_corner_radius" />
+
+    <padding
+        android:bottom="0dp"
+        android:left="0dp"
+        android:right="0dp"
+        android:top="0dp" />
+
+    <stroke
+        android:width="0dp"
+        android:color="@color/color_launcher_bg" />
+
+</shape>

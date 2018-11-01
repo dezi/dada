@@ -1,10 +1,12 @@
 package com.aura.aosp.gorilla.launcher.model.stream;
 
 import com.aura.aosp.aura.common.simple.Simple;
+import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.function.Predicate;
 
 /**
  * The filtered stream model.
@@ -12,23 +14,36 @@ import java.util.Comparator;
 public class FilteredStream extends ArrayList<StreamItemInterface> {
 
     /**
-     * Sort stream items by creation time.
+     * Sort stream items by creation time. Remove items of type
+     * "bouhndary stream item" before sorting.
      *
      * @param asc
      */
     public void sortyByCreateTime(final boolean asc) {
+        removeIf(new Predicate<StreamItemInterface>() {
+            @Override
+            public boolean test(StreamItemInterface streamItemInterface) {
+                return streamItemInterface instanceof BoundaryStreamItem;
+            }
+        });
         sort(new TimeComparator(true, asc));
     }
 
     /**
-     * Sort stream items by modification time.
+     * Sort stream items by modification time. Remove items of type
+     * "bouhndary stream item" before sorting.
      *
      * @param asc
      */
     public void sortyByModifyTime(final boolean asc) {
+        removeIf(new Predicate<StreamItemInterface>() {
+            @Override
+            public boolean test(StreamItemInterface streamItemInterface) {
+                return streamItemInterface instanceof BoundaryStreamItem;
+            }
+        });
         sort(new TimeComparator(false, asc));
     }
-
 
     /**
      * Called if item was fully visible to user.
@@ -40,6 +55,24 @@ public class FilteredStream extends ArrayList<StreamItemInterface> {
 
         StreamItemInterface streamItem = get(pos);
         streamItem.onFullyViewed();
+    }
+
+    /**
+     * Retrieve position for inserting a new item to the end of stream. Check
+     * if last item is "boundary stream item" and adjust position accordingly.
+     *
+     * @return
+     */
+    public int getInsertToEndPos() {
+
+        int currentItemCount = this.size();
+        int currentEndPos = currentItemCount - 1;
+
+        StreamItemInterface lastPosStreamItem = get(currentEndPos);
+
+        return (lastPosStreamItem instanceof BoundaryStreamItem)
+                ? currentEndPos
+                : currentItemCount;
     }
 
     /**

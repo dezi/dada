@@ -126,7 +126,7 @@ public class ActionClusterStore {
 
                     items.add(new InvokerActionItem(
                             context.getResources().getString(R.string.actions_openStream),
-                            R.drawable.stream_oval_24dp,
+                            R.drawable.vector_oval_24dp,
                             0.93f,
                             StreamActivity.class.getMethod("onReturnToStream", boolean.class)
                     ));

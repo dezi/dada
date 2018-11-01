@@ -6,11 +6,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
-import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.launcher.R;
+import com.aura.aosp.gorilla.launcher.model.stream.BoundaryStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.FilteredStream;
+import com.aura.aosp.gorilla.launcher.model.stream.StreamItemInterface;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
+import com.aura.aosp.gorilla.launcher.ui.common.LoadMoreListener;
 
 /**
  * "Content Stream" view (child of "Launcher" view)
@@ -18,8 +20,15 @@ import com.aura.aosp.gorilla.launcher.ui.animation.Effects;
 public class StreamView extends RecyclerView {
 
     private static final String LOGTAG = StreamView.class.getSimpleName();
+    private static final int VISIBLE_ITEM_TRESHOLD = 10;
 
-    protected User myUser;
+    private User myUser;
+    private LoadMoreListener loadMoreListener;
+
+    private int lastVisibleItemPos;
+    private int firstVisibleItemPos;
+
+    private boolean isLoadingMore = false;
 
     public StreamView(Context context) {
         super(context);
@@ -43,13 +52,63 @@ public class StreamView extends RecyclerView {
 
         RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
 
+            /**
+             * TODO: Extract different handlers, create own classes (or create inline instances)
+             * TODO: and add them dependent on items stream view state via
+             * TODO: recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() directly within StreamAdapter
+             *
+             * @param recyclerView
+             * @param dx
+             * @param dy
+             */
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-//                LinearLayoutManager layoutmanager = (LinearLayoutManager) recyclerView.getLayoutManager();
-//                StreamAdapter streamAdapter = (StreamAdapter) recyclerView.getAdapter();
-//                FilteredStream filteredStream = (FilteredStream) streamAdapter.getStreamItems();
+                LinearLayoutManager layoutmanager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                StreamAdapter streamAdapter = (StreamAdapter) recyclerView.getAdapter();
+                FilteredStream filteredStream = (FilteredStream) streamAdapter.getStreamItems();
+
+                BoundaryStreamItem boundaryStreamItem = new BoundaryStreamItem();
+
+                int currentItemCount = filteredStream.size();
+                int currentItemEndPos = currentItemCount - 1;
+
+                firstVisibleItemPos = layoutmanager.findLastVisibleItemPosition();
+                lastVisibleItemPos = layoutmanager.findLastVisibleItemPosition();
+
+                if (!isLoadingMore && currentItemCount <= (lastVisibleItemPos + VISIBLE_ITEM_TRESHOLD)) {
+                    isLoadingMore = true;
+                    if (loadMoreListener != null) {
+                        // TODO: Implement for dynamic loading more items, probably showing
+                        // TODO: some nice progress item. It might also make sense to
+                        // TODO: restrict list size and cut items from the beginning + implmenting
+                        // TODO: same method for scrolling to the beginning of list
+                        loadMoreListener.onLoadMore();
+                    }
+                }
+
+                if (currentItemEndPos == lastVisibleItemPos) {
+
+                    StreamItemInterface lastStreamItem = streamAdapter.getStreamItems().get(lastVisibleItemPos);
+
+                    if (!(lastStreamItem instanceof BoundaryStreamItem)) {
+                        streamAdapter.addItem(currentItemCount, boundaryStreamItem);
+                        streamAdapter.notifyItemChanged(currentItemCount);
+                    }
+
+                } else if (currentItemEndPos == firstVisibleItemPos) {
+
+                    // Exclusive else because we just want ONE boundary item when there are
+                    // no items at all yet!
+
+                    StreamItemInterface firstStreamItem = streamAdapter.getStreamItems().get(0);
+
+                    if (!(firstStreamItem instanceof BoundaryStreamItem)) {
+                        streamAdapter.addItem(0, boundaryStreamItem);
+                        streamAdapter.notifyItemChanged(0);
+                    }
+                }
 //
 //                int fvItemPosition = layoutmanager.findFirstCompletelyVisibleItemPosition();
 //                int lvItemPosition = layoutmanager.findLastCompletelyVisibleItemPosition();

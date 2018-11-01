@@ -1,6 +1,7 @@
 package com.aura.aosp.gorilla.launcher.model.stream;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.user.User;
@@ -11,10 +12,11 @@ import com.aura.aosp.gorilla.launcher.model.user.User;
 public class InvisibleStreamItem extends AbstractStreamItem implements StreamItemInterface {
 
     public InvisibleStreamItem(@NonNull User myUser, @NonNull User ownerUser) {
-        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_INVISIBLE);
-        setImagePlaceholderId(R.drawable.stream_oval_transparent_24dp);
+        super(ItemType.TYPE_STREAMITEM_INVISIBLE);
+        setImagePlaceholderId(R.drawable.vector_oval_transparent_24dp);
     }
 
+    @Nullable
     @Override
     public Integer getImageId() {
         return null;
@@ -32,11 +34,11 @@ public class InvisibleStreamItem extends AbstractStreamItem implements StreamIte
 
     @Override
     public void onPreviewViewed() {
-        return;
+
     }
 
     @Override
     public void onFullyViewed() {
-        return;
+
     }
 }

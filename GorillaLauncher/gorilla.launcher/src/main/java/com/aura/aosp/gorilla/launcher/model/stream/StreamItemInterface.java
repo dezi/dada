@@ -11,10 +11,10 @@ public interface StreamItemInterface {
 
     // TODO: Create rule for action domains, context, subactions: com.aura.notes...
     public static enum ItemType {
-        TYPE_STREAMITEM_GENERIC,
-        TYPE_STREAMITEM_CONTACT,
+        TYPE_STREAMITEM_IMAGE,
         TYPE_STREAMITEM_DRAFT,
         TYPE_STREAMITEM_MESSAGE,
+        TYPE_STREAMITEM_CONTACT,
         TYPE_STREAMITEM_INVISIBLE
     }
 

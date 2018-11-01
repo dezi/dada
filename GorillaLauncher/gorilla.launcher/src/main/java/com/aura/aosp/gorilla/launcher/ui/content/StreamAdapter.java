@@ -19,7 +19,6 @@ import com.aura.aosp.gorilla.launcher.StreamActivity;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
 import com.aura.aosp.gorilla.launcher.model.stream.ContactStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.FilteredStream;
-import com.aura.aosp.gorilla.launcher.model.stream.GenericStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.StreamItemInterface;
 import com.aura.aosp.gorilla.launcher.store.ActionClusterStore;
 import com.aura.aosp.gorilla.launcher.ui.common.ImageShaper;
@@ -87,6 +86,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                         .inflate(R.layout.fragment_stream_item_dot, parent, false);
                 break;
 
+            case ITEM_TYPE_CIRCLE:
             case ITEM_TYPE_PREVIEW_LEFT:
                 itemView = (StreamItemView) LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.fragment_stream_item_preview_left, parent, false);
@@ -146,7 +146,11 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 break;
 
             case TYPE_STREAMITEM_DRAFT:
-                itemType = ITEM_TYPE_PREVIEW_RIGHT;
+                itemType = ITEM_TYPE_PREVIEW_LEFT;
+                break;
+
+            case TYPE_STREAMITEM_IMAGE:
+                itemType = ITEM_TYPE_CIRCLE;
                 break;
         }
 
@@ -202,7 +206,6 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         moveAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-
             }
 
             @Override
@@ -230,19 +233,26 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         // Modify some attributes based  on stream item type
         switch (streamItem.getType()) {
 
-            case TYPE_STREAMITEM_GENERIC:
-                useShapeBgColor = R.color.color_stream_preview_bg_generic;
+            default:
+            case TYPE_STREAMITEM_INVISIBLE:
+            case TYPE_STREAMITEM_IMAGE:
+                useShapeBgColor = R.color.color_transparent;
+                useIconImageColor = R.color.color_transparent;
+                break;
+
+            case TYPE_STREAMITEM_DRAFT:
+                useShapeBgColor = R.color.color_stream_item_bg_aura_ai;
                 break;
 
             case TYPE_STREAMITEM_CONTACT:
-                useShapeBgColor = R.color.color_stream_preview_bg_contact;
+                useShapeBgColor = R.color.color_stream_item_bg_contact;
                 break;
 
             case TYPE_STREAMITEM_MESSAGE:
 
                 if (streamItem.isMyItem()) {
 
-                    useShapeBgColor = R.color.color_stream_preview_bg_mymessage_default;
+                    useShapeBgColor = R.color.color_stream_item_bg_mymessage_default;
 
                     if (streamItem.shareIsQueued()) {
                         useIconImageRes =  R.drawable.ic_access_time_black_24dp;
@@ -267,16 +277,12 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 } else {
 
                     if (streamItem.isFullyViewed()) {
-                        useShapeBgColor = R.color.color_stream_preview_bg_message_read;
+                        useShapeBgColor = R.color.color_stream_item_bg_message_read;
                     } else {
-                        useShapeBgColor = R.color.color_stream_preview_bg_message_default;
+                        useShapeBgColor = R.color.color_stream_item_bg_message_default;
                     }
                 }
 
-                break;
-
-            case TYPE_STREAMITEM_INVISIBLE:
-                useShapeBgColor = R.color.color_transparent;
                 break;
         }
 
@@ -284,21 +290,27 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
             case ITEM_TYPE_DOT:
             default:
-                useImageShapeBgRes = R.drawable.stream_dot;
-                previewItemHeight = context.getResources().getDimension(R.dimen.stream_dot_item_image_height);
-                previewItemWidth = context.getResources().getDimension(R.dimen.stream_dot_item_image_width);
+                useImageShapeBgRes = R.drawable.shape_stream_item_dot;
+                previewItemHeight = context.getResources().getDimension(R.dimen.stream_item_dot_image_height);
+                previewItemWidth = context.getResources().getDimension(R.dimen.stream_item_dot_image_width);
+                break;
+
+            case ITEM_TYPE_CIRCLE:
+                useImageShapeBgRes = R.drawable.shape_stream_item_circle;
+                previewItemHeight = context.getResources().getDimension(R.dimen.stream_item_preview_image_height);
+                previewItemWidth = context.getResources().getDimension(R.dimen.stream_item_preview_image_width);
                 break;
 
             case ITEM_TYPE_PREVIEW_LEFT:
-                useImageShapeBgRes = R.drawable.stream_preview_rounded_corners_right;
-                previewItemHeight = context.getResources().getDimension(R.dimen.stream_preview_item_image_height);
-                previewItemWidth = context.getResources().getDimension(R.dimen.stream_preview_item_image_width);
+                useImageShapeBgRes = R.drawable.shape_stream_item_rounded_corners_right;
+                previewItemHeight = context.getResources().getDimension(R.dimen.stream_item_preview_image_height);
+                previewItemWidth = context.getResources().getDimension(R.dimen.stream_item_preview_image_width);
                 break;
 
             case ITEM_TYPE_PREVIEW_RIGHT:
-                useImageShapeBgRes = R.drawable.stream_preview_rounded_corners_left;
-                previewItemHeight = context.getResources().getDimension(R.dimen.stream_preview_item_image_height);
-                previewItemWidth = context.getResources().getDimension(R.dimen.stream_preview_item_image_width);
+                useImageShapeBgRes = R.drawable.shape_stream_item_rounded_corners_left;
+                previewItemHeight = context.getResources().getDimension(R.dimen.stream_item_preview_image_height);
+                previewItemWidth = context.getResources().getDimension(R.dimen.stream_item_preview_image_width);
                 break;
         }
 
@@ -339,6 +351,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
             switch (holder.getItemViewType()) {
 
                 case ITEM_TYPE_DOT:
+                case ITEM_TYPE_CIRCLE:
                 default:
 
                     if (imageShapeCache.get(imageId) == null) {
@@ -479,13 +492,13 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
         // TODO: Register own observer with special handling for various stream item data types!
     }
 
-    public void addItem(int position, GenericStreamItem streamItem) {
+    public void addItem(int position, StreamItemInterface streamItem) {
         // Insert a new item to the RecyclerView on a predefined position
         streamItems.add(position, streamItem);
         notifyItemInserted(position);
     }
 
-    public void removeItem(GenericStreamItem streamItem) {
+    public void removeItem(StreamItemInterface streamItem) {
         // Remove a RecyclerView item containing a specified Data object
         int position = streamItems.indexOf(streamItem);
         streamItems.remove(position);

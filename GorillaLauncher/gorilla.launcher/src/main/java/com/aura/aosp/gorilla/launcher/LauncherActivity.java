@@ -18,13 +18,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
-import com.aura.aosp.aura.common.crypter.UID;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
-import com.aura.aosp.aura.common.univid.Contacts;
-import com.aura.aosp.aura.common.univid.Identity;
-import com.aura.aosp.gorilla.atoms.GorillaOwner;
-import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;

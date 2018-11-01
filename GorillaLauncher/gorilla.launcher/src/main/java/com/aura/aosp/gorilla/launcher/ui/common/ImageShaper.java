@@ -48,6 +48,10 @@ public class ImageShaper {
         Bitmap oImageBitmap = BitmapFactory.decodeResource(context.getResources(), originalImage);
         Bitmap sImageBitmap = BitmapFactory.decodeResource(context.getResources(), shapedImage);
 
+        if (oImageBitmap == null) {
+            oImageBitmap = getBitmap(context, originalImage);
+        }
+
         if (sImageBitmap == null) {
             sImageBitmap = getBitmap(context, shapedImage);
         }

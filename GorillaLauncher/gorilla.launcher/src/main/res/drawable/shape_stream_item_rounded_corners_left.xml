@@ -2,15 +2,15 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <solid android:color="#ffffff" />
+    <solid android:color="@color/color_stream_item_shape_bg" />
 
     <size
-        android:width="@dimen/stream_preview_item_image_width"
-        android:height="@dimen/stream_preview_item_image_height" />
+        android:width="@dimen/stream_item_preview_image_width"
+        android:height="@dimen/stream_item_preview_image_height" />
 
     <corners
-        android:bottomLeftRadius="@dimen/stream_preview_item_corner_radius"
-        android:topLeftRadius="@dimen/stream_preview_item_corner_radius" />
+        android:bottomLeftRadius="@dimen/stream_item_preview_corner_radius"
+        android:topLeftRadius="@dimen/stream_item_preview_corner_radius" />
 
     <padding
         android:bottom="0dp"

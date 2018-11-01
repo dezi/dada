@@ -5,8 +5,8 @@
     <solid android:color="@color/color_stream_dot" />
 
     <size
-        android:width="@dimen/stream_dot_item_image_width"
-        android:height="@dimen/stream_dot_item_image_height" />
+        android:width="@dimen/stream_item_dot_image_width"
+        android:height="@dimen/stream_item_dot_image_height" />
 
     <padding
         android:bottom="0dp"

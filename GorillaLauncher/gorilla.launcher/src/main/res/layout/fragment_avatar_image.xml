@@ -8,7 +8,7 @@
         android:id="@+id/circle_image"
         android:layout_width="54dp"
         android:layout_height="54dp"
-        android:src="@drawable/stream_oval_transparent_24dp"
+        android:src="@drawable/vector_oval_transparent_24dp"
         app:civ_border_color="@color/color_circleimage_avatar_border"
         app:civ_border_width="@dimen/circleimage_avatar_borderWidth" />
 
