@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.Transformation;
 
+import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.StreamActivity;
 import com.aura.aosp.gorilla.launcher.model.actions.ActionCluster;
@@ -51,7 +54,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
     private static final int ITEM_TYPE_FULLVIEW_LEFT = 20;
     private static final int ITEM_TYPE_FULLVIEW_RIGHT = 21;
 
-    private int lastPosition = - 1;
+    private int lastPosition = -1;
 
     /**
      * @param filteredStream
@@ -255,22 +258,22 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                     useShapeBgColor = R.color.color_stream_item_bg_mymessage_default;
 
                     if (streamItem.shareIsQueued()) {
-                        useIconImageRes =  R.drawable.ic_access_time_black_24dp;
+                        useIconImageRes = R.drawable.ic_access_time_black_24dp;
                         useIconImageColor = R.color.color_stream_icon_drawable_state_default;
                     }
 
                     if (streamItem.shareIsSent()) {
-                        useIconImageRes =  R.drawable.ic_access_time_black_24dp;
+                        useIconImageRes = R.drawable.ic_access_time_black_24dp;
                         useIconImageColor = R.color.color_stream_icon_drawable_state_success;
                     }
 
                     if (streamItem.shareIsReceived()) {
-                        useIconImageRes =  R.drawable.ic_check_circle_black_24dp;
+                        useIconImageRes = R.drawable.ic_check_circle_black_24dp;
                         useIconImageColor = R.color.color_stream_icon_drawable_state_default;
                     }
 
                     if (streamItem.shareIsRead()) {
-                        useIconImageRes =  R.drawable.ic_check_circle_black_24dp;
+                        useIconImageRes = R.drawable.ic_check_circle_black_24dp;
                         useIconImageColor = R.color.color_stream_icon_drawable_state_success;
                     }
 
@@ -418,7 +421,7 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
                 // TODO: Reorganize the whole onClick binding in conjunction with refactoring
                 // TODO: actions and action clusters
 
-                if (! streamItem.isMyItem()) {
+                if (!streamItem.isMyItem()) {
 
                     holder.previewImageContainer.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -437,7 +440,52 @@ public class StreamAdapter extends RecyclerView.Adapter<StreamViewHolder> {
 
                     holder.previewTextContainer.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View view) {
+                        public void onClick(View v) {
+                            Log.d("###### holder.getClass() itemViewType <%s>", holder.getClass().toString());
+                            Log.d("###### holder.item.getClass() itemViewType <%s>", holder.item.getClass().toString());
+                            Log.d("###### holder.itemView.getClass() itemViewType <%s>", holder.itemView.getClass().toString());
+                            Log.d("###### holder.itemView.getLayoutParams().getClass() itemViewType <%s>", holder.itemView.getLayoutParams().getClass().toString());
+
+                            final int startHeight;
+                            final int newHeight;
+                            final int startArrowAngle;
+                            final int newArrowAngle;
+
+                            if (! holder.isFullyOpened) {
+                                holder.isFullyOpened = true;
+                                startHeight = holder.item.getHeight();
+                                newHeight = holder.item.getHeight() * 2;
+                                startArrowAngle = 0;
+                                newArrowAngle = 180;
+                                holder.previewText.setText(streamItem.getText());
+                            } else {
+                                holder.isFullyOpened = false;
+                                startHeight = holder.item.getHeight();
+                                newHeight = context.getResources().getDimensionPixelSize(R.dimen.stream_item_preview_height);
+                                startArrowAngle = 180;
+                                newArrowAngle = 0;
+                                holder.previewText.setText(streamItem.getTextExcerpt());
+                            }
+
+                            // TODO: Hier weiter...
+                            Animation a = new Animation() {
+                                @Override
+                                protected void applyTransformation(float interpolatedTime, Transformation t) {
+                                    super.applyTransformation(interpolatedTime, t);
+//                                    holder.itemLayoutParams.height = startHeight + (int) ((newHeight - startHeight) * interpolatedTime);
+                                    holder.itemLayoutParams.height = startHeight + (int) ((newHeight - startHeight) * interpolatedTime);
+                                    holder.item.setLayoutParams(holder.itemLayoutParams);
+                                    holder.previewIcon.setRotationY(startArrowAngle + (newArrowAngle - startArrowAngle) * interpolatedTime);
+                                }
+                            };
+
+                            a.setDuration(200);
+                            holder.item.startAnimation(a);
+
+//                            RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT);
+//                            holder.itemView.setLayoutParams(lp);
+
+                            holder.previewText.setText(streamItem.getText());
                             streamItem.onFullyViewed();
                         }
                     });

@@ -35,9 +35,9 @@
             android:layout_height="@dimen/stream_item_preview_icon_height"
             android:layout_marginStart="@dimen/stream_item_preview_icon_marginEdge"
             android:layout_marginEnd="@dimen/stream_item_preview_marginCenter"
+            android:background="@drawable/ic_more_vert_black_24dp"
             android:contentDescription="@string/stream_item_type"
             android:gravity="start|center_vertical"
-            android:background="@drawable/ic_more_vert_black_24dp"
             android:tint="@color/color_stream_image_drawable" />
 
         <TextView

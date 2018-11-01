@@ -46,12 +46,12 @@
             android:id="@+id/previewIcon"
             android:layout_width="@dimen/stream_item_preview_icon_width"
             android:layout_height="@dimen/stream_item_preview_icon_height"
-            android:contentDescription="@string/stream_item_type"
-            android:gravity="end|center_vertical"
             android:layout_marginStart="@dimen/stream_item_preview_marginCenter"
             android:layout_marginEnd="@dimen/stream_item_preview_icon_marginEdge"
-            android:tint="@color/color_stream_image_drawable"
-            android:background="@drawable/ic_more_vert_black_24dp" />
+            android:background="@drawable/ic_more_vert_black_24dp"
+            android:contentDescription="@string/stream_item_type"
+            android:gravity="end|center_vertical"
+            android:tint="@color/color_stream_image_drawable" />
 
     </LinearLayout>
 

@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.launcher.ui.content;
 
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,7 +16,9 @@ import com.aura.aosp.gorilla.launcher.R;
  * you provide access to all the views for a data item in a view holder
  */
 public class StreamViewHolder extends RecyclerView.ViewHolder {
+
     public StreamItemView item;
+    public RecyclerView.LayoutParams itemLayoutParams;
 //    public TextView title;
     public LinearLayout previewTextContainer;
     public ImageView previewIcon;
@@ -24,9 +27,14 @@ public class StreamViewHolder extends RecyclerView.ViewHolder {
     public LinearLayout previewImageContainer;
     public ImageView previewImage;
 
+    public Boolean isFullyOpened = false;
+
     public StreamViewHolder(View itemView) {
         super(itemView);
+
         item = itemView.findViewById(R.id.item);
+        itemLayoutParams = (RecyclerView.LayoutParams) item.getLayoutParams();
+
         previewIcon = itemView.findViewById(R.id.previewIcon);
         previewTitle = itemView.findViewById(R.id.previewTitle);
         previewText = itemView.findViewById(R.id.previewText);
