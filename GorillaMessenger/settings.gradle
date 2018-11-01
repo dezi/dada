@@ -1,10 +1,10 @@
-include ':aura.gui'
-project(':aura.gui').projectDir = new File(settingsDir, '../Modules/aura.gui')
+include ':aura.java.gui'
+project(':aura.java.gui').projectDir = new File(settingsDir, '../../aura.java.gui')
 
 include ':aura.common'
 project(':aura.common').projectDir = new File(settingsDir, '../Modules/aura.common')
 
 include ':gorilla.java.client'
-project(':gorilla.java.client').projectDir = new File(settingsDir, '../Modules/gorilla.java.client')
+project(':gorilla.java.client').projectDir = new File(settingsDir, '../../gorilla.java.client')
 
 include ':gorilla.messenger'
