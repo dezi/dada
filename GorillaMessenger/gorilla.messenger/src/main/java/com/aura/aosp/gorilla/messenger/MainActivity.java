@@ -28,6 +28,7 @@ import com.aura.aosp.gorilla.atoms.GorillaPayload;
 import com.aura.aosp.gorilla.atoms.GorillaPayloadResult;
 import com.aura.aosp.gorilla.atoms.GorillaPhraseSuggestion;
 import com.aura.aosp.gorilla.atoms.GorillaSuggestion;
+import com.aura.aosp.gorilla.atoms.GorillaSuggestions;
 import com.aura.aosp.gorilla.client.GorillaClient;
 import com.aura.aosp.gorilla.client.GorillaListener;
 
@@ -141,17 +142,14 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void run()
         {
-            List<GorillaSuggestion> suggestions = GorillaClient.getInstance().requestSuggestions("com.aura.aosp.gorilla.messenger");
+            GorillaSuggestions suggestions = GorillaClient.getInstance().requestSuggestions("com.aura.aosp.gorilla.messenger");
 
             Log.d(LOGTAG, "########################## suggestion");
 
             if (suggestions != null)
             {
-                for (int inx = 0; inx < suggestions.size(); inx++)
+                for (GorillaSuggestion suggestion : suggestions)
                 {
-                    GorillaSuggestion suggestion = suggestions.get(inx);
-                    if (suggestion == null) continue;
-
                     Log.d(LOGTAG, "########################## suggestion=" + suggestion.toString());
                 }
             }
