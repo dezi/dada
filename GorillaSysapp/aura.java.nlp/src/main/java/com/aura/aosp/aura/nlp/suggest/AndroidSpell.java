@@ -1,20 +1,20 @@
-package com.aura.aosp.gorilla.golang;
+package com.aura.aosp.aura.nlp.suggest;
 
 import android.content.Context;
+
 import android.view.textservice.SentenceSuggestionsInfo;
+import android.view.textservice.TextServicesManager;
 import android.view.textservice.SpellCheckerSession;
 import android.view.textservice.SuggestionsInfo;
 import android.view.textservice.TextInfo;
-import android.view.textservice.TextServicesManager;
 
 import com.aura.aosp.aura.common.simple.Log;
-import com.aura.aosp.gorilla.service.GorillaBase;
 
 public class AndroidSpell
 {
-    public static void testSpell()
+    public static void testSpell(Context context)
     {
-        final TextServicesManager tsm = (TextServicesManager) GorillaBase.getAppContext().getSystemService(Context.TEXT_SERVICES_MANAGER_SERVICE);
+        final TextServicesManager tsm = (TextServicesManager) context.getSystemService(Context.TEXT_SERVICES_MANAGER_SERVICE);
         if (tsm == null)
         {
             Log.d("nix hier....");

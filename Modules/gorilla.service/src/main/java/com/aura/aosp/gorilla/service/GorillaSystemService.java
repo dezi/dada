@@ -14,7 +14,7 @@ import com.aura.aosp.gorilla.client.IGorillaSystemService;
 
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
 import com.aura.aosp.gorilla.goatoms.GorillaAtomContact;
-import com.aura.aosp.gorilla.golang.GolangSuggest;
+import com.aura.aosp.aura.nlp.suggest.Suggest;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 import com.aura.aosp.gorilla.gopoor.GopoorRegister;
 import com.aura.aosp.gorilla.gopoor.GopoorSuggest;
@@ -416,7 +416,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public String requestPhraseSuggestionsSync(String apkname, String phrase, String checksum)
     {
-        JSONObject result = GolangSuggest.hintPhrase(Locale.getDefault().getLanguage(), phrase);
+        JSONObject result = Suggest.hintPhrase(Locale.getDefault().getLanguage(), phrase);
         String resultStr = Json.toString(result);
 
         Log.d("result=%s", resultStr);
@@ -435,7 +435,7 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     @Override
     public boolean requestPhraseSuggestionsAsync(String apkname, String phrase, String checksum)
     {
-        JSONObject result = GolangSuggest.hintPhrase(Locale.getDefault().getLanguage(), phrase);
+        JSONObject result = Suggest.hintPhrase(Locale.getDefault().getLanguage(), phrase);
         Err err = GorillaSender.sendPhraseSuggestions(apkname, result);
 
         return (err == null);

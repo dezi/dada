@@ -14,7 +14,7 @@ import android.app.Application;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.simple.Simple;
 
-import com.aura.aosp.gorilla.golang.GolangSuggest;
+import com.aura.aosp.aura.nlp.suggest.Suggest;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 
 /**
@@ -78,7 +78,7 @@ public class GorillaBase extends Application
             @Override
             public void run()
             {
-                GolangSuggest.testDat();
+                Suggest.testDat();
             }
         }, 1000);
     }

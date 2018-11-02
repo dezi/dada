@@ -1,8 +1,10 @@
+include ':aura.java.com'
+project(':aura.java.com').projectDir = new File(settingsDir, '../../aura.java.com')
+
 include ':aura.java.gui'
 project(':aura.java.gui').projectDir = new File(settingsDir, '../../aura.java.gui')
 
-include ':aura.java.com'
-project(':aura.java.com').projectDir = new File(settingsDir, '../../aura.java.com')
+include ':aura.java.nlp'
 
 include ':gorilla.java.client'
 project(':gorilla.java.client').projectDir = new File(settingsDir, '../../gorilla.java.client')

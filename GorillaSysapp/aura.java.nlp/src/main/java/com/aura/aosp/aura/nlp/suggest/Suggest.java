@@ -1,4 +1,4 @@
-package com.aura.aosp.gorilla.golang;
+package com.aura.aosp.aura.nlp.suggest;
 
 import android.support.annotation.NonNull;
 
@@ -8,7 +8,7 @@ import com.aura.aosp.aura.common.simple.Perf;
 
 import org.json.JSONObject;
 
-public class GolangSuggest
+public class Suggest
 {
     @NonNull
     public static JSONObject hintPhrase(String language, String phrase)
@@ -17,7 +17,7 @@ public class GolangSuggest
 
         JSONObject result;
 
-        result = GolangPhrases.phraseSuggest(language, phrase);
+        result = Phrases.phraseSuggest(language, phrase);
 
         if (result != null)
         {
@@ -26,7 +26,7 @@ public class GolangSuggest
             return result;
         }
 
-        result = GolangCorrect.phraseCorrect(language, phrase);
+        result = Correct.phraseCorrect(language, phrase);
 
         if (result != null)
         {
@@ -41,7 +41,7 @@ public class GolangSuggest
             // Fallback to english.
             //
 
-            result = GolangPhrases.phraseSuggest("en", phrase);
+            result = Phrases.phraseSuggest("en", phrase);
 
             if (result != null)
             {
@@ -50,7 +50,7 @@ public class GolangSuggest
                 return result;
             }
 
-            result = GolangCorrect.phraseCorrect("en", phrase);
+            result = Correct.phraseCorrect("en", phrase);
 
             if (result != null)
             {
@@ -80,10 +80,10 @@ public class GolangSuggest
         Perf startTime;
 
         startTime = new Perf();
-        GolangPhrases.phraseSuggest("de", "");
-        GolangPhrases.phraseSuggest("en", "");
-        GolangCorrect.phraseCorrect("de", "");
-        GolangCorrect.phraseCorrect("en", "");
+        Phrases.phraseSuggest("de", "");
+        Phrases.phraseSuggest("en", "");
+        Correct.phraseCorrect("de", "");
+        Correct.phraseCorrect("en", "");
         Log.d("init=%d", startTime.elapsedTimeMillis());
 
         JSONObject result;

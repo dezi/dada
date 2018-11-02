@@ -5,7 +5,7 @@
  *
  */
 
-package com.aura.aosp.gorilla.golang;
+package com.aura.aosp.aura.nlp.suggest;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,13 +30,13 @@ import java.io.RandomAccessFile;
 import java.io.IOException;
 import java.io.File;
 
-public class GolangCorrect
+public class Correct
 {
     private final static int READSIZE = 16 * 1024;
     private final static int MAXCACHESIZE = 256 * 1024;
 
     private final String language;
-    private final static Map<String, GolangCorrect> languages = new HashMap<>();
+    private final static Map<String, Correct> languages = new HashMap<>();
 
     private CorrectFile topFile;
     private CorrectFile botFile;
@@ -53,7 +53,7 @@ public class GolangCorrect
             return null;
         }
 
-        GolangCorrect gs = languages.get(language);
+        Correct gs = languages.get(language);
 
         if (gs == null)
         {
@@ -61,7 +61,7 @@ public class GolangCorrect
             // Engine not yet initialized.
             //
 
-            gs = new GolangCorrect(language);
+            gs = new Correct(language);
             languages.put(language, gs);
         }
 
@@ -83,11 +83,11 @@ public class GolangCorrect
      *
      * @param language two digit language tag.
      */
-    private GolangCorrect(String language)
+    private Correct(String language)
     {
         this.language = language;
 
-        File suggestDir = GolangUtils.getStorageDir(language, "suggest", false);
+        File suggestDir = Utils.getStorageDir(language, "suggest", false);
 
         try
         {
@@ -176,13 +176,13 @@ public class GolangCorrect
 
         byte[] wordBytes = word.getBytes();
         int[] wordRunes = new int[wordBytes.length];
-        int wordRuneLen = GolangUtils.getRunesFromBytes(wordRunes, wordBytes, wordBytes.length);
+        int wordRuneLen = Utils.getRunesFromBytes(wordRunes, wordBytes, wordBytes.length);
 
         //
         // Allocate score array.
         //
 
-        List<GolangUtils.Score> targetScores = new ArrayList<>();
+        List<Utils.Score> targetScores = new ArrayList<>();
         int totalScore = 0;
 
         //
@@ -282,11 +282,11 @@ public class GolangCorrect
 
                 if (buffer[inx] == '\n')
                 {
-                    dist = GolangUtils.levenshtein(wordRunes, wordRuneLen, wrunes, wlen, 2);
+                    dist = Levenshtein.levenshtein(wordRunes, wordRuneLen, wrunes, wlen, 2);
 
                     if ((dist != null) && (0 <= dist) && (dist <= 2))
                     {
-                        wlen = GolangUtils.getBytesFromRunes(wbytes, wrunes, wlen);
+                        wlen = Utils.getBytesFromRunes(wbytes, wrunes, wlen);
 
                         String wString = new String(wbytes, 0, wlen);
                         String pString = new String(pbytes, 0, plen);
@@ -294,7 +294,7 @@ public class GolangCorrect
                         int percent = Integer.parseInt(pString);
                         if (dist > 1) percent /= dist;
 
-                        targetScores.add(new GolangUtils.Score(wString, percent));
+                        targetScores.add(new Utils.Score(wString, percent));
                         totalScore += percent;
                     }
 
@@ -347,10 +347,10 @@ public class GolangCorrect
         // We have a least one valid hint.
         //
 
-        Collections.sort(targetScores, new Comparator<GolangUtils.Score>()
+        Collections.sort(targetScores, new Comparator<Utils.Score>()
         {
             @Override
-            public int compare(GolangUtils.Score score1, GolangUtils.Score score2)
+            public int compare(Utils.Score score1, Utils.Score score2)
             {
                 return score2.score - score1.score;
             }
@@ -365,7 +365,7 @@ public class GolangCorrect
 
         int limit = 0;
 
-        for (GolangUtils.Score targetScore : targetScores)
+        for (Utils.Score targetScore : targetScores)
         {
             //Log.d("word=%s target=%s percent=%d", word, targetScore.phrase, targetScore.score);
 
@@ -427,7 +427,7 @@ public class GolangCorrect
                     {
                         if (buffer[inx] == ':')
                         {
-                            runesize = GolangUtils.getRuneLength(wrdbuf, wordsize);
+                            runesize = Utils.getRuneLength(wrdbuf, wordsize);
 
                             if (runesize != lastsize)
                             {

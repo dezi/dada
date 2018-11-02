@@ -5,7 +5,7 @@
  *
  */
 
-package com.aura.aosp.gorilla.golang;
+package com.aura.aosp.aura.nlp.suggest;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,13 +32,13 @@ import java.io.File;
  *
  * @author Dennis Zierahn
  */
-public class GolangPhrases
+public class Phrases
 {
     private final static int READSIZE = 2048;
     private final static int CACHEPOINTS = 32;
     private final static int MAXPHRASELEN = 24;
 
-    private final static Map<String, GolangPhrases> languages = new HashMap<>();
+    private final static Map<String, Phrases> languages = new HashMap<>();
 
     private final String language;
     private PhrasesFile phrasesFile;
@@ -55,7 +55,7 @@ public class GolangPhrases
     @Nullable
     public static JSONObject phraseSuggest(String language, String phrase)
     {
-        GolangPhrases gs = languages.get(language);
+        Phrases gs = languages.get(language);
 
         if (gs == null)
         {
@@ -63,7 +63,7 @@ public class GolangPhrases
             // Engine not yet initialized.
             //
 
-            gs = new GolangPhrases(language);
+            gs = new Phrases(language);
             languages.put(language, gs);
         }
 
@@ -85,11 +85,11 @@ public class GolangPhrases
      *
      * @param language two digit language tag.
      */
-    private GolangPhrases(String language)
+    private Phrases(String language)
     {
         this.language = language;
 
-        File suggestDir = GolangUtils.getStorageDir(language, "suggest", false);
+        File suggestDir = Utils.getStorageDir(language, "suggest", false);
         File phrasesFile = new File(suggestDir, "phrases.json");
 
         try
@@ -655,7 +655,7 @@ public class GolangPhrases
     @Nullable
     private String scanPhrase(String phrase, boolean iscomplete)
     {
-        List<GolangUtils.Score> targetScores = new ArrayList<>();
+        List<Utils.Score> targetScores = new ArrayList<>();
         String targetPhrase;
         long total = 0;
 
@@ -670,7 +670,7 @@ public class GolangPhrases
             // it fucks off UTF-8 characters!
             //
 
-            targetPhrase = GolangUtils.readLineUTFSafe(phrasesFile.file);
+            targetPhrase = Utils.readLineUTFSafe(phrasesFile.file);
             if (targetPhrase == null) break;
 
             if (targetPhrase.startsWith(phrase))
@@ -697,7 +697,7 @@ public class GolangPhrases
 
                 int targetScore = Integer.parseInt(targetPhrase.substring(atchar + 2, comma));
 
-                targetScores.add(new GolangUtils.Score(targetWord, targetScore));
+                targetScores.add(new Utils.Score(targetWord, targetScore));
                 total += targetScore;
             }
             else
@@ -723,10 +723,10 @@ public class GolangPhrases
             return null;
         }
 
-        Collections.sort(targetScores, new Comparator<GolangUtils.Score>()
+        Collections.sort(targetScores, new Comparator<Utils.Score>()
         {
             @Override
-            public int compare(GolangUtils.Score score1, GolangUtils.Score score2)
+            public int compare(Utils.Score score1, Utils.Score score2)
             {
                 return score2.score - score1.score;
             }
@@ -741,7 +741,7 @@ public class GolangPhrases
         prefixPhrases.append("@:");
         prefixPhrases.append(Long.toString(total));
 
-        for (GolangUtils.Score targetScore : targetScores)
+        for (Utils.Score targetScore : targetScores)
         {
             //
             // Normalize phrase count in percentage.
