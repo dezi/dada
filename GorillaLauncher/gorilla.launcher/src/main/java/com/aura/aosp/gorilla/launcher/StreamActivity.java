@@ -37,7 +37,6 @@ import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterAdapter;
 import com.aura.aosp.gorilla.launcher.ui.navigation.ActionClusterView;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -441,7 +440,7 @@ public class StreamActivity extends LauncherActivity {
             for (int i = 0; i < filteredStream.size(); i++) {
                 StreamItemInterface streamItem = filteredStream.get(i);
 
-                if (streamItem.getType() == StreamItemInterface.ItemType.TYPE_STREAMITEM_MESSAGE)
+                if (streamItem.getType() == StreamItemInterface.ItemType.ITEMTYPE_MESSAGE)
                 {
                     MessageStreamItem messageStreamItem = (MessageStreamItem) streamItem;
 

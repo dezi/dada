@@ -20,39 +20,40 @@
         android:id="@+id/textContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/shape_stream_item_rounded_corners_left"
+        android:minHeight="@dimen/stream_item_expanded_minHeight"
+        android:background="@drawable/shape_stream_item_rounded_corners_right"
         android:gravity="start|top"
-        android:paddingStart="@dimen/stream_item_preview_text_paddingEdge"
+        android:paddingStart="@dimen/stream_item_preview_text_paddingCenter"
         android:paddingTop="@dimen/stream_item_preview_text_paddingVertical"
-        android:paddingEnd="@dimen/stream_item_preview_text_paddingCenter"
+        android:paddingEnd="@dimen/stream_item_preview_text_paddingEdge"
         android:paddingBottom="@dimen/stream_item_preview_text_paddingVertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/imageContainer"
+        app:layout_constraintStart_toEndOf="@id/imageContainer"
         app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_width="@dimen/stream_item_preview_icon_width"
-            android:layout_height="@dimen/stream_item_preview_icon_height"
-            android:layout_marginStart="@dimen/stream_item_preview_icon_marginEdge"
-            android:layout_marginEnd="@dimen/stream_item_preview_marginCenter"
-            android:background="@drawable/ic_more_vert_black_24dp"
-            android:contentDescription="@string/stream_item_type"
-            android:gravity="start|center_vertical"
-            android:tint="@color/color_stream_image_drawable" />
 
         <TextView
             android:id="@+id/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="end|center_vertical"
+            android:gravity="start|center_vertical"
             android:maxWidth="@dimen/stream_item_preview_text_maxWidth"
             android:minWidth="@dimen/stream_item_preview_text_minWidth"
             android:text="@string/_dotdotdot"
-            android:textAlignment="textEnd"
+            android:textAlignment="textStart"
             android:textColor="@color/color_stream_text_main"
             android:textSize="@dimen/stream_item_preview_text_main_size"
             android:textStyle="normal" />
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="@dimen/stream_item_preview_icon_width"
+            android:layout_height="@dimen/stream_item_preview_icon_height"
+            android:layout_marginStart="@dimen/stream_item_preview_marginCenter"
+            android:layout_marginEnd="@dimen/stream_item_preview_icon_marginEdge"
+            android:background="@drawable/ic_more_vert_black_24dp"
+            android:contentDescription="@string/stream_item_type"
+            android:gravity="end|center_vertical"
+            android:tint="@color/color_stream_image_drawable" />
 
     </LinearLayout>
 
@@ -60,11 +61,12 @@
         android:id="@+id/imageContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minHeight="@dimen/stream_item_expanded_minHeight"
         android:layout_marginStart="0dp"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="0dp"
         android:layout_marginBottom="0dp"
-        android:background="@drawable/shape_stream_item_rounded_corners_right"
+        android:background="@drawable/shape_stream_item_rounded_corners_left"
         android:gravity="center_horizontal|top"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -81,6 +83,15 @@
             android:layout_marginBottom="0dp"
             android:contentDescription="@string/image_preview"
             android:gravity="center_horizontal|top" />
+
+        <TextView
+            android:id="@+id/imageCaption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="@color/color_stream_text_main"
+            android:textSize="@dimen/stream_item_preview_text_caption_size"
+            />
     </LinearLayout>
 
 </com.aura.aosp.gorilla.launcher.ui.content.StreamItemView>

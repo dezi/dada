@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.aura.aosp.aura.common.simple.Dates;
 import com.aura.aosp.aura.common.simple.Log;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
@@ -13,6 +14,8 @@ import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.GorillaHelper;
 import com.aura.aosp.gorilla.launcher.model.GorillaSharable;
 import com.aura.aosp.gorilla.launcher.model.user.User;
+
+import java.util.Date;
 
 /**
  * Message item (chat messages shared via Gorilla)
@@ -34,7 +37,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      * @param text
      */
     public MessageStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull String text) {
-        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), text, R.drawable.ic_chat_bubble_outline_black_24dp);
+        super(myUser, ownerUser, ItemType.ITEMTYPE_MESSAGE, ownerUser.getIdentity().getNick(), text, R.drawable.ic_chat_bubble_outline_black_24dp);
     }
 
     /**
@@ -45,7 +48,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
      * @param gorillaMessage
      */
     public MessageStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull GorillaMessage gorillaMessage) {
-        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), gorillaMessage.getMessageText(), R.drawable.ic_chat_bubble_outline_black_24dp);
+        super(myUser, ownerUser, ItemType.ITEMTYPE_MESSAGE, ownerUser.getIdentity().getNick(), gorillaMessage.getMessageText(), R.drawable.ic_chat_bubble_outline_black_24dp);
 
         setGorillaMessage(gorillaMessage);
         setTimeCreated(gorillaMessage.getTime());
@@ -141,21 +144,29 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
         return getOwnerUser().getContactAvatarImageRes();
     }
 
+    @Nullable
     @Override
-    public boolean isPreviewViewed() {
-        // TODO: Adjust!
-        return shareIsRead();
+    public String getImageCaption() {
+        return Dates.getLocalDateAndTime(getTimeCreated());
     }
 
     @Override
-    public boolean isFullyViewed() {
-        // TODO: Adjust!
-        return isPreviewViewed();
+    public boolean isPreviewViewed() {
+        return shareIsReceived();
     }
 
     @Override
     public void onPreviewViewed() {
+        return;
+    }
 
+    @Override
+    public boolean isFullyViewed() {
+        return shareIsRead();
+    }
+
+    @Override
+    public void onFullyViewed() {
         if (shareIsRead()) {
             return;
         }
@@ -173,13 +184,7 @@ public class MessageStreamItem extends AbstractStreamItem implements GorillaShar
                     gorillaClient.putAtomSharedBy(remoteUserUUID, getGorillaMessage().getAtom());
                 }
             }
-        }, 2000);
-    }
-
-    @Override
-    public void onFullyViewed() {
-        // TODO: Adjust!
-        onPreviewViewed();
+        }, 1000);
     }
 
     private GorillaMessage getGorillaMessage() {

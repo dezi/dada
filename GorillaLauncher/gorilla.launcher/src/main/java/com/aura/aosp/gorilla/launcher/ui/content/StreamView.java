@@ -141,6 +141,11 @@ public class StreamView extends RecyclerView {
         addOnScrollListener(onScrollListener);
     }
 
+    @Override
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        super.setOnClickListener(l);
+    }
+
     public void fadeIn() {
         Integer duration = getContext().getResources().getInteger(R.integer.streamview_fadein_transition_duration);
         Effects.fadeInView(this, getContext(), duration);

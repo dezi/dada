@@ -8,7 +8,7 @@
     <!-- Content Stream Item: Generic layout -->
     <dimen name="stream_item_text_size">14sp</dimen>
 
-    <!-- Content Stream Item: State "dot" -->
+    <!-- Content Stream Item: Display State "dot" -->
     <dimen name="stream_item_dot_height">20dp</dimen>
     <dimen name="stream_item_dot_padding_top">0dp</dimen>
     <dimen name="stream_item_dot_padding_bottom">0dp</dimen>
@@ -21,7 +21,7 @@
     <dimen name="stream_item_dot_image_width">20dp</dimen>
     <dimen name="stream_item_dot_image_height">20dp</dimen>
 
-    <!-- Content Stream Item: Expansion state "circle" -->
+    <!-- Content Stream Item: Display State "circle" -->
     <dimen name="stream_item_circle_height">44dp</dimen>
     <dimen name="stream_item_circle_corner_radius">22dp</dimen>
     <dimen name="stream_item_circle_padding_top">0dp</dimen>
@@ -36,7 +36,7 @@
     <dimen name="stream_item_circle_image_width">44dp</dimen>
     <dimen name="stream_item_circle_image_height">44dp</dimen>
 
-    <!-- Content Stream Item: Expansion state "preview" -->
+    <!-- Content Stream Item: Display State "preview" -->
     <dimen name="stream_item_preview_height">44dp</dimen>
     <dimen name="stream_item_preview_corner_radius">16dp</dimen>
     <dimen name="stream_item_preview_padding_top">0dp</dimen>
@@ -58,11 +58,17 @@
     <dimen name="stream_item_preview_text_paddingEdge">12dp</dimen>
     <dimen name="stream_item_preview_text_maxWidth">90dp</dimen>
     <dimen name="stream_item_preview_text_minWidth">40dp</dimen>
-    <dimen name="stream_item_preview_text_title_size">13sp</dimen>
+    <dimen name="stream_item_preview_text_title_size">15sp</dimen>
     <dimen name="stream_item_preview_text_main_size">14sp</dimen>
+    <dimen name="stream_item_preview_text_caption_size">13sp</dimen>
 
     <dimen name="stream_item_preview_image_width">44dp</dimen>
     <dimen name="stream_item_preview_image_height">44dp</dimen>
+
+    <!-- Content Stream Item: Display State "expanded" -->
+    <dimen name="stream_item_expanded_minHeight">88dp</dimen>
+    <dimen name="stream_item_expanded_image_width">44dp</dimen>
+    <dimen name="stream_item_expanded_image_height">44dp</dimen>
 
     <!-- Main Status Bar -->
     <dimen name="statusbar_padding_horizontal">11dp</dimen>

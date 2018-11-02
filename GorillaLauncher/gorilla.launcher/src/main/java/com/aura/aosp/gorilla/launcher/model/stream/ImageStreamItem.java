@@ -1,7 +1,5 @@
 package com.aura.aosp.gorilla.launcher.model.stream;
 
-import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -16,14 +14,16 @@ public class ImageStreamItem extends AbstractStreamItem implements StreamItemInt
     Integer imageId;
 
     public ImageStreamItem(@NonNull Integer imageId) {
-        super(ItemType.TYPE_STREAMITEM_IMAGE);
+        super(ItemType.ITEMTYPE_IMAGE);
         setImageId(imageId);
+        setDisplayState(ItemDisplayState.DSTATE_CIRCLE);
         setImagePlaceholderId(R.drawable.shape_stream_item_circle);
     }
 
     public ImageStreamItem(@NonNull User myUser, @NonNull Integer imageId) {
-        super(myUser, myUser, ItemType.TYPE_STREAMITEM_IMAGE);
+        super(myUser, myUser, ItemType.ITEMTYPE_IMAGE);
         setImageId(imageId);
+        setDisplayState(ItemDisplayState.DSTATE_CIRCLE);
         setImagePlaceholderId(R.drawable.shape_stream_item_circle);
     }
 

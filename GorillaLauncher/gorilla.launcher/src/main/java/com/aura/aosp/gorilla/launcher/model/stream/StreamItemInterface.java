@@ -1,5 +1,6 @@
 package com.aura.aosp.gorilla.launcher.model.stream;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.aura.aosp.gorilla.launcher.model.user.User;
@@ -7,18 +8,30 @@ import com.aura.aosp.gorilla.launcher.model.user.User;
 /**
  * The stream item interface.
  */
-public interface StreamItemInterface {
+public interface StreamItemInterface extends StreamItemLifecycleListener {
 
-    // TODO: Create rule for action domains, context, subactions: com.aura.notes...
     public static enum ItemType {
-        TYPE_STREAMITEM_IMAGE,
-        TYPE_STREAMITEM_DRAFT,
-        TYPE_STREAMITEM_MESSAGE,
-        TYPE_STREAMITEM_CONTACT,
-        TYPE_STREAMITEM_INVISIBLE
+        ITEMTYPE_IMAGE,
+        ITEMTYPE_DRAFT,
+        ITEMTYPE_MESSAGE,
+        ITEMTYPE_CONTACT
+    }
+
+    public static enum ItemDisplayState {
+        DSTATE_DOT,
+        DSTATE_CIRCLE,
+        DSTATE_PREVIEW,
+        DSTATE_EXPANDED,
+        DSTATE_FULL
     }
 
     ItemType getType();
+
+    void setType(ItemType itemType);
+
+    ItemDisplayState getDisplayState();
+
+    void setDisplayState(ItemDisplayState displayState);
 
     User getMyUser();
 
@@ -29,6 +42,9 @@ public interface StreamItemInterface {
     String getText();
 
     String getTextExcerpt();
+
+    @Nullable
+    String getImageCaption();
 
     /**
      * Get the image drawablewhich is added the item stream.
@@ -65,16 +81,4 @@ public interface StreamItemInterface {
     boolean isFullyViewed();
 
     boolean isPreviewViewed();
-
-    /**
-     * This method gets called if the preview (e.g. text excerpt) of
-     * this item has been visually exposed to the device user.
-     */
-    void onPreviewViewed();
-
-    /**
-     * This method gets called if the full content of this
-     * item has been visually exposed to the device user.
-     */
-    void onFullyViewed();
 }

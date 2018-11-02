@@ -23,7 +23,7 @@ public class DraftStreamItem extends AbstractStreamItem implements GorillaPersis
      * @param text
      */
     public DraftStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull String text) {
-        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_DRAFT, null, text, R.drawable.ic_note_black_24dp);
+        super(myUser, ownerUser, ItemType.ITEMTYPE_DRAFT, null, text, R.drawable.ic_note_black_24dp);
     }
 
     /**
@@ -34,7 +34,7 @@ public class DraftStreamItem extends AbstractStreamItem implements GorillaPersis
      */
     public DraftStreamItem(@NonNull User myUser, @NonNull User ownerUser, @NonNull GorillaMessage gorillaMessage) {
 
-        super(myUser, ownerUser, ItemType.TYPE_STREAMITEM_MESSAGE, ownerUser.getIdentity().getNick(), gorillaMessage.getMessageText(), R.drawable.ic_note_black_24dp);
+        super(myUser, ownerUser, ItemType.ITEMTYPE_MESSAGE, ownerUser.getIdentity().getNick(), gorillaMessage.getMessageText(), R.drawable.ic_note_black_24dp);
 
         setTitle(ownerUser.getIdentity().getNick());
         setImagePlaceholderId(R.drawable.ic_note_black_24dp);

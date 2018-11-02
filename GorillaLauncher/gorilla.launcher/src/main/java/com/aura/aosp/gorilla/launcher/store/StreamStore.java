@@ -8,14 +8,11 @@ import com.aura.aosp.aura.common.univid.Contacts;
 import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.gorilla.atoms.GorillaMessage;
 import com.aura.aosp.gorilla.client.GorillaClient;
-import com.aura.aosp.gorilla.launcher.R;
 import com.aura.aosp.gorilla.launcher.model.GorillaHelper;
 import com.aura.aosp.gorilla.launcher.model.stream.BoundaryStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.ContactStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.DraftStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.FilteredStream;
-import com.aura.aosp.gorilla.launcher.model.stream.ImageStreamItem;
-import com.aura.aosp.gorilla.launcher.model.stream.InvisibleStreamItem;
 import com.aura.aosp.gorilla.launcher.model.stream.MessageStreamItem;
 import com.aura.aosp.gorilla.launcher.model.user.User;
 

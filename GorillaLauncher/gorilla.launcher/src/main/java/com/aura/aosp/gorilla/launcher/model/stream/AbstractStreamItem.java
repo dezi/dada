@@ -11,19 +11,21 @@ import com.aura.aosp.gorilla.launcher.model.user.User;
  */
 public abstract class AbstractStreamItem implements StreamItemInterface {
 
-    private static final int DEFAULT_MAX_EXCERPT_LENGTH = 38;
+    private static final int MAX_EXCERPT_LENGTH = 38;
 
     protected User myUser;
     protected User ownerUser;
     protected String title;
     protected String text;
     protected String textExcerpt;
+    protected String imageCaption;
     protected Integer imagePlaceholderId;
     protected ItemType type;
     protected Float absoluteScore = 1.0f;
     protected Long timeCreated;
     protected Long timeModified;
     protected String uuid;
+    protected ItemDisplayState displayState = ItemDisplayState.DSTATE_PREVIEW;
 
     /**
      * Construct stream item of invocationType "unknown".
@@ -85,19 +87,19 @@ public abstract class AbstractStreamItem implements StreamItemInterface {
      */
     private static String extractExcerpt(String text) {
 
-        if (text.length() <= DEFAULT_MAX_EXCERPT_LENGTH) {
+        if (text.length() <= MAX_EXCERPT_LENGTH) {
             return text;
         }
 
-        String tryTitle = "";
-        String useTitle = null;
+        String tryExcerpt = "";
+        String useExcerpt = null;
 
         if (text.contains("\n")) {
 
-            tryTitle = text.substring(0, text.indexOf("\n"));
+            tryExcerpt = text.substring(0, text.indexOf("\n"));
 
-            if (tryTitle.length() <= DEFAULT_MAX_EXCERPT_LENGTH) {
-                useTitle = tryTitle;
+            if (tryExcerpt.length() <= MAX_EXCERPT_LENGTH) {
+                useExcerpt = tryExcerpt;
             }
 
         } else if (text.contains(" ")) {
@@ -108,23 +110,42 @@ public abstract class AbstractStreamItem implements StreamItemInterface {
 
                 int endPos = text.indexOf(" ", startPos);
 
-                if (endPos >= 0 && startPos < DEFAULT_MAX_EXCERPT_LENGTH - 4) {
-                    tryTitle += text.substring(startPos, endPos) + " ";
+                if (endPos >= 0 && startPos < MAX_EXCERPT_LENGTH - 4) {
+                    tryExcerpt = tryExcerpt.concat(text.substring(startPos, endPos) + " ");
                     startPos = endPos + 1;
                     continue;
                 }
 
-                useTitle = tryTitle.trim() + " ...";
+                useExcerpt = tryExcerpt.trim().concat("...");
 
                 break;
             }
         }
 
-        if (useTitle == null) {
-            useTitle = text.substring(0, DEFAULT_MAX_EXCERPT_LENGTH - 4) + " ...";
+        if (useExcerpt == null) {
+            useExcerpt = text.substring(0, MAX_EXCERPT_LENGTH - 4) + " ...";
         }
 
-        return useTitle;
+        return useExcerpt;
+    }
+
+    @Override
+    public ItemType getType() {
+        return type;
+    }
+
+    public void setType(ItemType type) {
+        this.type = type;
+    }
+
+    @Override
+    public ItemDisplayState getDisplayState() {
+        return displayState;
+    }
+
+    @Override
+    public void setDisplayState(ItemDisplayState displayState) {
+        this.displayState = displayState;
     }
 
     @Override
@@ -143,15 +164,6 @@ public abstract class AbstractStreamItem implements StreamItemInterface {
 
     public void setOwnerUser(User ownerUser) {
         this.ownerUser = ownerUser;
-    }
-
-    @Override
-    public ItemType getType() {
-        return type;
-    }
-
-    public void setType(ItemType type) {
-        this.type = type;
     }
 
     @Override
@@ -183,6 +195,16 @@ public abstract class AbstractStreamItem implements StreamItemInterface {
 
     public void setTextExcerpt(String textExcerpt) {
         this.textExcerpt = textExcerpt;
+    }
+
+    @Nullable
+    @Override
+    public String getImageCaption() {
+        return imageCaption;
+    }
+
+    public void setImageCaption(String imageCaption) {
+        this.imageCaption = imageCaption;
     }
 
     @Override

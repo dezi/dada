@@ -3,9 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GorillaLauncher.iml" filepath="$PROJECT_DIR$/GorillaLauncher.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../Modules/aura.common/aura.common.iml" filepath="$PROJECT_DIR$/../Modules/aura.common/aura.common.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../Modules/aura.gui/aura.gui.iml" filepath="$PROJECT_DIR$/../Modules/aura.gui/aura.gui.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../Modules/gorilla.client/gorilla.client.iml" filepath="$PROJECT_DIR$/../Modules/gorilla.client/gorilla.client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../aura.java.com/aura.java.com.iml" filepath="$PROJECT_DIR$/../aura.java.com/aura.java.com.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../aura.java.gui/aura.java.gui.iml" filepath="$PROJECT_DIR$/../aura.java.gui/aura.java.gui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../aura.java.nlp/aura.java.nlp.iml" filepath="$PROJECT_DIR$/../aura.java.nlp/aura.java.nlp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../gorilla.java.client/gorilla.java.client.iml" filepath="$PROJECT_DIR$/../gorilla.java.client/gorilla.java.client.iml" />
       <module fileurl="file://$PROJECT_DIR$/gorilla.launcher/gorilla.launcher.iml" filepath="$PROJECT_DIR$/gorilla.launcher/gorilla.launcher.iml" />
     </modules>
   </component>

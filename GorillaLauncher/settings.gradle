@@ -1,10 +1,13 @@
+include ':aura.java.gui'
+project(':aura.java.gui').projectDir = new File(settingsDir, '../aura.java.gui')
+
+include ':aura.java.com'
+project(':aura.java.com').projectDir = new File(settingsDir, '../aura.java.com')
+
+include ':aura.java.nlp'
+project(':aura.java.nlp').projectDir = new File(settingsDir, '../aura.java.nlp')
+
+include ':gorilla.java.client'
+project(':gorilla.java.client').projectDir = new File(settingsDir, '../gorilla.java.client')
+
 include ':gorilla.launcher'
-
-include ':aura.gui'
-project(':aura.gui').projectDir = new File(settingsDir, '../Modules/aura.gui')
-
-include ':aura.common'
-project(':aura.common').projectDir = new File(settingsDir, '../Modules/aura.common')
-
-include ':gorilla.client'
-project(':gorilla.client').projectDir = new File(settingsDir, '../Modules/gorilla.client')

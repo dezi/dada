@@ -42,13 +42,13 @@
     <color name="color_stream_item_bg_message">#676cf9</color>
     <color name="color_stream_item_bg_message_default">#31b6a2</color>
     <color name="color_stream_item_bg_message_read">#838383</color>
-    <color name="color_stream_item_bg_mymessage_default">@color/color_stream_item_bg_message</color>
+    <color name="color_stream_item_bg_mymessage_default">#619eae</color>
 
     <color name="color_stream_text_main">#ffffff</color>
     <color name="color_stream_text_muted">#dedede</color>
 
     <color name="color_stream_icon_drawable_state_default">@color/color_stream_image_drawable</color>
-    <color name="color_stream_icon_drawable_state_success">#31b6a2</color>
+    <color name="color_stream_icon_drawable_state_success">#648aa3</color>
 
     <!-- Action Cluster Container / Mask -->
     <color name="color_actioncluster_container_mask_bg">#000000</color>

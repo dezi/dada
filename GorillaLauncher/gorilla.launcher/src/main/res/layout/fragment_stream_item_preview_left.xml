@@ -16,7 +16,7 @@
     android:paddingBottom="@dimen/stream_item_preview_padding_bottom">
 
     <LinearLayout
-        android:id="@+id/previewTextContainer"
+        android:id="@+id/textContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/shape_stream_item_rounded_corners_left"
@@ -26,11 +26,11 @@
         android:paddingEnd="@dimen/stream_item_preview_text_paddingCenter"
         android:paddingBottom="@dimen/stream_item_preview_text_paddingVertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/previewImageContainer"
+        app:layout_constraintEnd_toStartOf="@id/imageContainer"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/previewIcon"
+            android:id="@+id/icon"
             android:layout_width="@dimen/stream_item_preview_icon_width"
             android:layout_height="@dimen/stream_item_preview_icon_height"
             android:layout_marginStart="@dimen/stream_item_preview_icon_marginEdge"
@@ -41,7 +41,7 @@
             android:tint="@color/color_stream_image_drawable" />
 
         <TextView
-            android:id="@+id/previewText"
+            android:id="@+id/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="end|center_vertical"
@@ -56,7 +56,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/previewImageContainer"
+        android:id="@+id/imageContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="0dp"
@@ -71,7 +71,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/previewImage"
+            android:id="@+id/image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
