@@ -10,11 +10,11 @@ import com.aura.aosp.aura.common.univid.Identity;
 import com.aura.aosp.aura.common.univid.Owner;
 import com.aura.aosp.aura.common.simple.Log;
 
+import com.aura.aosp.aura.nlp.suggest.Suggest;
 import com.aura.aosp.gorilla.client.IGorillaSystemService;
 
 import com.aura.aosp.gorilla.goatom.GoatomStorage;
 import com.aura.aosp.gorilla.goatoms.GorillaAtomContact;
-import com.aura.aosp.aura.nlp.suggest.Suggest;
 import com.aura.aosp.gorilla.gomess.GomessHandler;
 import com.aura.aosp.gorilla.gopoor.GopoorRegister;
 import com.aura.aosp.gorilla.gopoor.GopoorSuggest;
