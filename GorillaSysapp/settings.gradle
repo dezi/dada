@@ -1,16 +1,13 @@
-include ':aura.nat'
-project(':aura.nat').projectDir = new File(settingsDir, '../Modules/aura.nat')
+include ':aura.java.gui'
+project(':aura.java.gui').projectDir = new File(settingsDir, '../../aura.java.gui')
 
-include ':aura.gui'
-project(':aura.gui').projectDir = new File(settingsDir, '../Modules/aura.gui')
+include ':aura.java.com'
+project(':aura.java.com').projectDir = new File(settingsDir, '../../aura.java.com')
 
-include ':aura.common'
-project(':aura.common').projectDir = new File(settingsDir, '../Modules/aura.common')
+include ':gorilla.java.client'
+project(':gorilla.java.client').projectDir = new File(settingsDir, '../../gorilla.java.client')
 
 include ':gorilla.service'
 project(':gorilla.service').projectDir = new File(settingsDir, '../Modules/gorilla.service')
-
-include ':gorilla.client'
-project(':gorilla.client').projectDir = new File(settingsDir, '../Modules/gorilla.client')
 
 include ':gorilla.sysapp'
