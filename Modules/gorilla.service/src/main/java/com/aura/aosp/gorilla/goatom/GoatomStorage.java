@@ -20,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.nio.file.Files;
 
 public class GoatomStorage
 {
@@ -93,6 +94,90 @@ public class GoatomStorage
 
         byte[] syncBytes = GZP.enGzip(syncStr.getBytes());
         File syncFile = new File(gosyncdir, dateStr + "." + syncUUID + ".json.gz");
+
+        return Simple.putFileBytes(syncFile, syncBytes);
+    }
+
+    @Nullable
+    public static Err delAtom(@NonNull JSONObject atom)
+    {
+        String ownerUUID = Owner.getOwnerUUIDBase64();
+        if (ownerUUID == null) return Err.getLastErr();
+
+        return delAtom(ownerUUID, ownerUUID, atom);
+    }
+
+    @Nullable
+    public static Err delAtomSharedBy(@NonNull String userUUID, @NonNull JSONObject atom)
+    {
+        String ownerUUID = Owner.getOwnerUUIDBase64();
+        if (ownerUUID == null) return Err.getLastErr();
+
+        return delAtom(userUUID, ownerUUID, atom);
+    }
+
+    @Nullable
+    public static Err delAtomSharedWith(@NonNull String userUUID, @NonNull JSONObject atom)
+    {
+        String ownerUUID = Owner.getOwnerUUIDBase64();
+        if (ownerUUID == null) return Err.getLastErr();
+
+        return delAtom(ownerUUID, userUUID, atom);
+    }
+
+    @Nullable
+    private static Err delAtom(@NonNull String ownerUUID, @NonNull String sharedUUID, @NonNull JSONObject atom)
+    {
+        prepareAtom(atom);
+
+        File atomfile = getStorageFile(ownerUUID, sharedUUID, atom);
+        if (atomfile == null) return Err.getLastErr();
+
+        Log.d("ownerUUID=%s sharedUUID=%s atomfile=%s atom=%s", ownerUUID, sharedUUID, atomfile, atom);
+
+        if (! atomfile.delete())
+        {
+            return Err.errp("cannot delete file=%s", atomfile.toString());
+        }
+
+        return delSync(ownerUUID, sharedUUID, atom);
+    }
+
+    @Nullable
+    private static Err delSync(@NonNull String ownerUUID, @NonNull String sharedUUID, @NonNull JSONObject atom)
+    {
+        String atomUUID = Json.getString(atom, "uuid");
+        if (atomUUID == null)
+        {
+            Err.errp("missing uuid atom=%s", atom.toString());
+            return null;
+        }
+
+        File appfilesdir = Environment.getExternalStorageDirectory();
+        File gokilldir = new File(appfilesdir, "gokill");
+
+        synchronized (mutex)
+        {
+            Err err = Simple.mkdirs(appfilesdir, gokilldir);
+            if (err != null) return err;
+        }
+
+        String syncUUID = UID.randomUUIDString();
+
+        Long timeStamp = GorillaTime.serverTimeMillis();
+        String dateStr = Dates.getUniversalDateAndTimeMillis(timeStamp);
+
+        JSONObject sync = new JSONObject();
+
+        Json.put(sync, "ownerUUID", ownerUUID);
+        Json.put(sync, "sharedUUID", sharedUUID);
+        Json.put(sync, "atomUUID", atomUUID);
+
+        String syncStr = Json.toPretty(sync);
+        if (syncStr == null) return Err.getLastErr();
+
+        byte[] syncBytes = GZP.enGzip(syncStr.getBytes());
+        File syncFile = new File(gokilldir, dateStr + "." + syncUUID + ".json.gz");
 
         return Simple.putFileBytes(syncFile, syncBytes);
     }

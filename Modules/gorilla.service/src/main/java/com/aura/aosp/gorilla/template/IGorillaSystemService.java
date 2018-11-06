@@ -83,6 +83,12 @@ interface IGorillaSystemService
 
     boolean putAtomSharedWith(String apkname, String userUUID, String atomJSON, String checksum);
 
+    boolean delAtom(String apkname, String atomJSON, String checksum);
+
+    boolean delAtomSharedBy(String apkname, String userUUID, String atomJSON, String checksum);
+
+    boolean delAtomSharedWith(String apkname, String userUUID, String atomJSON, String checksum);
+
     String getAtom(String apkname, String atomUUID, String checksum);
 
     String getAtomSharedBy(String apkname, String userUUID, String atomUUID, String checksum);

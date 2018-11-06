@@ -178,6 +178,52 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
     }
 
     @Override
+    public boolean delAtom(String apkname, String atomJSON, String checksum)
+    {
+        if (!GorillaIntercon.validateSHASignatureBase64(checksum, apkname, apkname, atomJSON))
+        {
+            return false;
+        }
+
+        JSONObject atom = Json.fromStringObject(atomJSON);
+        if (atom == null) return false;
+
+        Err err = GoatomStorage.delAtom(atom);
+        return (err == null);
+    }
+
+    @Override
+    public boolean delAtomSharedBy(String apkname, String userUUID, String atomJSON, String checksum)
+    {
+        if (!GorillaIntercon.validateSHASignatureBase64(checksum, apkname, apkname, userUUID, atomJSON))
+        {
+            return false;
+        }
+
+        JSONObject atom = Json.fromStringObject(atomJSON);
+        if (atom == null) return false;
+
+        Err err = GoatomStorage.delAtomSharedBy(userUUID, atom);
+        return (err == null);
+
+    }
+
+    @Override
+    public boolean delAtomSharedWith(String apkname, String userUUID, String atomJSON, String checksum)
+    {
+        if (!GorillaIntercon.validateSHASignatureBase64(checksum, apkname, apkname, userUUID, atomJSON))
+        {
+            return false;
+        }
+
+        JSONObject atom = Json.fromStringObject(atomJSON);
+        if (atom == null) return false;
+
+        Err err = GoatomStorage.delAtomSharedWith(userUUID, atom);
+        return (err == null);
+    }
+
+    @Override
     @Nullable
     public String getAtom(@NonNull String apkname, @NonNull String atomUUID, @NonNull String checksum)
     {
