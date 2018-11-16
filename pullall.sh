@@ -19,6 +19,8 @@ cd ~/go/src/github.com/dezi/nlpstuff; git pull; cd ..
 
 cd ~/go/src/github.com/auraproduct/stuff.fid; git pull; cd ..
 cd ~/go/src/github.com/auraproduct/stuff.geo; git pull; cd ..
+cd ~/go/src/github.com/auraproduct/stuff.spr; git pull; cd ..
+cd ~/go/src/github.com/auraproduct/stuff.spt; git pull; cd ..
 
 cd ~/go/src/github.com/auraproduct/aura.go.nlp; git pull; cd ..
 
