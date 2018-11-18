@@ -5,6 +5,10 @@ import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.aura.aosp.aura.ocv.utils.ModelDownloader;
+
+import java.io.File;
+
 public class MainActivity extends AppCompatActivity
 {
 
@@ -25,5 +29,7 @@ public class MainActivity extends AppCompatActivity
 
         FaceView faceView = new FaceView(this);
         topFrame.addView(faceView);
+
+        File cascadeFile = ModelDownloader.LoadModelFile(this, "haarcascade_frontalcatface.xml");
     }
 }

@@ -1,1 +1,10 @@
+include ':aura.gui'
+project(':aura.gui').projectDir = new File(settingsDir, '../Modules/aura.gui')
+
+include ':aura.common'
+project(':aura.common').projectDir = new File(settingsDir, '../Modules/aura.common')
+
+include ':aura.java.ocv'
+project(':aura.java.ocv').projectDir = new File(settingsDir, '../Modules/aura.java.ocv')
+
 include ':app'

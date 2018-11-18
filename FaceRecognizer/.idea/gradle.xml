@@ -9,6 +9,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/../Modules/aura.common" />
+            <option value="$PROJECT_DIR$/../Modules/aura.gui" />
+            <option value="$PROJECT_DIR$/../Modules/aura.java.ocv" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
