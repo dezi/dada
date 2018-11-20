@@ -456,13 +456,16 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
      *
      * @param apkname  the apk name of requesting app.
      * @param phrase   the text phrase for suggestions.
+     * @param language the language for suggestions or null for default locale.
      * @param checksum parameters checksum.
      * @return JSON object string of type GorillaSuggestions or null.
      */
     @Override
-    public String requestPhraseSuggestionsSync(String apkname, String phrase, String checksum)
+    public String requestPhraseSuggestionsSync(String apkname, String phrase, String language, String checksum)
     {
-        JSONObject result = Suggest.hintPhrase(Locale.getDefault().getLanguage(), phrase);
+        String lang = (language == null || language.isEmpty()) ? Locale.getDefault().getLanguage() : language;
+
+        JSONObject result = Suggest.hintPhrase(lang, phrase);
         String resultStr = Json.toString(result);
 
         Log.d("result=%s", resultStr);
@@ -475,13 +478,16 @@ public class GorillaSystemService extends IGorillaSystemService.Stub
      *
      * @param apkname  the apk name of requesting app.
      * @param phrase   the text phrase for suggestions.
+     * @param language the language for suggestions or null for default locale.
      * @param checksum parameters checksum.
      * @return true if request is beeing processed.
      */
     @Override
-    public boolean requestPhraseSuggestionsAsync(String apkname, String phrase, String checksum)
+    public boolean requestPhraseSuggestionsAsync(String apkname, String phrase, String language, String checksum)
     {
-        JSONObject result = Suggest.hintPhrase(Locale.getDefault().getLanguage(), phrase);
+        String lang = (language == null || language.isEmpty()) ? Locale.getDefault().getLanguage() : language;
+
+        JSONObject result = Suggest.hintPhrase(lang, phrase);
         Err err = GorillaSender.sendPhraseSuggestions(apkname, result);
 
         return (err == null);

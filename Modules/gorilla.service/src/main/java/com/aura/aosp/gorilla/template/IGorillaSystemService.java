@@ -200,18 +200,20 @@ interface IGorillaSystemService
      *
      * @param apkname  the apk name of requesting app.
      * @param phrase   the text phrase for suggestions.
+     * @param language the language for suggestions or null for default locale.
      * @param checksum parameters checksum.
      * @return JSON object string of type GorillaSuggestions or null.
      */
-    String requestPhraseSuggestionsSync(String apkname, String phrase, String checksum);
+    String requestPhraseSuggestionsSync(String apkname, String phrase, String language, String checksum);
 
     /**
      * Request suggestion for text phrase via service callback.
      *
      * @param apkname  the apk name of requesting app.
      * @param phrase   the text phrase for suggestions.
+     * @param language the language for suggestions or null for default locale.
      * @param checksum parameters checksum.
      * @return true if request is beeing processed.
      */
-    boolean requestPhraseSuggestionsAsync(String apkname, String phrase, String checksum);
+    boolean requestPhraseSuggestionsAsync(String apkname, String phrase, String language, String checksum);
 }
