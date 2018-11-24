@@ -7,6 +7,7 @@ cd ~/aura/aura.java.gui; git commit -a -m "Safe check in."; git push; cd ..
 cd ~/aura/aura.java.nlp; git commit -a -m "Safe check in."; git push; cd ..
 cd ~/aura/aura.java.ocv; git commit -a -m "Safe check in."; git push; cd ..
 cd ~/aura/aura.java.sdk; git commit -a -m "Safe check in."; git push; cd ..
+cd ~/aura/aura.java.tts; git commit -a -m "Safe check in."; git push; cd ..
 
 cd ~/aura/gorilla.java.client; git commit -a -m "Safe check in."; git push; cd ..
 
@@ -25,5 +26,6 @@ cd ~/go/src/github.com/auraproduct/stuff.spt; git commit -a -m "Safe check in.";
 
 cd ~/go/src/github.com/auraproduct/aura.go.nlp; git commit -a -m "Safe check in."; git push; cd ..
 
+cd ~/go/src/github.com/auraproduct/project.go.rebaser; git commit -a -m "Safe check in."; git pull; cd ..
 cd ~/go/src/github.com/auraproduct/project.go.kalditrainer; git commit -a -m "Safe check in."; git pull; cd ..
 cd ~/go/src/github.com/auraproduct/project.go.textsuggestions; git commit -a -m "Safe check in."; git pull; cd ..

@@ -7,6 +7,7 @@ cd ~/aura/aura.java.gui; git pull; cd ..
 cd ~/aura/aura.java.nlp; git pull; cd ..
 cd ~/aura/aura.java.ocv; git pull; cd ..
 cd ~/aura/aura.java.sdk; git pull; cd ..
+cd ~/aura/aura.java.tts; git pull; cd ..
 
 cd ~/aura/gorilla.java.client; git pull; cd ..
 
@@ -25,6 +26,7 @@ cd ~/go/src/github.com/auraproduct/stuff.spt; git pull; cd ..
 
 cd ~/go/src/github.com/auraproduct/aura.go.nlp; git pull; cd ..
 
+cd ~/go/src/github.com/auraproduct/project.go.rebaser; git pull; cd ..
 cd ~/go/src/github.com/auraproduct/project.go.kalditrainer; git pull; cd ..
 cd ~/go/src/github.com/auraproduct/project.go.textsuggestions; git pull; cd ..
 
