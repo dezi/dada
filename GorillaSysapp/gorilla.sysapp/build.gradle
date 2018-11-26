@@ -12,7 +12,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.aura.aosp.gorilla.sysapp"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 27
         versionCode 0
         versionName '0.001'
