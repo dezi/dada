@@ -8,7 +8,7 @@ include ':aura.java.nlp'
 project(':aura.java.nlp').projectDir = new File(settingsDir, '../../aura.java.nlp')
 
 include ':aura.java.nat'
-project(':aura.java.nat').projectDir = new File(settingsDir, '../Modules/aura.java.nat')
+project(':aura.java.nat').projectDir = new File(settingsDir, '../Modules/aura.nat')
 
 include ':gorilla.java.client'
 project(':gorilla.java.client').projectDir = new File(settingsDir, '../../gorilla.java.client')
