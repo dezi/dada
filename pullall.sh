@@ -3,6 +3,8 @@
 cd ~/aura/dada; git pull; cd ..
 
 cd ~/aura/aosp.sdk.service.tts; git pull; cd ..
+cd ~/aura/aosp.app.service.tts; git pull; cd ..
+cd ~/aura/aosp.app.examples.tts; git pull; cd ..
 
 cd ~/aura/aura.java.com; git pull; cd ..
 cd ~/aura/aura.java.gui; git pull; cd ..
