@@ -1,6 +1,8 @@
-#!/bin/bash
+#!/bin/bash -x
 
 cd ~/aura/dada; git commit -a -m "Safe check in."; git push; cd ..
+
+cd ~/aura/aosp.sdk.service.tts; git commit -a -m "Safe check in."; git push; cd ..
 
 cd ~/aura/aura.java.com; git commit -a -m "Safe check in."; git push; cd ..
 cd ~/aura/aura.java.gui; git commit -a -m "Safe check in."; git push; cd ..
