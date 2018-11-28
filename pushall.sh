@@ -18,8 +18,6 @@ cd ~/aura/project.java.facedetect; git commit -a -m "Safe check in."; git push; 
 cd ~/aura/project.java.textsuggestions; git commit -a -m "Safe check in."; git push; cd ..
 cd ~/aura/project.java.actionsuggestions; git commit -a -m "Safe check in."; git push; cd ..
 
-cd ~/go/src/github.com/dezi/nlpstuff; git commit -a -m "Safe check in."; git push; cd ..
-
 cd ~/go/src/github.com/auraproduct/stuff.nlp; git commit -a -m "Safe check in."; git push; cd ..
 cd ~/go/src/github.com/auraproduct/stuff.fid; git commit -a -m "Safe check in."; git push; cd ..
 cd ~/go/src/github.com/auraproduct/stuff.geo; git commit -a -m "Safe check in."; git push; cd ..

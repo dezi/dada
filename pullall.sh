@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 cd ~/aura/dada; git pull; cd ..
 
@@ -17,8 +17,6 @@ cd ~/aura/project.java.launcher; git pull; cd ..
 cd ~/aura/project.java.facedetect; git pull; cd ..
 cd ~/aura/project.java.textsuggestions; git pull; cd ..
 cd ~/aura/project.java.actionsuggestions; git pull; cd ..
-
-cd ~/go/src/github.com/dezi/nlpstuff; git pull; cd ..
 
 cd ~/go/src/github.com/auraproduct/stuff.nlp; git pull; cd ..
 cd ~/go/src/github.com/auraproduct/stuff.fid; git pull; cd ..
