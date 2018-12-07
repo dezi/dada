@@ -31,3 +31,8 @@ cd ~/go/src/github.com/auraproduct/aura.go.nlp; git commit -a -m "Safe check in.
 cd ~/go/src/github.com/auraproduct/project.go.rebaser; git commit -a -m "Safe check in."; git pull; cd ..
 cd ~/go/src/github.com/auraproduct/project.go.kalditrainer; git commit -a -m "Safe check in."; git pull; cd ..
 cd ~/go/src/github.com/auraproduct/project.go.textsuggestions; git commit -a -m "Safe check in."; git pull; cd ..
+
+cd ~/rebaser/aosp.android.sdk; git commit -a -m "Safe check in."; git pull
+cd ~/rebaser/aosp.package.LatinIME; git commit -a -m "Safe check in."; git pull
+cd ~/rebaser/aosp.package.SystemUI; git commit -a -m "Safe check in."; git pull
+

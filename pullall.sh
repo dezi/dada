@@ -32,3 +32,7 @@ cd ~/go/src/github.com/auraproduct/project.go.rebaser; git pull; cd ..
 cd ~/go/src/github.com/auraproduct/project.go.kalditrainer; git pull; cd ..
 cd ~/go/src/github.com/auraproduct/project.go.textsuggestions; git pull; cd ..
 
+cd ~/rebaser/aosp.android.sdk; git pull
+cd ~/rebaser/aosp.package.LatinIME; git pull
+cd ~/rebaser/aosp.package.SystemUI; git pull
+
